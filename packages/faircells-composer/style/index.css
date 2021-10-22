@@ -1,0 +1,13 @@
+.vre-composer {
+    display: flex;
+}
+
+.sidebar-items-container {
+    overflow: scroll;
+    max-height: 250px;
+    min-height: 250px;
+}
+
+.btn-export-workflow {
+    margin: 20px !important;
+}

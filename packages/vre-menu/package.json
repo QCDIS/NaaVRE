@@ -1,0 +1,63 @@
+{
+    "name": "@jupyter_vre/vre-menu",
+    "version": "1.0.0",
+    "description": "VRE Menu",
+    "keywords": [
+        "jupyter",
+        "jupyterlab",
+        "jupyterlab-extension"
+    ],
+    "homepage": "https://github.com/r-whites/jupyterlab_vre",
+    "bugs": {
+        "url": "https://github.com/r-whites/FAIRCells-VRE/issues"
+    },
+    "license": "BSD-3-Clause",
+    "author": "Riccardo Bianchi",
+    "files": [
+        "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
+        "src/**/*.{ts,tsx}",
+        "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+    ],
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "style": "style/index.css",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/r-whites/jupyter_vre.git"
+    },
+    "scripts": {
+        "build": "tsc",
+        "dist": "yarn pack .",
+        "clean": "rimraf lib",
+        "watch": "tsc -w"
+    },
+    "dependencies": {
+        "@jupyterlab/application": "^3.0.3",
+        "@jupyterlab/coreutils": "^5.0.1",
+        "@jupyterlab/launcher": "^3.0.2",
+        "@jupyterlab/mainmenu": "^3.0.9",
+        "@jupyterlab/notebook": "^3.0.3",
+        "@material-ui/core": "^4.11.2",
+        "@material-ui/icons": "^4.11.2",
+        "@mrblenny/react-flow-chart": "^0.0.14",
+        "crypto": "^1.0.1",
+        "d3": "^6.5.0",
+        "lodash": "^4.17.21",
+        "prop-types": "^15.7.2",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2",
+        "react-is": "^17.0.2",
+        "styled-components": "^5.2.3"
+    },
+    "devDependencies": {
+        "@types/node": "^14.14.37",
+        "rimraf": "^2.6.1",
+        "typescript": "~4.1.3"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "jupyterlab": {
+        "extension": true
+    }
+}

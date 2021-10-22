@@ -1,0 +1,27 @@
+/* Fill */
+
+.conf-card {
+    margin: 30px;
+}
+
+.btn-prov {
+    margin: 20px !important;
+}
+
+.conf-title {
+    font-size: 14;
+    margin: 10px !important;
+}
+
+.conf-form {
+    width: 200px !important;
+    margin: 20px !important;
+}
+.custom-prov-container {
+    margin-left: 20px;
+}
+
+.lw-deploy-table {
+    width: 600px !important;
+    margin: 15px !important;
+}

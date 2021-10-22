@@ -1,0 +1,11 @@
+name: venv
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.7
+  - pip
+  - pip:
+  {% for d in deps %}
+    - {{ d }}
+  {% endfor %}

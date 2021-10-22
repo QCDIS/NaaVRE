@@ -1,0 +1,14 @@
+.node-title {
+    font-size: small;
+    padding: 5px;
+}
+
+.node-title-container {
+    background-color: lightblue;
+    width: 200px !important;
+    text-align: center;
+}
+
+.scaling-node-info {
+    margin: 20px;
+}

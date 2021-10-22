@@ -1,0 +1,64 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: workflow-test-
+spec:
+    entrypoint: workflow-test
+    arguments:
+      parameters:
+      {% for p in global_params %}
+      - name: {{ p }}
+        value: ''
+      {% endfor %}
+    templates:
+    - name: workflow-test
+      dag:
+        tasks:
+        {% for nid, dep in deps_dag.items() %}
+        - name: {{ cells[nid]['task_name'] }}
+          {% if dep|length > 0 %}
+          dependencies: [{% for d in dep %} {{ d['task_name'] }}{% if not loop.last %},{% endif %} {% endfor %}]
+          {% endif %}
+          template: {{ cells[nid]['task_name'] }}-tmp
+          {% if dep|length > 0 or cells[nid]['params']|length > 0 %}
+          arguments:
+            parameters:
+            {% for d in dep %}
+            - {name: {{ d['port_id'] }}, value: {% if d['scaling'] %}{{ '"{{item}}"' }}{% else %}{{ '"{{tasks.' }}{{ d['task_name'] }}{{ '.outputs.result}}"' }}{% endif %}}
+            {% endfor %}
+            {% for p in cells[nid]['params'] %}
+            - {name: {{ p }}, value: {{ '"{{workflow.parameters.' }}{{ p }}{{ '}}"' }}}
+            {% endfor %}
+          {% for d in dep %}
+          {% if d['scaling'] %}
+          withParam: {{ '"{{tasks.' }}{{ d['task_name'] }}{{ '.outputs.result}}"' }}
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+        {% endfor %}
+
+    {% for nid, dep in deps_dag.items() %}
+    - name: {{ cells[nid]['task_name'] }}-tmp
+      {% if dep|length > 0 %}
+      inputs:
+        parameters:
+        {% for d in dep %}
+        - name: {{ d['port_id'] }}
+        {% endfor %}
+        {% for p in cells[nid]['params'] %}
+        - name: {{ p }}
+        {% endfor %}
+      {% endif %}
+      container:
+        image: "qcdis/{{ cells[nid]['task_name'] }}"
+        command: ["/bin/bash", "-c"]
+        args:
+          - source /venv/bin/activate;
+            python {{ cells[nid]['task_name'] }}.py{{ ";" if dep|length == 0 and cells[nid]['params']|length == 0}}
+            {% for d in dep %}
+            --{{ d['port_id'] }}{{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }}{{ ";" if loop.last and cells[nid]['params']|length == 0}}
+            {% endfor %}
+            {% for p in cells[nid]['params'] %}
+            --{{ p }}{{ " {{workflow.parameters." }}{{ p }}{{ "}}" }}{{ ";" if loop.last }}
+            {% endfor %}
+    {% endfor %}
