@@ -14,6 +14,7 @@ from tornado import web
 from datetime import datetime, timedelta
 from jupyterlab_vre.extractor.extractor import Extractor
 from jupyterlab_vre.converter.converter import ConverterReactFlowChart
+from jupyterlab_vre.sdia.sdia import SDIA
 from jupyterlab_vre.faircell import Cell
 from jupyterlab_vre.storage.catalog import Catalog
 from jupyterlab_vre.storage.azure import AzureStorage
@@ -246,7 +247,31 @@ class CatalogGetAllHandler(APIHandler, Catalog):
 
 ################################################################################
 
-                            # Workflows
+                            # SDIA Auth
+
+################################################################################
+
+class SDIAAuthHandler(APIHandler, SDIA):
+
+    @web.authenticated
+    async def post(self, *args, **kwargs):
+        
+        payload = self.get_json_body()
+
+        try:
+            res = SDIA.test_auth(payload['sdia-auth-username'], payload['sdia-auth-password'], payload['sdia-auth-endpoint'])
+            self.finish(res)
+            self.flush()
+        except Exception as ex:
+            print("In ex")
+            self.finish(json.dumps(str(ex)))
+            self.flush()
+
+        
+
+################################################################################
+
+                            # Automator
 
 ################################################################################
 
@@ -258,9 +283,6 @@ class ProvisionAddHandler(APIHandler, Catalog):
 
         payload = self.get_json_body()
         self.write(payload)
-
-        
-
         self.flush()
 
 

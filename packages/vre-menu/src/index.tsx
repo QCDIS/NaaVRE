@@ -5,6 +5,7 @@ import {
 
 import * as React from 'react';
 import { IMainMenu } from '@jupyterlab/mainmenu';
+import { requestAPI } from '@jupyter_vre/core';
 import { Menu } from '@lumino/widgets';
 import { ICommandPalette, showDialog, Dialog } from '@jupyterlab/apputils';
 import { AuthDialog } from './AuthDialog';
@@ -42,8 +43,14 @@ activate: (
         caption: 'SDIA',
         execute: (args: any) => {
             showDialog(SDIACredDialogOptions).then((res) => {
-                console.log(res.value);
-            });
+
+                requestAPI<any>('sdia/testauth', {
+                    body: JSON.stringify(res.value),
+                    method: 'POST'
+                }).then((resp) => {
+                    console.log(resp.status);
+                });
+        });
         }
     });
 
