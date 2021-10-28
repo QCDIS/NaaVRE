@@ -48,7 +48,7 @@ activate: (
                     body: JSON.stringify(res.value),
                     method: 'POST'
                 }).then((resp) => {
-                    console.log(resp.status);
+                    console.log(resp);
                 });
         });
         }

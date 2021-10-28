@@ -257,15 +257,12 @@ class SDIAAuthHandler(APIHandler, SDIA):
     async def post(self, *args, **kwargs):
         
         payload = self.get_json_body()
-
-        try:
-            res = SDIA.test_auth(payload['sdia-auth-username'], payload['sdia-auth-password'], payload['sdia-auth-endpoint'])
-            self.finish(res)
-            self.flush()
-        except Exception as ex:
-            print("In ex")
-            self.finish(json.dumps(str(ex)))
-            self.flush()
+        reply = {}
+        res = SDIA.test_auth(payload['sdia-auth-username'], payload['sdia-auth-password'], payload['sdia-auth-endpoint'])
+        error = issubclass(type(res), Exception)
+        reply['message'] = str(res) if error else 'Saving credentials ...'
+        self.write(reply)
+        self.flush()
 
         
 
