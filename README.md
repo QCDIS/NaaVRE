@@ -30,3 +30,9 @@ Additionally, it is possible to start the extension instance on a local director
 ```console
 docker run -it -p 8888:8888 -v <local-dir>/:/home/jovyan/work -w /home/jovyan/work qcdis/jupyterlab_vre:latest jupyter lab --debug
 ```
+
+
+# Build Release
+```bash
+make release 
+```
