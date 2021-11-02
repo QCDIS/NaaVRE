@@ -1,15 +1,17 @@
 import json
 from tinydb import TinyDB, where
 from jupyterlab_vre.faircell import Cell
+from jupyterlab_vre.sdia.credentials import SDIACredentials
 
 
 TinyDB.DEFAULT_TABLE = 'cells'
 
 class Catalog:
 
-    db = TinyDB('db.json')
-    cells = db.table('cells')
-    provision = db.table('provision')
+    db          = TinyDB('db.json')
+    cells       = db.table('cells')
+    provision   = db.table('provision')
+    credentials = db.table('credentials')
     editor_buffer: Cell
 
     @classmethod
@@ -19,6 +21,10 @@ class Catalog:
     @classmethod
     def get_all_cells(cls):
         return cls.cells.all()
+
+    @classmethod
+    def add_credentials(cls, cred: SDIACredentials):
+        cls.credentials.insert(cred.__dict__)
 
     @classmethod
     def get_cell_from_og_node_id(cls, og_node_id) -> Cell:
