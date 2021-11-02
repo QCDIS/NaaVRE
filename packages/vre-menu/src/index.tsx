@@ -5,9 +5,11 @@ import {
 
 import * as React from 'react';
 import { IMainMenu } from '@jupyterlab/mainmenu';
+import { requestAPI } from '@jupyter_vre/core';
 import { Menu } from '@lumino/widgets';
 import { ICommandPalette, showDialog, Dialog } from '@jupyterlab/apputils';
 import { AuthDialog } from './AuthDialog';
+import { formDialogWidget } from './formDialogWidget';
   
 /**
  * Initialization data for the main menu example.
@@ -27,58 +29,62 @@ activate: (
     const auth_remote_storage_command = 'vre:cred:remote-storage-auth';
     const auth_registry_command = 'vre:cred:container-registry-auth';
 
-    // VRE commands
+    const SDIACredDialogOptions: Partial<Dialog.IOptions<any>> = {
+        title: 'Infrastructure Automator Credentials',
+        body: formDialogWidget(
+          <AuthDialog />
+        ),
+        buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })],
+        defaultButton: 1
+    };
 
     commands.addCommand(auth_sdia_command, {
         label: 'SDIA',
         caption: 'SDIA',
         execute: (args: any) => {
-            showDialog({
-                title: 'Infrastructure Automator Credentials',
-                body: (
-                  <AuthDialog />
-                ),
-                buttons: [Dialog.okButton()]
-            }).then((res) => {
-                
-                // Make test auth request
-            });
+            showDialog(SDIACredDialogOptions).then((res) => {
+
+                requestAPI<any>('sdia/testauth', {
+                    body: JSON.stringify(res.value),
+                    method: 'POST'
+                }).then((resp) => {
+                    console.log(resp);
+                });
+        });
         }
     });
 
-    commands.addCommand(auth_remote_storage_command, {
-        label: 'Remote Storage',
-        caption: 'Remote Storage',
-        execute: (args: any) => {
-            showDialog({
-                title: 'Remote Storage Credentials',
-                body: (
-                  <AuthDialog />
-                ),
-                buttons: [Dialog.okButton()]
-            }).then((res) => {
+    // commands.addCommand(auth_remote_storage_command, {
+    //     label: 'Remote Storage',
+    //     caption: 'Remote Storage',
+    //     execute: (args: any) => {
+    //         showDialog({
+    //             title: 'Remote Storage Credentials',
+    //             body: (
+    //               <AuthDialog />
+    //             ),
+    //             buttons: [Dialog.okButton()]
+    //         }).then((res) => {
                 
-                // Make test auth request
-            });
-        }
-    });
+    //         });
+    //     }
+    // });
 
-    commands.addCommand(auth_registry_command, {
-        label: 'Container Registry',
-        caption: 'Container Registry',
-        execute: (args: any) => {
-            showDialog({
-                title: 'Container Registry Credentials',
-                body: (
-                  <AuthDialog />
-                ),
-                buttons: [Dialog.okButton()]
-            }).then((res) => {
+    // commands.addCommand(auth_registry_command, {
+    //     label: 'Container Registry',
+    //     caption: 'Container Registry',
+    //     execute: (args: any) => {
+    //         showDialog({
+    //             title: 'Container Registry Credentials',
+    //             body: (
+    //               <AuthDialog />
+    //             ),
+    //             buttons: [Dialog.okButton()]
+    //         }).then((res) => {
                 
-                // Make test auth request
-            });
-        }
-    });
+    //         });
+    //     }
+    // });
 
     const category = 'LifeWatch VRE';
         palette.addItem({
