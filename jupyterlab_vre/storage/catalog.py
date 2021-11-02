@@ -1,11 +1,17 @@
+import os
 import json
+from pathlib import Path
 from tinydb import TinyDB, where
 from jupyterlab_vre.faircell import Cell
 from jupyterlab_vre.sdia.credentials import SDIACredentials
 
 class Catalog:
 
-    db          = TinyDB('db.json')
+    naa_vre_path = os.path.join(str(Path.home()), 'NaaVRE')
+    if not os.path.exists(naa_vre_path):
+        os.mkdir(naa_vre_path)
+
+    db          = TinyDB(os.path.join(naa_vre_path, 'db.json'))
     cells       = db.table('cells')
     provision   = db.table('provision')
     credentials = db.table('credentials')
