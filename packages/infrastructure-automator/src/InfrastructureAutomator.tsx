@@ -9,12 +9,14 @@ interface IProps {  }
 interface IState {
 	provision_template	: string
 	loading				: boolean
+	credentials			: []
 	deployments			: Object[]
 }
 
 export const DefaultState: IState = {
 	provision_template	: '',
 	loading				: false,
+	credentials			: [],
 	deployments			: []
 }
 
@@ -24,6 +26,15 @@ class InfrastructureAutomator extends React.Component<IProps, IState> {
 
 	constructor(props: IProps) {
 		super(props);
+		this.loadCredentials();
+	}
+
+	loadCredentials = async () => {
+
+		const resp = await requestAPI<any>('sdia/credentials', { 
+			method: 'GET' 
+		});
+		console.log(resp);
 	}
 
 	handleProvisionTemplateChange = (event: React.ChangeEvent<{ value: unknown }>) => {

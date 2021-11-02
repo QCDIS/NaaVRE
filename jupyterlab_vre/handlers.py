@@ -275,7 +275,21 @@ class SDIAAuthHandler(APIHandler, SDIA, Catalog):
         self.write(reply)
         self.flush()
 
-        
+
+################################################################################
+
+                            # SDIA Credentials
+
+################################################################################
+
+
+class SDIACredentialsHandler(APIHandler, Catalog):
+
+    @web.authenticated
+    async def get(self, *args, **kwargs):
+        self.write(json.dumps(Catalog.get_credentials()))
+        self.flush()
+
 
 ################################################################################
 

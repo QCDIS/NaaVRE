@@ -30,6 +30,10 @@ class Catalog:
         cls.credentials.insert(cred.__dict__)
 
     @classmethod
+    def get_credentials(cls):
+        return cls.credentials.all()
+
+    @classmethod
     def get_cell_from_og_node_id(cls, og_node_id) -> Cell:
         res = cls.cells.search(where('node_id') == og_node_id)
         if (res):
