@@ -3,9 +3,6 @@ from tinydb import TinyDB, where
 from jupyterlab_vre.faircell import Cell
 from jupyterlab_vre.sdia.credentials import SDIACredentials
 
-
-TinyDB.DEFAULT_TABLE = 'cells'
-
 class Catalog:
 
     db          = TinyDB('db.json')
