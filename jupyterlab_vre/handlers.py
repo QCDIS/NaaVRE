@@ -14,6 +14,8 @@ from tornado import web
 from datetime import datetime, timedelta
 from jupyterlab_vre.extractor.extractor import Extractor
 from jupyterlab_vre.converter.converter import ConverterReactFlowChart
+from jupyterlab_vre.sdia.sdia import SDIA
+from jupyterlab_vre.sdia.credentials import SDIACredentials
 from jupyterlab_vre.faircell import Cell
 from jupyterlab_vre.storage.catalog import Catalog
 from jupyterlab_vre.storage.azure import AzureStorage
@@ -246,7 +248,38 @@ class CatalogGetAllHandler(APIHandler, Catalog):
 
 ################################################################################
 
-                            # Workflows
+                            # SDIA Auth
+
+################################################################################
+
+class SDIAAuthHandler(APIHandler, SDIA, Catalog):
+
+    @web.authenticated
+    async def post(self, *args, **kwargs):
+        
+        payload = self.get_json_body()
+        reply = {}
+        res = SDIA.test_auth(payload['sdia-auth-username'], payload['sdia-auth-password'], payload['sdia-auth-endpoint'])
+        error = issubclass(type(res), Exception)
+
+        if not error:
+            Catalog.add_credentials(
+                SDIACredentials(
+                    username = payload['sdia-auth-username'], 
+                    password = payload['sdia-auth-password'],
+                    endpoint = payload['sdia-auth-endpoint']
+                )
+            )
+
+        reply['message'] = str(res) if error else 'Credentials Saved'
+        self.write(reply)
+        self.flush()
+
+        
+
+################################################################################
+
+                            # Automator
 
 ################################################################################
 
@@ -258,9 +291,6 @@ class ProvisionAddHandler(APIHandler, Catalog):
 
         payload = self.get_json_body()
         self.write(payload)
-
-        
-
         self.flush()
 
 

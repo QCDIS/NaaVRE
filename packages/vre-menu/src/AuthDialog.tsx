@@ -1,4 +1,3 @@
-import { TextField } from '@material-ui/core';
 import * as React from 'react';
 
 export class AuthDialog extends React.Component {
@@ -9,24 +8,34 @@ export class AuthDialog extends React.Component {
 
     render(): React.ReactElement {
         return (
-            <div>
-                <form noValidate autoComplete="off">
-                    <TextField
-                        className="auth-form"
-                        required id="standard-required" 
-                        label="Username"
-                        variant="outlined"
-                    />
-                    <br />
-                    <TextField
-                        className="auth-form"
-                        id="standard-password"
-                        type="password"
-                        label="Password"
-                        variant="outlined"
-                    />
-                </form>
-            </div>
+            <form className={'sdia-auth-form'}>
+                <label htmlFor='sdia-auth-username'>Username:</label>
+                <br/>
+                <input
+                    type='text'
+                    className='auth-form'
+                    id='sdia-auth-username'
+                    name='sdia-auth-username'
+                />
+                <br/>
+                <label htmlFor='sdia-auth-password'>Password:</label>
+                <br/>
+                <input
+                    type='password'
+                    className='auth-form'
+                    id='sdia-auth-password'
+                    name='sdia-auth-password'
+                />
+                <br/>
+                <label htmlFor='sdia-auth-endpoint'>Endpoint:</label>
+                <br/>
+                <input
+                    type='url'
+                    className='auth-form'
+                    id='sdia-auth-endpoint'
+                    name='sdia-auth-endpoint'
+                />
+            </form>
         )
     }
 }
