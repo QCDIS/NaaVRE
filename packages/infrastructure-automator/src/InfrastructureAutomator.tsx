@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ReactWidget } from '@jupyterlab/apputils';
 import { theme } from './Theme';
 import { requestAPI } from '@jupyter_vre/core';
-import { Button, Card, CardContent, CircularProgress, FormControl, InputLabel, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, ThemeProvider, Typography } from '@material-ui/core';
+import { Button, Card, CardContent, FormControl, InputLabel, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ThemeProvider, Typography } from '@material-ui/core';
 
 interface IProps {  }
 
@@ -41,12 +41,12 @@ class InfrastructureAutomator extends React.Component<IProps, IState> {
 	}
 
 	handleProvisionTemplateChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-
-		let newValue = (event.target.value == 'custom') ? 'custom' : event.target.value
-		this.setState({ provision_template: newValue as string });
+		
+		this.setState({ provision_template: event.target.value as string });
 	};
 
 	handleSelCredChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+		
 		this.setState({ sel_cred: event.target.value });
 	};
 
@@ -110,21 +110,9 @@ class InfrastructureAutomator extends React.Component<IProps, IState> {
 								onChange={this.handleProvisionTemplateChange}
 							>
 								<MenuItem value={''}>-- None --</MenuItem>
-								<MenuItem value={'615f18ecaf8ebb245af0b09c'}>Standard</MenuItem>
-								<MenuItem value={'custom'}>Custom</MenuItem>
+								<MenuItem value={'615f18ecaf8ebb245af0b09c'}>2 VMs (Argo on K8s)</MenuItem>
 							</Select>
 						</FormControl>
-						{ (this.state.provision_template == 'custom') ? (
-							<div className={'custom-prov-container'}>
-								<TextField
-									className="custom-prov-form"
-									label="Custom ID"
-									variant="outlined"
-									onChange={this.handleProvisionTemplateChange}
-									value={this.state.provision_template}
-								/>
-							</div>
-						) : (<div></div>) }
 						<br />
 						<Button variant='contained'
 								className={'btn-prov'}
@@ -133,11 +121,6 @@ class InfrastructureAutomator extends React.Component<IProps, IState> {
 								onClick={this.handleProvisionClick}>
 									Provision
 						</Button>
-						{this.state.loading ? (
-							<span>
-								<CircularProgress className={'add-catalog-progress'} size={30}/>
-							</span>
-						) :(<span></span>)}
 					</CardContent>
 				</Card>
 				<Card className={'conf-card'}>
