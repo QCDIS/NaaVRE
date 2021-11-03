@@ -304,7 +304,10 @@ class ProvisionAddHandler(APIHandler, Catalog):
     async def post(self, *args, **kwargs):
 
         payload = self.get_json_body()
-        self.write(payload)
+        cred_username = payload['credential']
+        template_id = payload['provision_template']
+        credentials = Catalog.get_credentials_from_username(cred_username)
+        print(credentials)
         self.flush()
 
 
