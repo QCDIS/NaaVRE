@@ -10,6 +10,7 @@ interface IState {
 	provision_template	: string
 	loading				: boolean
 	credentials			: []
+	sel_cred			: Object
 	deployments			: Object[]
 }
 
@@ -17,6 +18,7 @@ export const DefaultState: IState = {
 	provision_template	: '',
 	loading				: false,
 	credentials			: [],
+	sel_cred			: null,
 	deployments			: []
 }
 
@@ -34,13 +36,18 @@ class InfrastructureAutomator extends React.Component<IProps, IState> {
 		const resp = await requestAPI<any>('sdia/credentials', { 
 			method: 'GET' 
 		});
-		console.log(resp);
+		
+		this.setState({ credentials: resp });
 	}
 
 	handleProvisionTemplateChange = (event: React.ChangeEvent<{ value: unknown }>) => {
 
 		let newValue = (event.target.value == 'custom') ? 'custom' : event.target.value
 		this.setState({ provision_template: newValue as string });
+	};
+
+	handleSelCredChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+		this.setState({ sel_cred: event.target.value });
 	};
 
 	handleProvisionClick = async () => {
@@ -71,6 +78,26 @@ class InfrastructureAutomator extends React.Component<IProps, IState> {
 		return (
 			<ThemeProvider theme={theme}>
 				<div>
+				<Card className={'conf-card'}>
+					<CardContent>
+						<Typography className={'conf-title'}>
+							SDIA Credentials
+						</Typography>
+						<FormControl className={'conf-form'}>
+							<InputLabel>Select Credentials</InputLabel>
+							<Select
+								value={this.state.sel_cred}
+								onChange={this.handleSelCredChange}
+							>
+								<MenuItem value={''}>-- None --</MenuItem>
+							{ this.state.credentials.map((cred: any) => (
+								<MenuItem value={cred['username']}>{cred['username']} - {cred['endpoint']}</MenuItem>
+							))}
+							</Select>
+						</FormControl>
+					</CardContent>
+				</Card>
+				{ this.state.sel_cred ? (<div>
 				<Card className={'conf-card'}>
 					<CardContent>
 						<Typography className={'conf-title'}>
@@ -144,6 +171,7 @@ class InfrastructureAutomator extends React.Component<IProps, IState> {
                         </TableContainer>
 					</CardContent>
 				</Card>
+				</div>) : (<div></div>) }
 				</div>
 			</ThemeProvider>
 		)
