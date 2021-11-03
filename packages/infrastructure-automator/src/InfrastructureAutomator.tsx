@@ -10,7 +10,7 @@ interface IState {
 	provision_template	: string
 	loading				: boolean
 	credentials			: []
-	sel_cred			: Object
+	sel_cred			: string
 	deployments			: Object[]
 }
 
@@ -18,7 +18,7 @@ export const DefaultState: IState = {
 	provision_template	: '',
 	loading				: false,
 	credentials			: [],
-	sel_cred			: null,
+	sel_cred			: '',
 	deployments			: []
 }
 
@@ -37,6 +37,7 @@ class InfrastructureAutomator extends React.Component<IProps, IState> {
 			method: 'GET' 
 		});
 		
+		console.log(resp);
 		this.setState({ credentials: resp });
 	}
 
@@ -47,7 +48,7 @@ class InfrastructureAutomator extends React.Component<IProps, IState> {
 
 	handleSelCredChange = (event: React.ChangeEvent<{ value: unknown }>) => {
 		
-		this.setState({ sel_cred: event.target.value });
+		this.setState({ sel_cred: event.target.value as string });
 	};
 
 	handleProvisionClick = async () => {
@@ -56,7 +57,8 @@ class InfrastructureAutomator extends React.Component<IProps, IState> {
 
 		await requestAPI<any>('catalog/provision/add', {
 			body: JSON.stringify({
-				privision_template: this.state.provision_template
+				credential: this.state.sel_cred,
+				provision_template: this.state.provision_template
 			}),
 			method: 'POST'
 		});
