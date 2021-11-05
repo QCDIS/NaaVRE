@@ -298,7 +298,7 @@ class SDIACredentialsHandler(APIHandler, Catalog):
 ################################################################################
 
 
-class ProvisionAddHandler(APIHandler, Catalog):
+class ProvisionAddHandler(APIHandler, Catalog, SDIA):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
@@ -307,7 +307,10 @@ class ProvisionAddHandler(APIHandler, Catalog):
         cred_username = payload['credential']
         template_id = payload['provision_template']
         credentials = Catalog.get_credentials_from_username(cred_username)
-        print(credentials)
+
+        resp = SDIA.provision(credentials, template_id)
+        print(resp)
+
         self.flush()
 
 

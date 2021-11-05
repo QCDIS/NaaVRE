@@ -30,7 +30,7 @@ class Catalog:
         cls.credentials.insert(cred.__dict__)
 
     @classmethod
-    def get_credentials_from_username(cls, cred_username):
+    def get_credentials_from_username(cls, cred_username) -> SDIACredentials:
         res = cls.credentials.search(where('username') == cred_username)
         if res:
             return res[0]

@@ -1,5 +1,6 @@
 import requests
 from requests.models import HTTPBasicAuth
+from .credentials import SDIACredentials
 
 class SDIA:
 
@@ -15,5 +16,25 @@ class SDIA:
             )
         
         except Exception as ex:
-            print("In ex")
+            return ex
+
+    @staticmethod
+    def provision(credentials: SDIACredentials, template_id):
+
+        provision_path = credentials['endpoint'] + 'orchestrator/provisioner/provision/' + template_id
+        print(provision_path)
+
+        try:
+
+            return requests.get(
+                provision_path,
+                auth=HTTPBasicAuth(
+                    credentials['username'],
+                    credentials['password']
+                ),
+                verify=False,
+                headers={'accept': 'text/plain'}
+            )
+
+        except Exception as ex:
             return ex

@@ -112,7 +112,7 @@ class InfrastructureAutomator extends React.Component<IProps, IState> {
 								onChange={this.handleProvisionTemplateChange}
 							>
 								<MenuItem value={''}>-- None --</MenuItem>
-								<MenuItem value={'615f18ecaf8ebb245af0b09c'}>2 VMs (Argo on K8s)</MenuItem>
+								<MenuItem value={'6183b6700ef9ab0975655b87'}>2 VMs (Argo on K8s)</MenuItem>
 							</Select>
 						</FormControl>
 						<br />
