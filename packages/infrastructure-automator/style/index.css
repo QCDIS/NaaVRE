@@ -1,5 +1,9 @@
 /* Fill */
 
+.vre-infrastructure-automator {
+    overflow-y: scroll !important;
+}
+
 .conf-card {
     margin: 30px;
 }
