@@ -275,7 +275,21 @@ class SDIAAuthHandler(APIHandler, SDIA, Catalog):
         self.write(reply)
         self.flush()
 
-        
+
+################################################################################
+
+                            # SDIA Credentials
+
+################################################################################
+
+
+class SDIACredentialsHandler(APIHandler, Catalog):
+
+    @web.authenticated
+    async def get(self, *args, **kwargs):
+        self.write(json.dumps(Catalog.get_credentials()))
+        self.flush()
+
 
 ################################################################################
 
@@ -284,13 +298,19 @@ class SDIAAuthHandler(APIHandler, SDIA, Catalog):
 ################################################################################
 
 
-class ProvisionAddHandler(APIHandler, Catalog):
+class ProvisionAddHandler(APIHandler, Catalog, SDIA):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
 
         payload = self.get_json_body()
-        self.write(payload)
+        cred_username = payload['credential']
+        template_id = payload['provision_template']
+        credentials = Catalog.get_credentials_from_username(cred_username)
+
+        resp = SDIA.provision(credentials, template_id)
+        print(resp)
+
         self.flush()
 
 
