@@ -50,11 +50,11 @@ class WorkflowParser:
         for k in self.links:
             link = self.links[k]
 
-            if link['to']['portId'] == 'splitter_source':
+            if link['to']['portId'] == 'splitter_source' or link['to']['portId'] == 'merger_source':
                 self.splitters[link['to']['nodeId']]['source'] = link
                 continue
 
-            if link['from']['portId'] == 'splitter_target':
+            if link['from']['portId'] == 'splitter_target' or link['to']['portId'] == 'merger_target':
                 self.splitters[link['from']['nodeId']]['target'] = link
                 
             else:

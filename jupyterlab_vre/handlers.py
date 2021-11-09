@@ -175,7 +175,7 @@ class CellsHandler(APIHandler, Catalog):
 
         template_cell.stream(cell=current_cell, deps=deps, types=current_cell.types, confs=confs).dump(os.path.join(cell_temp_path, cell_file_name))
         template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_temp_path, env_name))
-        template_dockerfile.stream(task_name=current_cell.task_name).dump(dockerfile_name)
+        template_dockerfile.stream(task_name=current_cell.task_name).dump(os.path.join(cell_temp_path, dockerfile_name))
 
         with tarfile.open(context_name, 'w:gz') as tar:
             tar.add(cell_temp_path, arcname=os.path.sep)

@@ -1,22 +1,4 @@
-import { createMuiTheme } from '@material-ui/core/styles';
-
-declare module '@material-ui/core/styles/createMuiTheme' {
-  interface Theme {
-    kale: {
-      headers: {
-        main: string;
-      };
-    };
-  }
-
-  interface ThemeOptions {
-    kale?: {
-      headers?: {
-        main?: string;
-      };
-    };
-  }
-}
+import { createMuiTheme } from '@material-ui/core';
 
 export const theme = createMuiTheme({
   palette: {
