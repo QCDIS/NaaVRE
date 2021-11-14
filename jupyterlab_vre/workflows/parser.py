@@ -17,10 +17,10 @@ class WorkflowParser:
         self.nodes = nodes
         self.links = links
         self.splitters = defaultdict(dict)
-        self.dependencies = { nodes[node]['properties']['og_node_id'] : [] for node in nodes if nodes[node]['type'] != 'splitter' }
+        self.dependencies = { nodes[node]['properties']['og_node_id'] : [] for node in nodes if nodes[node]['type'] != 'splitter' and nodes[node]['type'] != 'merger' }
         self.cells_in_use = { nodes[node]['properties']['og_node_id'] : \
                                 Catalog.get_cell_from_og_node_id(nodes[node]['properties']['og_node_id']) \
-                                for node in nodes if nodes[node]['type'] != 'splitter'
+                                for node in nodes if nodes[node]['type'] != 'splitter' and nodes[node]['type'] != 'merger'
                             }
         self.__parse_links()
         self.__resolve_splitters()
@@ -70,7 +70,6 @@ class WorkflowParser:
                 
     
     def __get_og_node_id(self, node_id) -> str:
-
         return self.nodes[node_id]['properties']['og_node_id']
 
 

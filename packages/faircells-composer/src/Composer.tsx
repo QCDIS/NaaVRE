@@ -154,7 +154,7 @@ class Composer extends React.Component<IProps, IState> {
 		return (
 			<p>{node.properties['title']}</p>
 		);
-}
+	}
 
 	render() {
 		return (
