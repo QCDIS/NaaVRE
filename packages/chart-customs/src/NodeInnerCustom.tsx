@@ -17,7 +17,7 @@ export const NodeInnerCustom = ({ node, config }: INodeInnerDefaultProps) => {
             <div className={'node-title-container'}>
                 <p className={'node-title'}>{node.properties.title}</p>
             </div>
-            {node.type == 'splitter'
+            {(node.type == 'splitter' || node.type == 'merger')
             ? (<div className={'scaling-node-info'}><p>Scaling Factor: {node.properties['scalingFactor']}</p></div>) 
             : (<div></div>)}
         </Outer>
