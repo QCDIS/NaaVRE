@@ -17,10 +17,10 @@ class WorkflowParser:
         self.nodes = nodes
         self.links = links
         self.splitters = defaultdict(dict)
-        self.dependencies = { nodes[node]['properties']['og_node_id'] : [] for node in nodes if nodes[node]['type'] != 'splitter' }
+        self.dependencies = { nodes[node]['properties']['og_node_id'] : [] for node in nodes if nodes[node]['type'] != 'splitter' and nodes[node]['type'] != 'merger' }
         self.cells_in_use = { nodes[node]['properties']['og_node_id'] : \
                                 Catalog.get_cell_from_og_node_id(nodes[node]['properties']['og_node_id']) \
-                                for node in nodes if nodes[node]['type'] != 'splitter'
+                                for node in nodes if nodes[node]['type'] != 'splitter' and nodes[node]['type'] != 'merger'
                             }
         self.__parse_links()
         self.__resolve_splitters()
@@ -50,11 +50,11 @@ class WorkflowParser:
         for k in self.links:
             link = self.links[k]
 
-            if link['to']['portId'] == 'splitter_source':
+            if link['to']['portId'] == 'splitter_source' or link['to']['portId'] == 'merger_source':
                 self.splitters[link['to']['nodeId']]['source'] = link
                 continue
 
-            if link['from']['portId'] == 'splitter_target':
+            if link['from']['portId'] == 'splitter_target' or link['to']['portId'] == 'merger_target':
                 self.splitters[link['from']['nodeId']]['target'] = link
                 
             else:
@@ -70,7 +70,6 @@ class WorkflowParser:
                 
     
     def __get_og_node_id(self, node_id) -> str:
-
         return self.nodes[node_id]['properties']['og_node_id']
 
 

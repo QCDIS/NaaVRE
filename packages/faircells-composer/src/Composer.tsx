@@ -82,7 +82,6 @@ class Composer extends React.Component<IProps, IState> {
 		(...args: any) => {
 			let newChartTransformer = func(...args);
 			let newChart = newChartTransformer(this.state.chart);
-			console.log(newChart);
 			this.setState({
 				chart: { ...this.state.chart, ...newChart }
 			});
@@ -105,10 +104,10 @@ class Composer extends React.Component<IProps, IState> {
 		this.setState({ catalog_elements: resp });
 	}
 
-	handleChangeScalingFactor = (e: React.ChangeEvent<{}>, newValue: number | number[], splitter_id: string) => {
+	handleChangeScalingFactor = (e: React.ChangeEvent<{}>, newValue: number | number[], node_id: string) => {
 		
 		let newNodes = this.state.chart.nodes
-		newNodes[splitter_id].properties['scalingFactor'] = newValue
+		newNodes[node_id].properties['scalingFactor'] = newValue
 
 		this.setState({
 			chart: {
@@ -133,10 +132,9 @@ class Composer extends React.Component<IProps, IState> {
 		let id_sel = this.state.chart.selected.id;
 		let node = this.state.chart.nodes[id_sel];
 		
-		if (node.type == "splitter") {
+		if (node.type == "splitter" || node.type == "merger") {
 			return (
 				<div>
-					<h3>Splitter Editor</h3>
 					<p>Scaling Factor:</p>
 					<Slider
 						onChange={(e, nv) => { this.handleChangeScalingFactor(e, nv, node.id) }}
@@ -156,7 +154,7 @@ class Composer extends React.Component<IProps, IState> {
 		return (
 			<p>{node.properties['title']}</p>
 		);
-}
+	}
 
 	render() {
 		return (
@@ -208,13 +206,29 @@ class Composer extends React.Component<IProps, IState> {
 									}}
 									properties={{
 										'title': 'Splitter',
-										'scalingFactor': 1,
-										"targetInput": ''
+										'scalingFactor': 1
 									}}
 								/>
 								<SidebarItem
 									type={'merger'}
-									ports={{}}
+									ports={{
+										merger_source: {
+											id: 'merger_source',
+											type: 'left',
+											properties: {
+												special_node: 1,
+												color: '#000000'
+											}
+										},
+										merger_target: {
+											id: 'merger_target',
+											type: 'right',
+											properties: {
+												special_node: 1,
+												color: '#000000'
+											}
+										}
+									}}
 									properties={{
 										'title': 'Merger',
 										'scalingFactor': 1
