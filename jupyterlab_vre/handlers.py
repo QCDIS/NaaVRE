@@ -179,14 +179,14 @@ class CellsHandler(APIHandler, Catalog):
             os.mkdir(cell_path)
 
         cell_file_name = current_cell.task_name + '.py'
-        dockerfile_name = current_cell.task_name + '-dockerfile'
-        env_name = current_cell.task_name + '-environment.yaml'
+        dockerfile_name = 'Dockerfile.qcdis.' + current_cell.task_name
+        #env_name = current_cell.task_name + '-environment.yaml'
 
-        set_deps = set([dep['module'].split('.')[0] for dep in current_cell.dependencies])
+        #set_deps = set([dep['module'].split('.')[0] for dep in current_cell.dependencies])
 
         template_cell.stream(cell=current_cell, deps=deps, types=current_cell.types, confs=confs).dump(os.path.join(cell_path, cell_file_name))
-        template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
         template_dockerfile.stream(task_name=current_cell.task_name).dump(os.path.join(cell_path, dockerfile_name))
+        #template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
 
         self.flush()
         
