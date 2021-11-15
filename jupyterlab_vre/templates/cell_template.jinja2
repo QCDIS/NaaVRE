@@ -23,9 +23,6 @@ args = arg_parser.parse_args()
 {% for in_var in cell.inputs|sort %}
 {% if types[in_var] != 'point_cloud' %}
 {{ in_var }} = args.{{ in_var }}
-{% else %}
-from laserchicken import load
-{{ in_var }} = load('/tmp/{{ in_var }}.ply')
 {% endif %}
 {% endfor %}
 
@@ -41,12 +38,12 @@ from laserchicken import load
 {{ cell.original_source }}
 
 {% if cell.outputs|length > 0 %}
+import json
+outs = {}
 {% for out_var in cell.outputs|sort %}
 {% if types[out_var] != 'point_cloud' %}
-print({{ out_var }})
-{% else %}
-from laserchicken import export
-export({{ out_var }}, '/tmp/{{ out_var }}.ply')
+outs['{{ out_var }}'] = {{ out_var }}
 {% endif %}
 {% endfor %}
+print(json.dumps(outs))
 {% endif %}
