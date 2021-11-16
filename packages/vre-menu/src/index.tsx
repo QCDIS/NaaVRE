@@ -8,7 +8,8 @@ import { IMainMenu } from '@jupyterlab/mainmenu';
 import { requestAPI } from '@jupyter_vre/core';
 import { Menu } from '@lumino/widgets';
 import { ICommandPalette, showDialog, Dialog } from '@jupyterlab/apputils';
-import { AuthDialog } from './AuthDialog';
+import { SDIAAuthDialog } from './SDIAAuthDialog';
+import { GithubAuthDialog } from './GithubAuthDialog';
 import { formDialogWidget } from './formDialogWidget';
   
 /**
@@ -26,13 +27,21 @@ activate: (
 
     const { commands } = app;
     const auth_sdia_command = 'vre:cred:sdia-auth';
-    const auth_remote_storage_command = 'vre:cred:remote-storage-auth';
-    const auth_registry_command = 'vre:cred:container-registry-auth';
+    const auth_github_command = 'vre:cred:github-auth';
 
     const SDIACredDialogOptions: Partial<Dialog.IOptions<any>> = {
         title: 'Infrastructure Automator Credentials',
         body: formDialogWidget(
-          <AuthDialog />
+          <SDIAAuthDialog />
+        ),
+        buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })],
+        defaultButton: 1
+    };
+
+    const GithubDialogOptions: Partial<Dialog.IOptions<any>> = {
+        title: 'Github Token',
+        body: formDialogWidget(
+          <GithubAuthDialog />
         ),
         buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })],
         defaultButton: 1
@@ -50,45 +59,36 @@ activate: (
                 }).then((resp) => {
                     console.log(resp);
                 });
-        });
+            });
         }
     });
 
-    // commands.addCommand(auth_remote_storage_command, {
-    //     label: 'Remote Storage',
-    //     caption: 'Remote Storage',
-    //     execute: (args: any) => {
-    //         showDialog({
-    //             title: 'Remote Storage Credentials',
-    //             body: (
-    //               <AuthDialog />
-    //             ),
-    //             buttons: [Dialog.okButton()]
-    //         }).then((res) => {
-                
-    //         });
-    //     }
-    // });
+    commands.addCommand(auth_github_command, {
+        label: 'Github',
+        caption: 'Github',
+        execute: (args: any) => {
+            showDialog(GithubDialogOptions).then((res) => {
 
-    // commands.addCommand(auth_registry_command, {
-    //     label: 'Container Registry',
-    //     caption: 'Container Registry',
-    //     execute: (args: any) => {
-    //         showDialog({
-    //             title: 'Container Registry Credentials',
-    //             body: (
-    //               <AuthDialog />
-    //             ),
-    //             buttons: [Dialog.okButton()]
-    //         }).then((res) => {
-                
-    //         });
-    //     }
-    // });
+                requestAPI<any>('github/savetoken', {
+                    body: JSON.stringify(res.value),
+                    method: 'POST'
+                }).then((resp) => {
+                    console.log(resp);
+                });
+            });
+        }
+    });
 
     const category = 'LifeWatch VRE';
-        palette.addItem({
+
+    palette.addItem({
         command: auth_sdia_command,
+        category,
+        args: { origin: 'from the palette' }
+    });
+
+    palette.addItem({
+        command: auth_github_command,
         category,
         args: { origin: 'from the palette' }
     });
@@ -100,8 +100,7 @@ activate: (
     const credentialsMenu: Menu = new Menu({ commands });
     credentialsMenu.title.label = 'Manage Credentials'
     credentialsMenu.addItem({ command: auth_sdia_command, args: { origin: 'from the menu' }});
-    credentialsMenu.addItem({ command: auth_remote_storage_command, args: { origin: 'from the menu' }});
-    credentialsMenu.addItem({ command: auth_registry_command, args: { origin: 'from the menu' }});
+    credentialsMenu.addItem({ command: auth_github_command, args: { origin: 'from the menu' }});
     
     vreMenu.addItem({ submenu: credentialsMenu, type: 'submenu' });
     mainMenu.addMenu(vreMenu, { rank: 100 });
