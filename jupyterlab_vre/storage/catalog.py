@@ -3,7 +3,8 @@ import json
 from pathlib import Path
 from tinydb import TinyDB, where
 from jupyterlab_vre.faircell import Cell
-from jupyterlab_vre.sdia.credentials import SDIACredentials
+from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
+from jupyterlab_vre.github.gh_credentials import GHCredentials
 
 class Catalog:
 
@@ -11,10 +12,11 @@ class Catalog:
     if not os.path.exists(naa_vre_path):
         os.mkdir(naa_vre_path)
 
-    db          = TinyDB(os.path.join(naa_vre_path, 'db.json'))
-    cells       = db.table('cells')
-    provision   = db.table('provision')
-    credentials = db.table('credentials')
+    db               = TinyDB(os.path.join(naa_vre_path, 'db.json'))
+    cells            = db.table('cells')
+    provision        = db.table('provision')
+    sdia_credentials = db.table('sdia_credentials')
+    gh_tokens        = db.table('gh_tokens')
     editor_buffer: Cell
 
     @classmethod
@@ -27,17 +29,21 @@ class Catalog:
 
     @classmethod
     def add_credentials(cls, cred: SDIACredentials):
-        cls.credentials.insert(cred.__dict__)
+        cls.sdia_credentials.insert(cred.__dict__)
+
+    @classmethod
+    def add_gh_credentials(cls, cred: GHCredentials):
+        cls.gh_tokens.insert(cred.__dict__)
 
     @classmethod
     def get_credentials_from_username(cls, cred_username) -> SDIACredentials:
-        res = cls.credentials.search(where('username') == cred_username)
+        res = cls.sdia_credentials.search(where('username') == cred_username)
         if res:
             return res[0]
 
     @classmethod
     def get_credentials(cls):
-        return cls.credentials.all()
+        return cls.sdia_credentials.all()
 
     @classmethod
     def get_cell_from_og_node_id(cls, og_node_id) -> Cell:

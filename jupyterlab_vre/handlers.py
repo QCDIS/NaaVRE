@@ -8,6 +8,7 @@ from requests.models import HTTPBasicAuth
 import yaml
 import uuid
 import requests
+from jupyterlab_vre.github.gh_credentials import GHCredentials
 import nbformat as nb
 import autopep8
 from notebook.base.handlers import APIHandler
@@ -234,6 +235,25 @@ class SDIAAuthHandler(APIHandler, SDIA, Catalog):
 
         reply['message'] = str(res) if error else 'Credentials Saved'
         self.write(reply)
+        self.flush()
+
+
+################################################################################
+
+                            # Github  Auth
+
+################################################################################
+
+
+class GithubAuthHandler(APIHandler, Catalog):
+
+    @web.authenticated
+    async def post(self, *args, **kwargs):
+
+        payload = self.get_json_body()
+        Catalog.add_gh_credentials(
+            GHCredentials(token = payload['github-auth-token'])
+        )
         self.flush()
 
 
