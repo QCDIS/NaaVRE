@@ -8,9 +8,7 @@ import argparse
 arg_parser = argparse.ArgumentParser()
 
 {% for in_var in cell.inputs|sort %}
-{% if types[in_var] != 'str' %}
 arg_parser.add_argument('--{{ in_var }}', action='store', type={{ types[in_var] }}, required='True', dest='{{ in_var }}')
-{% endif %}
 {% endfor %}
 
 {% for param in cell.params|sort %}
@@ -34,10 +32,14 @@ args = arg_parser.parse_args()
 {{ cell.original_source }}
 
 {% if cell.outputs|length > 0 %}
+{% if cell.outputs|length == 1 and types[cell.outputs.0] == 'list' %}
+print({{cell.outputs.0 }})
+{% else %}
 import json
 outs = {}
 {% for out_var in cell.outputs|sort %}
 outs['{{ out_var }}'] = {{ out_var }}
 {% endfor %}
 print(json.dumps(outs))
+{% endif %}
 {% endif %}

@@ -161,7 +161,6 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                     <MenuItem value={'float'}>Float</MenuItem>
                                                     <MenuItem value={'str'}>String</MenuItem>
                                                     <MenuItem value={'list'}>List</MenuItem>
-                                                    <MenuItem value={'point_cloud'}>Point Cloud</MenuItem>
                                                 </Select>
                                             </FormControl>
                                         </TableCell>
@@ -191,7 +190,6 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                     <MenuItem value={'float'}>Float</MenuItem>
                                                     <MenuItem value={'str'}>String</MenuItem>
                                                     <MenuItem value={'list'}>List</MenuItem>
-                                                    <MenuItem value={'point_cloud'}>Point Cloud</MenuItem>
                                                 </Select>
                                             </FormControl>
                                         </TableCell>
