@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export class AuthDialog extends React.Component {
+export class SDIAAuthDialog extends React.Component {
 
     constructor(props: any) {
         super(props);

@@ -1,12 +1,15 @@
 import os
+from github3 import login
 import tarfile
 import copy
+from pathlib import Path
 import json
 import shutil
 from requests.models import HTTPBasicAuth
 import yaml
 import uuid
 import requests
+from jupyterlab_vre.github.gh_credentials import GHCredentials
 import nbformat as nb
 import autopep8
 from notebook.base.handlers import APIHandler
@@ -162,70 +165,64 @@ class CellsHandler(APIHandler, Catalog):
 
         Catalog.add_cell(current_cell)
 
-        cell_temp_path = "./%s" % current_cell.task_name
-        os.mkdir(cell_temp_path)
+        cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
+
+        if not os.path.exists(cells_path):
+            os.mkdir(cells_path)
+
+        cell_path = os.path.join(cells_path, current_cell.task_name)
+
+        if os.path.exists(cell_path):
+            for files in os.listdir(cell_path):
+                path = os.path.join(cell_path, files)
+                os.remove(path)
+
+        else:
+            os.mkdir(cell_path)
 
         cell_file_name = current_cell.task_name + '.py'
-        context_name = current_cell.task_name + '-context.tar.gz'
-        dockerfile_name = current_cell.task_name + '-dockerfile'
-        env_name = current_cell.task_name + '-environment.yaml'
+        dockerfile_name = 'Dockerfile.qcdis.' + current_cell.task_name
+        #env_name = current_cell.task_name + '-environment.yaml'
 
-        set_deps = set([dep['module'].split('.')[0] for dep in current_cell.dependencies])
-        print(current_cell.params)
+        #set_deps = set([dep['module'].split('.')[0] for dep in current_cell.dependencies])
 
-        template_cell.stream(cell=current_cell, deps=deps, types=current_cell.types, confs=confs).dump(os.path.join(cell_temp_path, cell_file_name))
-        template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_temp_path, env_name))
-        template_dockerfile.stream(task_name=current_cell.task_name).dump(os.path.join(cell_temp_path, dockerfile_name))
+        cell_file_path = os.path.join(cell_path, cell_file_name)
+        dockerfile_file_path = os.path.join(cell_path, dockerfile_name)
+        files_info = {}
+        files_info[cell_file_name]  = cell_file_path
+        files_info[dockerfile_name] = dockerfile_file_path
 
-        with tarfile.open(context_name, 'w:gz') as tar:
-            tar.add(cell_temp_path, arcname=os.path.sep)
+        template_cell.stream(cell=current_cell, deps=deps, types=current_cell.types, confs=confs).dump(cell_file_path)
+        template_dockerfile.stream(task_name=current_cell.task_name).dump(dockerfile_file_path)
+        #template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
 
-        # AzureStorage.test_upload(file_path=context_name, container_name='test-container')
-        # AzureStorage.test_upload(file_path=dockerfile_name, container_name='test-container')
+        token = Catalog.get_gh_token()
+        gh = login(token=token['token'])
+        repository = gh.repository('QCDIS', 'NaaVRE-container-prestage')
 
-        # os.remove(context_name)
-        # os.remove(dockerfile_name)
-        # shutil.rmtree(cell_temp_path)
+        last_comm = next(repository.commits(number = 1), None)
 
-        # tosca_res = requests.get(
-        #     'https://lifewatch.lab.uvalight.net:30003/orchestrator/tosca_template/61450d4a55804f310896f954',
-        #     auth=HTTPBasicAuth('', ''),
-        #     verify=False
-        # )
+        if last_comm:
+            last_tree_sha = last_comm.commit.tree.sha
+            tree = repository.tree(last_tree_sha)
+            paths = []
 
-        # tosca = yaml.safe_load(tosca_res.content)
+            for comm_file in tree.tree:
+                paths.append(comm_file.path)
 
-        # tosca['topology_template']['node_templates']['kaniko']['interfaces'] \
-        #         ['Helm']['install_chart']['inputs']['extra_variables']['values']['context'] = \
-        #         'https://lwdatasetstorage.blob.core.windows.net/test-container/' + context_name
-
-        # tosca['topology_template']['node_templates']['kaniko']['interfaces'] \
-        #         ['Helm']['install_chart']['inputs']['extra_variables']['values']['dockerfile'] = \
-        #         'https://lwdatasetstorage.blob.core.windows.net/test-container/' + dockerfile_name
-
-        # tosca['topology_template']['node_templates']['kaniko']['interfaces'] \
-        #         ['Helm']['install_chart']['inputs']['extra_variables']['values']['destination'] = \
-        #         'qcdis/' + current_cell.task_name
-
-        # with open('tosca_edited.yaml', 'w') as tosca_file:
-        #     yaml.dump(tosca, tosca_file)
-        
-        # upload_file = {'file': ('tosca.yaml', open('tosca_edited.yaml', 'rb'), 'text/yaml')}
-
-        # up_res = requests.post(
-        #     'https://lifewatch.lab.uvalight.net:30003/orchestrator/tosca_template/',
-        #     auth=HTTPBasicAuth('', ''),
-        #     verify=False,
-        #     files=upload_file
-        # )
-
-        # os.remove('tosca_edited.yaml')
-
-        # deploy_res = requests.get(
-        #     'https://lifewatch.lab.uvalight.net:30003/orchestrator/deployer/deploy/' + up_res.text,
-        #     auth=HTTPBasicAuth('', ''),
-        #     verify=False
-        # )
+        if current_cell.task_name in paths:
+            print('Cell is already in repository')
+            # TODO: Update file
+        else:
+            print('Cell is not in repository')
+            for f_name, f_path in files_info.items():
+                with open(f_path, 'rb') as f:
+                    content = f.read()
+                    repository.create_file(
+                        path        = current_cell.task_name + '/' + f_name,
+                        message     = current_cell.task_name + ' creation',
+                        content     = content,
+                    )
 
         self.flush()
         
@@ -273,6 +270,25 @@ class SDIAAuthHandler(APIHandler, SDIA, Catalog):
 
         reply['message'] = str(res) if error else 'Credentials Saved'
         self.write(reply)
+        self.flush()
+
+
+################################################################################
+
+                            # Github  Auth
+
+################################################################################
+
+
+class GithubAuthHandler(APIHandler, Catalog):
+
+    @web.authenticated
+    async def post(self, *args, **kwargs):
+
+        payload = self.get_json_body()
+        Catalog.add_gh_credentials(
+            GHCredentials(token = payload['github-auth-token'])
+        )
         self.flush()
 
 
