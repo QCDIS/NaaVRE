@@ -8,22 +8,18 @@ import argparse
 arg_parser = argparse.ArgumentParser()
 
 {% for in_var in cell.inputs|sort %}
-{% if types[in_var] != 'point_cloud' %}
-arg_parser.add_argument('--{{ in_var }}', action='store', type='{{ types[in_var] }}', required='True', dest='{{ in_var }}')
+{% if types[in_var] != 'str' %}
+arg_parser.add_argument('--{{ in_var }}', action='store', type={{ types[in_var] }}, required='True', dest='{{ in_var }}')
 {% endif %}
 {% endfor %}
 
 {% for param in cell.params|sort %}
-{% if types[param] != 'point_cloud' %}
-arg_parser.add_argument('--{{ param }}', action='store', type='{{ types[param] }}', required='True', dest='{{ param }}')
-{% endif %}
+arg_parser.add_argument('--{{ param }}', action='store', type={{ types[param] }}, required='True', dest='{{ param }}')
 {% endfor %}
 
 args = arg_parser.parse_args()
 {% for in_var in cell.inputs|sort %}
-{% if types[in_var] != 'point_cloud' %}
 {{ in_var }} = args.{{ in_var }}
-{% endif %}
 {% endfor %}
 
 {% for param in cell.params|sort %}
@@ -41,9 +37,7 @@ args = arg_parser.parse_args()
 import json
 outs = {}
 {% for out_var in cell.outputs|sort %}
-{% if types[out_var] != 'point_cloud' %}
 outs['{{ out_var }}'] = {{ out_var }}
-{% endif %}
 {% endfor %}
 print(json.dumps(outs))
 {% endif %}

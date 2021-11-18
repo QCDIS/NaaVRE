@@ -1,4 +1,5 @@
 import os
+from github3 import login
 import tarfile
 import copy
 from pathlib import Path
@@ -185,9 +186,43 @@ class CellsHandler(APIHandler, Catalog):
 
         #set_deps = set([dep['module'].split('.')[0] for dep in current_cell.dependencies])
 
-        template_cell.stream(cell=current_cell, deps=deps, types=current_cell.types, confs=confs).dump(os.path.join(cell_path, cell_file_name))
-        template_dockerfile.stream(task_name=current_cell.task_name).dump(os.path.join(cell_path, dockerfile_name))
+        cell_file_path = os.path.join(cell_path, cell_file_name)
+        dockerfile_file_path = os.path.join(cell_path, dockerfile_name)
+        files_info = {}
+        files_info[cell_file_name]  = cell_file_path
+        files_info[dockerfile_name] = dockerfile_file_path
+
+        template_cell.stream(cell=current_cell, deps=deps, types=current_cell.types, confs=confs).dump(cell_file_path)
+        template_dockerfile.stream(task_name=current_cell.task_name).dump(dockerfile_file_path)
         #template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
+
+        token = Catalog.get_gh_token()
+        gh = login(token=token['token'])
+        repository = gh.repository('QCDIS', 'NaaVRE-container-prestage')
+
+        last_comm = next(repository.commits(number = 1), None)
+
+        if last_comm:
+            last_tree_sha = last_comm.commit.tree.sha
+            tree = repository.tree(last_tree_sha)
+            paths = []
+
+            for comm_file in tree.tree:
+                paths.append(comm_file.path)
+
+        if current_cell.task_name in paths:
+            print('Cell is already in repository')
+            # TODO: Update file
+        else:
+            print('Cell is not in repository')
+            for f_name, f_path in files_info.items():
+                with open(f_path, 'rb') as f:
+                    content = f.read()
+                    repository.create_file(
+                        path        = current_cell.task_name + '/' + f_name,
+                        message     = current_cell.task_name + ' creation',
+                        content     = content,
+                    )
 
         self.flush()
         
