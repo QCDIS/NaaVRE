@@ -36,6 +36,12 @@ class Catalog:
         cls.gh_tokens.insert(cred.__dict__)
 
     @classmethod
+    def get_gh_token(cls) -> GHCredentials:
+        tokens = cls.gh_tokens.all()
+        if len(tokens) > 0:
+            return tokens[0]
+
+    @classmethod
     def get_credentials_from_username(cls, cred_username) -> SDIACredentials:
         res = cls.sdia_credentials.search(where('username') == cred_username)
         if res:

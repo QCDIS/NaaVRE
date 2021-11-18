@@ -24,7 +24,7 @@ spec:
           arguments:
             parameters:
             {% for d in dep %}
-            - {name: {{ d['port_id'] }}, value: {% if d['scaling'] %}{{ '"{{item}}"' }}{% else %}{{ '"{{=jsonpath(tasks.' }}{{ d['task_name'] }}{{ '.outputs.result, \'$.'}}{{ d['port_id'] }}{{'\')}}"' }}{% endif %}}
+            - {name: {{ d['port_id'] }}, value: {% if d['scaling'] %}{{ '"{{item}}"' }}{% else %}{{ '"{{=jsonpath(tasks[\'' }}{{ d['task_name'] }}{{ '\'].outputs.result, \'$.'}}{{ d['port_id'] }}{{'\')}}"' }}{% endif %}}
             {% endfor %}
             {% for p in cells[nid]['params'] %}
             - {name: {{ p }}, value: {{ '"{{workflow.parameters.' }}{{ p }}{{ '}}"' }}}
