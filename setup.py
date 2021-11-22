@@ -15,7 +15,7 @@ jupyter_config_path = './jupyter-config/*.json'
 
 setup_args = dict(
     name=name,
-    version="1.0.0",
+    version="0.1.0",
     url="https://github.com/r-whites/jupyterlab_vre",
     author="Riccardo Bianchi",
     author_email="riccardo.bianchi@lifewatch.eu",
@@ -35,7 +35,8 @@ setup_args = dict(
         "colorhash",
         "tinydb",
         "pyyaml",
-        "azure-storage-blob"
+        "azure-storage-blob",
+        "github3.py"
     ],
     zip_safe=False,
     include_package_data=True,
