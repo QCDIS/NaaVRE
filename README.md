@@ -14,9 +14,29 @@ The extension is currently under a early stage of development. This repository s
 At the moment, the extension is only distributed on demand as a python wheel package compatible with JupyterLab >= 3.0.0. Moreover, a Docker image with the extension pre-installed is also made available.
 
 ## Pip
+Create a python virtual environment 
 
 ```console
-pip install jupyterlab_vre-<version>-py3-none-any.whl && jupyter lab build
+python3 -m venv  venv/
+source venv/bin/activate
+```
+Install pip and wheel requirements
+
+```console
+pip install --upgrade pip
+pip install wheel setuptools_rust
+pip install jupyterlab_vre-1.0.0-py3-none-any.whl
+```
+
+Install and enable the extension
+```console
+pip install jupyterlab_vre-1.0.0-py3-none-any.whl
+jupyter lab build 
+jupyter serverextension enable --py jupyterlab_vre --user
+```
+Start Jupyter lab 
+```console
+jupyter lab 
 ```
 
 ## Docker
