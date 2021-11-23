@@ -18,7 +18,7 @@ from datetime import datetime, timedelta
 from jupyterlab_vre.extractor.extractor import Extractor
 from jupyterlab_vre.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.sdia.sdia import SDIA
-from jupyterlab_vre.sdia.credentials import SDIACredentials
+from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 from jupyterlab_vre.faircell import Cell
 from jupyterlab_vre.storage.catalog import Catalog
 from jupyterlab_vre.storage.azure import AzureStorage

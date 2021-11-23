@@ -29,7 +29,6 @@ eggs/
 .eggs/
 lib/
 lib64/
-docker/
 parts/
 sdist/
 var/

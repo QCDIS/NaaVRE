@@ -51,12 +51,12 @@ activate: (
         label: 'SDIA',
         caption: 'SDIA',
         execute: (args: any) => {
-            showDialog(SDIACredDialogOptions).then((res) => {
+            showDialog(SDIACredDialogOptions).then((res: { value: any; }) => {
 
                 requestAPI<any>('sdia/testauth', {
                     body: JSON.stringify(res.value),
                     method: 'POST'
-                }).then((resp) => {
+                }).then((resp: any) => {
                     console.log(resp);
                 });
             });
@@ -67,12 +67,12 @@ activate: (
         label: 'Github',
         caption: 'Github',
         execute: (args: any) => {
-            showDialog(GithubDialogOptions).then((res) => {
+            showDialog(GithubDialogOptions).then((res: { value: any; }) => {
 
                 requestAPI<any>('github/savetoken', {
                     body: JSON.stringify(res.value),
                     method: 'POST'
-                }).then((resp) => {
+                }).then((resp: any) => {
                     console.log(resp);
                 });
             });

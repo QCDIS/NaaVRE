@@ -1,4 +1,4 @@
-from jupyterlab_vre.sdia.credentials import SDIACredentials
+from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 from ._version import __version__ 
 from notebook.utils import url_path_join
 from .handlers import ExtractorHandler, CellsHandler, \

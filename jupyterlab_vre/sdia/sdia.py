@@ -1,6 +1,6 @@
 import requests
 from requests.models import HTTPBasicAuth
-from .credentials import SDIACredentials
+from .sdia_credentials import SDIACredentials
 
 class SDIA:
 
