@@ -1,3 +1,4 @@
+![Docker](https://github.com/qcdis-sdia/sdia-provisioner/workflows/Docker/badge.svg)
 # Jupyter Lab VRE
 
 Jupyter Lab extension for virtual research environments.
