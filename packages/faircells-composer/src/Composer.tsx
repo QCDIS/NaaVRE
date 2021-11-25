@@ -1,5 +1,4 @@
 import * as React from 'react';
-// import { v4 as uuidv4 } from 'uuid';
 import { ReactWidget } from '@jupyterlab/apputils';
 import * as actions from "@mrblenny/react-flow-chart/src/container/actions";
 import styled from 'styled-components'
@@ -11,6 +10,7 @@ import { FlowChart, IChart } from '@mrblenny/react-flow-chart';
 import { Button, Slider, ThemeProvider } from '@material-ui/core';
 import { NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
 import { requestAPI } from '@jupyter_vre/core';
+import { SidebarSpecialItem } from './components/SidebarSpecialItem';
 
 const LeftContent = styled.div`
   display: flex;
@@ -184,7 +184,7 @@ class Composer extends React.Component<IProps, IState> {
 								Scaling Nodes
 							</Message>
 							<div className={'sidebar-items-container'}>
-								<SidebarItem
+								<SidebarSpecialItem
 									type={'splitter'}
 									ports={{
 										splitter_source: {
@@ -209,7 +209,7 @@ class Composer extends React.Component<IProps, IState> {
 										'scalingFactor': 1
 									}}
 								/>
-								<SidebarItem
+								<SidebarSpecialItem
 									type={'merger'}
 									ports={{
 										merger_source: {
