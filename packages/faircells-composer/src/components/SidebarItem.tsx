@@ -45,6 +45,7 @@ export const SidebarItem = ({ type, ports, properties }: ISidebarItemProps) => {
 
   return (
     <Outer
+      clickable={false}
       onClick={click}
       draggable={true}
       onDragStart={(event: any) => {
