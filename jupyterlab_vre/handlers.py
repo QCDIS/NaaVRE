@@ -18,7 +18,7 @@ from datetime import datetime, timedelta
 from jupyterlab_vre.extractor.extractor import Extractor
 from jupyterlab_vre.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.sdia.sdia import SDIA
-from jupyterlab_vre.sdia.credentials import SDIACredentials
+from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 from jupyterlab_vre.faircell import Cell
 from jupyterlab_vre.storage.catalog import Catalog
 from jupyterlab_vre.storage.azure import AzureStorage
@@ -225,7 +225,13 @@ class CellsHandler(APIHandler, Catalog):
                     )
 
         self.flush()
-        
+    
+
+    @web.authenticated
+    async def delete(self, *args, **kwargs):
+        payload = self.get_json_body()
+        Catalog.delete_cell_from_title(payload['title'])
+
 
 class CatalogGetAllHandler(APIHandler, Catalog):
 
