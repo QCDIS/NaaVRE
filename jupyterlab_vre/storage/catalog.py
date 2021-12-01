@@ -24,6 +24,10 @@ class Catalog:
         cls.cells.insert(cell.__dict__)
 
     @classmethod
+    def delete_cell_from_title(cls, title: str):
+        cls.cells.remove(where('title') == title);
+
+    @classmethod
     def get_all_cells(cls):
         return cls.cells.all()
 
