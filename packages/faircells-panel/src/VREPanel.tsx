@@ -57,7 +57,7 @@ export class VREPanel extends React.Component<IProps> {
 
             this.setState({ loading: true });
 
-            await requestAPI<any>('catalog/cells/add', {
+            await requestAPI<any>('catalog/cells', {
                 body: JSON.stringify({}),
                 method: 'POST'
             });
