@@ -72,9 +72,11 @@ registries to push these images, so they can be discovered by the Argo workflow 
 1. If you don't already have a Dockerhub account create a new one.
 2. Go to ![https://hub.docker.com/settings/security](https://hub.docker.com/settings/security) and create a new access token by pressing "New Access Token".
 
-[!IMPORTANT]
-Make sure you temporarily note the access token. You're going to need it later when creating the GitHub repository. 
 
+---
+**IMPORTANT**
+Make sure you temporarily note the access token. You're going to need it later when creating the GitHub repository. 
+---
 More information on Dockerhub's access tokens can be found ![here](https://docs.docker.com/docker-hub/access-tokens/)
 
 ### GitHub
@@ -103,9 +105,10 @@ a personal access token. To do that go to ![https://github.com/settings/tokens](
  3. Set a reasonable expiration date e.g. 60. Note if this token respires you can always create a new in the future.
  4. On the section "Select scopes" tick the "repo" selection 
  5. Scroll on the bottom of the page and press "Generate token"
-[!IMPORTANT]
+---
+**IMPORTANT**
 Make sure you temporarily note the token. You're going to need to added to NaaVRE
- 
+---
 More information on GitHub's personal tokens can be found ![here](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
 
 # Argo workflow engine
