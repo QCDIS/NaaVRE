@@ -116,6 +116,7 @@ Make sure your temporarily note the token. You're going to need to added to NaaV
 More information on GitHub's personal tokens can be found ![here](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
 
 # Argo workflow engine
-Argo Workflows is an open source container-native workflow engine for orchestrating parallel jobs on Kubernetes.
+NaaVRE exports workflows as Argo workflows. Argo Workflows is an open source container-native workflow engine for 
+orchestrating parallel jobs on Kubernetes.
 ## Run Argo workflow engine in minikube 
 You'll need to install ![minikube](https://minikube.sigs.k8s.io/docs/start/)
