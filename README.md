@@ -76,7 +76,7 @@ registries to push these images, so they can be discovered by the Argo workflow 
 ---
 **IMPORTANT**
 
-Make sure you temporarily note the access token. You're going to need it later when creating the GitHub repository. 
+Make sure your temporarily note the access token. You're going to need it later when creating the GitHub repository. 
 
 ---
 More information on Dockerhub's access tokens can be found ![here](https://docs.docker.com/docker-hub/access-tokens/)
@@ -110,7 +110,7 @@ a personal access token. To do that go to ![https://github.com/settings/tokens](
 ---
 **IMPORTANT**
 
-Make sure you temporarily note the token. You're going to need to added to NaaVRE
+Make sure your temporarily note the token. You're going to need to added to NaaVRE
 
 ---
 More information on GitHub's personal tokens can be found ![here](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
