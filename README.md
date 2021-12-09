@@ -27,12 +27,11 @@ Install pip and wheel requirements
 ```console
 pip install --upgrade pip
 pip install wheel setuptools_rust
-pip install jupyterlab_vre-1.0.0-py3-none-any.whl
 ```
 
 Install and enable the extension
 ```console
-pip install jupyterlab_vre-1.0.0-py3-none-any.whl
+pip install jupyterlab_vre-?.?.?-py3-none-any.whl
 jupyter lab build 
 jupyter serverextension enable --py jupyterlab_vre --user
 ```
@@ -56,11 +55,6 @@ Additionally, it is possible to start the extension instance on a local director
 
 ```console
 docker run -it -p 8888:8888 -v <local-dir>/:/home/jovyan/work -w /home/jovyan/work qcdis/jupyterlab_vre:latest jupyter lab --debug
-```
-
-# Build Release
-```bash
-make release 
 ```
 
 # Set up Repository for Cells
@@ -120,3 +114,9 @@ NaaVRE exports workflows as Argo workflows. Argo Workflows is an open source con
 orchestrating parallel jobs on Kubernetes.
 ## Run Argo workflow engine in minikube 
 You'll need to install ![minikube](https://minikube.sigs.k8s.io/docs/start/)
+
+
+# Build Release
+```bash
+make release 
+```
