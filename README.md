@@ -117,6 +117,16 @@ You'll need to install ![minikube](https://minikube.sigs.k8s.io/docs/start/)
 
 
 # Build Release
+```console
+python3 -m venv  venv/
+source venv/bin/activate
+```
+
+```console
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
 ```bash
 make release 
 ```
