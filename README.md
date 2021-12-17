@@ -244,7 +244,8 @@ Open your browser to the Argo workflow server e.g. http://192.168.49.2:30832/ an
 ## Error Reporting 
 If you encounter any issues, bugs, or errors you may report them at: https://github.com/QCDIS/NaaVRE/issues/new/choose 
 From there press the "Get started" button to submit a report.
-Alternafilly you may use this form: https://docs.google.com/forms/d/e/1FAIpQLScytqOAdsizGwvwVf0q7jfmvnelvrN6PGD7_U0cnUurc1-v2g/viewform?usp=sf_link
+
+Alternafilly you may use this Google form: https://docs.google.com/forms/d/e/1FAIpQLScytqOAdsizGwvwVf0q7jfmvnelvrN6PGD7_U0cnUurc1-v2g/viewform?usp=sf_link
 
 
 # Build Release
