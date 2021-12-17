@@ -18,7 +18,7 @@ build-backend:
 	python setup.py bdist_wheel sdist
 
 install-backend: build-backend
-	pip install --upgrade --upgrade-strategy only-if-needed  --use-deprecated=legacy-resolver dist/jupyterlab_vre-1.0.0-py3-none-any.whl
+	pip install --upgrade --upgrade-strategy only-if-needed  --use-deprecated=legacy-resolver dist/jupyterlab_vre-0.1.0-py3-none-any.whl
 	jupyter serverextension enable --py jupyterlab_vre --user
 
 build-frontend: jlpm-install
