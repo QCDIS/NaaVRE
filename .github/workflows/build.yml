@@ -24,4 +24,4 @@ jobs:
 
       - name: Build wheel
         run: |
-          pip install jupyterlab && make release
+          pip install jupyterlab && cd packages/core && jupyter labextension install --no-build . && jupyter labextension link --no-build .make release && cd ../ && make release
