@@ -241,6 +241,10 @@ If you open the File Browser (Ctr+Shift+F) you'll see a file named "workflow.yam
 
 Open your browser to the Argo workflow server e.g. http://192.168.49.2:30832/ and 
 
+## Reporting 
+If you ecunter any issues, bugs or errors you may report them at: https://github.com/QCDIS/NaaVRE/issues/new/choose 
+From there press "Get started" button to submit a report.
+
 
 # Build Release
 ```console
