@@ -10,51 +10,6 @@ The extension is currently under an early stage of development.
 
 ---
 
-
-# Installation
-
-## Pip
-Create a python virtual environment 
-
-```console
-python3 -m venv  venv/
-source venv/bin/activate
-```
-Install pip and wheel requirements
-
-```console
-pip install --upgrade pip
-pip install wheel setuptools_rust
-```
-
-Install and enable the extension
-```console
-pip install jupyterlab_vre-?.?.?-py3-none-any.whl
-jupyter lab build 
-jupyter serverextension enable --py jupyterlab_vre --user
-```
-Start Jupyter lab 
-```console
-jupyter lab 
-```
-
-## Docker
-
-If you have ![Docker installed](https://docs.docker.com/get-docker/), you can use the NaaVRE Jupyter Docker extension. 
-
-```console
-docker run -it -p 8888:8888 qcdis/n-a-a-vre:latest jupyter lab --debug
-```
-This command pulls the qcdis/n-a-a-vre image Docker Hub if it is not already present on the local host. It then starts a 
-container running a Jupyter Notebook server and exposes the server on host port 8888. The server logs appear in the 
-terminal where you can find the server's URL e.g. http://127.0.0.1:8888/lab?token=a70292d8b2ef97ee9f873663b85b7988455cc72d68bf8df9
-
-Additionally, it is possible to start the extension instance on a local directory as follows:
-
-```console
-docker run -it -p 8888:8888 -v <local-dir>/:/home/jovyan/work -w /home/jovyan/work qcdis/jupyterlab_vre:latest jupyter lab --debug
-```
-
 # Getting started with NaaVRE
 
 This is a quick start guide to run the NaaVRE in a local environment without any cloud resources.
@@ -261,4 +216,49 @@ pip install -r requirements.txt
 
 ```bash
 make release 
+```
+
+
+# Installation
+
+## Pip
+Create a python virtual environment 
+
+```console
+python3 -m venv  venv/
+source venv/bin/activate
+```
+Install pip and wheel requirements
+
+```console
+pip install --upgrade pip
+pip install wheel setuptools_rust
+```
+
+Install and enable the extension
+```console
+pip install jupyterlab_vre-py3-none-any.whl
+jupyter lab build 
+jupyter serverextension enable --py jupyterlab_vre --user
+```
+Start Jupyter lab 
+```console
+jupyter lab 
+```
+
+## Docker
+
+If you have ![Docker installed](https://docs.docker.com/get-docker/), you can use the NaaVRE Jupyter Docker extension. 
+
+```console
+docker run -it -p 8888:8888 qcdis/n-a-a-vre:latest jupyter lab --debug
+```
+This command pulls the qcdis/n-a-a-vre image Docker Hub if it is not already present on the local host. It then starts a 
+container running a Jupyter Notebook server and exposes the server on host port 8888. The server logs appear in the 
+terminal where you can find the server's URL e.g. http://127.0.0.1:8888/lab?token=a70292d8b2ef97ee9f873663b85b7988455cc72d68bf8df9
+
+Additionally, it is possible to start the extension instance on a local directory as follows:
+
+```console
+docker run -it -p 8888:8888 -v <local-dir>/:/home/jovyan/work -w /home/jovyan/work qcdis/jupyterlab_vre:latest jupyter lab --debug
 ```
