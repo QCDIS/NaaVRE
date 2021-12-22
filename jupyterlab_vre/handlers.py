@@ -156,7 +156,7 @@ class CellsHandler(APIHandler, Catalog):
         template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
         
         template_cell = template_env.get_template('cell_template.jinja2')
-        template_dockerfile = template_env.get_template('dockerfile_template.jinja2')
+        template_dockerfile = template_env.get_template('dockerfile_template_conda.jinja2')
         template_conda = template_env.get_template('conda_env_template.jinja2')
 
         compiled_code = template_cell.render(cell=current_cell, deps=deps, types=current_cell.types, confs=confs)
@@ -182,19 +182,21 @@ class CellsHandler(APIHandler, Catalog):
 
         cell_file_name = current_cell.task_name + '.py'
         dockerfile_name = 'Dockerfile.qcdis.' + current_cell.task_name
-        #env_name = current_cell.task_name + '-environment.yaml'
+        env_name = current_cell.task_name + '-environment.yaml'
 
-        #set_deps = set([dep['module'].split('.')[0] for dep in current_cell.dependencies])
+        set_deps = set([dep['module'].split('.')[0] for dep in current_cell.dependencies])
 
         cell_file_path = os.path.join(cell_path, cell_file_name)
         dockerfile_file_path = os.path.join(cell_path, dockerfile_name)
+        env_file_path = os.path.join(cell_path, env_name)
         files_info = {}
         files_info[cell_file_name]  = cell_file_path
         files_info[dockerfile_name] = dockerfile_file_path
+        files_info[env_name] = env_file_path
 
         template_cell.stream(cell=current_cell, deps=deps, types=current_cell.types, confs=confs).dump(cell_file_path)
         template_dockerfile.stream(task_name=current_cell.task_name).dump(dockerfile_file_path)
-        #template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
+        template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
 
         token = Catalog.get_gh_token()
         gh = login(token=token['token'])
