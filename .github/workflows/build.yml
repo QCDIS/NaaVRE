@@ -14,16 +14,21 @@ jobs:
     name: Build distributions 
     runs-on: ubuntu-latest
     steps:
+    
     - uses: actions/checkout@v2
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
-    - name: Build
+        python-version: 3.9
+    - name: install requirements  
+      run: |
+        $CONDA/bin/conda install jupyterlab nodejs yarn
+    - name: install typescript  
       run: |
         $CONDA/bin/conda install jupyterlab nodejs yarn
         $CONDA/bin/conda install -c conda-forge typescript
         npm install @mrblenny/react-flow-chart@"^0.0.14"
         npm install @types/node --save-dev
-        npm install lerna
-        npm install
+    - name: install react-flow-chart  
+      run: |
+        npm install @mrblenny/react-flow-chart@"^0.0.14"
