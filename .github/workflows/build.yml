@@ -19,7 +19,7 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
-    - name: Install dependencies
+    - name: Build
       run: |
         $CONDA/bin/conda install jupyterlab nodejs yarn
         $CONDA/bin/conda install -c conda-forge typescript
@@ -27,7 +27,5 @@ jobs:
         npm install @types/node --save-dev
         npm install lerna
         npm install
-    - name: Build the frontend
-      run: |
         npx lerna run build --scope @jupyter_vre/core
         npx lerna run build
