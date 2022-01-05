@@ -34,6 +34,6 @@ jobs:
         npm install
     - name: Build the frontend
       run: |
-        npx lerna run build --scope @jupyter_vre/core
+        make release
         
         
