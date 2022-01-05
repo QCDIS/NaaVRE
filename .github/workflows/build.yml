@@ -32,3 +32,6 @@ jobs:
     - name: install react-flow-chart  
       run: |
         npm install @mrblenny/react-flow-chart@"^0.0.14"
+    - name: install node
+      run: |
+        npm install @types/node --save-dev
