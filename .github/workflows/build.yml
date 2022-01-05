@@ -23,15 +23,10 @@ jobs:
     - name: install requirements  
       run: |
         $CONDA/bin/conda install jupyterlab nodejs yarn
-    - name: install typescript  
-      run: |
-        $CONDA/bin/conda install jupyterlab nodejs yarn
         $CONDA/bin/conda install -c conda-forge typescript
-        npm install @mrblenny/react-flow-chart@"^0.0.14"
-        npm install @types/node --save-dev
-    - name: install react-flow-chart  
+    - name: npm install 
       run: |
         npm install @mrblenny/react-flow-chart@"^0.0.14"
-    - name: install node
-      run: |
         npm install @types/node --save-dev
+        npm install lerna
+        
