@@ -14,14 +14,13 @@ jobs:
     name: Build distributions 
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v2
-
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.x"
-
-      - name: Build wheel
-        run: |
-          pip install jupyterlab && cd packages/core && jupyter labextension install --no-build . && jupyter labextension link --no-build .make release && cd ../ && make release
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        $CONDA/bin/conda env update --file environment.yml --name base
+        
