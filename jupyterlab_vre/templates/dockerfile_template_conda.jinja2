@@ -11,3 +11,4 @@ RUN /venv/bin/conda-unpack
 FROM debian:buster AS runtime
 COPY --from=build /venv /venv
 COPY {{ task_name }}.py .
+RUN ln -s /venv/bin/python /usr/bin/python
