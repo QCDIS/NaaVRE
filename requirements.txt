@@ -1,4 +1,8 @@
-jupyterlab>= 3.0.0
+jupyterlab== 3.0.13
 wheel==0.37.0
 setuptools_rust==1.1.2
-# cliapp==1.0.9
+pyflakes==2.4.0
+colorhash==1.0.4
+requests==2.27.1
+azure-storage-blob==12.9.0
+tinydb==4.5.2
