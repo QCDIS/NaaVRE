@@ -38,7 +38,7 @@ jobs:
       run: |
           docker run -d -p 8888:8888 -host=172.17.0.2 n-a-a-vre:latest jupyter lab
           sleep 5
-    - name: Run API Tests
+#     - name: Run API Tests
 #       id: run-newman
 #       uses: anthonyvscode/newman-action@v1
 #       with:
