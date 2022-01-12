@@ -14,10 +14,10 @@ jobs:
         python-version: 3.9
     - name: Install dependencies
       run: |
-        make release
         $CONDA/bin/conda env update --file environment.yml --name base
         npm install @mrblenny/react-flow-chart@"^0.0.14" 
         npm install @types/node --save-dev
         npm install lerna
         npm install
+        make release
         npx lerna run build --scope @jupyter_vre/core --loglevel debug
