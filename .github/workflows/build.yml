@@ -16,15 +16,14 @@ jobs:
     steps:
     
     - uses: actions/checkout@v2
-    - name: Set up Python 3.9
+    - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9
+        python-version: 3.8
     - name: install requirements  
       run: |
-        $CONDA/bin/conda create -n jupyterlab  python=3.9
-        $CONDA/bin/conda install -n jupyterlab jupyterlab nodejs yarn
-        $CONDA/bin/conda install -n jupyterlab -c conda-forge typescript
+        $CONDA/bin/conda install jupyterlab nodejs yarn
+        $CONDA/bin/conda install -c conda-forge typescript
     - name: npm install requirements
       run: |
         npm install @mrblenny/react-flow-chart@"^0.0.14" --force
