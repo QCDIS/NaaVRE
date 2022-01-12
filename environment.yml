@@ -1,0 +1,9 @@
+name: venv
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - jupyterlab==3.0.13
+  - nodejs==15.14.0
+  - npm==7.7.6
+  - typescript==4.1.6
