@@ -28,4 +28,6 @@ jobs:
         npm install
     - name: build
       run: |
-        make release
+          npx lerna run build --scope @jupyter_vre/core
+          npx lerna run build
+          make release
