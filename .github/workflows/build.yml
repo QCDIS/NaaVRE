@@ -20,20 +20,12 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
-    - name: install requirements  
+    - name: install all  
       run: |
         $CONDA/bin/conda install jupyterlab nodejs yarn
         $CONDA/bin/conda install -c conda-forge typescript
-    - name: npm install requirements
-      run: |
         npm install @mrblenny/react-flow-chart@"^0.0.14" --force
         npm install @types/node --save-dev
         npm install lerna
-    - name: npm install
-      run: |
-        npm install
-    - name: Build the frontend
-      run: |
         npx lerna run build --scope @jupyter_vre/core
-        
         
