@@ -20,5 +20,7 @@ jobs:
         npm install lerna
         npm install
         export PATH="$HOME/.local/bin:$PATH"
+        ls $HOME/.local/bin
+        echo $PATH
         make release
         npx lerna run build --scope @jupyter_vre/core --loglevel debug
