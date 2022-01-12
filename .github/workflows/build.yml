@@ -29,4 +29,3 @@ jobs:
     - name: build
       run: |
         make release
-        npx lerna run build --scope @jupyter_vre/core --loglevel debug
