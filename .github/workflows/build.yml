@@ -31,3 +31,8 @@ jobs:
           npx lerna run build --scope @jupyter_vre/core
           npx lerna run build
           make release
+    - name: Build docker
+      run: |
+          cp dist/jupyterlab_vre-0.1.0-py3-none-any.whl docker/
+          cd docker && docker build . --file Dockerfile
+          
