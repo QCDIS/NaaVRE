@@ -1,31 +1,23 @@
-name: build
+name: Python Package Using Anaconda
 
+on: [push]
 
-on:
-  push:
-  release:
-    types: [created]
-
-    # Publish `v1.2.3` tags as releases.
-    tags:
-      - v*
 jobs:
-  build:
-    name: Build distributions 
+  build-linux:
     runs-on: ubuntu-latest
+
     steps:
-    
     - uses: actions/checkout@v2
-    - name: Set up Python 3.8
+    - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
-    - name: install all  
+        python-version: 3.9
+    - name: Install dependencies
       run: |
-        $CONDA/bin/conda install jupyterlab nodejs yarn
-        $CONDA/bin/conda install -c conda-forge typescript
-        npm install @mrblenny/react-flow-chart@"^0.0.14" --force
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        $CONDA/bin/conda env update --file environment.yml --name base
+        npm install @mrblenny/react-flow-chart@"^0.0.14"
         npm install @types/node --save-dev
         npm install lerna
+        npm install
         npx lerna run build --scope @jupyter_vre/core
-        
