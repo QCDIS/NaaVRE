@@ -12,11 +12,10 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
-    - name: Setup node 12
-      uses: actions/setup-node@v2
+    - name: Setup npm
+      uses: actions/setup-node@v1
       with:
-        node-version: 15.14.0
-        cache: npm
+          node-version: 10
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
