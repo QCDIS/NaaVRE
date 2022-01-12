@@ -5,6 +5,5 @@ channels:
 dependencies:
   - jupyterlab==3.0.13
   - nodejs==15.14.0
-  - npm
   - typescript==3.6.4
   - python==3.9.2
