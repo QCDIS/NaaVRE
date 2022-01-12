@@ -16,8 +16,8 @@ jobs:
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         $CONDA/bin/conda env update --file environment.yml --name base
-        npm install @mrblenny/react-flow-chart@"^0.0.14" --loglevel debug
+        npm install @mrblenny/react-flow-chart@"^0.0.14" 
         npm install @types/node --save-dev
         npm install lerna
         npm install
-        npx lerna run build --scope @jupyter_vre/core
+        npx lerna run build --scope @jupyter_vre/core --loglevel debug
