@@ -23,7 +23,7 @@ jobs:
     - name: install requirements  
       run: |
         $CONDA/bin/conda create -n jupyterlab  python=3.9
-        $CONDA/bin/conda conda init bash
+        $CONDA/bin/conda init bash
         $CONDA/bin/conda activate jupyterlab
         $CONDA/bin/conda install jupyterlab nodejs yarn
         $CONDA/bin/conda install -c conda-forge typescript
