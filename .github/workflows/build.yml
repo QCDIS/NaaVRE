@@ -1,6 +1,6 @@
 name: Build wheel and test Docker
 
-on: [push]
+on: [pull_request]
 
 jobs:
   build:
