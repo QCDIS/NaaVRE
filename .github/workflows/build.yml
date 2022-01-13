@@ -1,11 +1,6 @@
 name: Build wheel and test Docker
 
-on:  
-  push:
-  pull_request:
-    branches:
-      - master
-      - main
+on: [pull_request]
 
 jobs:
   build:
