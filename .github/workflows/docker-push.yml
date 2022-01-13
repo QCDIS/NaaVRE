@@ -47,7 +47,7 @@ jobs:
     - name: Build docker
       run: |
           cp dist/jupyterlab_vre-0.1.0-py3-none-any.whl docker/
-  push:
+  push-gitlab:
     needs: build
     # Ensure test job passes before pushing image.
     runs-on: ubuntu-latest
@@ -65,6 +65,45 @@ jobs:
           registry: registry.gitlab.com
           username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
           password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+          
+
+      - name: Push image to GitHub Container Registry
+        run: |
+          IMAGE_ID=$REPO_NAME/$IMAGE_NAME
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
+          # Strip "v" prefix from tag name
+          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+          [ "$VERSION" == "master" ] && VERSION=latest
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
+          docker tag $IMAGE_NAME $IMAGE_ID:latest
+          docker push $IMAGE_ID:latest
+  push-dockerhub:
+    needs: [build]
+    # Ensure test job passes before pushing image.
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v2        
+
+      - name: Build image
+        run: cd docker && docker build . --file Dockerfile --tag $IMAGE_NAME
+      
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
           
 
       - name: Push image to GitHub Container Registry
