@@ -4,6 +4,7 @@
 Jupyter Lab extension for virtual research environments.
 
 ---
+
 **NOTE**
 
 The extension is currently under an early stage of development.
