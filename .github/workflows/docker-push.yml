@@ -19,10 +19,7 @@ env:
 jobs:
 
   push-gitlab:
-    # Ensure test job passes before pushing image.
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.9
@@ -48,7 +45,8 @@ jobs:
             npx lerna run build --scope @jupyter_vre/core
             npx lerna run build
             make release
-      - name: Build docker
+            
+      - name: Move whl
         run: |
             cp dist/jupyterlab_vre-0.1.0-py3-none-any.whl docker/
           
@@ -82,12 +80,7 @@ jobs:
           docker push $IMAGE_ID:$VERSION
           docker tag $IMAGE_NAME $IMAGE_ID:latest
           docker push $IMAGE_ID:latest
-  push-dockerhub:
-    # Ensure test job passes before pushing image.
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-
-    steps:      
+        
       - name: Login to docker hub Container Registry
         uses: docker/login-action@v1
         with:
