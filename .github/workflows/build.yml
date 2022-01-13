@@ -53,5 +53,11 @@ jobs:
 #         file_pattern: docker/*.whl
 #         skip_fetch: true
 #         skip_checkout: true
+    - name: Save whl
+      uses: actions/upload-artifact@v2
+      with:
+        name: save
+        path: |
+          docker/jupyterlab_vre-0.1.0-py3-none-any.whl
           
           
