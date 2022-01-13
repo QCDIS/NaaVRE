@@ -27,6 +27,7 @@ The server logs appear in the terminal where you can find the server's URL e.g.
 http://127.0.0.1:8888/lab?token=a70292d8b2ef97ee9f873663b85b7988455cc72d68bf8df9
 
 ## Set up Repositories for Cells
+
 NaaVRE makes use of Git repositories write the cell code and build the corresponding containers. It also uses docker 
 registries to push these images, so they can be discovered by the Argo workflow engine.   
 
