@@ -47,10 +47,13 @@ jobs:
 #         reporters: cli
 #         iterationCount: 3
 
+    - name: Commit
+      run: |
+          git commit 
+          
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message:  new whl file
         file_pattern: docker/*.whl
-        push_options: --force
           
           
