@@ -47,11 +47,17 @@ jobs:
 #         reporters: cli
 #         iterationCount: 3
 
-    - name: commit
-      run: |
-        # Stage the file, commit and push
-        git add docker/jupyterlab_vre-0.1.0-py3-none-any.whl
-        git commit -m "new whl file"
-        git push origin main
+    - uses: actions/labeler@v2
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: actions/labeler@v2
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Commit whl          
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: new whl file
+        file_pattern: docker/*.whl
           
           
