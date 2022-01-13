@@ -1,4 +1,4 @@
-FROM jupyterhub/k8s-singleuser-sample:0.11.1
+FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e
 
 USER root
 
