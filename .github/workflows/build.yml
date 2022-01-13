@@ -51,5 +51,6 @@ jobs:
       with:
         commit_message:  new whl file
         file_pattern: docker/*.whl
+        push_options: --force
           
           
