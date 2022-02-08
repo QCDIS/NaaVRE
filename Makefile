@@ -27,6 +27,25 @@ build-frontend: jlpm-install
 jlpm-install:
 	jlpm
 
+
+install-ui:
+	$(call INSTALL_LAB_EXTENSION,chart-customs)
+	$(call INSTALL_LAB_EXTENSION,components)
+	$(call INSTALL_LAB_EXTENSION,faircells-composer)
+	$(call INSTALL_LAB_EXTENSION,faircells-panel)
+	$(call INSTALL_LAB_EXTENSION,core)
+	$(call INSTALL_LAB_EXTENSION,vre-menu)
+	$(call INSTALL_LAB_EXTENSION,infrastructure-automator)
+
+link-ui:
+	$(call LINK_LAB_EXTENSION,chart-customs)
+	$(call LINK_LAB_EXTENSION,components)
+	$(call LINK_LAB_EXTENSION,faircells-composer)
+	$(call LINK_LAB_EXTENSION,faircells-panel)
+	$(call LINK_LAB_EXTENSION,core)
+	$(call LINK_LAB_EXTENSION,vre-menu)
+	$(call LINK_LAB_EXTENSION,infrastructure-automator)
+
 dist-ui: build-frontend
 	mkdir -p dist
 	$(call PACKAGE_LAB_EXTENSION,chart-customs)
