@@ -196,7 +196,9 @@ class CellsHandler(APIHandler, Catalog):
 
         template_cell.stream(cell=current_cell, deps=deps, types=current_cell.types, confs=confs).dump(cell_file_path)
         template_dockerfile.stream(task_name=current_cell.task_name).dump(dockerfile_file_path)
-        template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
+        if set_deps:
+            print(env_name)
+            template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
 
         token = Catalog.get_gh_token()
         gh = login(token=token['token'])
@@ -294,9 +296,10 @@ class GithubAuthHandler(APIHandler, Catalog):
     async def post(self, *args, **kwargs):
 
         payload = self.get_json_body()
-        Catalog.add_gh_credentials(
-            GHCredentials(token = payload['github-auth-token'])
-        )
+        if payload and 'github-auth-token' in payload:
+            Catalog.add_gh_credentials(
+                GHCredentials(token = payload['github-auth-token'])
+            )
         self.flush()
 
 
