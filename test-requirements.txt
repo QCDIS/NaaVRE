@@ -1,5 +1,5 @@
-jupyterlab==3.1.4
-wheel==0.37.0
+jupyterlab==3.2.9
+wheel==0.37.1
 setuptools_rust==1.1.2
 pyflakes==2.4.0
 colorhash==1.0.4
