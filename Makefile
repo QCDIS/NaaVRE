@@ -56,6 +56,24 @@ dist-ui: build-frontend
 	$(call PACKAGE_LAB_EXTENSION,vre-menu)
 	$(call PACKAGE_LAB_EXTENSION,infrastructure-automator)
 
+install-ui:
+	$(call INSTALL_LAB_EXTENSION,chart-customs)
+	$(call INSTALL_LAB_EXTENSION,components)
+	$(call INSTALL_LAB_EXTENSION,faircells-composer)
+	$(call INSTALL_LAB_EXTENSION,faircells-panel)
+	$(call INSTALL_LAB_EXTENSION,core)
+	$(call INSTALL_LAB_EXTENSION,vre-menu)
+	$(call INSTALL_LAB_EXTENSION,infrastructure-automator)
+
+link-ui:
+	$(call LINK_LAB_EXTENSION,chart-customs)
+	$(call LINK_LAB_EXTENSION,components)
+	$(call LINK_LAB_EXTENSION,faircells-composer)
+	$(call LINK_LAB_EXTENSION,faircells-panel)
+	$(call LINK_LAB_EXTENSION,core)
+	$(call LINK_LAB_EXTENSION,vre-menu)
+	$(call LINK_LAB_EXTENSION,infrastructure-automator)
+
 release: dist-ui build-backend
 	
 

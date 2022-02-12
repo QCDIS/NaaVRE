@@ -227,6 +227,23 @@ class CellsHandler(APIHandler, Catalog):
                         message     = current_cell.task_name + ' creation',
                         content     = content,
                     )
+            
+            resp = requests.post(
+                url     = "https://api.github.com/repos/QCDIS/NaaVRE-container-prestage/actions/workflows/build-push-docker.yml/dispatches",
+                json    = { 
+                            "ref": "refs/heads/main",
+                            "inputs": { 
+                                "build_dir"     : current_cell.task_name,
+                                "dockerfile"    : dockerfile_name,
+                                "image_repo"    : "qcdis",
+                                "image_tag"     : current_cell.task_name
+                            }
+                        },
+                verify  = False,
+                headers ={"Accept": "application/vnd.github.v3+json", "Authorization": "token " + token["token"]}
+            )
+
+            print(resp)
 
         self.flush()
     
