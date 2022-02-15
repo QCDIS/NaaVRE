@@ -24,10 +24,15 @@ from jupyterlab_vre.storage.catalog import Catalog
 from jupyterlab_vre.storage.azure import AzureStorage
 from jupyterlab_vre.workflows.parser import WorkflowParser
 from jinja2 import Environment, PackageLoader, FileSystemLoader
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 ################################################################################
 
-                            # Extraction
+# Extraction
 
 ################################################################################
 
@@ -39,7 +44,6 @@ class ExtractorHandler(APIHandler, Catalog):
         self.write(msg_json)
         self.flush()
 
-
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
@@ -48,10 +52,10 @@ class ExtractorHandler(APIHandler, Catalog):
         extractor = Extractor(notebook)
 
         source = notebook.cells[cell_index].source
-		
+
         title = source.partition('\n')[0]
         title = title.replace('#', '').strip() if title[0] == "#" else "Untitled"
-        
+
         ins = set(extractor.infere_cell_inputs(source))
         outs = set(extractor.infere_cell_outputs(source))
         params = []
@@ -60,15 +64,15 @@ class ExtractorHandler(APIHandler, Catalog):
         dependencies = extractor.infere_cell_dependencies(source)
 
         cell = Cell(
-            title               = title,
-            task_name           = title.lower().replace(' ', '-'),
-            original_source     = source,
-            inputs              = ins,
-            outputs             = outs,
-            params              = params,
-            confs               = confs,
-            dependencies        = dependencies,
-            container_source    = ""
+            title=title,
+            task_name=title.lower().replace(' ', '-'),
+            original_source=source,
+            inputs=ins,
+            outputs=outs,
+            params=params,
+            confs=confs,
+            dependencies=dependencies,
+            container_source=""
         )
 
         cell.integrate_configuration()
@@ -77,15 +81,13 @@ class ExtractorHandler(APIHandler, Catalog):
 
         node_id = str(uuid.uuid4())[:7]
         node = ConverterReactFlowChart.get_node(
-            node_id, 
-            title, 
-            ins, 
-            outs, 
-            params, 
+            node_id,
+            title,
+            ins,
+            outs,
+            params,
             dependencies
         )
-
-        print(dependencies)
 
         chart = {
             'offset': {
@@ -93,7 +95,7 @@ class ExtractorHandler(APIHandler, Catalog):
                 'y': 0,
             },
             'scale': 1,
-            'nodes': { node_id: node },
+            'nodes': {node_id: node},
             'links': {},
             'selected': {},
             'hovered': {},
@@ -105,17 +107,17 @@ class ExtractorHandler(APIHandler, Catalog):
         Catalog.editor_buffer = copy.deepcopy(cell)
 
         self.write(json.dumps({
-            'node_id'   : node_id,
-            'chart'     : chart,
-            'deps'      : dependencies
+            'node_id': node_id,
+            'chart': chart,
+            'deps': dependencies
         }))
-        
+
         self.flush()
 
 
 ################################################################################
 
-                            # Types
+# Types
 
 ################################################################################
 
@@ -123,27 +125,27 @@ class TypesHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-
         payload = self.get_json_body()
         port = payload['port']
         p_type = payload['type']
         cell = Catalog.editor_buffer
         cell.types[port] = p_type
 
+
 ################################################################################
 
-                            # Catalog
+# Catalog
 
 ################################################################################
 
 class CellsHandler(APIHandler, Catalog):
+    logger = logging.getLogger(__name__)
 
     @web.authenticated
     async def get(self):
         msg_json = dict(title="Operation not supported.")
         self.write(msg_json)
         self.flush()
-
 
     @web.authenticated
     async def post(self, *args, **kwargs):
@@ -154,7 +156,7 @@ class CellsHandler(APIHandler, Catalog):
         current_cell.clean_code()
         loader = PackageLoader('jupyterlab_vre', 'templates')
         template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
-        
+
         template_cell = template_env.get_template('cell_template.jinja2')
         template_dockerfile = template_env.get_template('dockerfile_template_conda.jinja2')
         template_conda = template_env.get_template('conda_env_template.jinja2')
@@ -184,27 +186,35 @@ class CellsHandler(APIHandler, Catalog):
         dockerfile_name = 'Dockerfile.qcdis.' + current_cell.task_name
         env_name = current_cell.task_name + '-environment.yaml'
 
-        set_deps = set([dep['module'].split('.')[0] for dep in current_cell.dependencies])
+        set_deps = set([])
+        for dep in current_cell.dependencies:
+            if 'module' in dep and dep['module']:
+                if '.' in dep['module']:
+                    set_deps.add(set(dep['module'].split('.')[0]))
+                else:
+                    set_deps.add(dep['module'])
+            elif 'name' in dep and dep['name']:
+                set_deps.add(dep['name'])
+
+        # set_deps = set([dep['module'].split('.')[0] for dep in current_cell.dependencies])
 
         cell_file_path = os.path.join(cell_path, cell_file_name)
         dockerfile_file_path = os.path.join(cell_path, dockerfile_name)
         env_file_path = os.path.join(cell_path, env_name)
         files_info = {}
-        files_info[cell_file_name]  = cell_file_path
+        files_info[cell_file_name] = cell_file_path
         files_info[dockerfile_name] = dockerfile_file_path
         files_info[env_name] = env_file_path
 
         template_cell.stream(cell=current_cell, deps=deps, types=current_cell.types, confs=confs).dump(cell_file_path)
         template_dockerfile.stream(task_name=current_cell.task_name).dump(dockerfile_file_path)
-        if set_deps:
-            print(env_name)
-            template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
+        template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
 
         token = Catalog.get_gh_token()
         gh = login(token=token['token'])
         repository = gh.repository('QCDIS', 'NaaVRE-container-prestage')
 
-        last_comm = next(repository.commits(number = 1), None)
+        last_comm = next(repository.commits(number=1), None)
 
         if last_comm:
             last_tree_sha = last_comm.commit.tree.sha
@@ -223,30 +233,29 @@ class CellsHandler(APIHandler, Catalog):
                 with open(f_path, 'rb') as f:
                     content = f.read()
                     repository.create_file(
-                        path        = current_cell.task_name + '/' + f_name,
-                        message     = current_cell.task_name + ' creation',
-                        content     = content,
+                        path=current_cell.task_name + '/' + f_name,
+                        message=current_cell.task_name + ' creation',
+                        content=content,
                     )
-            
+
             resp = requests.post(
-                url     = "https://api.github.com/repos/QCDIS/NaaVRE-container-prestage/actions/workflows/build-push-docker.yml/dispatches",
-                json    = { 
-                            "ref": "refs/heads/main",
-                            "inputs": { 
-                                "build_dir"     : current_cell.task_name,
-                                "dockerfile"    : dockerfile_name,
-                                "image_repo"    : "qcdis",
-                                "image_tag"     : current_cell.task_name
-                            }
-                        },
-                verify  = False,
-                headers ={"Accept": "application/vnd.github.v3+json", "Authorization": "token " + token["token"]}
+                url="https://api.github.com/repos/QCDIS/NaaVRE-container-prestage/actions/workflows/build-push-docker.yml/dispatches",
+                json={
+                    "ref": "refs/heads/main",
+                    "inputs": {
+                        "build_dir": current_cell.task_name,
+                        "dockerfile": dockerfile_name,
+                        "image_repo": "qcdis",
+                        "image_tag": current_cell.task_name
+                    }
+                },
+                verify=False,
+                headers={"Accept": "application/vnd.github.v3+json", "Authorization": "token " + token["token"]}
             )
 
             print(resp)
 
         self.flush()
-    
 
     @web.authenticated
     async def delete(self, *args, **kwargs):
@@ -261,7 +270,6 @@ class CatalogGetAllHandler(APIHandler, Catalog):
         self.write(json.dumps(Catalog.get_all_cells()))
         self.flush()
 
-
     @web.authenticated
     async def post(self, *args, **kwargs):
         msg_json = dict(title="Operation not supported.")
@@ -269,10 +277,9 @@ class CatalogGetAllHandler(APIHandler, Catalog):
         self.flush()
 
 
-
 ################################################################################
 
-                            # SDIA Auth
+# SDIA Auth
 
 ################################################################################
 
@@ -280,18 +287,18 @@ class SDIAAuthHandler(APIHandler, SDIA, Catalog):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-        
         payload = self.get_json_body()
         reply = {}
-        res = SDIA.test_auth(payload['sdia-auth-username'], payload['sdia-auth-password'], payload['sdia-auth-endpoint'])
+        res = SDIA.test_auth(payload['sdia-auth-username'], payload['sdia-auth-password'],
+                             payload['sdia-auth-endpoint'])
         error = issubclass(type(res), Exception)
 
         if not error:
             Catalog.add_credentials(
                 SDIACredentials(
-                    username = payload['sdia-auth-username'], 
-                    password = payload['sdia-auth-password'],
-                    endpoint = payload['sdia-auth-endpoint']
+                    username=payload['sdia-auth-username'],
+                    password=payload['sdia-auth-password'],
+                    endpoint=payload['sdia-auth-endpoint']
                 )
             )
 
@@ -302,7 +309,7 @@ class SDIAAuthHandler(APIHandler, SDIA, Catalog):
 
 ################################################################################
 
-                            # Github  Auth
+# Github  Auth
 
 ################################################################################
 
@@ -311,18 +318,17 @@ class GithubAuthHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-
         payload = self.get_json_body()
         if payload and 'github-auth-token' in payload:
             Catalog.add_gh_credentials(
-                GHCredentials(token = payload['github-auth-token'])
+                GHCredentials(token=payload['github-auth-token'])
             )
         self.flush()
 
 
 ################################################################################
 
-                            # SDIA Credentials
+# SDIA Credentials
 
 ################################################################################
 
@@ -337,7 +343,7 @@ class SDIACredentialsHandler(APIHandler, Catalog):
 
 ################################################################################
 
-                            # Automator
+# Automator
 
 ################################################################################
 
@@ -346,7 +352,6 @@ class ProvisionAddHandler(APIHandler, Catalog, SDIA):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-
         payload = self.get_json_body()
         cred_username = payload['credential']
         template_id = payload['provision_template']
@@ -360,7 +365,7 @@ class ProvisionAddHandler(APIHandler, Catalog, SDIA):
 
 ################################################################################
 
-                            # Workflows
+# Workflows
 
 ################################################################################
 
@@ -369,7 +374,6 @@ class ExportWorkflowHandler(APIHandler):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-
         payload = self.get_json_body()
         global_params = []
 
@@ -388,5 +392,3 @@ class ExportWorkflowHandler(APIHandler):
         template = template_env.get_template('workflow_template.jinja2')
         template.stream(deps_dag=deps_dag, cells=cells, global_params=set(global_params)).dump('workflow.yaml')
         self.flush()
-        
-

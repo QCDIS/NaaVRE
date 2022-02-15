@@ -79,6 +79,7 @@ class Extractor:
         for name in self.__extract_cell_names(cell_source):
             if name in self.imports:
                 dependencies.append(self.imports.get(name))
+
         return dependencies
 
 
