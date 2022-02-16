@@ -190,7 +190,7 @@ class CellsHandler(APIHandler, Catalog):
         for dep in current_cell.dependencies:
             if 'module' in dep and dep['module']:
                 if '.' in dep['module']:
-                    set_deps.add(set(dep['module'].split('.')[0]))
+                    set_deps.add((dep['module'].split('.')[0]))
                 else:
                     set_deps.add(dep['module'])
             elif 'name' in dep and dep['name']:
