@@ -63,7 +63,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
         # self.assertNotEqual(response_body, None)
 
     def test_cellshandler_post(self):
-        cell_index = 3
+        cell_index = 1
         git_token = 'test_token'
         self.add_cell(cell_index=cell_index)
         # self.add_git_token(git_token=git_token)
