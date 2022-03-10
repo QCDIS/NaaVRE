@@ -25,10 +25,9 @@ jobs:
         npm install @types/node --save-dev
         npm install lerna
         npm install
-        npx lerna run build --scope @jupyter_vre/core
     - name: make 
       run: |      
-        make release
+        make build-frontend && make install-ui && make link-ui
 #     - name: build
 #       run: |
 #           npx lerna run build --scope @jupyter_vre/core
