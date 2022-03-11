@@ -1,0 +1,21 @@
+name: Docker push
+on:
+  push:
+  release:
+    types: [created]
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+
+env:
+  IMAGE_NAME:  n-a-a-vre
+  GITLAB: registry.gitlab.com/qcd1/registry
+  GITHUB: qcdis
+
+jobs:
+
+  push-gitlab:
+    runs:
+      using: "composite"
+      steps:
+        - uses: ./.github/actions/build.yml
