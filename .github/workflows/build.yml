@@ -41,7 +41,7 @@ jobs:
      - name: Start docker
        run: |
            docker run -d -p 8888:8888 -host=172.17.0.2 n-a-a-vre:latest jupyter lab
-
+#
 #    - name: Save whl
 #      uses: actions/upload-artifact@v2
 #      with:

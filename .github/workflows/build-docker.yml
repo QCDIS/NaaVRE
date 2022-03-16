@@ -18,4 +18,4 @@ jobs:
     runs:
       using: "composite"
       steps:
-        - uses: ./.github/actions/build
+        - uses: ./.github/actions/build.yml
