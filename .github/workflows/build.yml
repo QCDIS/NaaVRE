@@ -33,6 +33,7 @@ jobs:
       run: |      
         npx lerna run build --scope @jupyter_vre/core
         make build-frontend && make install-ui && make link-ui
+        make relese
      - name: Build docker
        run: |
            cp dist/jupyterlab_vre-0.1.0-py3-none-any.whl docker/
