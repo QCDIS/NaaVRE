@@ -45,10 +45,10 @@ jobs:
         npm install lerna
         npm install
     - name: make
-      run: |      
+      run: |
         npx lerna run build --scope @jupyter_vre/core
         make build-frontend && make install-ui && make link-ui
-        make relese
+        make release
     - name: upload wheel artifact
       uses: actions/upload-release-asset@v1
       env:
