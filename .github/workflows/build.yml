@@ -23,30 +23,22 @@ jobs:
         if [ -f test-requirements.txt ]; then pip install -r test-requirements.txt; fi
         $CONDA/bin/conda install jupyterlab nodejs yarn
         $CONDA/bin/conda install -c conda-forge typescript
-    - name: Install nodejs dependencies
-      run: |
-        npm install @mrblenny/react-flow-chart@"^0.0.14"
-        npm install @types/node --save-dev
-        npm install lerna
-        npm install
-    - name: make 
-      run: |      
-        npx lerna run build --scope @jupyter_vre/core
-        make build-frontend && make install-ui && make link-ui
-        make relese
-     - name: Build docker
-       run: |
-           cp dist/jupyterlab_vre-0.1.0-py3-none-any.whl docker/
-           cd docker && docker build . --file Dockerfile -t n-a-a-vre
-     - name: Start docker
-       run: |
-           docker run -d -p 8888:8888 -host=172.17.0.2 n-a-a-vre:latest jupyter lab
+#    - name: Install nodejs dependencies
+#      run: |
+#        npm install @mrblenny/react-flow-chart@"^0.0.14"
+#        npm install @types/node --save-dev
+#        npm install lerna
+#        npm install
+#    - name: make
+#      run: |
+#        npx lerna run build --scope @jupyter_vre/core
+#        make build-frontend && make install-ui && make link-ui
+#        make relese
 #
-#    - name: Save whl
-#      uses: actions/upload-artifact@v2
-#      with:
-#        name: save
-#        path: |
-#          docker/jupyterlab_vre-0.1.0-py3-none-any.whl
-          
-          
+#     - name: Build docker
+#       run: |
+#           cp dist/jupyterlab_vre-0.1.0-py3-none-any.whl docker/
+#           cd docker && docker build . --file Dockerfile -t n-a-a-vre
+#     - name: Start docker
+#       run: |
+#           docker run -d -p 8888:8888 -host=172.17.0.2 n-a-a-vre:latest jupyter lab
