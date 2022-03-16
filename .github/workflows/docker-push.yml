@@ -1,15 +1,15 @@
 name: Docker push
-on:
-  push:
-  release:
-    types: [created]
+on: [push]
 
-    # Publish `v1.2.3` tags as releases.
-    tags:
-      - v*
-
-  # Run tests for any PRs.
-  pull_request:
+#on:
+#  push:
+#  release:
+#    types: [created]
+#    # Publish `v1.2.3` tags as releases.
+#    tags:
+#      - v*
+#  # Run tests for any PRs.
+#  pull_request:
 
 env:
   IMAGE_NAME:  n-a-a-vre
