@@ -49,15 +49,15 @@ jobs:
         make build-frontend && make install-ui && make link-ui
         make release
 
-#    - name: upload wheel artifact
-#      uses: actions/upload-release-asset@v1
-#      env:
-#        GITHUB_TOKEN: ${{ github.token }}
-#      with:
-#        upload_url: ${{ steps.create_release.outputs.upload_url }}
-#        asset_path: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
-#        asset_name: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
-#        asset_content_type: application/octet-stream
+    - name: upload wheel artifact
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
+        asset_name: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
+        asset_content_type: application/octet-stream
 #
 #      - name: copy whl
 #        run: |
