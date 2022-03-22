@@ -33,6 +33,8 @@ jobs:
         registry: ${{ inputs.registry }}
         username: ${{ secrets.registry_username }}
         password: ${{ secrets.registry_password }}
-    - name: Push image to Container Registry
+    - name: Push image to container Registry
+      with:
+        image_id: ${{ inputs.image_id }}
       run: |
         echo "Hi!"
