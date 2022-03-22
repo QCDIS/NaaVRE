@@ -4,9 +4,10 @@ USER root
 
 #===== Add pdalpy dependencies ======
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++
-COPY laserfarm-environment.yaml .
-RUN conda install --file laserfarm-environment.yaml
-RUN conda install -c conda-forge conda-pack
+RUN conda install --yes -c conda-forge pdal python-pdal gdal
+RUN pip install dask distributed laserfarm
+RUN conda upgrade --yes numpy
+RUN conda update --yes -n base conda
 #====================================
 
 
