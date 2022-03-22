@@ -4,10 +4,6 @@ USER root
 
 #===== Add pdalpy dependencies ======
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++
-RUN conda install --yes -c conda-forge pdal python-pdal gdal
-RUN pip install dask distributed laserfarm
-RUN conda upgrade --yes numpy
-RUN conda update --yes -n base conda
 #====================================
 
 
@@ -25,6 +21,14 @@ RUN conda remove --force -y terminado && \
 RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl && \
     jupyter serverextension enable --py jupyterlab_vre --user && \
     jupyter lab build --debug;
+
+
+#===== Add pdalpy dependencies ======
+RUN conda install --yes -c conda-forge pdal python-pdal gdal
+RUN pip install dask distributed laserfarm
+RUN conda upgrade --yes numpy
+RUN conda update --yes -n base conda
+#====================================
 
 
 CMD ["/usr/local/bin/start-jupyter.sh"]
