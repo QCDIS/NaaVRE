@@ -32,4 +32,4 @@ jobs:
     - name: Upload image
       uses: ishworkh/docker-image-artifact-upload@v1
       with:
-        image: ${{ inputs.image_id }}
+        image: "vre_test_image:latest"
