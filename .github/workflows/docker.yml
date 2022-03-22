@@ -18,6 +18,7 @@ jobs:
   call-build-wheel:
     uses: ./.github/workflows/build-wheel.yml
   build-docker:
+    needs: call-build-wheel
     uses: ./.github/workflows/build-docker.yml
     with:
       wheel_artifact_name: jupyterlab_vre
