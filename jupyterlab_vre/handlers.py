@@ -178,7 +178,8 @@ class CellsHandler(APIHandler, Catalog):
         if os.path.exists(cell_path):
             for files in os.listdir(cell_path):
                 path = os.path.join(cell_path, files)
-                os.remove(path)
+                if os.path.isfile(path):
+                    os.remove(path)
 
         else:
             os.mkdir(cell_path)
