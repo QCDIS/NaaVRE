@@ -9,6 +9,9 @@ on:
       image_id:
         required: true
         type: string
+      tag:
+        required: true
+        type: string
     secrets:
       registry_username:
         required: true
@@ -17,6 +20,7 @@ on:
 
 env:
   IMAGE_ID:  ${{ inputs.image_id }}
+  TAG:  ${{ inputs.tag }}
 
 jobs:
   push:
@@ -27,7 +31,7 @@ jobs:
     - name: Download image
       uses: ishworkh/docker-image-artifact-download@v1
       with:
-        image: "n-a-a-vre:latest"
+        image: ${{ inputs.tag }}
 
     - name: Login to Container Registry
       uses: docker/login-action@v1
@@ -43,5 +47,5 @@ jobs:
         VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
         echo IMAGE_ID=$IMAGE_ID
         echo VERSION=$VERSION
-        docker tag n-a-a-vre:latest $IMAGE_ID:$VERSION
+        docker tag $TAG $IMAGE_ID:$VERSION
         docker push $IMAGE_ID:$VERSION
