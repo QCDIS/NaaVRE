@@ -10,3 +10,13 @@ jobs:
     uses: ./.github/workflows/build-container.yml
     with:
       wheel_artifact_name: jupyterlab_vre
+      dockerfile: Dockerfile
+      tag: n-a-a-vre
+  call-build-container-laserfarm:
+    needs: call-build-wheel
+    uses: ./.github/workflows/build-container.yml
+    with:
+      wheel_artifact_name: jupyterlab_vre
+      dockerfile: Dockerfile-laserfarm
+      tag: n-a-a-vre-laserfarm
+
