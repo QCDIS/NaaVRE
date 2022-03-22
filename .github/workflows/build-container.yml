@@ -6,6 +6,8 @@ on:
       wheel_artifact_name:
         required: true
         type: string
+
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,12 +21,12 @@ jobs:
     - name: Build docker
       run: |
           mv jupyterlab_vre-0.1.0-py3-none-any.whl docker/
-          cd docker && docker build . --file Dockerfile -t vre_test_image:latest
-    - name: Start container
+          cd docker && docker build . --file Dockerfile -t n-a-a-vre
+    - name: Start docker
       run: |
-          docker run -d -p 8888:8888 -host=172.17.0.2 vre_test_image:latest jupyter lab
+          docker run -d -p 8888:8888 -host=172.17.0.2 n-a-a-vre:latest jupyter lab
 
     - name: Upload image
       uses: ishworkh/docker-image-artifact-upload@v1
       with:
-        image: "vre_test_image:latest"
+        image: "n-a-a-vre:latest"
