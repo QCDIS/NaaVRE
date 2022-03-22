@@ -1,4 +1,10 @@
-![Docker](https://github.com/qcdis-sdia/sdia-provisioner/workflows/Docker/badge.svg)
+[![Build container](https://github.com/QCDIS/NaaVRE/actions/workflows/build-container.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/build-container.yml)
+[![Build wheel](https://github.com/QCDIS/NaaVRE/actions/workflows/build-wheel.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/build-wheel.yml)
+[![make](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml)
+[![make relese](https://github.com/QCDIS/NaaVRE/actions/workflows/make-relese.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/make-relese.yml)
+[![registry push](https://github.com/QCDIS/NaaVRE/actions/workflows/registry-push.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/registry-push.yml)
+[![save wheel file](https://github.com/QCDIS/NaaVRE/actions/workflows/save-wheel-in-release.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/save-wheel-in-release.yml)
+
 # Jupyter Lab VRE
 
 Jupyter Lab extension for virtual research environments.
