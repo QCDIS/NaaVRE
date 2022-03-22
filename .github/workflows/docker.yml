@@ -19,7 +19,7 @@ jobs:
 #    uses: ./.github/workflows/build-container.yml
 #    with:
 #      wheel_artifact_name: jupyterlab_vre
-  call-registry-push:
+  call-registry-push-gitlab:
 #    needs: call-build-container
     uses: ./.github/workflows/registry-push.yml
     with:
@@ -28,4 +28,14 @@ jobs:
     secrets:
       registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
       registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+
+  call-registry-push-dockerhub:
+#    needs: call-build-container
+    uses: ./.github/workflows/registry-push.yml
+    with:
+      registry: "qcdis"
+      image_id: "qcdis/n-a-a-vre"
+    secrets:
+      registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      registry_password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
