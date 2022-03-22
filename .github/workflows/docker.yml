@@ -17,8 +17,14 @@ env:
 jobs:
   call-build-wheel:
     uses: ./.github/workflows/build-wheel.yml
-  build-docker:
+  build-container:
     needs: call-build-wheel
-    uses: ./.github/workflows/build-docker.yml
+    uses: ./.github/workflows/build-container.yml
     with:
       wheel_artifact_name: jupyterlab_vre
+  build-docker:
+    needs: build-container
+    uses: ./.github/workflows/registry-push.yml
+    with:
+      registry: $GITLAB
+      image_id: $GITLAB/$IMAGE_NAME
