@@ -31,24 +31,24 @@ jobs:
     uses: ./.github/workflows/registry-push.yml
     with:
       registry: "registry.gitlab.com/qcd1/registry"
-      image_id: "registry.gitlab.com/qcd1/registry/n-a-a-vre-laserfarm"
-      tag: n-a-a-vre-laserfarm
-    secrets:
-      registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
-      registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
-  call-registry-push-gitlab-laserfarm:
-    needs: call-build-container
-    uses: ./.github/workflows/registry-push.yml
-    with:
-      registry: "registry.gitlab.com/qcd1/registry"
       image_id: "registry.gitlab.com/qcd1/registry/n-a-a-vre"
       tag: n-a-a-vre
     secrets:
       registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
       registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+  call-registry-push-gitlab-laserfarm:
+    needs: call-build-container-laserfarm
+    uses: ./.github/workflows/registry-push.yml
+    with:
+      registry: "registry.gitlab.com/qcd1/registry"
+      image_id: "registry.gitlab.com/qcd1/registry/n-a-a-vre-laserfarm"
+      tag: n-a-a-vre-laserfarm
+    secrets:
+      registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+      registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
 
   call-registry-push-dockerhub-laserfarm:
-    needs: call-build-container
+    needs: call-build-container-laserfarm
     uses: ./.github/workflows/registry-push.yml
     with:
       registry: "https://index.docker.io/v1/"
