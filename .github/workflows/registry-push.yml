@@ -21,11 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Download image
-      uses: ishworkh/docker-image-artifact-download@v1
-      with:
-        image: "vre_test_image:latest"
-
+#    - name: Download image
+#      uses: ishworkh/docker-image-artifact-download@v1
+#      with:
+#        image: "vre_test_image:latest"
     - name: Login to Container Registry
       uses: docker/login-action@v1
       with:
