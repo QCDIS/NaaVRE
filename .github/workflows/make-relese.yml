@@ -1,4 +1,4 @@
-name: Docker
+name: make relese
 on: [push]
 
 #on:
@@ -12,15 +12,15 @@ on: [push]
 
 
 jobs:
-#  call-build-wheel:
-#    uses: ./.github/workflows/build-wheel.yml
-#  call-build-container:
-#    needs: call-build-wheel
-#    uses: ./.github/workflows/build-container.yml
-#    with:
-#      wheel_artifact_name: jupyterlab_vre
+  call-build-wheel:
+    uses: ./.github/workflows/build-wheel.yml
+  call-build-container:
+    needs: call-build-wheel
+    uses: ./.github/workflows/build-container.yml
+    with:
+      wheel_artifact_name: jupyterlab_vre
   call-registry-push-gitlab:
-#    needs: call-build-container
+    needs: call-build-container
     uses: ./.github/workflows/registry-push.yml
     with:
       registry: "registry.gitlab.com/qcd1/registry"
@@ -30,7 +30,7 @@ jobs:
       registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
 
   call-registry-push-dockerhub:
-#    needs: call-build-container
+    needs: call-build-container
     uses: ./.github/workflows/registry-push.yml
     with:
       registry: "https://index.docker.io/v1/"
