@@ -1,0 +1,12 @@
+name: make relese
+on:
+  [push]
+
+jobs:
+  call-build-wheel:
+    uses: ./.github/workflows/build-wheel.yml
+  call-build-container:
+    needs: call-build-wheel
+    uses: ./.github/workflows/build-container.yml
+    with:
+      wheel_artifact_name: jupyterlab_vre
