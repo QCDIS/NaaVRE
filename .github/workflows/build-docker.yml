@@ -16,4 +16,4 @@ env:
 
 jobs:
   call-build-wheel:
-    uses: ./.github/workflows/build-wheel.yml@main
+    uses: ./.github/workflows/build-wheel.yml
