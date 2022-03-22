@@ -9,10 +9,7 @@ on: [push]
 #    tags:
 #      - v*
 
-env:
-  IMAGE_NAME:  n-a-a-vre
-  GITLAB: registry.gitlab.com/qcd1/registry
-  GITHUB: qcdis
+
 
 jobs:
 #  call-build-wheel:
@@ -22,12 +19,12 @@ jobs:
 #    uses: ./.github/workflows/build-container.yml
 #    with:
 #      wheel_artifact_name: jupyterlab_vre
-  build-docker:
+  call-registry-push:
 #    needs: call-build-container
     uses: ./.github/workflows/registry-push.yml
     with:
-      registry: $GITLAB
-      image_id: $GITLAB/$IMAGE_NAME
+      registry: "registry.gitlab.com/qcd1/registry"
+      image_id: "registry.gitlab.com/qcd1/registry/n-a-a-vre"
     secrets:
       registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
       registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
