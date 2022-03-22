@@ -1,4 +1,4 @@
-name: make relese
+name: make
 on:
   [pull_request]
 
