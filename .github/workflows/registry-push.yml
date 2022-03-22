@@ -36,7 +36,7 @@ jobs:
 
       - name: Push image to Container Registry
         with:
-          image_id: ${{ inputs.$image_id }}
+          image_id: ${{ inputs.image_id }}
         run: |
           echo $image_id
 #          # Change all uppercase to lowercase
