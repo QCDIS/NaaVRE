@@ -28,3 +28,7 @@ jobs:
     with:
       registry: $GITLAB
       image_id: $GITLAB/$IMAGE_NAME
+      secrets:
+        registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+        registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+
