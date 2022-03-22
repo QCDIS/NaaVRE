@@ -35,6 +35,12 @@ jobs:
         npx lerna run build --scope @jupyter_vre/core
         make build-frontend && make install-ui && make link-ui
         make release
+
+    - name: 'Upload wheel artifact'
+      uses: actions/upload-artifact@v3
+      with:
+        name: jupyterlab_vre
+        path: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
 #
 #     - name: Build docker
 #       run: |
