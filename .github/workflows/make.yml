@@ -1,6 +1,6 @@
 name: make relese
 on:
-  [push]
+  [pull_request]
 
 jobs:
   call-build-wheel:
