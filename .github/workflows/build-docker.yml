@@ -2,12 +2,22 @@ name: Build docker
 
 on:
   workflow_call:
+    inputs:
+      username:
+        required: true
+        type: string
+
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Download artifcat
+      uses: actions/download-artifact@v3
+      with:
+        name: jupyterlab_vre
+
     - name: Build docker
       run: |
           cp dist/jupyterlab_vre-0.1.0-py3-none-any.whl docker/
