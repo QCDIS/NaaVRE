@@ -22,9 +22,9 @@ jobs:
     uses: ./.github/workflows/build-container.yml
     with:
       wheel_artifact_name: jupyterlab_vre
-  build-docker:
-    needs: build-container
-    uses: ./.github/workflows/registry-push.yml
-    with:
-      registry: $GITLAB
-      image_id: $GITLAB/$IMAGE_NAME
+#  build-docker:
+#    needs: build-container
+#    uses: ./.github/workflows/registry-push.yml
+#    with:
+#      registry: $GITLAB
+#      image_id: $GITLAB/$IMAGE_NAME
