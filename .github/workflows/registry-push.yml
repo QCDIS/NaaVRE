@@ -37,4 +37,4 @@ jobs:
         password: ${{ secrets.registry_password }}
     - name: Push image to container Registry
       run: |
-        echo "Hi!"
+        echo "$IMAGE_ID"
