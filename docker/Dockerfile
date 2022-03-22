@@ -17,4 +17,13 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
     jupyter serverextension enable --py jupyterlab_vre --user && \
     jupyter lab build --debug;
 
+#===== Add pdalpy dependencies ======
+RUN conda install --yes -c conda-forge pdal python-pdal gdal
+RUN conda create --yes -n pdalpy python=3.8
+RUN conda activate --yes pdalpy
+RUN pip install dask distributed laserfarm
+RUN conda upgrade --yes numpy
+RUN conda update --yes -n base conda
+#====================================
+
 CMD ["/usr/local/bin/start-jupyter.sh"]
