@@ -29,6 +29,7 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+deprecated_modules = {'pathlib': 'pathlib2'}
 
 ################################################################################
 
@@ -190,21 +191,22 @@ class CellsHandler(APIHandler, Catalog):
         for dep in current_cell.dependencies:
             if 'module' in dep and dep['module']:
                 if '.' in dep['module']:
-                    set_deps.add((dep['module'].split('.')[0]))
+                    module_name = dep['module'].split('.')[0]
                 else:
-                    set_deps.add(dep['module'])
+                    module_name = dep['module']
             elif 'name' in dep and dep['name']:
-                set_deps.add(dep['name'])
+                module_name = dep['name']
+            if module_name:
+                if module_name in deprecated_modules.keys():
+                    module_name = deprecated_modules[module_name]
+                set_deps.add(module_name)
 
         # set_deps = set([dep['module'].split('.')[0] for dep in current_cell.dependencies])
 
         cell_file_path = os.path.join(cell_path, cell_file_name)
         dockerfile_file_path = os.path.join(cell_path, dockerfile_name)
         env_file_path = os.path.join(cell_path, env_name)
-        files_info = {}
-        files_info[cell_file_name] = cell_file_path
-        files_info[dockerfile_name] = dockerfile_file_path
-        files_info[env_name] = env_file_path
+        files_info = {cell_file_name: cell_file_path, dockerfile_name: dockerfile_file_path, env_name: env_file_path}
 
         template_cell.stream(cell=current_cell, deps=deps, types=current_cell.types, confs=confs).dump(cell_file_path)
         template_dockerfile.stream(task_name=current_cell.task_name).dump(dockerfile_file_path)
