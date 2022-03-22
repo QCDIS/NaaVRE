@@ -3,7 +3,7 @@ FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e
 USER root
 
 #===== Add pdalpy dependencies ======
-RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++
+#RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++
 #====================================
 
 
@@ -24,11 +24,11 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
 
 
 #===== Add pdalpy dependencies ======
-RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
-    conda upgrade --yes numpy && \
-    conda update --yes -n base conda && \
-    pip install dask distributed lazperf==1.4.4 && \
-    pip install laserfarm
+#RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
+#    conda upgrade --yes numpy && \
+#    conda update --yes -n base conda && \
+#    pip install dask distributed lazperf==1.4.4 && \
+#    pip install laserfarm
 #====================================
 
 
