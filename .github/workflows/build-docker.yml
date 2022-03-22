@@ -11,13 +11,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Download wheel artifcat
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ inputs.wheel_artifcat_name }}
+    - uses: actions/checkout@v2
+    - name: Download wheel artifcat
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ inputs.wheel_artifcat_name }}
 
-      - name: Build docker
-       run: |
+    - name: Build docker
+      run: |
            cp dist/jupyterlab_vre-0.1.0-py3-none-any.whl docker/
            cd docker && docker build . --file Dockerfile -t n-a-a-vre
      - name: Start docker
