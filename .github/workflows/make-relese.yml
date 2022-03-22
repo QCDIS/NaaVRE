@@ -11,6 +11,11 @@ on:
 jobs:
   call-build-wheel:
     uses: ./.github/workflows/build-wheel.yml
+  call-save-in-relese:
+    needs: call-build-wheel
+    uses: ./.github/workflows/save-wheel-in-release.yml
+    with:
+      wheel_artifact_name: jupyterlab_vre
   call-build-container:
     needs: call-build-wheel
     uses: ./.github/workflows/build-container.yml

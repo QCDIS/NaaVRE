@@ -1,0 +1,24 @@
+name: Build container
+
+on:
+  workflow_call:
+    inputs:
+      wheel_artifact_name:
+        required: true
+        type: string
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Download artifcat
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ inputs.wheel_artifact_name }}
+
+    - uses: AButler/upload-release-assets@v2.0
+      with:
+        files: 'jupyterlab_vre-0.1.0-py3-none-any.whl'
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
