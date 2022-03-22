@@ -2,6 +2,14 @@ FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e
 
 USER root
 
+#===== Add pdalpy dependencies ======
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++
+COPY laserfarm-environment.yaml .
+RUN conda install -f laserfarm-environment.yaml
+RUN conda install -c conda-forge conda-pack
+#====================================
+
+
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 COPY ./notebooks/ /home/jovyan/notebooks/
@@ -17,11 +25,5 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
     jupyter serverextension enable --py jupyterlab_vre --user && \
     jupyter lab build --debug;
 
-#===== Add pdalpy dependencies ======
-RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++
-COPY laserfarm-environment.yaml .
-RUN conda install -f laserfarm-environment.yaml
-RUN conda install -c conda-forge conda-pack
-#====================================
 
 CMD ["/usr/local/bin/start-jupyter.sh"]
