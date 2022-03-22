@@ -5,7 +5,7 @@ USER root
 #===== Add pdalpy dependencies ======
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++
 COPY laserfarm-environment.yaml .
-RUN conda install -f laserfarm-environment.yaml
+RUN conda install --file laserfarm-environment.yaml
 RUN conda install -c conda-forge conda-pack
 #====================================
 
