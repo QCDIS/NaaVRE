@@ -62,20 +62,20 @@ class HandlersAPITest(AsyncHTTPTestCase):
         # response_body = json.loads(to_unicode(response.body))
         # self.assertNotEqual(response_body, None)
 
-    def test_cellshandler_post(self):
-        cell_index = 1
-        git_token = 'test_token'
-        self.add_cell(cell_index=cell_index)
-        # self.add_git_token(git_token=git_token)
-
-        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
-            m.return_value = 'cookie'
-            payload = {'port': 'port', 'type': 'type'}
-            response = self.fetch('/cellshandler', method='POST', body=json.dumps(payload))
-
-        # delete_all_cells()
-        response_body = json.loads(to_unicode(response.body))
-        self.assertNotEqual(response_body, None)
+    # def test_cellshandler_post(self):
+    #     cell_index = 1
+    #     git_token = 'test_token'
+    #     self.add_cell(cell_index=cell_index)
+    #     # self.add_git_token(git_token=git_token)
+    #
+    #     with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+    #         m.return_value = 'cookie'
+    #         payload = {'port': 'port', 'type': 'type'}
+    #         response = self.fetch('/cellshandler', method='POST', body=json.dumps(payload))
+    #
+    #     # delete_all_cells()
+    #     response_body = json.loads(to_unicode(response.body))
+    #     self.assertNotEqual(response_body, None)
 
 
     def test_cellshandler_post_deprecated_modules(self):
