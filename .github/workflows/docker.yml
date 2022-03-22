@@ -33,7 +33,7 @@ jobs:
 #    needs: call-build-container
     uses: ./.github/workflows/registry-push.yml
     with:
-      registry: "ghcr.io"
+      registry: "https://index.docker.io/v1/"
       image_id: "qcdis/n-a-a-vre"
     secrets:
       registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
