@@ -3,7 +3,7 @@ name: Build docker
 on:
   workflow_call:
     inputs:
-      username:
+      wheel_artifact_name:
         required: true
         type: string
 
@@ -16,7 +16,7 @@ jobs:
     - name: Download artifcat
       uses: actions/download-artifact@v3
       with:
-        name: jupyterlab_vre
+        name: ${{ inputs.wheel_artifact_name }}
 
     - name: Build docker
       run: |
