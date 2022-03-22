@@ -15,15 +15,15 @@ env:
   GITHUB: qcdis
 
 jobs:
-  call-build-wheel:
-    uses: ./.github/workflows/build-wheel.yml
-  call-build-container:
-    needs: call-build-wheel
-    uses: ./.github/workflows/build-container.yml
-    with:
-      wheel_artifact_name: jupyterlab_vre
+#  call-build-wheel:
+#    uses: ./.github/workflows/build-wheel.yml
+#  call-build-container:
+#    needs: call-build-wheel
+#    uses: ./.github/workflows/build-container.yml
+#    with:
+#      wheel_artifact_name: jupyterlab_vre
   build-docker:
-    needs: call-build-container
+#    needs: call-build-container
     uses: ./.github/workflows/registry-push.yml
     with:
       registry: $GITLAB
