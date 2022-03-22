@@ -6,8 +6,6 @@ on:
     tags:
       - v*
 
-
-
 jobs:
   call-build-wheel:
     uses: ./.github/workflows/build-wheel.yml
