@@ -1,4 +1,4 @@
-name: Build container
+name: save wheel file
 
 on:
   workflow_call:
