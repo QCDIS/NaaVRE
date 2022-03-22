@@ -20,7 +20,7 @@ jobs:
 
     - name: Build docker
       run: |
-          cp dist/jupyterlab_vre-0.1.0-py3-none-any.whl docker/
+          mv jupyterlab_vre-0.1.0-py3-none-any.whl docker/
           cd docker && docker build . --file Dockerfile -t n-a-a-vre
     - name: Start docker
       run: |
