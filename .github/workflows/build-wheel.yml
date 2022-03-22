@@ -1,6 +1,7 @@
-name: Build wheel and test Docker
+name: Build wheel
 
-on: [push]
+on:
+  workflow_call:
 
 jobs:
   build:
