@@ -1,13 +1,10 @@
 name: make relese
-on: [push]
-
-#on:
-#  push:
-#  release:
-#    types: [created]
-#    # Publish `v1.2.3` tags as releases.
-#    tags:
-#      - v*
+on:
+  push:
+  release:
+    types: [created]
+    tags:
+      - v*
 
 
 
