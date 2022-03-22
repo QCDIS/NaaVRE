@@ -24,10 +24,11 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
 
 
 #===== Add pdalpy dependencies ======
-#RUN conda install --yes -c conda-forge pdal python-pdal gdal
-#RUN pip install dask distributed laserfarm
-#RUN conda upgrade --yes numpy
-#RUN conda update --yes -n base conda
+RUN conda install --yes -c conda-forge pdal python-pdal gdal
+RUN conda upgrade --yes numpy
+RUN conda update --yes -n base conda
+RUN pip install dask distributed lazperf==1.4.4
+RUN pip install laserfarm
 #====================================
 
 
