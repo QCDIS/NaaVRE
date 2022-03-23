@@ -62,8 +62,9 @@ class ExtractorHandler(APIHandler, Catalog):
         outs = set(extractor.infere_cell_outputs(source))
         params = []
         confs = extractor.extract_cell_conf_ref(source)
-
         dependencies = extractor.infere_cell_dependencies(source)
+        conf_deps = extractor.infere_cell_conf_dependencies(confs)
+        dependencies = dependencies + conf_deps
 
         cell = Cell(
             title=title,
