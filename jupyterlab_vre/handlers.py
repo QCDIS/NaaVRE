@@ -31,7 +31,7 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-deprecated_modules = {}
+module_name_mapping = {'fnmatch': 'fnmatch2'}
 part_of_standard_library = ['pathlib']
 
 
@@ -175,7 +175,7 @@ class CellsHandler(APIHandler, Catalog):
                 logger.error(parm_name + ' has not type')
                 msg_json = dict(title=parm_name + ' has not type')
                 self.write(msg_json)
-                raise tornado.web.HTTPError(400)
+                raise tornado.web.HTTPError(400, reason=parm_name + ' has not type')
 
         compiled_code = template_cell.render(cell=current_cell, deps=deps, types=current_cell.types, confs=confs)
         compiled_code = autopep8.fix_code(compiled_code)
@@ -213,8 +213,8 @@ class CellsHandler(APIHandler, Catalog):
             elif 'name' in dep and dep['name']:
                 module_name = dep['name']
             if module_name:
-                if module_name in deprecated_modules.keys():
-                    module_name = deprecated_modules[module_name]
+                if module_name in module_name_mapping.keys():
+                    module_name = module_name_mapping[module_name]
                 if module_name not in part_of_standard_library:
                     set_deps.add(module_name)
 
