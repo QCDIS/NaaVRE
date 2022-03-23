@@ -52,7 +52,6 @@ export class VREPanel extends React.Component<IProps> {
     }
 
     addToCatalog = async () => {
-
         if (!this.state.loading) {
 
             this.setState({ loading: true });
