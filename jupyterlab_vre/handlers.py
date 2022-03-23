@@ -1,4 +1,6 @@
 import os
+
+import tornado
 from github3 import login
 import tarfile
 import copy
@@ -31,6 +33,7 @@ logger.setLevel(logging.DEBUG)
 
 deprecated_modules = {}
 part_of_standard_library = ['pathlib']
+
 
 ################################################################################
 
@@ -164,6 +167,15 @@ class CellsHandler(APIHandler, Catalog):
         template_cell = template_env.get_template('cell_template.jinja2')
         template_dockerfile = template_env.get_template('dockerfile_template_conda.jinja2')
         template_conda = template_env.get_template('conda_env_template.jinja2')
+
+        all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
+        logger.debug('all_vars: ' + str(all_vars))
+        for parm_name in all_vars:
+            if parm_name not in current_cell.types:
+                logger.error(parm_name + ' has not type')
+                msg_json = dict(title=parm_name + ' has not type')
+                self.write(msg_json)
+                raise tornado.web.HTTPError(400)
 
         compiled_code = template_cell.render(cell=current_cell, deps=deps, types=current_cell.types, confs=confs)
         compiled_code = autopep8.fix_code(compiled_code)
