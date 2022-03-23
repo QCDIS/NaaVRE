@@ -83,6 +83,16 @@ class Extractor:
         return dependencies
 
 
+    def infere_cell_conf_dependencies(self, confs):
+        dependencies = []
+        for ck in confs:
+            for name in self.__extract_cell_names(confs[ck]):
+                if name in self.imports:
+                    dependencies.append(self.imports.get(name))
+
+        return dependencies
+
+
     def __extract_cell_names(self, cell_source):
         names = set()
         tree = ast.parse(cell_source)
