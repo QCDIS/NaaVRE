@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 module_name_mapping = {'fnmatch': 'fnmatch2'}
+
 part_of_standard_library = ['pathlib']
 
 
