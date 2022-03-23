@@ -39,6 +39,7 @@ part_of_standard_library = ['pathlib']
 ################################################################################
 
 class ExtractorHandler(APIHandler, Catalog):
+    logger = logging.getLogger(__name__)
 
     @web.authenticated
     async def get(self):
