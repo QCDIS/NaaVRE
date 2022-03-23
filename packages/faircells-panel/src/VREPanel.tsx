@@ -56,23 +56,30 @@ export class VREPanel extends React.Component<IProps> {
 
             this.setState({ loading: true });
 
-            await requestAPI<any>('catalog/cells', {
-                body: JSON.stringify({}),
-                method: 'POST'
-            });
+            try {
 
-            setTimeout(() => {
-                this.setState({ loading: false });
-                showDialog({
-                    title: 'Local Catalog',
-                    body: (
-                      <p>
-                        Cell successfully added to the catalog
-                      </p>
-                    ),
-                    buttons: [Dialog.okButton()]
+                await requestAPI<any>('catalog/cells', {
+                    body: JSON.stringify({}),
+                    method: 'POST'
                 });
-            }, 1500);
+
+                setTimeout(() => {
+                    this.setState({ loading: false });
+                    showDialog({
+                        title: 'Local Catalog',
+                        body: (
+                          <p>
+                            Cell successfully added to the catalog
+                          </p>
+                        ),
+                        buttons: [Dialog.okButton()]
+                    });
+                }, 1500);
+            }
+
+            catch (error) {
+                console.log(error);
+            }
         }
     }
 
