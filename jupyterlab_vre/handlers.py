@@ -29,7 +29,8 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-deprecated_modules = {'pathlib': 'pathlib2'}
+deprecated_modules = {}
+part_of_standard_library = ['pathlib']
 
 ################################################################################
 
@@ -200,7 +201,8 @@ class CellsHandler(APIHandler, Catalog):
             if module_name:
                 if module_name in deprecated_modules.keys():
                     module_name = deprecated_modules[module_name]
-                set_deps.add(module_name)
+                if module_name not in part_of_standard_library:
+                    set_deps.add(module_name)
 
         # set_deps = set([dep['module'].split('.')[0] for dep in current_cell.dependencies])
 
