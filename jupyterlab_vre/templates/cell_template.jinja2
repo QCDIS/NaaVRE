@@ -33,7 +33,8 @@ args = arg_parser.parse_args()
 
 {% if cell.outputs|length > 0 %}
 {% if cell.outputs|length == 1 and types[cell.outputs.0] == 'list' %}
-print(json.dumps( {{cell.outputs.0 }}))
+import json
+print(json.dumps({{cell.outputs.0 }}))
 {% else %}
 import json
 outs = {}
