@@ -1,8 +1,13 @@
 import hashlib
-import re
-import ast
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 class Cell:
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+
     title: str
     task_name: str
     original_source: str

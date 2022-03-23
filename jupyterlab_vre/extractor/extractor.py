@@ -1,17 +1,23 @@
+import logging
 import re
 from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
 import ast
 
-class Extractor:
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
-    sources         : list
-    imports         : list
-    configurations  : dict
-    global_params   : set
-    undefined       : set
+
+class Extractor:
+    logger = logging.getLogger(__name__)
+    sources: list
+    imports: list
+    configurations: dict
+    global_params: set
+    undefined: set
 
     def __init__(self, notebook):
-        self.sources = [ nbcell.source for nbcell in notebook.cells if nbcell.cell_type == 'code' and len(nbcell.source) > 0]
+        self.sources = [nbcell.source for nbcell in notebook.cells if
+                        nbcell.cell_type == 'code' and len(nbcell.source) > 0]
         self.imports = self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
         self.global_params = self.__extract_params(self.sources)
@@ -20,7 +26,7 @@ class Extractor:
             self.undefined.update(self.__extract_cell_undefined(source))
 
     def __extract_imports(self, sources):
-        imports = { }
+        imports = {}
         for s in sources:
             tree = ast.parse(s)
             for node in ast.walk(tree):
@@ -29,15 +35,15 @@ class Extractor:
                         key = n.asname if n.asname else n.name
                         if key not in imports:
                             imports[key] = {
-                                'name'	: n.name,
+                                'name': n.name,
                                 'asname': n.asname or None,
                                 'module': node.module if isinstance(node, ast.ImportFrom) else ""
                             }
+        logger.debug('imports: '+str(imports))
         return imports
 
-
     def __extract_configurations(self, sources):
-        configurations = { }
+        configurations = {}
         for s in sources:
             lines = s.splitlines()
             tree = ast.parse(s)
@@ -47,8 +53,8 @@ class Extractor:
                     prefix = name.split('_')[0]
                     if prefix == 'conf' and name not in configurations:
                         configurations[name] = lines[node.lineno - 1]
+        logger.debug('configurations: ' + str(configurations))
         return configurations
-
 
     def __extract_params(self, sources):
         params = set()
@@ -60,28 +66,27 @@ class Extractor:
                     prefix = name.split('_')[0]
                     if prefix == 'param':
                         params.add(name)
+        logger.debug('params: ' + str(params))
         return params
-
 
     def infere_cell_outputs(self, cell_source):
         cell_names = self.__extract_cell_names(cell_source)
         return [name for name in cell_names if name not in self.__extract_cell_undefined(cell_source) \
                 and name not in self.imports and name in self.undefined and name not in self.configurations and name not in self.global_params]
 
-    
     def infere_cell_inputs(self, cell_source):
         cell_undefined = self.__extract_cell_undefined(cell_source)
-        return [und for und in cell_undefined if und not in self.imports and und not in self.configurations and und not in self.global_params]
-
+        return [und for und in cell_undefined if
+                und not in self.imports and und not in self.configurations and und not in self.global_params]
 
     def infere_cell_dependencies(self, cell_source):
         dependencies = []
-        for name in self.__extract_cell_names(cell_source):
+        cell_names = self.__extract_cell_names(cell_source)
+        for name in cell_names:
             if name in self.imports:
                 dependencies.append(self.imports.get(name))
 
         return dependencies
-
 
     def __extract_cell_names(self, cell_source):
         names = set()
@@ -90,7 +95,6 @@ class Extractor:
             if isinstance(module, (ast.Name,)):
                 names.add(module.id)
         return names
-
 
     def __extract_cell_undefined(self, cell_source):
 
@@ -103,7 +107,7 @@ class Extractor:
 
         if rep._stderr():
             raise RuntimeError("Flakes reported the following error:"
-                            "\n{}".format('\t' + '\t'.join(rep._stderr())))
+                               "\n{}".format('\t' + '\t'.join(rep._stderr())))
         p = r"'(.+?)'"
 
         out = rep._stdout()
@@ -114,11 +118,9 @@ class Extractor:
             undef_vars.add(var_search.group(1))
         return undef_vars
 
-    
     def extract_cell_params(self, cell_source):
         cell_unds = self.__extract_cell_undefined(cell_source)
         return self.global_params.intersection(cell_unds)
-
 
     def extract_cell_conf_ref(self, cell_source):
         confs = {}
