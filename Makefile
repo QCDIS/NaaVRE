@@ -22,55 +22,62 @@ install-backend: build-backend
 	jupyter serverextension enable --py jupyterlab_vre --user
 
 build-frontend: jlpm-install
-	npx lerna run build
+	npx lerna run build --scope @jupyter_vre/core
+	npx lerna run build --scope @jupyter_vre/chart-customs
+	npx lerna run build --scope @jupyter_vre/components
+	npx lerna run build --scope @jupyter_vre/faicells-composer
+	npx lerna run build --scope @jupyter_vre/faicells-panel
+	npx lerna run build --scope @jupyter_vre/vre-menu
+	npx lerna run build --scope @jupyter_vre/infrastructure-automator
+
 
 jlpm-install:
 	jlpm
 
 
 install-ui:
+	$(call INSTALL_LAB_EXTENSION,core)
 	$(call INSTALL_LAB_EXTENSION,chart-customs)
 	$(call INSTALL_LAB_EXTENSION,components)
 	$(call INSTALL_LAB_EXTENSION,faircells-composer)
 	$(call INSTALL_LAB_EXTENSION,faircells-panel)
-	$(call INSTALL_LAB_EXTENSION,core)
 	$(call INSTALL_LAB_EXTENSION,vre-menu)
 	$(call INSTALL_LAB_EXTENSION,infrastructure-automator)
 
 link-ui:
+	$(call LINK_LAB_EXTENSION,core)
 	$(call LINK_LAB_EXTENSION,chart-customs)
 	$(call LINK_LAB_EXTENSION,components)
 	$(call LINK_LAB_EXTENSION,faircells-composer)
 	$(call LINK_LAB_EXTENSION,faircells-panel)
-	$(call LINK_LAB_EXTENSION,core)
 	$(call LINK_LAB_EXTENSION,vre-menu)
 	$(call LINK_LAB_EXTENSION,infrastructure-automator)
 
 dist-ui: build-frontend
 	mkdir -p dist
+	$(call PACKAGE_LAB_EXTENSION,core)
 	$(call PACKAGE_LAB_EXTENSION,chart-customs)
 	$(call PACKAGE_LAB_EXTENSION,components)
 	$(call PACKAGE_LAB_EXTENSION,faircells-composer)
 	$(call PACKAGE_LAB_EXTENSION,faircells-panel)
-	$(call PACKAGE_LAB_EXTENSION,core)
 	$(call PACKAGE_LAB_EXTENSION,vre-menu)
 	$(call PACKAGE_LAB_EXTENSION,infrastructure-automator)
 
 install-ui:
+	$(call INSTALL_LAB_EXTENSION,core)
 	$(call INSTALL_LAB_EXTENSION,chart-customs)
 	$(call INSTALL_LAB_EXTENSION,components)
 	$(call INSTALL_LAB_EXTENSION,faircells-composer)
 	$(call INSTALL_LAB_EXTENSION,faircells-panel)
-	$(call INSTALL_LAB_EXTENSION,core)
 	$(call INSTALL_LAB_EXTENSION,vre-menu)
 	$(call INSTALL_LAB_EXTENSION,infrastructure-automator)
 
 link-ui:
+	$(call LINK_LAB_EXTENSION,core)
 	$(call LINK_LAB_EXTENSION,chart-customs)
 	$(call LINK_LAB_EXTENSION,components)
 	$(call LINK_LAB_EXTENSION,faircells-composer)
 	$(call LINK_LAB_EXTENSION,faircells-panel)
-	$(call LINK_LAB_EXTENSION,core)
 	$(call LINK_LAB_EXTENSION,vre-menu)
 	$(call LINK_LAB_EXTENSION,infrastructure-automator)
 
