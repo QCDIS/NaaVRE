@@ -38,15 +38,12 @@ args = arg_parser.parse_args()
 {{ cell.original_source }}
 
 
-
-{% if cell.outputs|length > 0 %}
 outputs = {}
+{% if cell.outputs|length > 0 %}
 {% for out_var in cell.outputs|sort %}
 outputs['{{ out_var }}'] = {{ out_var }}
 {% endfor %}
-
+{% endif %}
 output_path = os.path.join(tempfile.gettempdir(), 'outputs.json')
-
 with open(output_path, 'w', encoding='utf-8') as f:
     json.dump(outputs, f, ensure_ascii=False, indent=4)
-{% endif %}
