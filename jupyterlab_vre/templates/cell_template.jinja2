@@ -40,7 +40,6 @@ args = arg_parser.parse_args()
 
 
 {% if cell.outputs|length > 0 %}
-import json
 outputs = {}
 {% for out_var in cell.outputs|sort %}
 outputs['{{ out_var }}'] = {{ out_var }}
