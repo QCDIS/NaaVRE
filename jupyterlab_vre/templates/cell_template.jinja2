@@ -5,6 +5,10 @@
 {% endif %}
 {% if cell.inputs|length > 0 or cell.params|length > 0%}
 import argparse
+import json
+import tempfile
+import os
+
 arg_parser = argparse.ArgumentParser()
 
 {% for in_var in cell.inputs|sort %}
@@ -31,11 +35,19 @@ args = arg_parser.parse_args()
 
 {{ cell.original_source }}
 
+
+
+
+
 {% if cell.outputs|length > 0 %}
-{% else %}
 import json
 outputs = {}
 {% for out_var in cell.outputs|sort %}
 outputs['{{ out_var }}'] = {{ out_var }}
 {% endfor %}
+
+output_path = os.path.join(tempfile.gettempdir(), 'outputs.json')
+
+with open(output_path, 'w', encoding='utf-8') as f:
+    json.dump(outputs, f, ensure_ascii=False, indent=4)
 {% endif %}
