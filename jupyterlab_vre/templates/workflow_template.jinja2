@@ -72,22 +72,22 @@ spec:
         image: "qcdis/{{ cells[nid]['task_name'] }}"
         command: ["/bin/bash", "-c"]
         args:
-            - echo '0' > /tmp/outputs_count;
-              source /venv/bin/activate;
-              {% for d in dep %}
-              {% if d['scaling'] %}
-              {{ d['port_id'] }}=`cat /tmp/outputs.json | jq '.[{{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }}]'`;
-              {% endif %}
-              {% endfor %}
-              python {{ cells[nid]['task_name'] }}.py{{ ";" if dep|length == 0 and cells[nid]['params']|length == 0}};
-              {% for d in dep %}
-              {% if d['scaling'] %}
-              --{{ d['port_id'] }} ${{ d['port_id'] }}{{ ";" if loop.last and cells[nid]['params']|length == 0}}
-              {% else %}
-              --{{ d['port_id'] }}{{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }}{{ ";" if loop.last and cells[nid]['params']|length == 0}}
-              {% endif %}
-              {% endfor %}
-              {% for p in cells[nid]['params'] %}
-              --{{ p }}{{ " {{workflow.parameters." }}{{ p }}{{ "}}" }}{{ ";" if loop.last }}
-             {% endfor %}
+          - echo '0' > /tmp/outputs_count;
+            source /venv/bin/activate;
+            {% for d in dep %}
+            {% if d['scaling'] %}
+            {{ d['port_id'] }}=`cat /tmp/outputs.json | jq '.[{{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }}]'`;
+            {% endif %}
+            {% endfor %}
+            python {{ cells[nid]['task_name'] }}.py{{ ";" if dep|length == 0 and cells[nid]['params']|length == 0}}
+            {% for d in dep %}
+            {% if d['scaling'] %}
+            --{{ d['port_id'] }} ${{ d['port_id'] }}{{ ";" if loop.last and cells[nid]['params']|length == 0}}
+            {% else %}
+            --{{ d['port_id'] }}{{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }}{{ ";" if loop.last and cells[nid]['params']|length == 0}}
+            {% endif %}
+            {% endfor %}
+            {% for p in cells[nid]['params'] %}
+            --{{ p }}{{ " {{workflow.parameters." }}{{ p }}{{ "}}" }}{{ ";" if loop.last }}
+            {% endfor %}
     {% endfor %}
