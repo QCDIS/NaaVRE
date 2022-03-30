@@ -76,7 +76,7 @@ spec:
             source /venv/bin/activate;
             {% for d in dep %}
             {% if d['scaling'] %}
-            {{ d['port_id'] }}=`cat /tmp/outputs.json | jq '.[{{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }}]'`;
+            {{ d['port_id'] }}=`cat /tmp/outputs.json | jq -r '.[{{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }}]'`;
             {% endif %}
             {% endfor %}
             python {{ cells[nid]['task_name'] }}.py{{ ";" if dep|length == 0 and cells[nid]['params']|length == 0}}
