@@ -49,6 +49,14 @@ spec:
         - name: {{ p }}
         {% endfor %}
       {% endif %}
+      outputs:
+        artifacts:
+          - name: items
+            path: /tmp/outputs.json
+        parameters:
+          - name: count
+            valueFrom:
+              path: /tmp/count
       container:
         image: "qcdis/{{ cells[nid]['task_name'] }}"
         command: ["/bin/bash", "-c"]
