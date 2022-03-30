@@ -24,10 +24,8 @@ spec:
           arguments:
             artifacts:
             {% for d in dep %}
-            {% if d['scaling'] %}
               - name: items
                 from: {{ '"{{tasks.' }}{{ d['task_name'] }}{{ '.outputs.artifacts.items}}"' }}
-            {% endif %}
             {% endfor %}
             parameters:
             {% for d in dep %}
