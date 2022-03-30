@@ -7,6 +7,6 @@ RUN conda-pack -n venv -o /tmp/env.tar && \
 RUN /venv/bin/conda-unpack
 
 FROM debian:buster AS runtime
+RUN apt update -y && apt upgrade -y && apt install jq
 COPY --from=build /venv /venv
 COPY {{ task_name }}.py .
-RUN ln -s /venv/bin/python /usr/bin/python

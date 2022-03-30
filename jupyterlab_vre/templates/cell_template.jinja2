@@ -34,7 +34,13 @@ args = arg_parser.parse_args()
 {% if cell.outputs|length > 0 %}
 {% if cell.outputs|length == 1 and types[cell.outputs.0] == 'list' %}
 import json
-print(json.dumps({{cell.outputs.0 }}))
+with open('/tmp/outputs.json', 'w') as f:
+    json.dump({{cell.outputs.0 }}, f)
+
+f = open('/tmp/outputs_count', 'w')
+f.write(str(len({{cell.outputs.0 }})))
+f.close()
+
 {% else %}
 import json
 outs = {}
