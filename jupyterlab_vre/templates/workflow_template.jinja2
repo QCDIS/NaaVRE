@@ -52,10 +52,6 @@ spec:
       container:
         image: "qcdis/{{ cells[nid]['task_name'] }}"
         command: ["/bin/bash", "-c"]
-        outputs:
-            artifacts:
-            - name: outputs
-              path: /tmp/outputs.json
         args:
           - source /venv/bin/activate; python {{ cells[nid]['task_name'] }}.py{{ ";" if dep|length == 0 and cells[nid]['params']|length == 0}}
             {% for d in dep %}

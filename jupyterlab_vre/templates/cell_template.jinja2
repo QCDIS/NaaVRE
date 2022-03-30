@@ -5,17 +5,11 @@
 {% endif %}
 {% if cell.inputs|length > 0 or cell.params|length > 0%}
 import argparse
-import json
-import tempfile
-import os
-input_path = os.path.join(tempfile.gettempdir(), 'inputs.json')
-
-with open(input_path, 'r') as f:
-    inputs = json.load(f)
-
-
 arg_parser = argparse.ArgumentParser()
 
+{% for in_var in cell.inputs|sort %}
+arg_parser.add_argument('--{{ in_var }}', action='store' {% if types[in_var] != 'list' %}, type={{ types[in_var] }} {% endif %}, required='True', dest='{{ in_var }}')
+{% endfor %}
 
 {% for param in cell.params|sort %}
 arg_parser.add_argument('--{{ param }}', action='store', type={{ types[param] }}, required='True', dest='{{ param }}')
@@ -23,7 +17,7 @@ arg_parser.add_argument('--{{ param }}', action='store', type={{ types[param] }}
 
 args = arg_parser.parse_args()
 {% for in_var in cell.inputs|sort %}
-{{ in_var }} = inputs['{{ in_var }}']
+{{ in_var }} = args.{{ in_var }}
 {% endfor %}
 
 {% for param in cell.params|sort %}
@@ -37,13 +31,16 @@ args = arg_parser.parse_args()
 
 {{ cell.original_source }}
 
-
-outputs = {}
 {% if cell.outputs|length > 0 %}
+{% if cell.outputs|length == 1 and types[cell.outputs.0] == 'list' %}
+import json
+print(json.dumps({{cell.outputs.0 }}))
+{% else %}
+import json
+outs = {}
 {% for out_var in cell.outputs|sort %}
-outputs['{{ out_var }}'] = {{ out_var }}
+outs['{{ out_var }}'] = {{ out_var }}
 {% endfor %}
+print(json.dumps(outs))
 {% endif %}
-output_path = os.path.join(tempfile.gettempdir(), 'outputs.json')
-with open(output_path, 'w', encoding='utf-8') as f:
-    json.dump(outputs, f, ensure_ascii=False, indent=4)
+{% endif %}
