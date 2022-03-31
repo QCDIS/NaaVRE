@@ -22,22 +22,16 @@ spec:
           template: {{ cells[nid]['task_name'] }}-tmp
           {% if dep|length > 0 or cells[nid]['params']|length > 0 %}
           arguments:
-            artifacts:
-            {% for d in dep %}
-              - name: items
-                from: {{ '"{{tasks.' }}{{ d['task_name'] }}{{ '.outputs.artifacts.items}}"' }}
-            {% endfor %}
             parameters:
             {% for d in dep %}
-            - {name: {{ d['port_id'] }}, value: {% if d['scaling'] %}{{ '"{{item}}"' }}{% else %}{{ '"{{=jsonpath(tasks[\'' }}{{ d['task_name'] }}{{ '\'].outputs.result, \'$.'}}{{ d['port_id'] }}{{'\')}}"' }}{% endif %}}
+            - {name: {{ d['port_id'] }}, value: {% if d['scaling'] %}{{ '"{{item}}"' }}{% else %}{{ '"{{=jsonpath(tasks[\'' }}{{ d['task_name'] }}{{ '\'].outputs.parameters.outs, \'$.'}}{{ d['port_id'] }}{{'\')}}"' }}{% endif %}}
             {% endfor %}
             {% for p in cells[nid]['params'] %}
             - {name: {{ p }}, value: {{ '"{{workflow.parameters.' }}{{ p }}{{ '}}"' }}}
             {% endfor %}
           {% for d in dep %}
           {% if d['scaling'] %}
-          withSequence:
-           count: {{ '"{{tasks.' }}{{ d['task_name'] }}{{ '.outputs.parameters.count}}"' }}
+          withParam: {{ '"{{tasks.' }}{{ d['task_name'] }}{{ '.outputs.parameters.outs}}"' }}
           {% endif %}
           {% endfor %}
           {% endif %}
@@ -47,9 +41,6 @@ spec:
     - name: {{ cells[nid]['task_name'] }}-tmp
       {% if dep|length > 0 %}
       inputs:
-        artifacts:
-          - name: items
-            path: /tmp/outputs.json
         parameters:
         {% for d in dep %}
         - name: {{ d['port_id'] }}
@@ -59,25 +50,17 @@ spec:
         {% endfor %}
       {% endif %}
       outputs:
-        artifacts:
-          - name: items
-            path: /tmp/outputs.json
         parameters:
-          - name: count
+          - name: outs
             valueFrom:
-              path: /tmp/outputs_count
+              path: /tmp/outputs.json
       container:
         image: "qcdis/{{ cells[nid]['task_name'] }}"
         command: ["/bin/bash", "-c"]
         args:
-          - echo '0' > /tmp/outputs_count;
-            source /venv/bin/activate;
+          - source /venv/bin/activate;
             {% for d in dep %}
-            {% if d['scaling'] %}
-            {{ d['port_id'] }}=`cat /tmp/outputs.json | jq -r '.[{{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }}]'`;
-            {% else %}
-            {{ d['port_id'] }}=`cat /tmp/outputs.json | jq -r '.{{ d['port_id'] }}'`;
-            {% endif %}
+            {{ d['port_id'] }}=`echo {{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }} | jq .[d['port_id']]``;
             {% endfor %}
             python {{ cells[nid]['task_name'] }}.py{{ ";" if dep|length == 0 and cells[nid]['params']|length == 0}}
             {% for d in dep %}

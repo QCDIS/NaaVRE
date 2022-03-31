@@ -37,10 +37,6 @@ import json
 with open('/tmp/outputs.json', 'w') as f:
     json.dump({{cell.outputs.0 }}, f)
 
-f = open('/tmp/outputs_count', 'w')
-f.write(str(len({{cell.outputs.0 }})))
-f.close()
-
 {% else %}
 outputs = {}
 {% for out_var in cell.outputs|sort %}
