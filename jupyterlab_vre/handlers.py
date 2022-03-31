@@ -395,6 +395,7 @@ class ExportWorkflowHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
+        print(payload)
         global_params = []
 
         nodes = payload['nodes']

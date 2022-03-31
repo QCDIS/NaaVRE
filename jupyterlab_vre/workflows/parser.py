@@ -26,7 +26,7 @@ class WorkflowParser:
 
         self.dependencies = {nodes[node]['properties']['og_node_id']: [] for node in nodes if
                              nodes[node]['type'] != 'splitter' and nodes[node]['type'] != 'merger'}
-
+        logger.debug('self.dependencies: '+str(self.dependencies))
         self.cells_in_use = {nodes[node]['properties']['og_node_id']: \
                                  Catalog.get_cell_from_og_node_id(nodes[node]['properties']['og_node_id']) \
                              for node in nodes if nodes[node]['type'] != 'splitter' and nodes[node]['type'] != 'merger'
@@ -64,8 +64,8 @@ class WorkflowParser:
                 self.splitters[link['from']['nodeId']]['target'] = link
 
             else:
-
                 og_id_to = self.__get_og_node_id(link['to']['nodeId'])
+                logger.debug('link: '+str(link['from']['nodeId']))
                 og_id_from = self.__get_og_node_id(link['from']['nodeId'])
                 from_cell = Catalog.get_cell_from_og_node_id(og_id_from)
                 self.dependencies[og_id_to].append({
