@@ -60,7 +60,7 @@ spec:
         args:
           - source /venv/bin/activate;
             {% for d in dep %}
-            {{ d['port_id'] }}=`echo {{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }} | jq .[{{ d['port_id'] }}]``;
+            {{ d['port_id'] }}=`echo {{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }} | jq .[{{ d['port_id'] }}]`;
             {% endfor %}
             python {{ cells[nid]['task_name'] }}.py{{ ";" if dep|length == 0 and cells[nid]['params']|length == 0}}
             {% for d in dep %}
