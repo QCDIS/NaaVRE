@@ -60,6 +60,7 @@ spec:
         args:
           - source /venv/bin/activate;
             {% for d in dep %}
+            echo d['scaling']
             {% if d['scaling'] %}
             {{ d['port_id'] }}=`echo {{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }}`;
             {% else %}
