@@ -6,9 +6,23 @@
 {% if cell.inputs|length > 0 or cell.params|length > 0%}
 import argparse
 arg_parser = argparse.ArgumentParser()
+from os.path import exists
+import json
+inputs_path = '/tmp/inputs.json'
+inputs_exists = exists(inputs_path)
+
+if inputs_exists:
+    with open(inputs_path) as json_file:
+        inputs = json.load(json_file)
 
 {% for in_var in cell.inputs|sort %}
-arg_parser.add_argument('--{{ in_var }}', action='store' {% if types[in_var] != 'list' %}, type={{ types[in_var] }} {% endif %}, required='True', dest='{{ in_var }}')
+if inputs_exists:
+    if 'in_var' in inputs:
+        in_var = inputs['in_var']
+    elif isinstance(inputs,list):
+        in_var = inputs
+else:
+    arg_parser.add_argument('--{{ in_var }}', action='store' {% if types[in_var] != 'list' %}, type={{ types[in_var] }} {% endif %}, required='True', dest='{{ in_var }}')
 {% endfor %}
 
 {% for param in cell.params|sort %}
@@ -17,7 +31,8 @@ arg_parser.add_argument('--{{ param }}', action='store', type={{ types[param] }}
 
 args = arg_parser.parse_args()
 {% for in_var in cell.inputs|sort %}
-{{ in_var }} = args.{{ in_var }}
+if not inputs_exists:
+    {{ in_var }} = args.{{ in_var }}
 {% endfor %}
 
 {% for param in cell.params|sort %}
