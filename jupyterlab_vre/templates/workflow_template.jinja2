@@ -60,7 +60,7 @@ spec:
         args:
           - source /venv/bin/activate;
             {% for d in dep %}
-            echo {{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }} > /tmp/inputs.json
+            echo {{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }} > /tmp/inputs.json;
             {% endfor %}
             python {{ cells[nid]['task_name'] }}.py{{ ";" if dep|length == 0 and cells[nid]['params']|length == 0}}
             {% for d in dep %}
