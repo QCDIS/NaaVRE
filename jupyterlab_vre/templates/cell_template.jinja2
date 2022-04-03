@@ -13,14 +13,19 @@ inputs_exists = exists(inputs_path)
 
 if inputs_exists:
     with open(inputs_path) as json_file:
-        inputs = json.load(json_file)
+        try:
+            inputs = json.load(json_file)
+        except JSONDecodeError:
+            json_file.close()
+            f = open(inputs_path, "r")
+            inputs = f.readlines()[0].strip()
 
 {% for in_var in cell.inputs|sort %}
-if inputs_exists:
-    if '{{ in_var }}' in inputs:
-        {{ in_var }} = inputs['{{ in_var }}']
-    elif isinstance(inputs,list):
-        {{ in_var }} = inputs
+if inputs:
+    if 'laz_files' in inputs:
+        laz_files = inputs['laz_files']
+    else:
+        laz_files = inputs
 else:
     arg_parser.add_argument('--{{ in_var }}', action='store' {% if types[in_var] != 'list' %}, type={{ types[in_var] }} {% endif %}, required='True', dest='{{ in_var }}')
 {% endfor %}
