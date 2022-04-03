@@ -23,10 +23,10 @@ if inputs_exists:
 
 {% for in_var in cell.inputs|sort %}
 if inputs:
-    if 'laz_files' in inputs:
-        laz_files = inputs['laz_files']
+    if '{{ in_var }}' in inputs:
+        {{ in_var }} = inputs['{{ in_var }}']
     else:
-        laz_files = inputs
+        {{ in_var }} = inputs
 else:
     arg_parser.add_argument('--{{ in_var }}', action='store' {% if types[in_var] != 'list' %}, type={{ types[in_var] }} {% endif %}, required='True', dest='{{ in_var }}')
 {% endfor %}
