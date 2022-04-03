@@ -5,9 +5,10 @@
 {% endif %}
 {% if cell.inputs|length > 0 or cell.params|length > 0%}
 import argparse
+import json
+from json import JSONDecodeError
 arg_parser = argparse.ArgumentParser()
 from os.path import exists
-import json
 inputs_path = '/tmp/inputs.json'
 inputs_exists = exists(inputs_path)
 
