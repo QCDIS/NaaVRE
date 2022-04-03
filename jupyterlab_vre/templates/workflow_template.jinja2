@@ -63,9 +63,6 @@ spec:
             echo {{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }} > /tmp/inputs.json;
             {% endfor %}
             python {{ cells[nid]['task_name'] }}.py{{ ";" if dep|length == 0 and cells[nid]['params']|length == 0}}
-            {% for d in dep %}
-            --{{ d['port_id'] }} ${{ d['port_id'] }}{{ ";" if loop.last and cells[nid]['params']|length == 0}}
-            {% endfor %}
             {% for p in cells[nid]['params'] %}
             --{{ p }}{{ " {{workflow.parameters." }}{{ p }}{{ "}}" }}{{ ";" if loop.last }}
             {% endfor %}
