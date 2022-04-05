@@ -27,6 +27,7 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
 #WORKDIR Deploy_MULTIPLY
 COPY MULTIPLY_conda_requirements.txt .
 COPY MULTIPLY_pip_requirements.txt .
+RUN conda update --all
 RUN conda install --no-pin --channel conda-forge --channel defaults --file MULTIPLY_conda_requirements.txt
 RUN pip install -r MULTIPLY_pip_requirements.txt
 #====================================
