@@ -16,21 +16,20 @@ spec:
         tasks:
         {% for nid, dep in deps_dag.items() %}
         - name: {{ cells[nid]['task_name'] }}
+          template: {{ cells[nid]['task_name'] }}-tmp
           {% if dep|length > 0 %}
           dependencies: [{% for d in dep %} {{ d['task_name'] }}{% if not loop.last %},{% endif %} {% endfor %}]
-          {% endif %}
-          template: {{ cells[nid]['task_name'] }}-tmp
-          {% if dep|length > 0 or cells[nid]['params']|length > 0 %}
+          {% if cells[nid]['params']|length > 0 %}
           arguments:
             parameters:
             {% for d in dep %}
-            - {name: {{ d['port_id'] }}, value: {% if d['scaling'] %}{{ '"{{item}}"' }}{% else %}{{ '"{{=jsonpath(tasks[\'' }}{{ d['task_name'] }}{{ '\'].outputs.result, \'$.'}}{{ d['port_id'] }}{{'\')}}"' }}{% endif %}}
+            - {name: {{ d['port_id'] }}, value: {% if d['type'] == 'splitter' %}{{ '"{{item}}"' }}{% else %}{{ '"{{=jsonpath(tasks[\'' }}{{ d['task_name'] }}{{ '\'].outputs.result, \'$.'}}{{ d['port_id'] }}{{'\')}}"' }}{% endif %}}
             {% endfor %}
             {% for p in cells[nid]['params'] %}
             - {name: {{ p }}, value: {{ '"{{workflow.parameters.' }}{{ p }}{{ '}}"' }}}
             {% endfor %}
           {% for d in dep %}
-          {% if d['scaling'] %}
+          {% if d['splitter'] %}
           withParam: {{ '"{{tasks.' }}{{ d['task_name'] }}{{ '.outputs.result}}"' }}
           {% endif %}
           {% endfor %}

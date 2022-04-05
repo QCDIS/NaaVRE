@@ -409,6 +409,13 @@ class ExportWorkflowHandler(APIHandler):
 
         loader = PackageLoader('jupyterlab_vre', 'templates')
         template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
-        template = template_env.get_template('workflow_template.jinja2')
-        template.stream(deps_dag=deps_dag, cells=cells, global_params=set(global_params)).dump('workflow.yaml')
+        template = template_env.get_template('workflow_template_v2.jinja2')
+
+        template.stream(
+            deps_dag=deps_dag, 
+            cells=cells,
+            nodes=nodes,
+            global_params=set(global_params)
+
+        ).dump('workflow.yaml')
         self.flush()
