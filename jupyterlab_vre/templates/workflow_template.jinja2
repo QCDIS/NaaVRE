@@ -24,14 +24,14 @@ spec:
           arguments:
             parameters:
             {% for d in dep %}
-            - {name: {{ d['port_id'] }}, value: {% if d['scaling'] %}{{ '"{{item}}"' }}{% else %}{{ '"{{=jsonpath(tasks[\'' }}{{ d['task_name'] }}{{ '\'].outputs.result, \'$.'}}{{ d['port_id'] }}{{'\')}}"' }}{% endif %}}
+            - {name: {{ d['port_id'] }}, value: {% if d['scaling'] %}{{ '"{{item}}"' }}{% else %}{{ '"{{tasks.' }}{{ d['task_name'] }}{{ '.outputs.parameters.outs}}"' }}{% endif %}}
             {% endfor %}
             {% for p in cells[nid]['params'] %}
             - {name: {{ p }}, value: {{ '"{{workflow.parameters.' }}{{ p }}{{ '}}"' }}}
             {% endfor %}
           {% for d in dep %}
           {% if d['scaling'] %}
-          withParam: {{ '"{{tasks.' }}{{ d['task_name'] }}{{ '.outputs.result}}"' }}
+          withParam: {{ '"{{tasks.' }}{{ d['task_name'] }}{{ '.outputs.parameters.outs}}"' }}
           {% endif %}
           {% endfor %}
           {% endif %}
@@ -49,14 +49,20 @@ spec:
         - name: {{ p }}
         {% endfor %}
       {% endif %}
+      outputs:
+        parameters:
+          - name: outs
+            valueFrom:
+              path: /tmp/outputs.json
       container:
         image: "qcdis/{{ cells[nid]['task_name'] }}"
         command: ["/bin/bash", "-c"]
         args:
-          - source /venv/bin/activate; python {{ cells[nid]['task_name'] }}.py{{ ";" if dep|length == 0 and cells[nid]['params']|length == 0}}
+          - source /venv/bin/activate;
             {% for d in dep %}
-            --{{ d['port_id'] }}{{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }}{{ ";" if loop.last and cells[nid]['params']|length == 0}}
+            echo {{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }} > /tmp/inputs.json;
             {% endfor %}
+            python {{ cells[nid]['task_name'] }}.py{{ ";" if dep|length == 0 and cells[nid]['params']|length == 0}}
             {% for p in cells[nid]['params'] %}
             --{{ p }}{{ " {{workflow.parameters." }}{{ p }}{{ "}}" }}{{ ";" if loop.last }}
             {% endfor %}
