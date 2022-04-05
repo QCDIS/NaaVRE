@@ -9,7 +9,7 @@ RUN apt-get update --allow-releaseinfo-change && apt-get -y install git unzip
 #WORKDIR Deploy_MULTIPLY
 COPY MULTIPLY_conda_requirements.txt .
 COPY MULTIPLY_pip_requirements.txt .
-RUN conda install --file MULTIPLY_conda_requirements.txt
+RUN conda install --channel conda-forge --file MULTIPLY_conda_requirements.txt
 RUN pip install -r MULTIPLY_pip_requirements.txt
 
 
