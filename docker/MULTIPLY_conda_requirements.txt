@@ -78,12 +78,6 @@ jinja2=2.11.0=py_0
 jpeg=9c=h14c3975_1001
 json-c=0.13.1=h14c3975_1001
 jsonschema=3.2.0=py36_0
-# jupyter=1.0.0=py_2
-# jupyter_client=5.3.4=py36_1
-# jupyter_console=5.1.0=py36_0
-# jupyter_core=4.6.1=py36_0
-# jupyterlab=0.35.4=py36_0
-# jupyterlab_server=0.2.0=py_0
 kealib=1.4.10=h1978553_1003
 keras-applications=1.0.8=py_1
 keras-preprocessing=1.1.0=py_0
