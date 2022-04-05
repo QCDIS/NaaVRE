@@ -1,0 +1,334 @@
+{
+  "offset": {
+    "x": -329,
+    "y": 96
+  },
+  "scale": 1,
+  "nodes": {
+    "1d00f409-f33d-4f5a-ab80-529d13c3c003": {
+      "id": "1d00f409-f33d-4f5a-ab80-529d13c3c003",
+      "position": {
+        "x": 130,
+        "y": 285
+      },
+      "orientation": 0,
+      "type": "input-output",
+      "ports": {
+        "laz_files": {
+          "properties": {
+            "color": "#e0cc6c"
+          },
+          "id": "laz_files",
+          "type": "right",
+          "position": {
+            "x": 199.5,
+            "y": 50.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Fetch Laz Files 30-03-22",
+        "vars": [
+          {
+            "name": "laz_files",
+            "direction": "output",
+            "type": "datatype",
+            "color": "#e0cc6c"
+          }
+        ],
+        "params": [
+          "param_hostname",
+          "param_password",
+          "param_login"
+        ],
+        "inputs": [],
+        "outputs": [
+          "laz_files"
+        ],
+        "og_node_id": "72cea5b",
+        "deps": [
+          "",
+          "laserfarm"
+        ]
+      },
+      "size": {
+        "width": 200,
+        "height": 100
+      }
+    },
+    "af9fafda-b147-4a86-aa76-865a1535b4e3": {
+      "id": "af9fafda-b147-4a86-aa76-865a1535b4e3",
+      "position": {
+        "x": 754,
+        "y": 165
+      },
+      "orientation": 0,
+      "type": "input-output",
+      "ports": {
+        "laz_files": {
+          "properties": {
+            "color": "#e0cc6c"
+          },
+          "id": "laz_files",
+          "type": "left",
+          "position": {
+            "x": 0.5,
+            "y": 50.5
+          }
+        },
+        "remote_path_retiled": {
+          "properties": {
+            "color": "#53abac"
+          },
+          "id": "remote_path_retiled",
+          "type": "right",
+          "position": {
+            "x": 199.5,
+            "y": 50.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Retiling 30-03-22",
+        "vars": [
+          {
+            "name": "laz_files",
+            "direction": "input",
+            "type": "datatype",
+            "color": "#e0cc6c"
+          },
+          {
+            "name": "remote_path_retiled",
+            "direction": "output",
+            "type": "datatype",
+            "color": "#53abac"
+          }
+        ],
+        "params": [
+          "param_hostname",
+          "param_password",
+          "param_login"
+        ],
+        "inputs": [
+          "laz_files"
+        ],
+        "outputs": [
+          "remote_path_retiled"
+        ],
+        "og_node_id": "d60deaa",
+        "deps": [
+          "",
+          "laserfarm"
+        ]
+      },
+      "size": {
+        "width": 200,
+        "height": 100
+      }
+    },
+    "6f04b210-3252-403c-ae8a-316d5d9fcef2": {
+      "id": "6f04b210-3252-403c-ae8a-316d5d9fcef2",
+      "position": {
+        "x": 439,
+        "y": 288
+      },
+      "orientation": 0,
+      "type": "splitter",
+      "ports": {
+        "splitter_source": {
+          "id": "splitter_source",
+          "type": "left",
+          "properties": {
+            "special_node": 1,
+            "color": "#000000"
+          },
+          "position": {
+            "x": 0.5,
+            "y": 50.5
+          }
+        },
+        "splitter_target": {
+          "id": "splitter_target",
+          "type": "right",
+          "properties": {
+            "special_node": 1,
+            "color": "#000000"
+          },
+          "position": {
+            "x": 199.5,
+            "y": 50.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Splitter",
+        "scalingFactor": 1
+      },
+      "size": {
+        "width": 200,
+        "height": 100
+      }
+    },
+    "76458a21-670d-4c5c-a0bd-af2cb14c2624": {
+      "id": "76458a21-670d-4c5c-a0bd-af2cb14c2624",
+      "position": {
+        "x": 1056,
+        "y": 138
+      },
+      "orientation": 0,
+      "type": "merger",
+      "ports": {
+        "merger_source": {
+          "id": "merger_source",
+          "type": "left",
+          "properties": {
+            "special_node": 1,
+            "color": "#000000"
+          },
+          "position": {
+            "x": 0.5,
+            "y": 50.5
+          }
+        },
+        "merger_target": {
+          "id": "merger_target",
+          "type": "right",
+          "properties": {
+            "special_node": 1,
+            "color": "#000000"
+          },
+          "position": {
+            "x": 199.5,
+            "y": 50.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Merger",
+        "scalingFactor": 1
+      },
+      "size": {
+        "width": 200,
+        "height": 100
+      }
+    },
+    "3f8a2a56-59d1-4305-91b4-48aac6f8bcc7": {
+      "id": "3f8a2a56-59d1-4305-91b4-48aac6f8bcc7",
+      "position": {
+        "x": 992,
+        "y": 442
+      },
+      "orientation": 0,
+      "type": "input-output",
+      "ports": {
+        "remote_path_retiled": {
+          "properties": {
+            "color": "#53abac"
+          },
+          "id": "remote_path_retiled",
+          "type": "left",
+          "position": {
+            "x": 0.5,
+            "y": 50.5
+          }
+        },
+        "tiles": {
+          "properties": {
+            "color": "#406abf"
+          },
+          "id": "tiles",
+          "type": "right",
+          "position": {
+            "x": 199.5,
+            "y": 50.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Fetch Tiles 30-03-22",
+        "vars": [
+          {
+            "name": "remote_path_retiled",
+            "direction": "input",
+            "type": "datatype",
+            "color": "#53abac"
+          },
+          {
+            "name": "tiles",
+            "direction": "output",
+            "type": "datatype",
+            "color": "#406abf"
+          }
+        ],
+        "params": [
+          "param_hostname",
+          "param_password",
+          "param_login"
+        ],
+        "inputs": [
+          "remote_path_retiled"
+        ],
+        "outputs": [
+          "tiles"
+        ],
+        "og_node_id": "45478ae",
+        "deps": [
+          "",
+          "laserfarm"
+        ]
+      },
+      "size": {
+        "width": 200,
+        "height": 100
+      }
+    }
+  },
+  "links": {
+    "d867ad70-da7c-4558-80e1-7908b903ffbc": {
+      "id": "d867ad70-da7c-4558-80e1-7908b903ffbc",
+      "from": {
+        "nodeId": "1d00f409-f33d-4f5a-ab80-529d13c3c003",
+        "portId": "laz_files"
+      },
+      "to": {
+        "nodeId": "6f04b210-3252-403c-ae8a-316d5d9fcef2",
+        "portId": "splitter_source"
+      }
+    },
+    "e4442d91-952b-4a5e-bd26-df833ab12d41": {
+      "id": "e4442d91-952b-4a5e-bd26-df833ab12d41",
+      "from": {
+        "nodeId": "6f04b210-3252-403c-ae8a-316d5d9fcef2",
+        "portId": "splitter_target"
+      },
+      "to": {
+        "nodeId": "af9fafda-b147-4a86-aa76-865a1535b4e3",
+        "portId": "laz_files"
+      }
+    },
+    "56dfbe76-edd7-4ba4-8c41-3c84a4626720": {
+      "id": "56dfbe76-edd7-4ba4-8c41-3c84a4626720",
+      "from": {
+        "nodeId": "af9fafda-b147-4a86-aa76-865a1535b4e3",
+        "portId": "remote_path_retiled"
+      },
+      "to": {
+        "nodeId": "76458a21-670d-4c5c-a0bd-af2cb14c2624",
+        "portId": "merger_source"
+      }
+    },
+    "309fa30e-979e-4e9c-829c-1dd54c0908a9": {
+      "id": "309fa30e-979e-4e9c-829c-1dd54c0908a9",
+      "from": {
+        "nodeId": "76458a21-670d-4c5c-a0bd-af2cb14c2624",
+        "portId": "merger_target"
+      },
+      "to": {
+        "nodeId": "3f8a2a56-59d1-4305-91b4-48aac6f8bcc7",
+        "portId": "remote_path_retiled"
+      }
+    }
+  },
+  "selected": {},
+  "hovered": {}
+}

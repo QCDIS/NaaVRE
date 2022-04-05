@@ -1,0 +1,2 @@
+gp-emulator==1.6.10
+sentinelhub==3.5.0

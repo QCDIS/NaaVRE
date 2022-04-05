@@ -23,6 +23,7 @@ class WorkflowParser:
         self.nodes = nodes
         self.links = links
         self.splitters = defaultdict(dict)
+
         self.dependencies = {nodes[node]['properties']['og_node_id']: [] for node in nodes if
                              nodes[node]['type'] != 'splitter' and nodes[node]['type'] != 'merger'}
         self.cells_in_use = {nodes[node]['properties']['og_node_id']: \
@@ -53,7 +54,8 @@ class WorkflowParser:
 
         for k in self.links:
             link = self.links[k]
-
+            print('link_to: ' +  link['to']['portId'])
+            print('link_from: '+link['from']['portId'])
             if link['to']['portId'] == 'splitter_source' or link['to']['portId'] == 'merger_source':
                 self.splitters[link['to']['nodeId']]['source'] = link
                 continue
@@ -62,8 +64,8 @@ class WorkflowParser:
                 self.splitters[link['from']['nodeId']]['target'] = link
 
             else:
-
                 og_id_to = self.__get_og_node_id(link['to']['nodeId'])
+                logger.debug('link: '+str(link['from']['nodeId']))
                 og_id_from = self.__get_og_node_id(link['from']['nodeId'])
                 from_cell = Catalog.get_cell_from_og_node_id(og_id_from)
                 self.dependencies[og_id_to].append({
