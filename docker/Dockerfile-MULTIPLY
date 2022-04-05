@@ -30,8 +30,6 @@ COPY MULTIPLY_pip_requirements.txt .
 RUN conda install --no-pin --channel conda-forge --channel defaults --file MULTIPLY_conda_requirements.txt
 RUN pip install -r MULTIPLY_pip_requirements.txt
 #====================================
-
-
 #========= multiply_modules =======
 RUN git clone https://github.com/JorisTimmermans/atmospheric_correction.git
 WORKDIR atmospheric_correction
