@@ -62,7 +62,6 @@ export class VREPanel extends React.Component<IProps> {
                     body: JSON.stringify({}),
                     method: 'POST'
                 });
-
                 setTimeout(() => {
                     this.setState({ loading: false });
                     showDialog({
@@ -79,6 +78,17 @@ export class VREPanel extends React.Component<IProps> {
 
             catch (error) {
                 console.log(error);
+                alert('Error adding cell to catalog: '+ error.replace('{"message": "Unknown HTTP Error"}','');
+                 showDialog({
+                    title: 'Error adding cell to catalog',
+                        body: (
+                          <p>
+                            Cell failed to be added to the catalog!
+                          </p>
+                        ),
+                        buttons: [Dialog.okButton()]
+                    });
+                    this.setState({ loading: false });
             }
         }
     }
