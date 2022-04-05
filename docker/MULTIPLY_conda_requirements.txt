@@ -132,7 +132,6 @@ ncurses
 netcdf4
 networkx
 nodejs
-notebook
 numba
 numpy
 olefile
