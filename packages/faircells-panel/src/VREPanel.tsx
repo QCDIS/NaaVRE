@@ -78,8 +78,7 @@ export class VREPanel extends React.Component<IProps> {
 
             catch (error) {
                 console.log(error);
-                console.log(type(error));
-                alert('Error adding cell to catalog: '+ error);
+                alert('Error adding cell to catalog: '+ String(error).replace('{"message": "Unknown HTTP Error"}','');
                 this.setState({ loading: false });
             }
         }
