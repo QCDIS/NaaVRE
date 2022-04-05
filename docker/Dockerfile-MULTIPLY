@@ -5,10 +5,13 @@ USER root
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install git unzip
 
 #========= Install_environments =======
-RUN git clone https://github.com/JorisTimmermans/Deploy_MULTIPLY.git
-WORKDIR Deploy_MULTIPLY
-COPY MULTIPLY_requirements.txt .
-RUN conda install --file MULTIPLY_requirements.txt
+#RUN git clone https://github.com/JorisTimmermans/Deploy_MULTIPLY.git
+#WORKDIR Deploy_MULTIPLY
+COPY MULTIPLY_conda_requirements.txt .
+COPY MULTIPLY_pip_requirements.txt .
+RUN conda install --file MULTIPLY_conda_requirements.txt
+RUN pip install -r MULTIPLY_pip_requirements.txt
+
 
 #====================================
 
