@@ -1,0 +1,70 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: workflow-test-
+spec:
+    entrypoint: workflow-test
+    arguments:
+      parameters:
+      {% for p in global_params %}
+      - name: {{ p }}
+        value: ''
+      {% endfor %}
+    templates:
+    - name: workflow-test
+      dag:
+        tasks:
+        {% for nid in nodes %}
+        {% set is_special_node = nodes[nid]['type'] == 'splitter' or nodes[nid]['type'] == 'merger' %}
+        {# nodes and cells are indexed differently, cells requires indices of og ids #}
+        {% set task_name =  nodes[nid]['type'] + "_" + nid if is_special_node else cells[nid]['task_name'] %}
+        {% set params =  [] if is_special_node else cells[nid]['params'] %}
+        - name: {{ task_name }}
+          {% if deps_dag[nid]|length > 0 %}
+          dependencies: [{% for d in deps_dag[nid] %} {{ d['task_name'] }}{% if not loop.last %},{% endif %} {% endfor %}]
+          {% endif %}
+          template: {{ task_name }}-tmp
+          {% if deps_dag[nid]|length > 0 or params|length > 0 %}
+          arguments:
+            parameters:
+            {% for d in deps_dag[nid] %}
+            - {name: {{ d['port_id'] }}, value: {% if d['scaling'] %}{{ '"{{item}}"' }}{% else %}{{ '"{{=jsonpath(tasks[\'' }}{{ d['task_name'] }}{{ '\'].outputs.result, \'$.'}}{{ d['port_id'] }}{{'\')}}"' }}{% endif %}}
+            {% endfor %}
+            {% for p in params %}
+            - {name: {{ p }}, value: {{ '"{{workflow.parameters.' }}{{ p }}{{ '}}"' }}}
+            {% endfor %}
+          {% for d in deps_dag[nid] %}
+          {% if d['type'] == "splitter" %}
+          withParam: {{ '"{{tasks.' }}{{ d['task_name'] }}{{ '.outputs.result}}"' }}
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+        {% endfor %}
+
+    {% for nid in nodes %}
+    {% set is_special_node = nodes[nid]['type'] %}
+    {% set task_name =  nodes[nid]['type'] + "_" + nid if is_special_node else cells[nid]['task_name'] %}
+    {% set params =  [] if is_special_node else cells[nid]['params'] %}
+    - name: {{ task_name }}-tmp
+      {% if deps_dag[nid]|length > 0 %}
+      inputs:
+        parameters:
+        {% for d in deps_dag[nid] %}
+        - name: {{ d['port_id'] }}
+        {% endfor %}
+        {% for p in params %}
+        - name: {{ p }}
+        {% endfor %}
+      {% endif %}
+      container:
+        image: "qcdis/{{ task_name }}"
+        command: ["/bin/bash", "-c"]
+        args:
+          - source /venv/bin/activate; python {{ task_name }}.py{{ ";" if deps_dag[nid]|length == 0 and params|length == 0}}
+            {% for d in deps_dag[nid] %}
+            --{{ d['port_id'] }}{{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }}{{ ";" if loop.last and params|length == 0}}
+            {% endfor %}
+            {% for p in params %}
+            --{{ p }}{{ " {{workflow.parameters." }}{{ p }}{{ "}}" }}{{ ";" if loop.last }}
+            {% endfor %}
+    {% endfor %}
