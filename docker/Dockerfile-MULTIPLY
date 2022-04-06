@@ -43,7 +43,7 @@ RUN rm -r BRDF_descriptors
 #RUN git clone https://github.com/bcdev/calvalus-instances
 
 
-RUN cat 'from multiply_data_access import DataAccessComponent' > test.py
+RUN echo 'from multiply_data_access import DataAccessComponent' > test.py
 RUN python test.py
 #====================================
 
