@@ -1,198 +1,197 @@
-_libgcc_mutex
-_openmp_mutex
-absl-py
-alabaster
-astor
-atomicwrites
-attrs
-babel
-backcall
-beautifulsoup4
-blas
-bleach
-boost-cpp
-branca
-bzip2
-c-ares
-ca-certificates
-cairo
-certifi
-cffi
-cfitsio
-cftime
-chardet
-click
-click-plugins
-cligj
-cloudpickle
-colorama
-commonmark
-coverage
-cryptography
-curl
-cycler
-cytoolz
-dask-core
-dbus
-decorator
-defusedxml
-docutils
-entrypoints
-expat
-fiona
-fontconfig
-freetype
-freexl
-future
-gast
-gdal
-geojson
-geopandas
-geos
-geotiff
-gettext
-giflib
-glib
-grpcio
-gst-plugins-base
-gstreamer
-h5py
-hdf4
-hdf5
-html5lib
-icu
-idna
-imageio
-imagesize
-importlib_metadata
-inflect
-inflection
-# ipykernel
-# ipyleaflet
-# ipython
-# ipython_genutils
-# ipywidgets
-jaraco.itertools
-jedi
-jinja2
-jpeg
-json-c
-jsonschema
-kealib
-keras-applications
-keras-preprocessing
-kiwisolver
-krb5
-latexcodec
-libblas
-libcblas
-libcurl
-libdap4
-libedit
-libffi
-libgcc-ng
-libgdal
-libgfortran-ng
-libgomp
-libiconv
-libkml
-liblapack
-liblapacke
-libllvm8
-libnetcdf
-libopenblas
-libpng
-libpq
-libprotobuf
-libsodium
-libspatialindex
-libspatialite
-libssh2
-libstdcxx-ng
-libtiff
-libuuid
-libxcb
-libxml2
-libxslt
-lightgbm
-llvmlite
-lxml
-lz4-c
-markdown
-markupsafe
-matplotlib
-matplotlib-base
-mistune
-mock
-more-itertools
-munch
-nbconvert
-nbformat
-ncurses
-netcdf4
-networkx
-nodejs
-numba
-numpy
-olefile
-openblas
-openjpeg
-openssl
-oset
-packaging
-pandas
-pandoc
-pandocfilters
-parso
-pbr
-pcre
-pexpect
-pickleshare
-pillow
-pip
-pixman
-pluggy
-poppler
-poppler-data
-postgresql
-proj4
-prometheus_client
-prompt_toolkit
-protobuf
-psutil
-pthread-stubs
-ptyprocess
-py
-pybtex
-pybtex-docutils
-pycparser
-pygments
-pyopenssl
-pyparsing
-pyproj
-pyqt
-pyrsistent
-pysocks
-pytest
-pytest-cov
-python
-python-dateutil
-pytz
-pywavelets
-pyyaml
-pyzmq
-qt
-qtconsole
-readline
-recommonmark
-requests
-rtree
-scikit-image
-scikit-learn
-scipy
-send2trash
-setuptools
-shapely
+# _libgcc_mutex
+# _openmp_mutex
+# absl-py
+# alabaster
+# astor
+# atomicwrites
+# attrs
+# babel
+# backcall
+# beautifulsoup4
+# blas
+# bleach
+# boost-cpp
+# branca
+# bzip2
+# c-ares
+# ca-certificates
+# cairo
+# certifi
+# cffi
+# cfitsio
+# cftime
+# chardet
+# click
+# click-plugins
+# cligj
+# cloudpickle
+# colorama
+# commonmark
+# coverage
+# cryptography
+# curl
+# cycler
+# cytoolz
+# dask-core
+# dbus
+# decorator
+# defusedxml
+# docutils
+# entrypoints
+# expat
+# fiona
+# fontconfig
+# freetype
+# freexl
+# future
+# gast
+# geojson
+# geopandas
+# geos
+# geotiff
+# gettext
+# giflib
+# glib
+# grpcio
+# gst-plugins-base
+# gstreamer
+# h5py
+# hdf4
+# hdf5
+# html5lib
+# icu
+# idna
+# imageio
+# imagesize
+# importlib_metadata
+# inflect
+# inflection
+# # ipykernel
+# # ipyleaflet
+# # ipython
+# # ipython_genutils
+# # ipywidgets
+# jaraco.itertools
+# jedi
+# jinja2
+# jpeg
+# json-c
+# jsonschema
+# kealib
+# keras-applications
+# keras-preprocessing
+# kiwisolver
+# krb5
+# latexcodec
+# libblas
+# libcblas
+# libcurl
+# libdap4
+# libedit
+# libffi
+# libgcc-ng
+# libgdal
+# libgfortran-ng
+# libgomp
+# libiconv
+# libkml
+# liblapack
+# liblapacke
+# libllvm8
+# libnetcdf
+# libopenblas
+# libpng
+# libpq
+# libprotobuf
+# libsodium
+# libspatialindex
+# libspatialite
+# libssh2
+# libstdcxx-ng
+# libtiff
+# libuuid
+# libxcb
+# libxml2
+# libxslt
+# lightgbm
+# llvmlite
+# lxml
+# lz4-c
+# markdown
+# markupsafe
+# matplotlib
+# matplotlib-base
+# mistune
+# mock
+# more-itertools
+# munch
+# nbconvert
+# nbformat
+# ncurses
+# netcdf4
+# networkx
+# nodejs
+# numba
+# numpy
+# olefile
+# openblas
+# openjpeg
+# openssl
+# oset
+# packaging
+# pandas
+# pandoc
+# pandocfilters
+# parso
+# pbr
+# pcre
+# pexpect
+# pickleshare
+# pillow
+# pip
+# pixman
+# pluggy
+# poppler
+# poppler-data
+# postgresql
+# proj4
+# prometheus_client
+# prompt_toolkit
+# protobuf
+# psutil
+# pthread-stubs
+# ptyprocess
+# py
+# pybtex
+# pybtex-docutils
+# pycparser
+# pygments
+# pyopenssl
+# pyparsing
+# pyproj
+# pyqt
+# pyrsistent
+# pysocks
+# pytest
+# pytest-cov
+# python
+# python-dateutil
+# pytz
+# pywavelets
+# pyyaml
+# pyzmq
+# qt
+# qtconsole
+# readline
+# recommonmark
+# requests
+# rtree
+# scikit-image
+# scikit-learn
+# scipy
+# send2trash
+# setuptools
+# shapely
 # sip=4.19.8=py36hf484d3e_1000
 # six=1.12.0=py36_1001
 # snowballstemmer=2.0.0=py_0
