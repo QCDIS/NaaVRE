@@ -40,7 +40,59 @@ RUN python setup.py install
 WORKDIR ../
 RUN rm -r BRDF_descriptors
 
-#RUN git clone https://github.com/bcdev/calvalus-instances
+RUN git clone https://github.com/JorisTimmermans/data-access.git
+WORKDIR data-access
+RUN python setup.py develop
+WORKDIR ../
+RUN rm -r data-access
+
+
+RUN git clone https://github.com/multiply-org/inference-engine.git
+WORKDIR inference-engine
+RUN python setup.py develop
+WORKDIR ../
+RUN rm -r inference-engine
+
+
+RUN git clone https://github.com/multiply-org/kaska.git
+WORKDIR kaska
+RUN python setup.py develop
+WORKDIR ../
+RUN rm -r kaska
+
+
+RUN git clone https://github.com/multiply-org/KaFKA-InferenceEngine.git
+WORKDIR KaFKA-InferenceEngine
+RUN python setup.py develop
+WORKDIR ../
+RUN rm -r KaFKA-InferenceEngine
+
+RUN git clone https://github.com/JorisTimmermans/multiply-core.git
+WORKDIR multiply-core
+RUN python setup.py develop
+WORKDIR ../
+RUN rm -r multiply-core
+
+
+RUN git clone https://github.com/multiply-org/MULTIPLYVisualisation.git
+WORKDIR MULTIPLYVisualisation
+RUN python setup.py develop
+WORKDIR ../
+RUN rm -r MULTIPLYVisualisation
+
+RUN git clone https://github.com/multiply-org/sar-pre-processing.git
+WORKDIR sar-pre-processing
+RUN python setup.py develop
+WORKDIR ../
+RUN rm -r sar-pre-processing
+
+RUN git clone https://github.com/JorisTimmermans/vm-support.git
+WORKDIR vm-support
+RUN python setup.py develop
+WORKDIR ../
+RUN rm -r vm-support
+
+
 
 
 RUN echo 'from multiply_data_access import DataAccessComponent' > test.py
