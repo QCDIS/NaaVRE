@@ -2,7 +2,7 @@ FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e
 
 USER root
 
-RUN apt-get update --allow-releaseinfo-change && apt-get -y install git unzip
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install git unzip gcc g++
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
@@ -24,12 +24,9 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
 
 #========= Install_environments =======
 #RUN git clone https://github.com/JorisTimmermans/Deploy_MULTIPLY.git
-#WORKDIR Deploy_MULTIPLY
-COPY MULTIPLY_conda_requirements.txt .
-COPY MULTIPLY_pip_requirements.txt .
 RUN conda update --all
-RUN conda install --no-pin --channel conda-forge --channel defaults --file MULTIPLY_conda_requirements.txt
-RUN pip install -r MULTIPLY_pip_requirements.txt
+RUN conda install --yes -c conda-forge pdal python-pdal gdal
+#RUN pip install -r MULTIPLY_pip_requirements.txt
 #====================================
 #========= multiply_modules =======
 RUN git clone https://github.com/JorisTimmermans/atmospheric_correction.git
