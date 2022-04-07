@@ -402,6 +402,7 @@ class ExportWorkflowHandler(APIHandler):
 
         parser = WorkflowParser(nodes, links)
         cells = parser.get_workflow_cells()
+
         deps_dag = parser.get_dependencies_dag()
 
         for nid, cell in cells.items():
