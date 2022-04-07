@@ -175,8 +175,13 @@ class CellsHandler(APIHandler, Catalog):
             if parm_name not in current_cell.types:
                 logger.error(parm_name + ' has not type')
                 msg_json = dict(title=parm_name + ' has not type')
-                self.write(msg_json)
-                raise tornado.web.HTTPError(400, reason=parm_name + ' has not type')
+                self.set_status(400)
+                self.write(parm_name + ' has not type')
+                self.write_error(parm_name + ' has not type')
+                self.flush()
+                # or self.render("error.html", reason="You're not authorized"))
+                return
+                # raise tornado.web.HTTPError(400, reason=parm_name + ' has not type')
 
         compiled_code = template_cell.render(cell=current_cell, deps=deps, types=current_cell.types, confs=confs)
         compiled_code = autopep8.fix_code(compiled_code)
@@ -231,6 +236,14 @@ class CellsHandler(APIHandler, Catalog):
         template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
 
         token = Catalog.get_gh_token()
+        if not token:
+            self.set_status(400)
+            self.write('Github token not set!')
+            self.write_error('Github token not set!')
+            self.flush()
+            # or self.render("error.html", reason="You're not authorized"))
+            return
+
         gh = login(token=token['token'])
         repository = gh.repository('QCDIS', 'NaaVRE-container-prestage')
 
@@ -395,6 +408,7 @@ class ExportWorkflowHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
+        print(payload)
         global_params = []
 
         nodes = payload['nodes']

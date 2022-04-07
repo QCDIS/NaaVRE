@@ -9,7 +9,7 @@ from tornado.escape import to_unicode
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 
-from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, GithubAuthHandler
+from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, GithubAuthHandler, ExportWorkflowHandler
 from jupyterlab_vre.faircell import Cell
 from jupyterlab_vre.storage.catalog import Catalog
 
@@ -18,6 +18,7 @@ def delete_all_cells():
     for cell in Catalog.get_all_cells():
         print(cell)
         Catalog.delete_cell_from_title(cell['title'])
+
 
 class HandlersAPITest(AsyncHTTPTestCase):
 
@@ -28,7 +29,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
         self.app = Application([('/extractorhandler', ExtractorHandler),
                                 ('/typeshandler', TypesHandler),
                                 ('/cellshandler', CellsHandler),
-                                ('/githubauthhandler', GithubAuthHandler)
+                                ('/githubauthhandler', GithubAuthHandler),
+                                ('/exportworkflowhandler', ExportWorkflowHandler),
                                 ],
                                cookie_secret='asdfasdf')
         return self.app
@@ -77,7 +79,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
         response_body = json.loads(to_unicode(response.body))
         self.assertNotEqual(response_body, None)
 
-
     def test_cellshandler_post_deprecated_modules(self):
         cell_index = 0
         git_token = 'test_token'
@@ -90,5 +91,18 @@ class HandlersAPITest(AsyncHTTPTestCase):
             response = self.fetch('/cellshandler', method='POST', body=json.dumps(payload))
 
         # delete_all_cells()
-        response_body = json.loads(to_unicode(response.body))
-        self.assertNotEqual(response_body, None)
+
+    def post_wf(self, payload=None):
+        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+            m.return_value = 'cookie'
+            response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
+
+    # def test_exportworkflowhandler_post_plitter(self):
+    #     with open('./resources/workflows/splitter.json', "r") as read_file:
+    #         payload = json.load(read_file)
+    #     self.post_wf(payload=payload)
+
+    def test_exportworkflowhandler_post_merger(self):
+        with open('./resources/workflows/merger.json', "r") as read_file:
+            payload = json.load(read_file)
+        self.post_wf(payload=payload)
