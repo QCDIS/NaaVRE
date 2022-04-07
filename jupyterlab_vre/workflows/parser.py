@@ -46,7 +46,7 @@ class WorkflowParser:
             from_node = self.nodes[link['from']['nodeId']]
 
             from_special_node = (from_node['type'] == 'merger' or from_node['type'] == 'splitter')
-            task_name = f'{from_node["type"]}_{from_node["id"][:7]}' if from_special_node else Catalog.get_cell_from_og_node_id(
+            task_name = f'{from_node["type"]}-{from_node["id"][:7]}' if from_special_node else Catalog.get_cell_from_og_node_id(
                 self.__get_og_node_id(from_node['id']))['task_name']
 
             self.dependencies[to_node['id']].append({

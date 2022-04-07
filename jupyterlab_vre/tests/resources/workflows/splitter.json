@@ -5,11 +5,11 @@
   },
   "scale": 1,
   "nodes": {
-    "1d00f409-f33d-4f5a-ab80-529d13c3c003": {
-      "id": "1d00f409-f33d-4f5a-ab80-529d13c3c003",
+    "60a799ad-b729-47c5-b568-d0f1debb4f7f": {
+      "id": "60a799ad-b729-47c5-b568-d0f1debb4f7f",
       "position": {
-        "x": 130,
-        "y": 285
+        "x": 46.51666259765625,
+        "y": 68
       },
       "orientation": 0,
       "type": "input-output",
@@ -27,7 +27,7 @@
         }
       },
       "properties": {
-        "title": "Fetch Laz Files 30-03-22",
+        "title": "Fetch Laz Files 01-04-22",
         "vars": [
           {
             "name": "laz_files",
@@ -37,15 +37,15 @@
           }
         ],
         "params": [
+          "param_login",
           "param_hostname",
-          "param_password",
-          "param_login"
+          "param_password"
         ],
         "inputs": [],
         "outputs": [
           "laz_files"
         ],
-        "og_node_id": "72cea5b",
+        "og_node_id": "e4f5338",
         "deps": [
           "",
           "laserfarm"
@@ -56,11 +56,11 @@
         "height": 100
       }
     },
-    "af9fafda-b147-4a86-aa76-865a1535b4e3": {
-      "id": "af9fafda-b147-4a86-aa76-865a1535b4e3",
+    "d9c3fc4c-cffc-49c1-b031-b3afe345a0aa": {
+      "id": "d9c3fc4c-cffc-49c1-b031-b3afe345a0aa",
       "position": {
-        "x": 754,
-        "y": 165
+        "x": 570.5166625976562,
+        "y": 50
       },
       "orientation": 0,
       "type": "input-output",
@@ -89,7 +89,7 @@
         }
       },
       "properties": {
-        "title": "Retiling 30-03-22",
+        "title": "Retiling 01-04-22",
         "vars": [
           {
             "name": "laz_files",
@@ -105,9 +105,9 @@
           }
         ],
         "params": [
-          "param_hostname",
+          "param_login",
           "param_password",
-          "param_login"
+          "param_hostname"
         ],
         "inputs": [
           "laz_files"
@@ -115,7 +115,7 @@
         "outputs": [
           "remote_path_retiled"
         ],
-        "og_node_id": "d60deaa",
+        "og_node_id": "9077baf",
         "deps": [
           "",
           "laserfarm"
@@ -126,11 +126,175 @@
         "height": 100
       }
     },
-    "6f04b210-3252-403c-ae8a-316d5d9fcef2": {
-      "id": "6f04b210-3252-403c-ae8a-316d5d9fcef2",
+    "843c2303-e364-4666-86de-cf314efb901a": {
+      "id": "843c2303-e364-4666-86de-cf314efb901a",
       "position": {
-        "x": 439,
-        "y": 288
+        "x": 324.51666259765625,
+        "y": 51
+      },
+      "orientation": 0,
+      "type": "splitter",
+      "ports": {
+        "splitter_source": {
+          "id": "splitter_source",
+          "type": "left",
+          "properties": {
+            "special_node": 1,
+            "color": "#000000"
+          },
+          "position": {
+            "x": 0.5,
+            "y": 50.5
+          }
+        },
+        "splitter_target": {
+          "id": "splitter_target",
+          "type": "right",
+          "properties": {
+            "special_node": 1,
+            "color": "#000000"
+          },
+          "position": {
+            "x": 199.5,
+            "y": 50.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Splitter",
+        "scalingFactor": 1
+      },
+      "size": {
+        "width": 200,
+        "height": 100
+      }
+    },
+    "c27e91a1-5647-4e08-8550-bd8ddffedeaa": {
+      "id": "c27e91a1-5647-4e08-8550-bd8ddffedeaa",
+      "position": {
+        "x": 63.51666259765625,
+        "y": 214
+      },
+      "orientation": 0,
+      "type": "input-output",
+      "ports": {
+        "tiles": {
+          "properties": {
+            "color": "#406abf"
+          },
+          "id": "tiles",
+          "type": "left",
+          "position": {
+            "x": 0.5,
+            "y": 50.5
+          }
+        },
+        "features": {
+          "properties": {
+            "color": "#1f7a93"
+          },
+          "id": "features",
+          "type": "right",
+          "position": {
+            "x": 199.5,
+            "y": 50.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Feature Extraction 01-04-22",
+        "vars": [
+          {
+            "name": "tiles",
+            "direction": "input",
+            "type": "datatype",
+            "color": "#406abf"
+          },
+          {
+            "name": "features",
+            "direction": "output",
+            "type": "datatype",
+            "color": "#1f7a93"
+          }
+        ],
+        "params": [
+          "param_login",
+          "param_password",
+          "param_hostname"
+        ],
+        "inputs": [
+          "tiles"
+        ],
+        "outputs": [
+          "features"
+        ],
+        "og_node_id": "d3d703c",
+        "deps": [
+          "",
+          "laserfarm"
+        ]
+      },
+      "size": {
+        "width": 200,
+        "height": 100
+      }
+    },
+    "60c53580-cf4d-4071-bdf7-af3cb1ecf7c3": {
+      "id": "60c53580-cf4d-4071-bdf7-af3cb1ecf7c3",
+      "position": {
+        "x": 645.5166625976562,
+        "y": 210
+      },
+      "orientation": 0,
+      "type": "input-output",
+      "ports": {
+        "features": {
+          "properties": {
+            "color": "#1f7a93"
+          },
+          "id": "features",
+          "type": "left",
+          "position": {
+            "x": 0.5,
+            "y": 50.5
+          }
+        }
+      },
+      "properties": {
+        "title": "GeoTIFF Export 01-04-22",
+        "vars": [
+          {
+            "name": "features",
+            "direction": "input",
+            "type": "datatype",
+            "color": "#1f7a93"
+          }
+        ],
+        "params": [
+          "param_login",
+          "param_password",
+          "param_hostname"
+        ],
+        "inputs": [
+          "features"
+        ],
+        "outputs": [],
+        "og_node_id": "eeae72e",
+        "deps": [
+          "",
+          "laserfarm"
+        ]
+      },
+      "size": {
+        "width": 200,
+        "height": 100
+      }
+    },
+    "a8007533-75e1-4a0c-8ccf-3cea877ad816": {
+      "id": "a8007533-75e1-4a0c-8ccf-3cea877ad816",
+      "position": {
+        "x": 364.51666259765625,
+        "y": 219
       },
       "orientation": 0,
       "type": "splitter",
@@ -171,26 +335,59 @@
     }
   },
   "links": {
-    "d867ad70-da7c-4558-80e1-7908b903ffbc": {
-      "id": "d867ad70-da7c-4558-80e1-7908b903ffbc",
+    "03b31f7e-390f-4829-910a-fbce434abb5c": {
+      "id": "03b31f7e-390f-4829-910a-fbce434abb5c",
       "from": {
-        "nodeId": "1d00f409-f33d-4f5a-ab80-529d13c3c003",
+        "nodeId": "60a799ad-b729-47c5-b568-d0f1debb4f7f",
         "portId": "laz_files"
       },
       "to": {
-        "nodeId": "6f04b210-3252-403c-ae8a-316d5d9fcef2",
+        "nodeId": "843c2303-e364-4666-86de-cf314efb901a",
         "portId": "splitter_source"
       }
     },
-    "e4442d91-952b-4a5e-bd26-df833ab12d41": {
-      "id": "e4442d91-952b-4a5e-bd26-df833ab12d41",
+    "730f37d1-ea78-4d4f-81bf-4cf5a73bde12": {
+      "id": "730f37d1-ea78-4d4f-81bf-4cf5a73bde12",
       "from": {
-        "nodeId": "6f04b210-3252-403c-ae8a-316d5d9fcef2",
+        "nodeId": "843c2303-e364-4666-86de-cf314efb901a",
         "portId": "splitter_target"
       },
       "to": {
-        "nodeId": "af9fafda-b147-4a86-aa76-865a1535b4e3",
+        "nodeId": "d9c3fc4c-cffc-49c1-b031-b3afe345a0aa",
         "portId": "laz_files"
+      }
+    },
+    "146ac39c-a0ff-4ad2-bba0-82991a81f0b9": {
+      "id": "146ac39c-a0ff-4ad2-bba0-82991a81f0b9",
+      "from": {
+        "nodeId": "d9c3fc4c-cffc-49c1-b031-b3afe345a0aa",
+        "portId": "remote_path_retiled"
+      },
+      "to": {
+        "nodeId": "c27e91a1-5647-4e08-8550-bd8ddffedeaa",
+        "portId": "tiles"
+      }
+    },
+    "34c7548f-d10e-4401-847c-6a9dfc89c0e3": {
+      "id": "34c7548f-d10e-4401-847c-6a9dfc89c0e3",
+      "from": {
+        "nodeId": "c27e91a1-5647-4e08-8550-bd8ddffedeaa",
+        "portId": "features"
+      },
+      "to": {
+        "nodeId": "a8007533-75e1-4a0c-8ccf-3cea877ad816",
+        "portId": "splitter_source"
+      }
+    },
+    "d3a9d20b-5133-4696-acbf-62d39d4f9b0d": {
+      "id": "d3a9d20b-5133-4696-acbf-62d39d4f9b0d",
+      "from": {
+        "nodeId": "a8007533-75e1-4a0c-8ccf-3cea877ad816",
+        "portId": "splitter_target"
+      },
+      "to": {
+        "nodeId": "60c53580-cf4d-4071-bdf7-af3cb1ecf7c3",
+        "portId": "features"
       }
     }
   },

@@ -97,12 +97,12 @@ class HandlersAPITest(AsyncHTTPTestCase):
             m.return_value = 'cookie'
             response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
 
-    # def test_exportworkflowhandler_post_plitter(self):
-    #     with open('./resources/workflows/splitter.json', "r") as read_file:
-    #         payload = json.load(read_file)
-    #     self.post_wf(payload=payload)
-
-    def test_exportworkflowhandler_post_merger(self):
-        with open('./resources/workflows/merger.json', "r") as read_file:
+    def test_exportworkflowhandler_post_plitter(self):
+        with open('./resources/workflows/splitter.json', "r") as read_file:
             payload = json.load(read_file)
         self.post_wf(payload=payload)
+
+    # def test_exportworkflowhandler_post_merger(self):
+    #     with open('./resources/workflows/merger.json', "r") as read_file:
+    #         payload = json.load(read_file)
+    #     self.post_wf(payload=payload)
