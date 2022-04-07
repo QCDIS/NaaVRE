@@ -24,18 +24,23 @@ from jupyterlab_vre.workflows.parser import WorkflowParser
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-
-module_name_mapping = {'fnmatch': 'fnmatch2'}
-
+module_mapping = {'fnmatch': 'fnmatch2'}
 standard_library = ['pathlib', 'time']
 
 standard_library_names_path = os.path.join(str(Path.home()), 'NaaVRE', 'standard_library_names.json')
 if not os.path.exists(standard_library_names_path):
     with open(standard_library_names_path, "w") as write_file:
         json.dump(standard_library, write_file, indent=4)
-
 f = open(standard_library_names_path)
 part_of_standard_library = json.load(f)
+
+
+module_name_mapping_path = os.path.join(str(Path.home()), 'NaaVRE', 'module_name_mapping.json')
+if not os.path.exists(module_name_mapping_path):
+    with open(module_name_mapping_path, "w") as write_file:
+        json.dump(module_mapping, write_file, indent=4)
+f = open(module_name_mapping_path)
+module_name_mapping = json.load(f)
 
 
 ################################################################################
