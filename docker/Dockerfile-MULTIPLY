@@ -93,14 +93,6 @@ RUN python setup.py develop
 WORKDIR ../
 RUN rm -r vm-support
 
-
-RUN git clone https://github.com/multiply-org/data-access.git
-WORKDIR data-access
-RUN python setup.py install --user
-WORKDIR ../
-RUN rm -r data-access
-
-
 RUN echo 'from multiply_data_access import DataAccessComponent' > test.py
 RUN python test.py
 #====================================
