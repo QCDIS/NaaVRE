@@ -1,5 +1,5 @@
+python=3.6
 gdal=2.4.2=py36h5f563d9_8
-
 # _libgcc_mutex
 # _openmp_mutex
 # absl-py
