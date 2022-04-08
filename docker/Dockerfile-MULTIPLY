@@ -94,7 +94,7 @@ WORKDIR ../
 RUN rm -r vm-support
 
 RUN echo 'from multiply_data_access import DataAccessComponent' > test.py
-RUN python test.py
+RUN #python test.py
 #====================================
 
 
