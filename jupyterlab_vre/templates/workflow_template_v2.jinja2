@@ -34,7 +34,7 @@ spec:
             {% endfor %}
           {% for d in deps_dag[nid] %}
           {% if d['type'] == "splitter" %}
-          withParam: {{ '"{{tasks.' }}{{ d['task_name'] }}{{ '.outputs.parameters.' }}{{ d['port_id'] }}{{'}}"'}}
+          withParam: {{ '"{{tasks.' }}{{ d['task_name'] }}{{ '.outputs.result' }}{{'}}"'}}
           {% endif %}
           {% endfor %}
           {% endif %}
@@ -56,6 +56,7 @@ spec:
         - name: {{ p }}
         {% endfor %}
       {% endif %}
+      {% if not nodes[nid]['type'] == 'splitter' %}
       outputs:
         parameters:
         {% for p in ports %}
@@ -65,21 +66,39 @@ spec:
               path: /tmp/{{ ports[p]['id'] }}.json
         {% endif %}
         {% endfor %}
-      container:
-        {% if is_special_node %}
-        image: alpine:latest
-        command: [sh, -c]
-        args: ["echo {{ task_name }}"]
+      {% endif %}
+      {% if is_special_node %}
+        {% set special_dep = deps_dag[nid][0] %}
+      script:
+        image: python:alpine3.9
+        command: [python]
+        source: |
+          import json
+          {{ special_dep['port_id'] }} = {{ '{{inputs.parameters.' }}{{ special_dep['port_id'] }}{{ '}}' }}
+        {% if nodes[nid]['type'] == 'splitter' %}
+          {# Splitter logic #}
+          print(json.dumps({{ special_dep['port_id'] }}))
         {% else %}
+          {% for p in ports %}
+          {% if ports[p]['type'] == 'right' %}
+          {# Merger logic #}
+          f_out = open("/tmp/{{ports[p]['id']}}.json", "w")
+          f_out.write(json.dumps({{special_dep['port_id']}}))
+          f_out.close()
+          {% endif %}
+          {% endfor %}
+        {% endif %}
+      {% else %}
+      container:
         image: "qcdis/{{ task_name }}"
         command: ["/bin/bash", "-c"]
         args:
           - source /venv/bin/activate; python {{ task_name }}.py{{ ";" if deps_dag[nid]|length == 0 and params|length == 0}}
             {% for d in deps_dag[nid] %}
-            --{{ d['port_id'] }}{{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }}{{ ";" if loop.last and params|length == 0}}
+            --{{ d['port_id'] }}{{ ' "{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}"' }}{{ ";" if loop.last and params|length == 0}}
             {% endfor %}
             {% for p in params %}
-            --{{ p }}{{ " {{workflow.parameters." }}{{ p }}{{ "}}" }}{{ ";" if loop.last }}
+            --{{ p }}{{ ' "{{workflow.parameters.' }}{{ p }}{{ '}}"' }}{{ ";" if loop.last }}
             {% endfor %}
-        {% endif %}
+      {% endif %}
     {% endfor %}

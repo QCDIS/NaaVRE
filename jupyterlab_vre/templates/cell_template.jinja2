@@ -32,15 +32,10 @@ args = arg_parser.parse_args()
 {{ cell.original_source }}
 
 {% if cell.outputs|length > 0 %}
-{% if cell.outputs|length == 1 and types[cell.outputs.0] == 'list' %}
 import json
-print(json.dumps({{cell.outputs.0 }}))
-{% else %}
-import json
-outs = {}
-{% for out_var in cell.outputs|sort %}
-outs['{{ out_var }}'] = {{ out_var }}
+{% for out in cell.outputs %}
+file_{{out}} = open("/tmp/{{out}}.json", "w")
+file_{{out}}.write(json.dumps({{out}}))
+file_{{out}}.close()
 {% endfor %}
-print(json.dumps(outs))
-{% endif %}
 {% endif %}
