@@ -96,7 +96,7 @@ RUN rm -r vm-support
 
 RUN git clone https://github.com/multiply-org/data-access.git
 WORKDIR data-access
-RUN python setup.py install -user
+RUN python setup.py install --user
 WORKDIR ../
 RUN rm -r data-access
 
