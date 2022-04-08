@@ -24,8 +24,7 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
 
 #========= Install_environments =======
 #RUN git clone https://github.com/JorisTimmermans/Deploy_MULTIPLY.git
-COPY MULTIPLY_conda_requirements.txt .
-RUN conda install -c conda-forge --file MULTIPLY_conda_requirements.txt
+RUN conda install -c conda-forge pdal python-pdal gdal
 #RUN pip install -r MULTIPLY_pip_requirements.txt
 #====================================
 #========= multiply_modules =======
@@ -54,11 +53,19 @@ RUN python setup.py develop
 WORKDIR ../
 RUN rm -r inference-engine
 
-RUN git clone https://github.com/multiply-org/kaska.git
-WORKDIR kaska
+
+RUN git clone https://github.com/JorisTimmermans/multiply-core.git
+WORKDIR multiply-core
 RUN python setup.py develop
 WORKDIR ../
-RUN rm -r kaska
+RUN rm -r multiply-core
+
+
+#RUN git clone https://github.com/multiply-org/kaska.git
+#WORKDIR kaska
+#RUN python setup.py develop
+#WORKDIR ../
+#RUN rm -r kaska
 
 
 RUN git clone https://github.com/multiply-org/KaFKA-InferenceEngine.git
@@ -66,12 +73,6 @@ WORKDIR KaFKA-InferenceEngine
 RUN python setup.py develop
 WORKDIR ../
 RUN rm -r KaFKA-InferenceEngine
-
-RUN git clone https://github.com/JorisTimmermans/multiply-core.git
-WORKDIR multiply-core
-RUN python setup.py develop
-WORKDIR ../
-RUN rm -r multiply-core
 
 
 RUN git clone https://github.com/multiply-org/MULTIPLYVisualisation.git
