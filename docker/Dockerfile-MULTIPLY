@@ -55,6 +55,7 @@ RUN rm -r inference-engine
 
 
 RUN conda install -c conda-forge gdal
+RUN conda update -n base conda
 
 RUN git clone https://github.com/multiply-org/kaska.git
 WORKDIR kaska
