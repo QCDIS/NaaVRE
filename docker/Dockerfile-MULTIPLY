@@ -74,12 +74,12 @@ RUN python setup.py develop
 WORKDIR ../
 RUN rm -r KaFKA-InferenceEngine
 
-
-RUN git clone https://github.com/multiply-org/MULTIPLYVisualisation.git
-WORKDIR MULTIPLYVisualisation
-RUN python setup.py develop
-WORKDIR ../
-RUN rm -r MULTIPLYVisualisation
+#
+#RUN git clone https://github.com/multiply-org/MULTIPLYVisualisation.git
+#WORKDIR MULTIPLYVisualisation
+#RUN python setup.py develop
+#WORKDIR ../
+#RUN rm -r MULTIPLYVisualisation
 
 RUN git clone https://github.com/multiply-org/sar-pre-processing.git
 WORKDIR sar-pre-processing
