@@ -1,39 +1,46 @@
-import os
-
-import tornado
-from github3 import login
-import tarfile
 import copy
-from pathlib import Path
 import json
-import shutil
-from requests.models import HTTPBasicAuth
-import yaml
+import logging
+import os
 import uuid
-import requests
-from jupyterlab_vre.github.gh_credentials import GHCredentials
-import nbformat as nb
+from pathlib import Path
+
 import autopep8
+import nbformat as nb
+import requests
+from github3 import login
+from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
 from tornado import web
-from datetime import datetime, timedelta
-from jupyterlab_vre.extractor.extractor import Extractor
+
 from jupyterlab_vre.converter.converter import ConverterReactFlowChart
+from jupyterlab_vre.extractor.extractor import Extractor
+from jupyterlab_vre.faircell import Cell
+from jupyterlab_vre.github.gh_credentials import GHCredentials
 from jupyterlab_vre.sdia.sdia import SDIA
 from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
-from jupyterlab_vre.faircell import Cell
 from jupyterlab_vre.storage.catalog import Catalog
-from jupyterlab_vre.storage.azure import AzureStorage
 from jupyterlab_vre.workflows.parser import WorkflowParser
-from jinja2 import Environment, PackageLoader, FileSystemLoader
-import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+module_mapping = {'fnmatch': 'fnmatch2'}
+standard_library = ['pathlib', 'time']
 
-module_name_mapping = {'fnmatch': 'fnmatch2'}
+standard_library_names_path = os.path.join(str(Path.home()), 'NaaVRE', 'standard_library_names.json')
+if not os.path.exists(standard_library_names_path):
+    with open(standard_library_names_path, "w") as write_file:
+        json.dump(standard_library, write_file, indent=4)
+f = open(standard_library_names_path)
+part_of_standard_library = json.load(f)
 
-part_of_standard_library = ['pathlib']
+
+module_name_mapping_path = os.path.join(str(Path.home()), 'NaaVRE', 'module_name_mapping.json')
+if not os.path.exists(module_name_mapping_path):
+    with open(module_name_mapping_path, "w") as write_file:
+        json.dump(module_mapping, write_file, indent=4)
+f = open(module_name_mapping_path)
+module_name_mapping = json.load(f)
 
 
 ################################################################################
