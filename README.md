@@ -2,9 +2,7 @@
 
 This is a quick start guide to use the NaaVRE.
 
-A video version can be found here:
-
-<vimeo-embed embed="203909195"></vimeo-embed>
+A video version can be found [here](https://vimeo.com/698380137)
 
 ## Log in to NaaVRE
 
