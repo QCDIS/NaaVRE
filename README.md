@@ -1,25 +1,14 @@
-[![Build container](https://github.com/QCDIS/NaaVRE/actions/workflows/build-container.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/build-container.yml)
-[![Build wheel](https://github.com/QCDIS/NaaVRE/actions/workflows/build-wheel.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/build-wheel.yml)
-[![make](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml)
-[![make relese](https://github.com/QCDIS/NaaVRE/actions/workflows/make-relese.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/make-relese.yml)
-[![registry push](https://github.com/QCDIS/NaaVRE/actions/workflows/registry-push.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/registry-push.yml)
-[![save wheel file](https://github.com/QCDIS/NaaVRE/actions/workflows/save-wheel-in-release.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/save-wheel-in-release.yml)
-
-# Jupyter Lab VRE
-
-Jupyter Lab extension for virtual research environments.
-
----
-
-**NOTE**
-
-The extension is currently under an early stage of development.
-
----
-
 # Getting started with NaaVRE
 
-This is a quick start guide to run the NaaVRE in a local environment without any cloud resources.
+This is a quick start guide to use the NaaVRE. 
+
+
+## Log in to NaaVRE
+Go to one of the deployed NaaVREs!
+[NaaVRE_1](https://user-images.githubusercontent.com/9680609/162737176-40a0f99c-914a-430e-9722-d09b9e564fb5.png)
+
+
+
 
 ## Start JupyterLab with NaaVRE
 
