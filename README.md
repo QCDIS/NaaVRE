@@ -85,4 +85,97 @@ Go to 'File->New Launcher'. On the bottom section 'LifeWatch VRE' click on the '
 
 <img src="https://user-images.githubusercontent.com/9680609/162753068-8704c396-5391-45c5-853c-48d607df3472.png" width="50%" height="50%">
 
-B
+By dragging and dropping the cells on the left, construct the workflow shown bellow. 
+
+<img src="https://user-images.githubusercontent.com/9680609/162758227-2eebddd7-3e84-490b-8df4-1c7a80c55d71.png" width="50%" height="50%">
+
+
+Click on 'EXPORT WORKFLOW' and go to the File Browser by selecting the icon on the top left. 
+
+<img src="https://user-images.githubusercontent.com/9680609/162760145-9dfcfe6a-b105-4474-badb-057d5225b6de.png" width="50%" height="50%">
+
+There you should see a file named 'workflow.yaml'. If you open it, it should look like this:
+
+````yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: workflow-test-
+spec:
+    entrypoint: workflow-test
+    arguments:
+      parameters:
+      - name: param_login
+        value: ''
+      - name: param_hostname
+        value: ''
+      - name: param_password
+        value: ''
+    templates:
+    - name: workflow-test
+      dag:
+        tasks:
+        - name: fetch-laz-files-demo
+          template: fetch-laz-files-demo-tmp
+          arguments:
+            parameters:
+            - {name: param_login, value: "{{workflow.parameters.param_login}}"}
+            - {name: param_hostname, value: "{{workflow.parameters.param_hostname}}"}
+            - {name: param_password, value: "{{workflow.parameters.param_password}}"}
+        - name: retiling-demo
+          dependencies: [ fetch-laz-files-demo ]
+          template: retiling-demo-tmp
+          arguments:
+            parameters:
+            - {name: laz_files, value: "{{item}}"}
+            - {name: param_login, value: "{{workflow.parameters.param_login}}"}
+            - {name: param_hostname, value: "{{workflow.parameters.param_hostname}}"}
+            - {name: param_password, value: "{{workflow.parameters.param_password}}"}
+          withParam: "{{tasks.fetch-laz-files-demo.outputs.parameters.outs}}"
+
+    - name: fetch-laz-files-demo-tmp
+      outputs:
+        parameters:
+          - name: outs
+            valueFrom:
+              path: /tmp/outputs.json
+      container:
+        image: "qcdis/fetch-laz-files-demo"
+        command: ["/bin/bash", "-c"]
+        args:
+          - source /venv/bin/activate;
+            python fetch-laz-files-demo.py
+            --param_login {{workflow.parameters.param_login}}
+            --param_hostname {{workflow.parameters.param_hostname}}
+            --param_password {{workflow.parameters.param_password}};
+    - name: retiling-demo-tmp
+      inputs:
+        parameters:
+        - name: laz_files
+        - name: param_login
+        - name: param_hostname
+        - name: param_password
+      outputs:
+        parameters:
+          - name: outs
+            valueFrom:
+              path: /tmp/outputs.json
+      container:
+        image: "qcdis/retiling-demo"
+        command: ["/bin/bash", "-c"]
+        args:
+          - source /venv/bin/activate;
+            echo  {{inputs.parameters.laz_files}} > /tmp/inputs.json;
+            python retiling-demo.py
+            --param_login {{workflow.parameters.param_login}}
+            --param_hostname {{workflow.parameters.param_hostname}}
+            --param_password {{workflow.parameters.param_password}};
+```
+
+Download that file on your own machine. 
+
+## Execute the workflow 
+
+Go to the Argo worklfow engine 
+
+
