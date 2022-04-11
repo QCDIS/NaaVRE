@@ -16,7 +16,8 @@ To login select the GitHub option
 <img src="https://user-images.githubusercontent.com/9680609/162738248-02ad6183-c0cc-47c3-8872-f88652e55343.png" width="50%" height="50%">
 
 
-Select the 'Laserfarm VL environment'  and click Start.
+Select the 'Latest version of VL'  and click Start.
+
 <img src="https://user-images.githubusercontent.com/9680609/162750631-b29ca350-e5b5-4399-a6b1-704c4a15872e.png" width="50%" height="50%">
 
 ## Configure GitHub Token
