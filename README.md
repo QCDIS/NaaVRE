@@ -4,8 +4,10 @@ This is a quick start guide to use the NaaVRE.
 
 
 ## Log in to NaaVRE
+
 Go to one of the deployed NaaVREs
 Click on 'Sign in'
+
 <img src="https://user-images.githubusercontent.com/9680609/162737176-40a0f99c-914a-430e-9722-d09b9e564fb5.png" width="50%" height="50%">
 
 
@@ -82,4 +84,4 @@ Go to 'File->New Launcher'. On the bottom section 'LifeWatch VRE' click on the '
 
 <img src="https://user-images.githubusercontent.com/9680609/162753068-8704c396-5391-45c5-853c-48d607df3472.png" width="50%" height="50%">
 
-
+B
