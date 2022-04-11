@@ -4,11 +4,9 @@ This is a quick start guide to use the NaaVRE.
 
 A video version can be found here:
 
-<!-- Include the custom element script -->
-<script src="http://unpkg.com/lite-vimeo-embed"></script>
-
-<!-- Use the element. You may define uses before the scripts are parsed and executed. -->
-<lite-vimeo videoid="357274789"></lite-vimeo>
+<lite-vimeo videoid="357274789" style="background-image: url('https://i.vimeocdn.com/video/810965406.webp?mw=1600&mh=900&q=70');">
+	<div class="ltv-playbtn"></div>
+</lite-vimeo>
 
 
 ## Log in to NaaVRE
