@@ -63,7 +63,7 @@ On the 'Inputs and Outputs' of the Component containerizer select the types as s
 
 Select the 'Retiling' cell. On the 'Inputs and Outputs' of the Component containerizer select the types as shown below. When all the types are added Click 'ADD TO CATALOG'
 
-<img src="https://user-images.githubusercontent.com/9680609/162749521-a412ee0c-cfd7-46b8-a32f-95d8e4e195ff.png" width="50%" height="50%">
+<img src="https://user-images.githubusercontent.com/9680609/162830069-1f0ba0a9-f068-4940-a448-100cd278c74e.png" width="50%" height="50%">
 
 
 ----
@@ -96,7 +96,7 @@ Click on 'EXPORT WORKFLOW' and go to the File Browser by selecting the icon on t
 
 There you should see a file named 'workflow.yaml'. If you open it, it should look like this:
 
-````yaml
+```yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
@@ -174,8 +174,27 @@ spec:
 
 Download that file on your own machine. 
 
-## Execute the workflow 
+## Execute the workflow
 
-Go to the Argo worklfow engine 
+Go to the Argo workflow engine and click on the workflow templates.
 
+<img src="https://user-images.githubusercontent.com/9680609/162761426-7616a345-b1f3-48b3-b7d9-06eae7e1f75f.png" width="50%" height="50%">
+
+Click on the 'CREATE NEW WORKFLOW TEMPLATE' and upload the workflow.yaml file and click '+CREATE'
+
+<img src="https://user-images.githubusercontent.com/9680609/162762038-ca469845-57ec-4579-b6e9-2801f9557fa5.png" width="50%" height="50%">
+
+
+Now click on '+ SUBMIT'
+
+<img src="https://user-images.githubusercontent.com/9680609/162762394-e6839f7f-8e95-4775-9425-cdbbeaa28b3b.png" width="50%" height="50%">
+
+
+Fill in the perimeters as shown below and click '+ SUBMIT'
+
+<img src="https://user-images.githubusercontent.com/9680609/162762707-1eba8e59-6d7b-4cc2-8bde-391863e63e5d.png" width="50%" height="50%">
+
+When the workflow completes its execution  it should look like this:
+
+<img src="https://user-images.githubusercontent.com/9680609/162831481-23c8a69c-1bf4-4b96-ab9d-01da6b618c72.png" width="50%" height="50%">
 
