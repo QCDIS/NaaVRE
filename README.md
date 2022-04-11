@@ -1,6 +1,14 @@
 # Getting started with NaaVRE
 
-This is a quick start guide to use the NaaVRE. 
+This is a quick start guide to use the NaaVRE.
+
+A video version can be found here:
+
+<!-- Include the custom element script -->
+<script src="http://unpkg.com/lite-vimeo-embed"></script>
+
+<!-- Use the element. You may define uses before the scripts are parsed and executed. -->
+<lite-vimeo videoid="357274789"></lite-vimeo>
 
 
 ## Log in to NaaVRE
