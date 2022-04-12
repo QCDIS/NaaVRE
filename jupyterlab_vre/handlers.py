@@ -64,8 +64,6 @@ standard_library = [
     'random'
 ]
 
-# TODO: Implement port naming as portId_cellId[:7] and for merger and splitter portId_nodeId[:7]
-
 ################################################################################
 
 # Extraction
