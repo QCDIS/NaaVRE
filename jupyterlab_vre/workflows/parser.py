@@ -23,8 +23,6 @@ class WorkflowParser:
         self.nodes = nodes
         self.links = links
 
-        # TODO: Use og_node_id as index for non special nodes, id for the special ones
-
         self.dependencies = {
             nodes[node]['id']: [] for node in nodes
         }
@@ -33,6 +31,26 @@ class WorkflowParser:
             nodes[node]['id']: Catalog.get_cell_from_og_node_id(nodes[node]['properties']['og_node_id'])
             for node in nodes if nodes[node]['type'] != 'splitter' and nodes[node]['type'] != 'merger'
         }
+
+        for nid, node in self.nodes.items():
+            for pid, port in node['ports'].items():
+                is_special = node['type'] == 'splitter' or node['type'] == 'merger' 
+                trailing_id = nid if is_special else node['properties']['og_node_id']
+                self.nodes[nid]['ports'][pid]['id'] = f"{pid}_{trailing_id[:7]}"
+
+        for lid, link in self.links.items():
+            node_from = self.nodes[link['from']['nodeId']]
+            node_to = self.nodes[link['to']['nodeId']]
+
+            from_is_special = node_from['type'] == 'splitter' or node_from['type'] == 'merger'
+            to_is_special = node_to['type'] == 'splitter' or node_to['type'] == 'merger'
+
+            from_trailing_id = node_from['id'] if from_is_special else node_from['properties']['og_node_id']
+            to_trailing_id = node_to['id'] if to_is_special else node_to['properties']['og_node_id']
+
+            link['from']['portId'] = link['from']['portId'] + "_" + from_trailing_id[:7]
+            link['to']['portId'] = link['to']['portId'] + "_" + to_trailing_id[:7]
+
 
         self.__parse_links()
 

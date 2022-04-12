@@ -19,7 +19,6 @@ class Cell:
     chart_obj: dict
     node_id: str
     container_source: str
-    cell_hash: int
     global_conf: dict
 
     def __init__(
@@ -49,7 +48,6 @@ class Cell:
         self.chart_obj = chart_obj
         self.node_id = node_id
         self.container_source = container_source
-        self.cell_hash = int(hashlib.sha1(original_source.encode('utf-8')).hexdigest(), 16)
 
     def clean_code(self):
 
