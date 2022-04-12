@@ -7,6 +7,8 @@
 import argparse
 arg_parser = argparse.ArgumentParser()
 
+arg_parser.add_argument('--id', action='store', type=str, required=True, dest='id')
+
 {% for in_var in cell.inputs|sort %}
 arg_parser.add_argument('--{{ in_var }}', action='store' {% if types[in_var] != 'list' %}, type={{ types[in_var] }} {% endif %}, required='True', dest='{{ in_var }}')
 {% endfor %}
@@ -16,6 +18,9 @@ arg_parser.add_argument('--{{ param }}', action='store', type={{ types[param] }}
 {% endfor %}
 
 args = arg_parser.parse_args()
+
+id = args.id
+
 {% for in_var in cell.inputs|sort %}
 {{ in_var }} = args.{{ in_var }}
 {% endfor %}
@@ -34,7 +39,8 @@ args = arg_parser.parse_args()
 {% if cell.outputs|length > 0 %}
 import json
 {% for out in cell.outputs %}
-file_{{out}} = open("/tmp/{{out}}.json", "w")
+filename = "/tmp/{{out}}_" + id + ".json"
+file_{{out}} = open(filename, "w")
 file_{{out}}.write(json.dumps({{out}}))
 file_{{out}}.close()
 {% endfor %}
