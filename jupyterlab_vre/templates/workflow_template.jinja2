@@ -48,14 +48,20 @@ spec:
         - name: {{ p }}
         {% endfor %}
       {% endif %}
+      outputs:
+        parameters:
+          - name: outs
+            valueFrom:
+              path: /tmp/outputs.json
       container:
         image: "qcdis/{{ cells[nid]['task_name'] }}"
         command: ["/bin/bash", "-c"]
         args:
-          - source /venv/bin/activate; python {{ cells[nid]['task_name'] }}.py{{ ";" if dep|length == 0 and cells[nid]['params']|length == 0}}
+          - source /venv/bin/activate;
             {% for d in dep %}
-            --{{ d['port_id'] }}{{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }}{{ ";" if loop.last and cells[nid]['params']|length == 0}}
+            echo {{ " {{inputs.parameters." }}{{ d['port_id'] }}{{ "}}" }} > /tmp/inputs.json;
             {% endfor %}
+            python {{ cells[nid]['task_name'] }}.py{{ ";" if dep|length == 0 and cells[nid]['params']|length == 0}}
             {% for p in cells[nid]['params'] %}
             --{{ p }}{{ " {{workflow.parameters." }}{{ p }}{{ "}}" }}{{ ";" if loop.last }}
             {% endfor %}
