@@ -1,39 +1,68 @@
-import os
-
-import tornado
-from github3 import login
-import tarfile
 import copy
-from pathlib import Path
 import json
-import shutil
-from requests.models import HTTPBasicAuth
-import yaml
+import logging
+import os
 import uuid
-import requests
-from jupyterlab_vre.github.gh_credentials import GHCredentials
-import nbformat as nb
+from pathlib import Path
+
 import autopep8
+import nbformat as nb
+import requests
+from github3 import login
+from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
 from tornado import web
-from datetime import datetime, timedelta
-from jupyterlab_vre.extractor.extractor import Extractor
+
 from jupyterlab_vre.converter.converter import ConverterReactFlowChart
+from jupyterlab_vre.extractor.extractor import Extractor
+from jupyterlab_vre.faircell import Cell
+from jupyterlab_vre.github.gh_credentials import GHCredentials
 from jupyterlab_vre.sdia.sdia import SDIA
 from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
-from jupyterlab_vre.faircell import Cell
 from jupyterlab_vre.storage.catalog import Catalog
-from jupyterlab_vre.storage.azure import AzureStorage
 from jupyterlab_vre.workflows.parser import WorkflowParser
-from jinja2 import Environment, PackageLoader, FileSystemLoader
-import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-
-module_name_mapping = {'fnmatch': 'fnmatch2'}
-
-part_of_standard_library = ['pathlib']
+module_mapping = {'fnmatch': 'fnmatch2'}
+standard_library = [
+    'pathlib',
+    'time',
+    'os',
+    'fileinput',
+    'tempfile',
+    'glob',
+    'sys',
+    'stat',
+    'filecmp',
+    'linecache',
+    'shutil',
+    'logging',
+    'socket',
+    'array',
+    'ssl',
+    'datetime',
+    'smtplib',
+    'selectors',
+    'asyncio',
+    'sys',
+    'signal',
+    'asynchat',
+    'mmap',
+    'multiprocessing',
+    'concurrent',
+    'urllib',
+    'math',
+    'shlex',
+    'subprocess',
+    'sched',
+    'threading',
+    'dummy_threading',
+    'io',
+    'argparse',
+    'getopt',
+    'random'
+]
 
 # TODO: Implement port naming as portId_cellId[:7] and for merger and splitter portId_nodeId[:7]
 
@@ -147,6 +176,26 @@ class TypesHandler(APIHandler, Catalog):
 
 ################################################################################
 
+def load_standard_library_names():
+    standard_library_names_path = os.path.join(str(Path.home()), 'NaaVRE', 'standard_library_names.json')
+    if not os.path.exists(standard_library_names_path):
+        with open(standard_library_names_path, "w") as standard_library_names_file:
+            json.dump(standard_library, standard_library_names_file, indent=4)
+    standard_library_names_file = open(standard_library_names_path)
+    part_of_standard_library = json.load(standard_library_names_file)
+    return part_of_standard_library
+
+
+def load_module_names_mapping():
+    module_name_mapping_path = os.path.join(str(Path.home()), 'NaaVRE', 'module_name_mapping.json')
+    if not os.path.exists(module_name_mapping_path):
+        with open(module_name_mapping_path, "w") as module_name_mapping_file:
+            json.dump(module_mapping, module_name_mapping_file, indent=4)
+    module_name_mapping_file = open(module_name_mapping_path)
+    module_name_mapping = json.load(module_name_mapping_file)
+    return module_name_mapping
+
+
 class CellsHandler(APIHandler, Catalog):
     logger = logging.getLogger(__name__)
 
@@ -176,8 +225,13 @@ class CellsHandler(APIHandler, Catalog):
             if parm_name not in current_cell.types:
                 logger.error(parm_name + ' has not type')
                 msg_json = dict(title=parm_name + ' has not type')
-                self.write(msg_json)
-                raise tornado.web.HTTPError(400, reason=parm_name + ' has not type')
+                self.set_status(400)
+                self.write(parm_name + ' has not type')
+                self.write_error(parm_name + ' has not type')
+                self.flush()
+                # or self.render("error.html", reason="You're not authorized"))
+                return
+                # raise tornado.web.HTTPError(400, reason=parm_name + ' has not type')
 
         compiled_code = template_cell.render(cell=current_cell, deps=deps, types=current_cell.types, confs=confs)
         compiled_code = autopep8.fix_code(compiled_code)
@@ -205,6 +259,8 @@ class CellsHandler(APIHandler, Catalog):
         dockerfile_name = 'Dockerfile.qcdis.' + current_cell.task_name
         env_name = current_cell.task_name + '-environment.yaml'
 
+        part_of_standard_library = load_standard_library_names()
+        module_name_mapping = load_module_names_mapping()
         set_deps = set([])
         for dep in current_cell.dependencies:
             if 'module' in dep and dep['module']:
@@ -232,6 +288,14 @@ class CellsHandler(APIHandler, Catalog):
         template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
 
         token = Catalog.get_gh_token()
+        if not token:
+            self.set_status(400)
+            self.write('Github token not set!')
+            self.write_error('Github token not set!')
+            self.flush()
+            # or self.render("error.html", reason="You're not authorized"))
+            return
+
         gh = login(token=token['token'])
         repository = gh.repository('QCDIS', 'NaaVRE-container-prestage')
 
@@ -396,6 +460,7 @@ class ExportWorkflowHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
+        print(payload)
         global_params = []
 
         nodes = payload['nodes']
