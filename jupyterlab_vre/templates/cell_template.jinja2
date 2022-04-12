@@ -21,6 +21,8 @@ if inputs_exists:
             f = open(inputs_path, "r")
             inputs = f.readlines()[0].strip()
 
+arg_parser.add_argument('--id', action='store', type=str, required=True, dest='id')
+
 {% for in_var in cell.inputs|sort %}
 if inputs:
     if '{{ in_var }}' in inputs:
@@ -36,6 +38,9 @@ arg_parser.add_argument('--{{ param }}', action='store', type={{ types[param] }}
 {% endfor %}
 
 args = arg_parser.parse_args()
+
+id = args.id
+
 {% for in_var in cell.inputs|sort %}
 if not inputs_exists:
     {{ in_var }} = args.{{ in_var }}
@@ -54,16 +59,10 @@ if not inputs_exists:
 
 {% if cell.outputs|length > 0 %}
 import json
-{% if cell.outputs|length == 1 and types[cell.outputs.0] == 'list' %}
-with open('/tmp/outputs.json', 'w') as f:
-    json.dump({{cell.outputs.0 }}, f)
-
-{% else %}
-outputs = {}
-{% for out_var in cell.outputs|sort %}
-outputs['{{ out_var }}'] = {{ out_var }}
+{% for out in cell.outputs %}
+filename = "/tmp/{{out}}_" + id + ".json"
+file_{{out}} = open(filename, "w")
+file_{{out}}.write(json.dumps({{out}}))
+file_{{out}}.close()
 {% endfor %}
-with open('/tmp/outputs.json', 'w') as f:
-    json.dump(outputs, f)
-{% endif %}
 {% endif %}

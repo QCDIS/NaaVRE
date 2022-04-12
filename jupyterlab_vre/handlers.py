@@ -64,6 +64,7 @@ standard_library = [
     'random'
 ]
 
+# TODO: Implement port naming as portId_cellId[:7] and for merger and splitter portId_nodeId[:7]
 
 ################################################################################
 
@@ -99,24 +100,25 @@ class ExtractorHandler(APIHandler, Catalog):
         dependencies = extractor.infere_cell_dependencies(source)
         conf_deps = extractor.infere_cell_conf_dependencies(confs)
         dependencies = dependencies + conf_deps
+        node_id = str(uuid.uuid4())[:7]
 
         cell = Cell(
-            title=title,
-            task_name=title.lower().replace(' ', '-'),
-            original_source=source,
-            inputs=ins,
-            outputs=outs,
-            params=params,
-            confs=confs,
-            dependencies=dependencies,
-            container_source=""
+            node_id             = node_id,
+            title               = title,
+            task_name           = title.lower().replace(' ', '-'),
+            original_source     = source,
+            inputs              = ins,
+            outputs             = outs,
+            params              = params,
+            confs               = confs,
+            dependencies        = dependencies,
+            container_source    = ""
         )
 
         cell.integrate_configuration()
         params = list(extractor.extract_cell_params(cell.original_source))
         cell.params = params
 
-        node_id = str(uuid.uuid4())[:7]
         node = ConverterReactFlowChart.get_node(
             node_id,
             title,
@@ -138,7 +140,6 @@ class ExtractorHandler(APIHandler, Catalog):
             'hovered': {},
         }
 
-        cell.node_id = node_id
         cell.chart_obj = chart
 
         Catalog.editor_buffer = copy.deepcopy(cell)
@@ -467,6 +468,7 @@ class ExportWorkflowHandler(APIHandler):
 
         parser = WorkflowParser(nodes, links)
         cells = parser.get_workflow_cells()
+
         deps_dag = parser.get_dependencies_dag()
 
         for nid, cell in cells.items():
@@ -474,6 +476,13 @@ class ExportWorkflowHandler(APIHandler):
 
         loader = PackageLoader('jupyterlab_vre', 'templates')
         template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
-        template = template_env.get_template('workflow_template.jinja2')
-        template.stream(deps_dag=deps_dag, cells=cells, global_params=set(global_params)).dump('workflow.yaml')
+        template = template_env.get_template('workflow_template_v2.jinja2')
+
+        template.stream(
+            deps_dag=deps_dag, 
+            cells=cells,
+            nodes=nodes,
+            global_params=set(global_params)
+
+        ).dump('workflow.yaml')
         self.flush()

@@ -22,60 +22,59 @@ class WorkflowParser:
 
         self.nodes = nodes
         self.links = links
-        self.splitters = defaultdict(dict)
 
-        self.dependencies = {nodes[node]['properties']['og_node_id']: [] for node in nodes if
-                             nodes[node]['type'] != 'splitter' and nodes[node]['type'] != 'merger'}
-        self.cells_in_use = {nodes[node]['properties']['og_node_id']: \
-                                 Catalog.get_cell_from_og_node_id(nodes[node]['properties']['og_node_id']) \
-                             for node in nodes if nodes[node]['type'] != 'splitter' and nodes[node]['type'] != 'merger'
-                             }
+        self.dependencies = {
+            nodes[node]['id']: [] for node in nodes
+        }
+
+        self.cells_in_use = {
+            nodes[node]['id']: Catalog.get_cell_from_og_node_id(nodes[node]['properties']['og_node_id'])
+            for node in nodes if nodes[node]['type'] != 'splitter' and nodes[node]['type'] != 'merger'
+        }
+
+        for nid, node in self.nodes.items():
+            for pid, port in node['ports'].items():
+                is_special = node['type'] == 'splitter' or node['type'] == 'merger' 
+                trailing_id = nid if is_special else node['properties']['og_node_id']
+                self.nodes[nid]['ports'][pid]['id'] = f"{pid}_{trailing_id[:7]}"
+
+        for lid, link in self.links.items():
+            node_from = self.nodes[link['from']['nodeId']]
+            node_to = self.nodes[link['to']['nodeId']]
+
+            from_is_special = node_from['type'] == 'splitter' or node_from['type'] == 'merger'
+            to_is_special = node_to['type'] == 'splitter' or node_to['type'] == 'merger'
+
+            from_trailing_id = node_from['id'] if from_is_special else node_from['properties']['og_node_id']
+            to_trailing_id = node_to['id'] if to_is_special else node_to['properties']['og_node_id']
+
+            link['from']['portId'] = link['from']['portId'] + "_" + from_trailing_id[:7]
+            link['to']['portId'] = link['to']['portId'] + "_" + to_trailing_id[:7]
+
+
         self.__parse_links()
-        self.__resolve_splitters()
-
-    def __resolve_splitters(self):
-
-        for s, links in self.splitters.items():
-            og_id_to = self.__get_og_node_id(links['target']['to']['nodeId'])
-            og_id_from = self.__get_og_node_id(links['source']['from']['nodeId'])
-            from_cell = Catalog.get_cell_from_og_node_id(og_id_from)
-            self.dependencies[og_id_to].append({
-                'task_name': from_cell['task_name'],
-                'port_id': links['source']['from']['portId'],
-                'scaling': True
-            })
 
     def __parse_links(self):
 
-        '''
-            node1(pno) => (sps)splitter(spt) => (pni)node2
-            node1(pno) => (pni)node2
-        '''
-
         for k in self.links:
+
             link = self.links[k]
-            print('link_to: ' +  link['to']['portId'])
-            print('link_from: '+link['from']['portId'])
-            if link['to']['portId'] == 'splitter_source' or link['to']['portId'] == 'merger_source':
-                self.splitters[link['to']['nodeId']]['source'] = link
-                continue
 
-            if link['from']['portId'] == 'splitter_target' or link['to']['portId'] == 'merger_target':
-                self.splitters[link['from']['nodeId']]['target'] = link
+            to_node = self.nodes[link['to']['nodeId']]
+            from_node = self.nodes[link['from']['nodeId']]
 
-            else:
-                og_id_to = self.__get_og_node_id(link['to']['nodeId'])
-                logger.debug('link: '+str(link['from']['nodeId']))
-                og_id_from = self.__get_og_node_id(link['from']['nodeId'])
-                from_cell = Catalog.get_cell_from_og_node_id(og_id_from)
-                self.dependencies[og_id_to].append({
-                    'task_name': from_cell['task_name'],
-                    'port_id': link['from']['portId'],
-                    'scaling': False
-                })
+            from_special_node = (from_node['type'] == 'merger' or from_node['type'] == 'splitter')
+            task_name = f'{from_node["type"]}-{from_node["id"][:7]}' if from_special_node else Catalog.get_cell_from_og_node_id(
+                self.__get_og_node_id(from_node['id']))['task_name'] + "-" + from_node['id'][:7]
+
+            self.dependencies[to_node['id']].append({
+                'task_name'     : task_name,
+                'port_id'       : link['from']['portId'],
+                'og_port_id'    : link['to']['portId'],
+                'type'          : from_node['type']
+            })
 
     def __get_og_node_id(self, node_id) -> str:
-        logger.debug('Node: ' + str(self.nodes[node_id]))
         return self.nodes[node_id]['properties']['og_node_id']
 
     def get_workflow_cells(self) -> dict:
