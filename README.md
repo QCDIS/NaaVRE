@@ -2,7 +2,6 @@
 
 This is a quick start guide to use the NaaVRE.
 
-A video version can be found here
 
 https://user-images.githubusercontent.com/9680609/162855203-2e8f6d7e-883d-4646-aff7-c56c0f507f32.mp4
 
