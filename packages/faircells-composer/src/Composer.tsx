@@ -1,23 +1,25 @@
 import * as React from 'react';
-import { ReactWidget } from '@jupyterlab/apputils';
+import { ReactWidget, Dialog, showDialog } from '@jupyterlab/apputils';
 import * as actions from "@mrblenny/react-flow-chart/src/container/actions";
 import styled from 'styled-components'
 import { theme } from './Theme';
 import { mapValues } from 'lodash';
-import { Page, SidebarItem } from './components';
+import { Page, /* SidebarItem */ } from './components';
 import { chartSimple } from './exampleChart';
 import { FlowChart, IChart } from '@mrblenny/react-flow-chart';
-import { Button, Slider, ThemeProvider } from '@material-ui/core';
+import { /* Button,*/ Slider, ThemeProvider } from '@material-ui/core';
 import { NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
 import { requestAPI } from '@jupyter_vre/core';
-import { SidebarSpecialItem } from './components/SidebarSpecialItem';
+import BasicSpeedDial from './components/SpeedDial';
+import { CatalogDialog } from './components/CatalogDialog';
+// import { SidebarSpecialItem } from './components/SidebarSpecialItem';
 
-const LeftContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 0 0 230px;
-  overflow: hidden;
-`
+// const LeftContent = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   flex: 0 0 230px;
+//   overflow: hidden;
+// `
 
 const CenterContent = styled.div`
   display: flex;
@@ -26,41 +28,41 @@ const CenterContent = styled.div`
   overflow: hidden;
 `
 
-const RightContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 0 0 400px;
-  overflow: hidden;
-`
+// const RightContent = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   flex: 0 0 400px;
+//   overflow: hidden;
+// `
 
-const CatalogSidebar = styled.div`
-	width: 100%;
-	background: white;
-	position: relative;
-	margin: 0;
-	display: flex;
-	flex-direction: column;
-	flex-shrink: 0;
-	`
+// const CatalogSidebar = styled.div`
+// 	width: 100%;
+// 	background: white;
+// 	position: relative;
+// 	margin: 0;
+// 	display: flex;
+// 	flex-direction: column;
+// 	flex-shrink: 0;
+// 	`
 
-const InfoSidebar = styled.div`
-	width: 215px;
-	background: white;
-	position: absolute;
-	margin: 20px;
-	display: flex;
-	flex-direction: column;
-	flex-shrink: 0;
-	`
+// const InfoSidebar = styled.div`
+// 	width: 215px;
+// 	background: white;
+// 	position: absolute;
+// 	margin: 20px;
+// 	display: flex;
+// 	flex-direction: column;
+// 	flex-shrink: 0;
+// 	`
 
-const Message = styled.div`
-	padding: 10px;
-	text-align: center;
-	color: white;
-	font-weight: bold;
-	font-size: larger;
-	background: lightslategrey;
-	`
+// const Message = styled.div`
+// 	padding: 10px;
+// 	text-align: center;
+// 	color: white;
+// 	font-weight: bold;
+// 	font-size: larger;
+// 	background: lightslategrey;
+// 	`
 
 interface IProps { }
 
@@ -73,6 +75,12 @@ export const DefaultState: IState = {
 	catalog_elements: [],
 	chart: chartSimple,
 }
+
+const CatalogDialogOptions: Partial<Dialog.IOptions<any>> = {
+	title: 'Explore Catalog',
+	body: ReactWidget.create(<CatalogDialog />) as Dialog.IBodyWidget<any>,
+	buttons: [],
+};
 
 class Composer extends React.Component<IProps, IState> {
 
@@ -93,6 +101,19 @@ class Composer extends React.Component<IProps, IState> {
 
 	componentDidMount() {
 		this.getCatalog();
+	}
+
+	handleDialSelection = (operation: string) => {
+		
+		switch (operation) {
+
+			case "open-catalog":
+				showDialog(CatalogDialogOptions)
+			break;
+
+			case "export-workflow":
+			break;
+		}
 	}
 
 	getCatalog = async () => {
@@ -160,93 +181,6 @@ class Composer extends React.Component<IProps, IState> {
 		return (
 			<ThemeProvider theme={theme} >
 				<Page>
-					<LeftContent>
-						<CatalogSidebar>
-							<Message>
-								Local Catalog
-							</Message>
-							<div className={'sidebar-items-container'}>
-								{this.state.catalog_elements.map((value, index) => {
-									let nodes = value['chart_obj']['nodes']
-									let element = nodes[Object.keys(nodes)[0]]
-									return (
-										<SidebarItem
-											type={element['type']}
-											ports={element['ports']}
-											properties={element['properties']}
-										/>
-									)
-								})}
-							</div>
-						</CatalogSidebar>
-						<CatalogSidebar>
-							<Message>
-								Scaling Nodes
-							</Message>
-							<div className={'sidebar-items-container'}>
-								<SidebarSpecialItem
-									type={'splitter'}
-									ports={{
-										splitter_source: {
-											id: 'splitter_source',
-											type: 'left',
-											properties: {
-												special_node: 1,
-												color: '#000000'
-											}
-										},
-										splitter_target: {
-											id: 'splitter_target',
-											type: 'right',
-											properties: {
-												special_node: 1,
-												color: '#000000'
-											}
-										}
-									}}
-									properties={{
-										'title': 'Splitter',
-										'scalingFactor': 1
-									}}
-								/>
-								<SidebarSpecialItem
-									type={'merger'}
-									ports={{
-										merger_source: {
-											id: 'merger_source',
-											type: 'left',
-											properties: {
-												special_node: 1,
-												color: '#000000'
-											}
-										},
-										merger_target: {
-											id: 'merger_target',
-											type: 'right',
-											properties: {
-												special_node: 1,
-												color: '#000000'
-											}
-										}
-									}}
-									properties={{
-										'title': 'Merger',
-										'scalingFactor': 1
-									}}
-								/>
-							</div>
-						</CatalogSidebar>
-						<div>
-							<Button 
-								className={'btn-export-workflow'} 
-								variant="contained" 
-								color="primary"
-								onClick={this.exportWorkflow}
-								>
-								Export Workflow
-							</Button>
-						</div>
-					</LeftContent>
 					<CenterContent>
 						<FlowChart
 							chart={this.state.chart}
@@ -256,16 +190,10 @@ class Composer extends React.Component<IProps, IState> {
 								Port: PortCustom
 							}}
 						/>
+						<BasicSpeedDial 
+							handleDialSelection={this.handleDialSelection}
+						/>
 					</CenterContent>
-					{ this.state.chart.selected.id && this.state.chart.selected.type == "node" ? (
-					<RightContent>
-						<InfoSidebar>
-							<div className={'info-sidebar-container'}>
-								<div>{this.getNodeEditor()}</div>
-							</div>
-						</InfoSidebar>
-					</RightContent>)
-					: (<div></div>) }
 				</Page>
 			</ThemeProvider>
 		)
