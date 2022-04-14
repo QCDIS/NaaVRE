@@ -32,8 +32,8 @@ RUN pip install sentinelhub --upgrade
 RUN git clone https://github.com/JorisTimmermans/Deploy_MULTIPLY.git
 WORKDIR Deploy_MULTIPLY
 RUN conda env create -f environments/environment_multiply_platform.yml
-RUN echo "source activate multiply-platform" > ~/.bashrc
-ENV PATH /opt/conda/envs/multiply-platform/bin:$PATH
+RUN conda activate multiply-platform
+
 
 #====================================
 #========= multiply_modules =======
