@@ -1,6 +1,24 @@
+#!/bin/sh
+
+pip install sentinelhub --upgrade
+
+mkdir dependencies
+
+git clone https://github.com/JorisTimmermans/Deploy_MULTIPLY.git
+cd Deploy_MULTIPLY
+conda env create -f environments/environment_multiply_platform.yml
+cd ../
+
+git clone https://github.com/JorisTimmermans/atmospheric_correction.git
+cd atmospheric_correction
+python setup.py develop
+cd ../
 
 
-RUN git clone https://github.com/JorisTimmermans/Deploy_MULTIPLY.git
-WORKDIR Deploy_MULTIPLY
-RUN conda env create -f environments/environment_multiply_platform.yml
-SHELL ["conda", "run", "-n", "multiply-platform", "/bin/bash", "-c"]
+git clone https://github.com/JorisTimmermans/data-access.git
+cd data-access
+python setup.py develop
+cd ../
+
+
+
