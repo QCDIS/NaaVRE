@@ -21,11 +21,20 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
 
 
 #===== Add MULTIPLY dependencies ======
+RUN pip install sentinelhub --upgrade
+
+
+
+
+
 
 #========= Install_environments =======
 RUN git clone https://github.com/JorisTimmermans/Deploy_MULTIPLY.git
-#RUN conda install -c conda-forge pdal python-pdal gdal
-#RUN pip install -r MULTIPLY_pip_requirements.txt
+WORKDIR Deploy_MULTIPLY
+RUN conda env create -f environments/environment_multiply_platform.yml
+RUN echo "source activate multiply-platform" > ~/.bashrc
+ENV PATH /opt/conda/envs/multiply-platform/bin:$PATH
+
 #====================================
 #========= multiply_modules =======
 #RUN git clone https://github.com/JorisTimmermans/atmospheric_correction.git
