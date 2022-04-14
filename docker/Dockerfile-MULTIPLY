@@ -102,9 +102,9 @@ RUN rm -r data-access
 #RUN rm -r vm-support
 #
 RUN echo 'from multiply_data_access import DataAccessComponent' > test.py
-RUN #python test.py
+RUN python test.py
 #====================================
 
 
 
-CMD ["/usr/local/bin/start-jupyter.sh"]
+CMD "/usr/local/bin/start-jupyter.sh"
