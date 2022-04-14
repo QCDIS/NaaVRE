@@ -1,8 +1,21 @@
-FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e
+FROM continuumio/miniconda3 AS build
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++
+
+RUN git clone https://github.com/JorisTimmermans/Deploy_MULTIPLY.git
+cd Deploy_MULTIPLY
+RUN conda env create -f environments/environment_multiply_platform.yml
+RUN conda-pack -n multiply-platform -o /tmp/env.tar && \
+    mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
+    rm /tmp/env.tar
+RUN /venv/bin/conda-unpack
+
+
+FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e AS runtime
+COPY --from=build /venv /venv
 
 USER root
 
-RUN apt-get update --allow-releaseinfo-change && apt-get -y install git unzip gcc g++ vim
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install git unzip gcc g++
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
@@ -21,82 +34,6 @@ RUN conda remove --force -y terminado && \
 RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl && \
     jupyter serverextension enable --py jupyterlab_vre --user && \
     jupyter lab build --debug;
-
-
-
-
-
-#====================================
-#========= multiply_modules =======
-#RUN git clone https://github.com/JorisTimmermans/atmospheric_correction.git
-#WORKDIR atmospheric_correction
-#RUN python setup.py develop
-#WORKDIR ../
-#RUN rm -r atmospheric_correction
-#
-#RUN git clone https://github.com/JorisTimmermans/BRDF_descriptors.git
-#WORKDIR BRDF_descriptors
-#RUN python setup.py install
-#WORKDIR ../
-#RUN rm -r BRDF_descriptors
-
-#RUN git clone https://github.com/JorisTimmermans/data-access.git
-#WORKDIR data-access
-#RUN python setup.py develop
-#WORKDIR ../
-#RUN rm -r data-access
-
-#RUN git clone https://github.com/multiply-org/inference-engine.git
-#WORKDIR inference-engine
-#RUN python setup.py develop
-#WORKDIR ../
-#RUN rm -r inference-engine
-#
-#
-#RUN git clone https://github.com/JorisTimmermans/multiply-core.git
-#WORKDIR multiply-core
-#RUN python setup.py develop
-#WORKDIR ../
-#RUN rm -r multiply-core
-#
-#
-##RUN git clone https://github.com/multiply-org/kaska.git
-##WORKDIR kaska
-##RUN python setup.py develop
-##WORKDIR ../
-##RUN rm -r kaska
-#
-#
-#RUN git clone https://github.com/multiply-org/KaFKA-InferenceEngine.git
-#WORKDIR KaFKA-InferenceEngine
-#RUN python setup.py develop
-#WORKDIR ../
-#RUN rm -r KaFKA-InferenceEngine
-#
-##
-##RUN git clone https://github.com/multiply-org/MULTIPLYVisualisation.git
-##WORKDIR MULTIPLYVisualisation
-##RUN python setup.py develop
-##WORKDIR ../
-##RUN rm -r MULTIPLYVisualisation
-#
-#RUN git clone https://github.com/multiply-org/sar-pre-processing.git
-#WORKDIR sar-pre-processing
-#RUN python setup.py develop
-#WORKDIR ../
-#RUN rm -r sar-pre-processing
-#
-#RUN git clone https://github.com/JorisTimmermans/vm-support.git
-#WORKDIR vm-support
-#RUN python setup.py develop
-#WORKDIR ../
-#RUN rm -r vm-support
-#
-#RUN echo 'from multiply_data_access import DataAccessComponent' > test.py
-#RUN python test.py
-#====================================
-
-
 
 CMD /home/jovyan/install_MULTIPLY.sh && \
     /usr/local/bin/start-jupyter.sh
