@@ -98,5 +98,6 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
 
 
 
-CMD /home/jovyan/install_MULTIPLY.sh && \
+CMD ls -lah && \
+    ls -lah /home/jovyan/install_MULTIPLY.sh && \
     /usr/local/bin/start-jupyter.sh
