@@ -25,23 +25,44 @@ from jupyterlab_vre.workflows.parser import WorkflowParser
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 module_mapping = {'fnmatch': 'fnmatch2'}
-standard_library = ['pathlib', 'time']
-
-standard_library_names_path = os.path.join(str(Path.home()), 'NaaVRE', 'standard_library_names.json')
-if not os.path.exists(standard_library_names_path):
-    with open(standard_library_names_path, "w") as write_file:
-        json.dump(standard_library, write_file, indent=4)
-f = open(standard_library_names_path)
-part_of_standard_library = json.load(f)
-
-
-module_name_mapping_path = os.path.join(str(Path.home()), 'NaaVRE', 'module_name_mapping.json')
-if not os.path.exists(module_name_mapping_path):
-    with open(module_name_mapping_path, "w") as write_file:
-        json.dump(module_mapping, write_file, indent=4)
-f = open(module_name_mapping_path)
-module_name_mapping = json.load(f)
-
+standard_library = [
+    'pathlib',
+    'time',
+    'os',
+    'fileinput',
+    'tempfile',
+    'glob',
+    'sys',
+    'stat',
+    'filecmp',
+    'linecache',
+    'shutil',
+    'logging',
+    'socket',
+    'array',
+    'ssl',
+    'datetime',
+    'smtplib',
+    'selectors',
+    'asyncio',
+    'sys',
+    'signal',
+    'asynchat',
+    'mmap',
+    'multiprocessing',
+    'concurrent',
+    'urllib',
+    'math',
+    'shlex',
+    'subprocess',
+    'sched',
+    'threading',
+    'dummy_threading',
+    'io',
+    'argparse',
+    'getopt',
+    'random'
+]
 
 ################################################################################
 
@@ -77,24 +98,25 @@ class ExtractorHandler(APIHandler, Catalog):
         dependencies = extractor.infere_cell_dependencies(source)
         conf_deps = extractor.infere_cell_conf_dependencies(confs)
         dependencies = dependencies + conf_deps
+        node_id = str(uuid.uuid4())[:7]
 
         cell = Cell(
-            title=title,
-            task_name=title.lower().replace(' ', '-'),
-            original_source=source,
-            inputs=ins,
-            outputs=outs,
-            params=params,
-            confs=confs,
-            dependencies=dependencies,
-            container_source=""
+            node_id             = node_id,
+            title               = title,
+            task_name           = title.lower().replace(' ', '-'),
+            original_source     = source,
+            inputs              = ins,
+            outputs             = outs,
+            params              = params,
+            confs               = confs,
+            dependencies        = dependencies,
+            container_source    = ""
         )
 
         cell.integrate_configuration()
         params = list(extractor.extract_cell_params(cell.original_source))
         cell.params = params
 
-        node_id = str(uuid.uuid4())[:7]
         node = ConverterReactFlowChart.get_node(
             node_id,
             title,
@@ -116,7 +138,6 @@ class ExtractorHandler(APIHandler, Catalog):
             'hovered': {},
         }
 
-        cell.node_id = node_id
         cell.chart_obj = chart
 
         Catalog.editor_buffer = copy.deepcopy(cell)
@@ -152,6 +173,26 @@ class TypesHandler(APIHandler, Catalog):
 # Catalog
 
 ################################################################################
+
+def load_standard_library_names():
+    standard_library_names_path = os.path.join(str(Path.home()), 'NaaVRE', 'standard_library_names.json')
+    if not os.path.exists(standard_library_names_path):
+        with open(standard_library_names_path, "w") as standard_library_names_file:
+            json.dump(standard_library, standard_library_names_file, indent=4)
+    standard_library_names_file = open(standard_library_names_path)
+    part_of_standard_library = json.load(standard_library_names_file)
+    return part_of_standard_library
+
+
+def load_module_names_mapping():
+    module_name_mapping_path = os.path.join(str(Path.home()), 'NaaVRE', 'module_name_mapping.json')
+    if not os.path.exists(module_name_mapping_path):
+        with open(module_name_mapping_path, "w") as module_name_mapping_file:
+            json.dump(module_mapping, module_name_mapping_file, indent=4)
+    module_name_mapping_file = open(module_name_mapping_path)
+    module_name_mapping = json.load(module_name_mapping_file)
+    return module_name_mapping
+
 
 class CellsHandler(APIHandler, Catalog):
     logger = logging.getLogger(__name__)
@@ -216,6 +257,8 @@ class CellsHandler(APIHandler, Catalog):
         dockerfile_name = 'Dockerfile.qcdis.' + current_cell.task_name
         env_name = current_cell.task_name + '-environment.yaml'
 
+        part_of_standard_library = load_standard_library_names()
+        module_name_mapping = load_module_names_mapping()
         set_deps = set([])
         for dep in current_cell.dependencies:
             if 'module' in dep and dep['module']:
@@ -423,6 +466,7 @@ class ExportWorkflowHandler(APIHandler):
 
         parser = WorkflowParser(nodes, links)
         cells = parser.get_workflow_cells()
+
         deps_dag = parser.get_dependencies_dag()
 
         for nid, cell in cells.items():
@@ -430,6 +474,13 @@ class ExportWorkflowHandler(APIHandler):
 
         loader = PackageLoader('jupyterlab_vre', 'templates')
         template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
-        template = template_env.get_template('workflow_template.jinja2')
-        template.stream(deps_dag=deps_dag, cells=cells, global_params=set(global_params)).dump('workflow.yaml')
+        template = template_env.get_template('workflow_template_v2.jinja2')
+
+        template.stream(
+            deps_dag=deps_dag, 
+            cells=cells,
+            nodes=nodes,
+            global_params=set(global_params)
+
+        ).dump('workflow.yaml')
         self.flush()
