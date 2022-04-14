@@ -10,7 +10,7 @@ COPY ./notebooks/ /home/jovyan/notebooks/
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 
-COPY install_MULTIPLY.sh  /home/jovyan/
+COPY install_MULTIPLY.sh  /home/jovyan/install_MULTIPLY.sh
 RUN chmod ugo+x install_MULTIPLY.sh
 
 USER $NB_USER
@@ -98,5 +98,5 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
 
 
 
-CMD install_MULTIPLY.sh && \
+CMD /home/jovyan/install_MULTIPLY.sh && \
     /usr/local/bin/start-jupyter.sh
