@@ -5,20 +5,29 @@ import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import { makeStyles } from '@material-ui/core';
 
 interface BasicSpeedDialProps {
     handleDialSelection: (operation: string) => void
 }
 
+const actions = [
+    { icon: <AutoStoriesIcon />, name: 'Open Catalog', operation: 'open-catalog' },
+    { icon: <FileUploadIcon />, name: 'Export Workflow', operation: 'export-workflow' }
+];
+
+const useStyles = makeStyles(() => ({
+    staticTooltipLabel: {
+        width: "200px !important"
+    }
+}));
+
 export default function BasicSpeedDial({ handleDialSelection }: BasicSpeedDialProps) {
 
-    const actions = [
-        { icon: <AutoStoriesIcon />, name: 'Open Catalog', operation: 'open-catalog' },
-        { icon: <FileUploadIcon />, name: 'Export Workflow', operation: 'export-workflow' }
-    ];
+    const classes = useStyles()
 
     return (
-        <Box sx={{ height: 320, transform: 'translateZ(0px)', flexGrow: 1, position: 'absolute', bottom: '10px', right: '10px' }}>
+        <Box sx={{ height: 320, transform: 'translateZ(0px)', flexGrow: 1, position: 'absolute', bottom: 16, right: 16 }}>
             <SpeedDial
                 ariaLabel="SpeedDial basic example"
                 sx={{ position: 'absolute', bottom: 16, right: 16 }}
@@ -29,6 +38,8 @@ export default function BasicSpeedDial({ handleDialSelection }: BasicSpeedDialPr
                         key={action.name}
                         icon={action.icon}
                         tooltipTitle={action.name}
+                        tooltipOpen
+                        classes={classes}
                         onClick={() => {
                             handleDialSelection(action.operation)
                         }}

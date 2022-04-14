@@ -12,14 +12,6 @@ import { NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
 import { requestAPI } from '@jupyter_vre/core';
 import BasicSpeedDial from './components/SpeedDial';
 import { CatalogDialog } from './components/CatalogDialog';
-// import { SidebarSpecialItem } from './components/SidebarSpecialItem';
-
-// const LeftContent = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   flex: 0 0 230px;
-//   overflow: hidden;
-// `
 
 const CenterContent = styled.div`
   display: flex;
@@ -28,58 +20,20 @@ const CenterContent = styled.div`
   overflow: hidden;
 `
 
-// const RightContent = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   flex: 0 0 400px;
-//   overflow: hidden;
-// `
-
-// const CatalogSidebar = styled.div`
-// 	width: 100%;
-// 	background: white;
-// 	position: relative;
-// 	margin: 0;
-// 	display: flex;
-// 	flex-direction: column;
-// 	flex-shrink: 0;
-// 	`
-
-// const InfoSidebar = styled.div`
-// 	width: 215px;
-// 	background: white;
-// 	position: absolute;
-// 	margin: 20px;
-// 	display: flex;
-// 	flex-direction: column;
-// 	flex-shrink: 0;
-// 	`
-
-// const Message = styled.div`
-// 	padding: 10px;
-// 	text-align: center;
-// 	color: white;
-// 	font-weight: bold;
-// 	font-size: larger;
-// 	background: lightslategrey;
-// 	`
-
 interface IProps { }
 
 interface IState {
-	catalog_elements: []
 	chart: IChart
 }
 
 export const DefaultState: IState = {
-	catalog_elements: [],
 	chart: chartSimple,
 }
 
 const CatalogDialogOptions: Partial<Dialog.IOptions<any>> = {
 	title: 'Explore Catalog',
 	body: ReactWidget.create(<CatalogDialog />) as Dialog.IBodyWidget<any>,
-	buttons: [],
+	buttons: []
 };
 
 class Composer extends React.Component<IProps, IState> {
@@ -99,10 +53,6 @@ class Composer extends React.Component<IProps, IState> {
 		super(props);
 	}
 
-	componentDidMount() {
-		this.getCatalog();
-	}
-
 	handleDialSelection = (operation: string) => {
 		
 		switch (operation) {
@@ -114,15 +64,6 @@ class Composer extends React.Component<IProps, IState> {
 			case "export-workflow":
 			break;
 		}
-	}
-
-	getCatalog = async () => {
-
-		const resp = await requestAPI<any>('catalog/cells/all', {
-			method: 'GET'
-		});
-
-		this.setState({ catalog_elements: resp });
 	}
 
 	handleChangeScalingFactor = (e: React.ChangeEvent<{}>, newValue: number | number[], node_id: string) => {
