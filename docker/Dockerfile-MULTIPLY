@@ -10,7 +10,7 @@ COPY ./notebooks/ /home/jovyan/notebooks/
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 
-COPY install_MULTIPLY.sh .
+COPY install_MULTIPLY.sh  /home/jovyan/
 RUN chmod ugo+x install_MULTIPLY.sh
 
 USER $NB_USER
