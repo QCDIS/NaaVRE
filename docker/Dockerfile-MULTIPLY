@@ -30,7 +30,7 @@ WORKDIR Deploy_MULTIPLY/environments
 RUN conda env create -f environment_multiply_platform.yml
 
 RUN eval "$(conda shell.bash hook)"
-RUN conda activate multiply-platform
+RUN conda activate $(head -1 environment_multiply_platform.yml
 
 
 #RUN echo "conda activate $(head -1 environment_multiply_platform.yml | cut -d' ' -f2)" >> ~/.bashrc
