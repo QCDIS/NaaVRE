@@ -21,20 +21,8 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
 
 
 #===== Add MULTIPLY dependencies ======
-RUN pip install sentinelhub --upgrade
-
-
-
-
-
-
-#========= Install_environments =======
-RUN git clone https://github.com/JorisTimmermans/Deploy_MULTIPLY.git
-WORKDIR Deploy_MULTIPLY
-RUN conda env create -f environments/environment_multiply_platform.yml
-SHELL ["conda", "run", "-n", "multiply-platform", "/bin/bash", "-c"]
-
-
+COPY install_MULTIPLY.sh .
+RUN +x install_MULTIPLY.sh
 #====================================
 #========= multiply_modules =======
 #RUN git clone https://github.com/JorisTimmermans/atmospheric_correction.git
@@ -49,11 +37,11 @@ SHELL ["conda", "run", "-n", "multiply-platform", "/bin/bash", "-c"]
 #WORKDIR ../
 #RUN rm -r BRDF_descriptors
 
-RUN git clone https://github.com/JorisTimmermans/data-access.git
-WORKDIR data-access
-RUN python setup.py develop
-WORKDIR ../
-RUN rm -r data-access
+#RUN git clone https://github.com/JorisTimmermans/data-access.git
+#WORKDIR data-access
+#RUN python setup.py develop
+#WORKDIR ../
+#RUN rm -r data-access
 
 #RUN git clone https://github.com/multiply-org/inference-engine.git
 #WORKDIR inference-engine
@@ -100,11 +88,8 @@ RUN rm -r data-access
 #RUN python setup.py develop
 #WORKDIR ../
 #RUN rm -r vm-support
-#
-RUN echo 'from multiply_data_access import DataAccessComponent' > test.py
-RUN python test.py
 #====================================
 
 
 
-CMD "/usr/local/bin/start-jupyter.sh"
+CMD "./install_MULTIPLY.sh && /usr/local/bin/start-jupyter.sh"
