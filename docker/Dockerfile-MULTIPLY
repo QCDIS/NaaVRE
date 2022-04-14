@@ -10,6 +10,9 @@ COPY ./notebooks/ /home/jovyan/notebooks/
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 
+COPY install_MULTIPLY.sh .
+RUN chmod ugo+x install_MULTIPLY.sh
+
 USER $NB_USER
 
 RUN conda remove --force -y terminado && \
@@ -20,25 +23,7 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
     jupyter lab build --debug;
 
 
-#===== Add MULTIPLY dependencies ======
-RUN pip install sentinelhub --upgrade
 
-
-#========= Install_environments =======
-RUN git clone https://github.com/JorisTimmermans/Deploy_MULTIPLY.git
-WORKDIR Deploy_MULTIPLY/environments
-RUN conda env create -f environment_multiply_platform.yml
-
-RUN echo "conda activate $(head -1 environment_multiply_platform.yml | cut -d' ' -f2)" >> ~/.bashrc
-ENV PATH /opt/conda/envs/$(head -1 environment_multiply_platform.yml | cut -d' ' -f2)/bin:$PATH
-ENV CONDA_DEFAULT_ENV $(head -1 environment_multiply_platform.yml | cut -d' ' -f2)
-
-
-RUN eval "$(conda shell.bash hook)"
-RUN conda activate multiply-platform
-
-
-WORKDIR ../../
 
 
 #====================================
@@ -55,11 +40,11 @@ WORKDIR ../../
 #WORKDIR ../
 #RUN rm -r BRDF_descriptors
 
-RUN git clone https://github.com/JorisTimmermans/data-access.git
-WORKDIR data-access
-RUN python setup.py develop
-WORKDIR ../
-RUN rm -r data-access
+#RUN git clone https://github.com/JorisTimmermans/data-access.git
+#WORKDIR data-access
+#RUN python setup.py develop
+#WORKDIR ../
+#RUN rm -r data-access
 
 #RUN git clone https://github.com/multiply-org/inference-engine.git
 #WORKDIR inference-engine
@@ -107,10 +92,11 @@ RUN rm -r data-access
 #WORKDIR ../
 #RUN rm -r vm-support
 #
-RUN echo 'from multiply_data_access import DataAccessComponent' > test.py
-RUN python test.py
+#RUN echo 'from multiply_data_access import DataAccessComponent' > test.py
+#RUN python test.py
 #====================================
 
 
 
-CMD "/usr/local/bin/start-jupyter.sh"
+CMD install_MULTIPLY.sh && \
+    /usr/local/bin/start-jupyter.sh
