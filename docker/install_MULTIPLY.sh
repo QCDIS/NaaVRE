@@ -46,6 +46,6 @@ cd ../
 
 git clone https://github.com/JorisTimmermans/vm-support.git
 cd vm-support
-cd python setup.py develop
+python setup.py develop
 cd ../
 
