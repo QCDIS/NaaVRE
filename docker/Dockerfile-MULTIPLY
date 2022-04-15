@@ -29,6 +29,9 @@ RUN chmod ugo+x install_MULTIPLY.sh
 
 USER $NB_USER
 
+RUN source /venv/bin/activate
+RUN /home/jovyan/install_MULTIPLY.sh
+
 RUN conda remove --force -y terminado && \
     python -m pip install --upgrade pip
 
@@ -36,7 +39,4 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
     jupyter serverextension enable --py jupyterlab_vre --user && \
     jupyter lab build --debug;
 
-ENTRYPOINT /home/jovyan/install_MULTIPLY.sh
-
-#CMD /home/jovyan/install_MULTIPLY.sh && \
-#    /usr/local/bin/start-jupyter.sh
+CMD ["/usr/local/bin/start-jupyter.sh"]
