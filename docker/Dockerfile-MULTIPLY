@@ -29,7 +29,7 @@ RUN chmod ugo+x install_MULTIPLY.sh
 
 USER $NB_USER
 
-RUN source /venv/bin/activate
+#RUN source /venv/bin/activate
 RUN /home/jovyan/install_MULTIPLY.sh
 
 RUN conda remove --force -y terminado && \
