@@ -1,11 +1,11 @@
 #!/bin/sh
 
-pip install sentinelhub --upgrade
-
 mkdir dependencies
 cd dependencies
 
-source /venv/bin/activate
+#
+pip install sentinelhub --upgrade
+
 
 git clone https://github.com/JorisTimmermans/atmospheric_correction.git
 cd atmospheric_correction
