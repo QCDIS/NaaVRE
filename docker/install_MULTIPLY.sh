@@ -6,10 +6,6 @@ cd dependencies
 #
 pip install sentinelhub --upgrade
 
-conda install --yes -c conda-forge pdal python-pdal gdal && \
-      conda upgrade --yes numpy && \
-      conda update --yes -n base conda
-
 git clone https://github.com/JorisTimmermans/atmospheric_correction.git
 cd atmospheric_correction
 python setup.py develop
