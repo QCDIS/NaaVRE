@@ -17,7 +17,8 @@ USER $NB_USER
 
 COPY MULTIPLY_conda_requirements.txt .
 RUN conda install --yes -c conda-forge python=3.6.7=h357f687_1006
-RUN conda install --yes -c conda-forge -c defaults gdal=2.4.2=py36h5f563d9_8 nodejs=12.4.0=he1b5a44_0
+RUN conda install --yes -c conda-forge gdal=2.4.2=py36h5f563d9_8 nodejs=12.4.0=he1b5a44_0
+RUN conda install --yes -c conda-forge --file MULTIPLY_conda_requirements.txt
 RUN /home/jovyan/install_MULTIPLY.sh
 
 RUN conda remove --force -y terminado && \
