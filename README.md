@@ -1,261 +1,204 @@
 # Getting started with NaaVRE
 
-This is a quick start guide to use the NaaVRE. 
+This is a quick start guide to use the NaaVRE.
+
+
+https://user-images.githubusercontent.com/9680609/162855203-2e8f6d7e-883d-4646-aff7-c56c0f507f32.mp4
+
 
 
 ## Log in to NaaVRE
-Go to one of the deployed NaaVREs!
-[NaaVRE_1](https://user-images.githubusercontent.com/9680609/162737176-40a0f99c-914a-430e-9722-d09b9e564fb5.png)
+
+Go to one of the deployed NaaVREs
+Click on 'Sign in'
+
+<img src="https://user-images.githubusercontent.com/9680609/162737176-40a0f99c-914a-430e-9722-d09b9e564fb5.png" width="50%" height="50%">
 
 
+To login select the GitHub option 
+
+<img src="https://user-images.githubusercontent.com/9680609/162738248-02ad6183-c0cc-47c3-8872-f88652e55343.png" width="50%" height="50%">
 
 
-## Start JupyterLab with NaaVRE
+Select the 'Latest version of VL'  and click Start.
 
-Make sure you have docker ![Docker installed](https://docs.docker.com/get-docker/). 
+<img src="https://user-images.githubusercontent.com/9680609/162750631-b29ca350-e5b5-4399-a6b1-704c4a15872e.png" width="50%" height="50%">
 
-Start the NaaVRE Jupyter Docker extension:
-```console
-docker run -it -p 8888:8888 qcdis/n-a-a-vre:latest jupyter lab --debug
+## Configure GitHub Token
+
+On the top menu select 'LifeWatch VRE->Manage Credentials->GitHub'. Add the GitHub token you were provided.
+
+<img src="https://user-images.githubusercontent.com/9680609/162747939-c49915ed-ef24-4408-8220-501501490d73.png" width="50%" height="50%">
+
+
+## Download sample notebook 
+
+From the section 'Other' click on 'Terminal'  
+<img src="https://user-images.githubusercontent.com/9680609/162739524-e200f407-6efb-4748-a863-4c95bf310f86.png" width="50%" height="50%">
+
+
+In the new terminal type:
 ```
-The server logs appear in the terminal where you can find the server's URL e.g. 
-http://127.0.0.1:8888/lab?token=a70292d8b2ef97ee9f873663b85b7988455cc72d68bf8df9
-
-## Set up Repositories for Cells
-
-NaaVRE makes use of Git repositories write the cell code and build the corresponding containers. It also uses docker 
-registries to push these images, so they can be discovered by the Argo workflow engine.   
-
-### Dockerhub
-
-If you don't already have a Dockerhub account create a new one.
-
-Go to ![https://hub.docker.com/settings/security](https://hub.docker.com/settings/security) and create a new access 
-token by pressing "New Access Token".
-
-
----
-**IMPORTANT**
-
-Make sure your temporarily note the access token. You're going to need it later when creating the GitHub repository. 
-
----
-More information on Dockerhub's access tokens can be found ![here](https://docs.docker.com/docker-hub/access-tokens/)
-
-### GitHub
-If you don't already have a GitHub account create a new one
-
-Got to the ![NaaVRE-cells](https://github.com/QCDIS/NaaVRE-cells) template repository and press on the top left on "Use 
-this template"
-
-Select a name for the repository make sure it's public and press "Create repository form template"
-
-More information on template GitHub repositories can be found 
-![here](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template)
-
-The newly crated GitHub repository needs to get access to DockerHub registry to push the containers generated form the 
-code in the cells.
-
-On the newly crated GitHub repository press "Settings" on the top left
-
-On the bottom right select "Secrets"
-
-On the new page on the top left press "New repository secret" 
-
-On the "Name" add "DOCKERHUB_USERNAME" and the "Value" your DockerHub username and press "Add secret"
-
-On the new page on the top left press again "New repository secret"
-
-On the "Name" add "DOCKERHUB_PASSWORD" and the "Value" your DockerHub access token generated from step 2 in Section "Dockerhub" and press "Add secret"
-
-
-NaaVRE needs to commit the cells from your notebooks into the newly crated repository. To do that you'll need to generate 
-a personal access token. To do that go to ![https://github.com/settings/tokens](https://github.com/settings/tokens). 
-
-In the top right corner select "Generate new token". 
-
-In the next page type a name for the token e.g. NaaVRE. 
-
-Set a reasonable expiration date e.g. 60. Note if this token respires you can always create a new in the future.
-
-On the section "Select scopes" tick the "repo" selection 
-
-Scroll on the bottom of the page and press "Generate token"
-
----
-**IMPORTANT**
-
-Make sure your temporarily note the token. You're going to need to added to NaaVRE
-
----
-More information on GitHub's personal tokens can be found ![here](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
-
-## Argo workflow engine in minikube 
-NaaVRE exports workflows as Argo workflows. Argo Workflows is an open source container-native workflow engine for 
-orchestrating parallel jobs on Kubernetes.
-
-Install ![minikube](https://minikube.sigs.k8s.io/docs/start/)
-
-Install ![helm](https://helm.sh/docs/intro/install/)
-
-Add the Argo Chart repository:
-```console
-helm repo add argo https://argoproj.github.io/argo-helm
+wget https://raw.githubusercontent.com/QCDIS/lifewatch-notebooks/main/eEcolidar/laserfarm_retiling.ipynb
 ```
 
-Install the Argo workflow engine:
-```console
-helm install argowf argo/argo-workflows --set controller.containerRuntimeExecutor=k8sapi --set server.enabled=true --set server.serviceType=NodePort
-```
-Check that argo is running by typing: 
-```console
-kubectl get pods 
-```
-You will see something like:
-```console
-NAME                                                             READY   STATUS              RESTARTS   AGE
-pod/argowf-argo-workflows-server-957d9db7d-zl7ps                 0/1     ContainerCreating   0          43s
-pod/argowf-argo-workflows-workflow-controller-856464db85-4v9lx   0/1     ContainerCreating   0          43s
-```
-
-After some minutes if you run again:
-```console
-kubectl get pods 
-```
-
-the lines should change to:  
-```console
-NAME                                                             READY   STATUS    RESTARTS   AGE
-pod/argowf-argo-workflows-server-957d9db7d-zl7ps                 1/1     Running   0          3m27s
-pod/argowf-argo-workflows-workflow-controller-856464db85-4v9lx   1/1     Running   0          3m27s
-```
-
-Get the Argo server port by typing:
-```console
-kubectl get service argowf-argo-workflows-server --output='jsonpath="{.spec.ports[0].nodePort}"' && echo 
-```
-
-Now you need to find the IP address minikube is running at by typing :
-```console
-minikube ip
-```
-You should get something like:
-```console
-192.168.49.2
-```
-
-To open Argo server open your borrower at http://<MINIKUBE_IP>:<ARGO_PORT>
-
-The page should ask you for an "argo auth token". To generate it type:
-```console
-kubectl create role vre --verb=list,update --resource=workflows.argoproj.io  && kubectl create sa vre && kubectl create rolebinding vre --role=vre --serviceaccount=argo:vre
-```
-
-And to get the argo auth token:
-```console
-SECRET=$(kubectl get sa vre -o=jsonpath='{.secrets[0].name}') && ARGO_TOKEN="Bearer $(kubectl get secret $SECRET -o=jsonpath='{.data.token}' | base64 --decode)" && echo $ARGO_TOKEN
-```
-The output should look like this:
-```console
-Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImJHbmc5b1l0R2p3cEhIYVJxWDY2SEZTQXVNQ3FMZWhfN3UtVVdlaDNTaFUifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6InZyZS10b2tlbi1zOGJmYiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJ2cmUiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiJjYTI1MTU4Zi1hNmVjLTQyOTEtOTM5OS05OTMwZTBiZGU2ODQiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6ZGVmYXVsdDp2cmUifQ.vB25wrOf3OIa1ixh-VjLjew84DLvcSsroDtqSUKV3mDHm8CRv9ITGQferGIFj3A8YaZ59hPGwidAwYmhILqIsfr2oLyyF9qt7ua9uw3f7fSCSnEKGbKbpP1_J-z992MYpsv3E5kCQeUf2IOnXP7Hd4K2hdHZHQkVVrqlwWD6RaPGe4O-Mbeq1_2QD8_75F2tj3NGeyMosJCAjyG7hU3hcNu2HjLOIpvD88GjOLHk8IT4pVHYNQAkly3DLin_4os0_FT1Qt7OD3f6GIFE-0GL4BJqDKvD0-CtBoI1G16oBfR2qusY3Ow
-```
-
-Copy the entire token and pasted on the box provided at http://<MINIKUBE_IP>:<ARGO_PORT>
-
-## Run simple workflow
-
-Open your browser to the JupyterLab e.g. http://127.0.0.1:8888/lab?token=a70292d8b2ef97ee9f873663b85b7988455cc72d68bf8df9.
-On the top you should see a tab named "LifeWatch VRE". Select "Manage Credentials"->"GitHub". In the text box 
-add your GitHub token and press "save".
-
-Create a new Python notebook and add two simple cells. Make sure you add a comment on the top for the name of each cell.
-For example:
-```Python
-#simple-cell1
-a = 40
-```
-```Python
-#simple-cell2
-b = a + 2
-```  
-From the mid-left select the "LifeWatch Panel" and select the output as Integer and press "ADD TO CATALOG".
-You should see a message: "Local Catalog Cell successfully added to the catalog". Press ok and repeat the same 
-for the other cell.
-
-Next, got to your GitHub repository and select actions. You should see the "Docker Image CI" actions for the cells.
-As soon as the actions are completed you can check if the Docker images are pushed in your Docker Hub registry.
-
-Now you can compose your workflow from the cells you just created. Open a new Launcher in Jupyter Hub (Ctr+Shift+L).
-At the bottom of the page press "Experiment Manager". There you can drag and drop the two cells you created on the 
-composer canvas. Connect cell1 to cell2 and press "Export Workflow". 
-
-If you open the File Browser (Ctr+Shift+F) you'll see a file named "workflow.yaml". Open that file and copy it's contents.
-
-Open your browser to the Argo workflow server e.g. http://192.168.49.2:30832/ and 
-
-## Error Reporting 
-If you encounter any issues, bugs, or errors you may report them at: https://github.com/QCDIS/NaaVRE/issues/new/choose 
-From there press the "Get started" button to submit a report.
-
-Alternafilly you may use this Google form: https://docs.google.com/forms/d/e/1FAIpQLScytqOAdsizGwvwVf0q7jfmvnelvrN6PGD7_U0cnUurc1-v2g/viewform?usp=sf_link
+<img src="https://user-images.githubusercontent.com/9680609/162740015-ec2d5554-6c6a-4c3b-a4cd-b7c2270adced.png" width="50%" height="50%">
 
 
-# Build Release
-```console
-python3 -m venv  venv/
-source venv/bin/activate
-```
+You will notice a new notebook is downloaded. Close the terminal. 
 
-```console
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-```bash
-make release 
-```
+<img src="https://user-images.githubusercontent.com/9680609/162744015-b19408dd-35e3-4a5a-a178-ca21b7f3d63e.png" width="50%" height="50%">
 
 
-# Installation
+## Containerize notebook cells 
 
-## Pip
-Create a python virtual environment 
 
-```console
-python3 -m venv  venv/
-source venv/bin/activate
-```
-Install pip and wheel requirements
+Open the notebook. Next on the left click on the LifeWatch panel.
 
-```console
-pip install --upgrade pip
-pip install wheel setuptools_rust
-```
+<img src="https://user-images.githubusercontent.com/9680609/162744335-eea6a0bd-14d5-4ed4-b678-c01e3b71188e.png" width="50%" height="50%">
 
-Install and enable the extension
-```console
-pip install jupyterlab_vre-py3-none-any.whl
-jupyter lab build 
-jupyter serverextension enable --py jupyterlab_vre --user
-```
-Start Jupyter lab 
-```console
-jupyter lab 
+Select the 'Fetch Laz File' cell.
+
+<img src="https://user-images.githubusercontent.com/9680609/162744821-fffaa346-2aa9-4e8f-9894-d54bc1928096.png" width="50%" height="50%">
+
+On the 'Inputs and Outputs' of the Component containerizer select the types as shown below. When all the types are added Click 'ADD TO CATALOG'
+
+<img src="https://user-images.githubusercontent.com/9680609/162745361-6d09440f-9ae9-434d-8ed8-a81f28865b1a.png" width="50%" height="50%">
+
+Select the 'Retiling' cell. On the 'Inputs and Outputs' of the Component containerizer select the types as shown below. When all the types are added Click 'ADD TO CATALOG'
+
+<img src="https://user-images.githubusercontent.com/9680609/162830069-1f0ba0a9-f068-4940-a448-100cd278c74e.png" width="50%" height="50%">
+
+
+----
+
+## NOTE 
+
+When you click 'ADD TO CATALOG' you may get the following warning:
+
+<img src="https://user-images.githubusercontent.com/9680609/162751191-c0000e65-9132-44c5-9967-d0a6b65c7743.png" width="50%" height="50%">
+
+ To solve this go through all the inputs and outputs, select a different type and then back the type shown in the image above. 
+
+----
+
+
+## Construct Workflow 
+
+Go to 'File->New Launcher'. On the bottom section 'LifeWatch VRE' click on the 'Experiment Manager'.
+
+<img src="https://user-images.githubusercontent.com/9680609/162753068-8704c396-5391-45c5-853c-48d607df3472.png" width="50%" height="50%">
+
+By dragging and dropping the cells on the left, construct the workflow shown bellow. 
+
+<img src="https://user-images.githubusercontent.com/9680609/162758227-2eebddd7-3e84-490b-8df4-1c7a80c55d71.png" width="50%" height="50%">
+
+
+Click on 'EXPORT WORKFLOW' and go to the File Browser by selecting the icon on the top left. 
+
+<img src="https://user-images.githubusercontent.com/9680609/162760145-9dfcfe6a-b105-4474-badb-057d5225b6de.png" width="50%" height="50%">
+
+There you should see a file named 'workflow.yaml'. If you open it, it should look like this:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: workflow-test-
+spec:
+    entrypoint: workflow-test
+    arguments:
+      parameters:
+      - name: param_login
+        value: ''
+      - name: param_hostname
+        value: ''
+      - name: param_password
+        value: ''
+    templates:
+    - name: workflow-test
+      dag:
+        tasks:
+        - name: fetch-laz-files-demo
+          template: fetch-laz-files-demo-tmp
+          arguments:
+            parameters:
+            - {name: param_login, value: "{{workflow.parameters.param_login}}"}
+            - {name: param_hostname, value: "{{workflow.parameters.param_hostname}}"}
+            - {name: param_password, value: "{{workflow.parameters.param_password}}"}
+        - name: retiling-demo
+          dependencies: [ fetch-laz-files-demo ]
+          template: retiling-demo-tmp
+          arguments:
+            parameters:
+            - {name: laz_files, value: "{{item}}"}
+            - {name: param_login, value: "{{workflow.parameters.param_login}}"}
+            - {name: param_hostname, value: "{{workflow.parameters.param_hostname}}"}
+            - {name: param_password, value: "{{workflow.parameters.param_password}}"}
+          withParam: "{{tasks.fetch-laz-files-demo.outputs.parameters.outs}}"
+
+    - name: fetch-laz-files-demo-tmp
+      outputs:
+        parameters:
+          - name: outs
+            valueFrom:
+              path: /tmp/outputs.json
+      container:
+        image: "qcdis/fetch-laz-files-demo"
+        command: ["/bin/bash", "-c"]
+        args:
+          - source /venv/bin/activate;
+            python fetch-laz-files-demo.py
+            --param_login {{workflow.parameters.param_login}}
+            --param_hostname {{workflow.parameters.param_hostname}}
+            --param_password {{workflow.parameters.param_password}};
+    - name: retiling-demo-tmp
+      inputs:
+        parameters:
+        - name: laz_files
+        - name: param_login
+        - name: param_hostname
+        - name: param_password
+      outputs:
+        parameters:
+          - name: outs
+            valueFrom:
+              path: /tmp/outputs.json
+      container:
+        image: "qcdis/retiling-demo"
+        command: ["/bin/bash", "-c"]
+        args:
+          - source /venv/bin/activate;
+            echo  {{inputs.parameters.laz_files}} > /tmp/inputs.json;
+            python retiling-demo.py
+            --param_login {{workflow.parameters.param_login}}
+            --param_hostname {{workflow.parameters.param_hostname}}
+            --param_password {{workflow.parameters.param_password}};
 ```
 
-## Docker
+Download that file on your own machine. 
 
-If you have ![Docker installed](https://docs.docker.com/get-docker/), you can use the NaaVRE Jupyter Docker extension. 
+## Execute the workflow
 
-```console
-docker run -it -p 8888:8888 qcdis/n-a-a-vre:latest jupyter lab --debug
-```
-This command pulls the qcdis/n-a-a-vre image Docker Hub if it is not already present on the local host. It then starts a 
-container running a Jupyter Notebook server and exposes the server on host port 8888. The server logs appear in the 
-terminal where you can find the server's URL e.g. http://127.0.0.1:8888/lab?token=a70292d8b2ef97ee9f873663b85b7988455cc72d68bf8df9
+Go to the Argo workflow engine and click on the workflow templates.
 
-Additionally, it is possible to start the extension instance on a local directory as follows:
+<img src="https://user-images.githubusercontent.com/9680609/162761426-7616a345-b1f3-48b3-b7d9-06eae7e1f75f.png" width="50%" height="50%">
 
-```console
-docker run -it -p 8888:8888 -v <local-dir>/:/home/jovyan/work -w /home/jovyan/work qcdis/jupyterlab_vre:latest jupyter lab --debug
-```
+Click on the 'CREATE NEW WORKFLOW TEMPLATE' and upload the workflow.yaml file and click '+CREATE'
+
+<img src="https://user-images.githubusercontent.com/9680609/162762038-ca469845-57ec-4579-b6e9-2801f9557fa5.png" width="50%" height="50%">
+
+
+Now click on '+ SUBMIT'
+
+<img src="https://user-images.githubusercontent.com/9680609/162762394-e6839f7f-8e95-4775-9425-cdbbeaa28b3b.png" width="50%" height="50%">
+
+
+Fill in the perimeters as shown below and click '+ SUBMIT'
+
+<img src="https://user-images.githubusercontent.com/9680609/162762707-1eba8e59-6d7b-4cc2-8bde-391863e63e5d.png" width="50%" height="50%">
+
+When the workflow completes its execution  it should look like this:
+
+<img src="https://user-images.githubusercontent.com/9680609/162831481-23c8a69c-1bf4-4b96-ab9d-01da6b618c72.png" width="50%" height="50%">
+
