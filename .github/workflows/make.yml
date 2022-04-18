@@ -20,3 +20,10 @@ jobs:
       dockerfile: Dockerfile-laserfarm
       tag: n-a-a-vre-laserfarm
 
+  call-build-container-multipy:
+    needs: call-build-wheel
+    uses: ./.github/workflows/build-container.yml
+    with:
+      wheel_artifact_name: jupyterlab_vre
+      dockerfile: Dockerfile-MULTIPLY
+      tag: n-a-a-vre-multiply
