@@ -18,6 +18,7 @@ USER $NB_USER
 COPY MULTIPLY_conda_requirements.txt .
 RUN conda install --yes -c conda-forge python=3.6.7=h357f687_1006
 RUN conda install --yes -c conda-forge nodejs=12.4.0=he1b5a44_0
+RUN conda update conda
 RUN conda config --set channel_priority strict
 RUN conda install --yes -c conda-forge gdal=2.4.2=py36h5f563d9_8
 #RUN conda install --yes -c conda-forge --file MULTIPLY_conda_requirements.txt
