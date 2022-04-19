@@ -15,6 +15,9 @@ USER $NB_USER
 
 COPY MULTIPLY_conda_requirements.txt .
 COPY MULTIPLY_pip_requirements.txt .
+RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
+    conda upgrade --yes numpy && \
+    conda update --yes -n base conda
 RUN pip install -r MULTIPLY_pip_requirements.txt
 
 RUN conda remove --force -y terminado && \
