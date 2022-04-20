@@ -286,6 +286,7 @@ class CellsHandler(APIHandler, Catalog):
         template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
 
         token = Catalog.get_gh_token()
+        url = Catalog.get_
         if not token:
             self.set_status(400)
             self.write('Github token not set!')
@@ -402,7 +403,6 @@ class GithubAuthHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        logger.debug('payload: '+str(payload))
         if payload and 'github-auth-token' in payload and 'github-url' in payload:
             Catalog.add_gh_credentials(
                 GHCredentials(token=payload['github-auth-token'], url=payload['github-url'])

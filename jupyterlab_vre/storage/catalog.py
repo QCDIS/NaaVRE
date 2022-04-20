@@ -46,6 +46,13 @@ class Catalog:
             return tokens[0]
 
     @classmethod
+    def get_gh_url(cls) -> GHCredentials:
+        urls = cls.get_gh_url().all()
+        if len(urls) > 0:
+            return urls[0]
+
+
+    @classmethod
     def get_credentials_from_username(cls, cred_username) -> SDIACredentials:
         res = cls.sdia_credentials.search(where('username') == cred_username)
         if res:
