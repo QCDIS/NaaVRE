@@ -1,8 +1,17 @@
 import { requestAPI } from '@jupyter_vre/core';
-import { styled } from '@material-ui/core';
+import { Avatar, styled, TextField } from '@material-ui/core';
+import { Autocomplete } from '@mui/material';
 import * as React from 'react';
+import DownloadForOffline from '@mui/icons-material/DownloadForOffline';
 import { CellPreview } from './CellPreview';
 import VirtualizedList from './VirtualizedList';
+
+const catalogs = [
+
+    { label: "LifeWatch ERIC" },
+    { label: "BIOMAC" },
+    { label: "eScience Center" }
+]
 
 interface IState {
     catalog_elements: []
@@ -13,10 +22,8 @@ export const DefaultState: IState = {
 }
 
 const CatalogBody = styled('div')({
-    minWidth: '1000px',
-    minHeight: '500px',
     display: 'flex',
-    flexDirection: 'row'
+    flexDirection: 'row',
 })
 
 const PreviewWindow = styled('div')({
@@ -27,6 +34,8 @@ const PreviewWindow = styled('div')({
 const CellInfo = styled('div')({
 
     position: 'absolute',
+    display: 'flex',
+    flexDirection: 'column',
     width: '100%',
     height: '230px',
     paddingTop: '20px',
@@ -65,14 +74,30 @@ export class CatalogDialog extends React.Component {
     render(): React.ReactElement {
         return (
             <CatalogBody>
-                <VirtualizedList
-                    items={this.state.catalog_elements}
-                    clickAction={this.onCellSelection}
-                />
+                <div>
+                    <Autocomplete
+                        disablePortal
+                        id="combo-box-demo"
+                        options={catalogs}
+                        sx={{ width: 300, margin: '10px' }}
+                        renderInput={(params) => <TextField {...params} label="Catalog" />}
+                    />
+                    <VirtualizedList
+                        items={this.state.catalog_elements}
+                        clickAction={this.onCellSelection}
+                    />
+                </div>
                 <PreviewWindow>
                     <CellPreview ref={this.cellPreviewElement} />
                     <CellInfo>
-                        <div>Cell Info</div>
+                        <div style={{ display: 'flex', flexDirection: 'row' }}>
+                            <Avatar>NS</Avatar>
+                            <p style={{ padding: '15px' }}>Name Surname</p>
+                            <DownloadForOffline sx={{ margin: '10px' }} fontSize='medium' />
+                        </div>
+                        <div style={{ marginTop: '20px', textAlign: 'justify', width: '500px' }}>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque dignissim tortor id neque egestas blandit. In hac habitasse platea dictumst. Nam feugiat blandit enim at pharetra. Duis rhoncus urna erat, quis posuere lorem consectetur non. Proin imperdiet lectus id nulla semper sagittis. Etiam ut leo sit amet lacus malesuada dignissim. Aenean ut turpis felis. Donec molestie, libero vitae imperdiet dictum, metus libero ullamcorper turpis, ut euismod mauris nulla a dui. Maecenas efficitur tristique posuere. Sed porta convallis elit, vel pulvinar dolor pulvinar vel. In scelerisque velit in dictum dictum. Praesent eget lacus sapien.
+                        </div>
                     </CellInfo>
                 </PreviewWindow>
             </CatalogBody>
