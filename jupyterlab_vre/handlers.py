@@ -402,9 +402,10 @@ class GithubAuthHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        if payload and 'github-auth-token' in payload:
+        logger.debug('payload: '+str(payload))
+        if payload and 'github-auth-token' in payload and 'github-url' in payload:
             Catalog.add_gh_credentials(
-                GHCredentials(token=payload['github-auth-token'])
+                GHCredentials(token=payload['github-auth-token'], url=payload['github-url'])
             )
         self.flush()
 

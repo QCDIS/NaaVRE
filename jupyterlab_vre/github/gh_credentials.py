@@ -1,6 +1,6 @@
 class GHCredentials:
+    token: str
 
-    token    : str
-
-    def __init__(self, token) -> None:
+    def __init__(self, token=None, url=None) -> None:
         self.token = token
+        self.url = url
