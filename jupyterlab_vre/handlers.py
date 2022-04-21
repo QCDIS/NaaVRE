@@ -352,9 +352,6 @@ class CellsHandler(APIHandler, Catalog):
                 verify=False,
                 headers={"Accept": "application/vnd.github.v3+json", "Authorization": "token " + credentials['token']}
             )
-
-            print(resp)
-
         self.flush()
 
     @web.authenticated
