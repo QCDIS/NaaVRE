@@ -41,7 +41,7 @@ class Catalog:
 
     @classmethod
     def get_gh_credentials(cls) -> GHCredentials:
-        credentials = cls.gh_tokens.all()
+        credentials = cls.gh_credentials.all()
         if len(credentials) > 0:
             return credentials[0]
 
