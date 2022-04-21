@@ -285,19 +285,18 @@ class CellsHandler(APIHandler, Catalog):
         template_dockerfile.stream(task_name=current_cell.task_name).dump(dockerfile_file_path)
         template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
 
-        token = Catalog.get_gh_token()
-        url = Catalog.get_gh_url()
-        if not token or not url:
+        credentials = Catalog.get_gh_credentials()
+        if not credentials:
             self.set_status(400)
-            self.write('Github token or URL are not set!')
-            self.write_error('Github token or URL are not set!')
+            self.write('Github credentials are not set!')
+            self.write_error('Github credentials are not set!')
             self.flush()
             # or self.render("error.html", reason="You're not authorized"))
             return
-
-        gh = login(token=token['token'])
-        owner = url.split('https://github.com/')[0]
-        repository_name = url.split('https://github.com/')[1]
+        logger.debug('credentials: '+str(credentials))
+        gh = login(token=credentials['token'])
+        owner = credentials['url'].split('https://github.com/')[0]
+        repository_name = credentials['url'].split('https://github.com/')[1]
         logger.debug('owner: '+owner+' repository_name: '+repository_name)
         repository = gh.repository(owner, repository_name)
 
@@ -381,7 +380,7 @@ class SDIAAuthHandler(APIHandler, SDIA, Catalog):
         error = issubclass(type(res), Exception)
 
         if not error:
-            Catalog.add_credentials(
+            Catalog.add_sdia_credentials(
                 SDIACredentials(
                     username=payload['sdia-auth-username'],
                     password=payload['sdia-auth-password'],
@@ -424,7 +423,7 @@ class SDIACredentialsHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def get(self, *args, **kwargs):
-        self.write(json.dumps(Catalog.get_credentials()))
+        self.write(json.dumps(Catalog.get_sdia_credentials()))
         self.flush()
 
 

@@ -16,7 +16,7 @@ class Catalog:
     cells            = db.table('cells')
     provision        = db.table('provision')
     sdia_credentials = db.table('sdia_credentials')
-    gh_tokens        = db.table('gh_tokens')
+    gh_credentials        = db.table('gh_credentials')
     editor_buffer: Cell
 
     @classmethod
@@ -32,25 +32,18 @@ class Catalog:
         return cls.cells.all()
 
     @classmethod
-    def add_credentials(cls, cred: SDIACredentials):
+    def add_sdia_credentials(cls, cred: SDIACredentials):
         cls.sdia_credentials.insert(cred.__dict__)
 
     @classmethod
     def add_gh_credentials(cls, cred: GHCredentials):
-        cls.gh_tokens.insert(cred.__dict__)
+        cls.gh_credentials.insert(cred.__dict__)
 
     @classmethod
-    def get_gh_token(cls) -> GHCredentials:
-        tokens = cls.gh_tokens.all()
-        if len(tokens) > 0:
-            return tokens[0]
-
-    @classmethod
-    def get_gh_url(cls) -> GHCredentials:
-        urls = cls.get_gh_url().all()
-        if len(urls) > 0:
-            return urls[0]
-
+    def get_gh_credentials(cls) -> GHCredentials:
+        credentials = cls.gh_tokens.all()
+        if len(credentials) > 0:
+            return credentials[0]
 
     @classmethod
     def get_credentials_from_username(cls, cred_username) -> SDIACredentials:
@@ -59,7 +52,7 @@ class Catalog:
             return res[0]
 
     @classmethod
-    def get_credentials(cls):
+    def get_sdia_credentials(cls):
         return cls.sdia_credentials.all()
 
     @classmethod
