@@ -26,9 +26,13 @@ Select the 'Latest version of VL'  and click Start.
 
 ## Configure GitHub Token
 
-On the top menu select 'LifeWatch VRE->Manage Credentials->GitHub'. Add the GitHub token you were provided.
+On the top menu select 'LifeWatch VRE->Manage Credentials->GitHub'. Add the GitHub url and token you created from the template project at: https://github.com/QCDIS/NaaVRE-cells 
 
-<img src="https://user-images.githubusercontent.com/9680609/162747939-c49915ed-ef24-4408-8220-501501490d73.png" width="50%" height="50%">
+<img src="https://user-images.githubusercontent.com/9680609/164538604-b91c3c00-4760-44c3-8477-371c54951ec0.png" width="50%" height="50%">
+
+
+
+https://user-images.githubusercontent.com/9680609/164538758-d34f6d4c-5231-4f7e-a1d0-94cab83e9fce.mp4
 
 
 ## Download sample notebook 
