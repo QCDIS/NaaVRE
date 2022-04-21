@@ -6,6 +6,7 @@ import uuid
 from pathlib import Path
 
 import autopep8
+import github3
 import nbformat as nb
 import requests
 from github3 import login
@@ -295,10 +296,22 @@ class CellsHandler(APIHandler, Catalog):
             return
         logger.debug('credentials: '+str(credentials))
         gh = login(token=credentials['token'])
-        owner = credentials['url'].split('https://github.com/')[0]
-        repository_name = credentials['url'].split('https://github.com/')[1]
+        owner = credentials['url'].split('https://github.com/')[1].split('/')[0]
+        repository_name = credentials['url'].split('https://github.com/')[1].split('/')[1]
+        if '.git' in repository_name:
+            repository_name = repository_name.split('.git')[0]
         logger.debug('owner: '+owner+' repository_name: '+repository_name)
-        repository = gh.repository(owner, repository_name)
+        try:
+            repository = gh.repository(owner, repository_name)
+        except github3.exceptions.AuthenticationFailed as ex:
+            self.set_status(400)
+            if hasattr(ex, 'message'):
+                self.write(ex.message)
+            else:
+                self.write(str(ex))
+            self.write_err
+            self.flush()
+            return
 
         last_comm = next(repository.commits(number=1), None)
 
@@ -325,7 +338,8 @@ class CellsHandler(APIHandler, Catalog):
                     )
 
             resp = requests.post(
-                url="https://api.github.com/repos/QCDIS/NaaVRE-container-prestage/actions/workflows/build-push-docker.yml/dispatches",
+                url='https://api.github.com/repos/'+owner+'/'+repository_name+'/actions/workflows/build-push-docker'
+                                                                              '.yml/dispatches',
                 json={
                     "ref": "refs/heads/main",
                     "inputs": {
@@ -336,7 +350,7 @@ class CellsHandler(APIHandler, Catalog):
                     }
                 },
                 verify=False,
-                headers={"Accept": "application/vnd.github.v3+json", "Authorization": "token " + token["token"]}
+                headers={"Accept": "application/vnd.github.v3+json", "Authorization": "token " + credentials['token']}
             )
 
             print(resp)
