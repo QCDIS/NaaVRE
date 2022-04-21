@@ -286,17 +286,20 @@ class CellsHandler(APIHandler, Catalog):
         template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
 
         token = Catalog.get_gh_token()
-        url = Catalog.get_
-        if not token:
+        url = Catalog.get_gh_url()
+        if not token or not url:
             self.set_status(400)
-            self.write('Github token not set!')
-            self.write_error('Github token not set!')
+            self.write('Github token or URL are not set!')
+            self.write_error('Github token or URL are not set!')
             self.flush()
             # or self.render("error.html", reason="You're not authorized"))
             return
 
         gh = login(token=token['token'])
-        repository = gh.repository('QCDIS', 'NaaVRE-container-prestage')
+        owner = url.split('https://github.com/')[0]
+        repository_name = url.split('https://github.com/')[1]
+        logger.debug('owner: '+owner+' repository_name: '+repository_name)
+        repository = gh.repository(owner, repository_name)
 
         last_comm = next(repository.commits(number=1), None)
 
