@@ -4,17 +4,17 @@ on:
 
 jobs:
   call-build-wheel:
-    uses: ./.github/workflows/build-wheel.yml
+    uses: ./.repository/workflows/build-wheel.yml
   call-build-container:
     needs: call-build-wheel
-    uses: ./.github/workflows/build-container.yml
+    uses: ./.repository/workflows/build-container.yml
     with:
       wheel_artifact_name: jupyterlab_vre
       dockerfile: Dockerfile
       tag: n-a-a-vre
   call-build-container-laserfarm:
     needs: call-build-wheel
-    uses: ./.github/workflows/build-container.yml
+    uses: ./.repository/workflows/build-container.yml
     with:
       wheel_artifact_name: jupyterlab_vre
       dockerfile: Dockerfile-laserfarm
@@ -22,7 +22,7 @@ jobs:
 
   call-build-container-multipy:
     needs: call-build-wheel
-    uses: ./.github/workflows/build-container.yml
+    uses: ./.repository/workflows/build-container.yml
     with:
       wheel_artifact_name: jupyterlab_vre
       dockerfile: Dockerfile-MULTIPLY
