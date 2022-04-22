@@ -9,15 +9,6 @@ export class GithubAuthDialog extends React.Component {
     render(): React.ReactElement {
         return (
             <form className={'github-auth-form'}>
-                <label htmlFor='docker-hub-name'>Git repository url:</label>
-                <br/>
-                <input
-                    type='url'
-                    className='auth-form'
-                    id='docker-hub-name'
-                    name='docker-hub-name'
-                />
-                <br/>
                 <label htmlFor='github-url'>Git repository url:</label>
                 <br/>
                 <input

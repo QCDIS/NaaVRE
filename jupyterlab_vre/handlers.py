@@ -254,7 +254,7 @@ class CellsHandler(APIHandler, Catalog):
         else:
             os.mkdir(cell_path)
 
-        image_repo = ''
+
         cell_file_name = current_cell.task_name + '.py'
         dockerfile_name = 'Dockerfile.'+image_repo+'.' + current_cell.task_name
         env_name = current_cell.task_name + '-environment.yaml'
