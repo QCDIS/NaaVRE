@@ -6,6 +6,7 @@ import uuid
 from pathlib import Path
 
 import autopep8
+import github3
 import nbformat as nb
 import requests
 from github3 import login
@@ -16,7 +17,7 @@ from tornado import web
 from jupyterlab_vre.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.extractor.extractor import Extractor
 from jupyterlab_vre.faircell import Cell
-from jupyterlab_vre.github.gh_credentials import GHCredentials
+from jupyterlab_vre.repository.repository_credentials import RepositoryCredentials
 from jupyterlab_vre.sdia.sdia import SDIA
 from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 from jupyterlab_vre.storage.catalog import Catalog
@@ -253,8 +254,9 @@ class CellsHandler(APIHandler, Catalog):
         else:
             os.mkdir(cell_path)
 
+        image_repo = ''
         cell_file_name = current_cell.task_name + '.py'
-        dockerfile_name = 'Dockerfile.qcdis.' + current_cell.task_name
+        dockerfile_name = 'Dockerfile.'+image_repo+'.' + current_cell.task_name
         env_name = current_cell.task_name + '-environment.yaml'
 
         part_of_standard_library = load_standard_library_names()
@@ -285,17 +287,32 @@ class CellsHandler(APIHandler, Catalog):
         template_dockerfile.stream(task_name=current_cell.task_name).dump(dockerfile_file_path)
         template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
 
-        token = Catalog.get_gh_token()
-        if not token:
+        credentials = Catalog.get_gh_credentials()
+        if not credentials:
             self.set_status(400)
-            self.write('Github token not set!')
-            self.write_error('Github token not set!')
+            self.write('Github credentials are not set!')
+            self.write_error('Github credentials are not set!')
             self.flush()
             # or self.render("error.html", reason="You're not authorized"))
             return
-
-        gh = login(token=token['token'])
-        repository = gh.repository('QCDIS', 'NaaVRE-container-prestage')
+        logger.debug('credentials: '+str(credentials))
+        gh = login(token=credentials['token'])
+        owner = credentials['url'].split('https://github.com/')[1].split('/')[0]
+        repository_name = credentials['url'].split('https://github.com/')[1].split('/')[1]
+        if '.git' in repository_name:
+            repository_name = repository_name.split('.git')[0]
+        logger.debug('owner: '+owner+' repository_name: '+repository_name)
+        try:
+            repository = gh.repository(owner, repository_name)
+        except github3.exceptions.AuthenticationFailed as ex:
+            self.set_status(400)
+            if hasattr(ex, 'message'):
+                self.write(ex.message)
+            else:
+                self.write(str(ex))
+            self.write_err
+            self.flush()
+            return
 
         last_comm = next(repository.commits(number=1), None)
 
@@ -322,22 +339,20 @@ class CellsHandler(APIHandler, Catalog):
                     )
 
             resp = requests.post(
-                url="https://api.github.com/repos/QCDIS/NaaVRE-container-prestage/actions/workflows/build-push-docker.yml/dispatches",
+                url='https://api.github.com/repos/'+owner+'/'+repository_name+'/actions/workflows/build-push-docker'
+                                                                              '.yml/dispatches',
                 json={
                     "ref": "refs/heads/main",
                     "inputs": {
                         "build_dir": current_cell.task_name,
                         "dockerfile": dockerfile_name,
-                        "image_repo": "qcdis",
+                        "image_repo": image_repo,
                         "image_tag": current_cell.task_name
                     }
                 },
                 verify=False,
-                headers={"Accept": "application/vnd.github.v3+json", "Authorization": "token " + token["token"]}
+                headers={"Accept": "application/vnd.repository.v3+json", "Authorization": "token " + credentials['token']}
             )
-
-            print(resp)
-
         self.flush()
 
     @web.authenticated
@@ -377,7 +392,7 @@ class SDIAAuthHandler(APIHandler, SDIA, Catalog):
         error = issubclass(type(res), Exception)
 
         if not error:
-            Catalog.add_credentials(
+            Catalog.add_sdia_credentials(
                 SDIACredentials(
                     username=payload['sdia-auth-username'],
                     password=payload['sdia-auth-password'],
@@ -402,9 +417,25 @@ class GithubAuthHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        if payload and 'github-auth-token' in payload:
+        if payload and 'repository-auth-token' in payload and 'repository-url' in payload:
             Catalog.add_gh_credentials(
-                GHCredentials(token=payload['github-auth-token'])
+                RepositoryCredentials(token=payload['repository-auth-token'], url=payload['repository-url'])
+            )
+        self.flush()
+
+################################################################################
+
+# Image Registry  Auth
+
+################################################################################
+class ImageRegistryAuthHandler(APIHandler, Catalog):
+
+    @web.authenticated
+    async def post(self, *args, **kwargs):
+        payload = self.get_json_body()
+        if payload and 'image-registry-url' in payload:
+            Catalog.add_gh_credentials(
+                RepositoryCredentials(url=payload['image-registry-url'])
             )
         self.flush()
 
@@ -420,7 +451,7 @@ class SDIACredentialsHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def get(self, *args, **kwargs):
-        self.write(json.dumps(Catalog.get_credentials()))
+        self.write(json.dumps(Catalog.get_sdia_credentials()))
         self.flush()
 
 
