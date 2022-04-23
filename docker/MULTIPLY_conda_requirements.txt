@@ -1,3 +1,5 @@
+nodejs=12.4.0=he1b5a44_0
+gdal=2.4.2=py36h5f563d9_8
 _libgcc_mutex=0.1=conda_forge
 _openmp_mutex=4.5=0_gnu
 absl-py=0.9.0=py36_0
@@ -45,7 +47,6 @@ freetype=2.10.0=he983fc9_1
 freexl=1.0.5=h14c3975_1002
 future=0.18.2=py36_0
 gast=0.3.3=py_0
-gdal=2.4.2=py36h5f563d9_8
 geojson=2.5.0=py_0
 geopandas=0.5.1=py_0
 geos=3.7.2=he1b5a44_2
@@ -137,7 +138,7 @@ nbformat=5.0.4=py_0
 ncurses=6.1=hf484d3e_1002
 netcdf4=1.5.1.2=py36had58050_0
 networkx=2.4=py_0
-nodejs=12.4.0=he1b5a44_0
+
 notebook=6.0.3=py36_0
 numba=0.46.0=py36hb3f55d8_1
 numpy=1.16.5=py36h95a1406_0
@@ -203,9 +204,9 @@ shapely=1.6.4=py36hec07ddf_1006
 sip=4.19.8=py36hf484d3e_1000
 six=1.12.0=py36_1001
 snowballstemmer=2.0.0=py_0
-sphinx=1.8.4=py36_0
-sphinxcontrib-bibtex=0.4.2=py_0
-sphinxcontrib-websupport=1.1.2=py_0
+sphinx
+sphinxcontrib-bibtex
+sphinxcontrib-websupport
 sqlite=3.30.1=hcee41ef_0
 tensorboard=1.13.1=py36_0
 tensorflow=1.13.1=h76b4ce7_7

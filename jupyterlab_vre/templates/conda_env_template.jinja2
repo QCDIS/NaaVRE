@@ -2,8 +2,8 @@ name: venv
 channels:
   - conda-forge
   - defaults
+  {% if deps|length > 0 %}
 dependencies:
-{% if deps|length > 0 %}
   - pip
   - pip:
   {% for d in deps %}

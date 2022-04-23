@@ -10,6 +10,7 @@ import { Menu } from '@lumino/widgets';
 import { ICommandPalette, showDialog, Dialog } from '@jupyterlab/apputils';
 import { SDIAAuthDialog } from './SDIAAuthDialog';
 import { GithubAuthDialog } from './GithubAuthDialog';
+import { ImageRegistryAuthDialog } from './ImageRegistryAuthDialog';
 import { formDialogWidget } from './formDialogWidget';
   
 /**
@@ -28,6 +29,7 @@ activate: (
     const { commands } = app;
     const auth_sdia_command = 'vre:cred:sdia-auth';
     const auth_github_command = 'vre:cred:github-auth';
+    const auth_image_registry_command = 'vre:cred:image-registry-auth';
 
     const SDIACredDialogOptions: Partial<Dialog.IOptions<any>> = {
         title: 'Infrastructure Automator Credentials',
@@ -42,6 +44,15 @@ activate: (
         title: 'Github Token',
         body: formDialogWidget(
           <GithubAuthDialog />
+        ),
+        buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })],
+        defaultButton: 1
+    };
+
+    const ImageRegistryAuthDialogOptions: Partial<Dialog.IOptions<any>> = {
+        title: 'Image Registry Auth',
+        body: formDialogWidget(
+          <ImageRegistryAuthDialog />
         ),
         buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })],
         defaultButton: 1
@@ -79,6 +90,22 @@ activate: (
         }
     });
 
+    commands.addCommand(auth_image_registry_command, {
+        label: 'ImageRegistry',
+        caption: 'ImageRegistry',
+        execute: (args: any) => {
+            showDialog(ImageRegistryAuthDialogOptions).then((res: { value: any; }) => {
+
+                requestAPI<any>('image_registry/savetoken', {
+                    body: JSON.stringify(res.value),
+                    method: 'POST'
+                }).then((resp: any) => {
+                    console.log(resp);
+                });
+            });
+        }
+    });
+
     const category = 'LifeWatch VRE';
 
     palette.addItem({
@@ -93,6 +120,12 @@ activate: (
         args: { origin: 'from the palette' }
     });
 
+    palette.addItem({
+        command: auth_image_registry_command,
+        category,
+        args: { origin: 'from the palette' }
+    });
+
     // Create a menu
     const vreMenu: Menu = new Menu({ commands });
     vreMenu.title.label = 'LifeWatch VRE';
@@ -101,6 +134,7 @@ activate: (
     credentialsMenu.title.label = 'Manage Credentials'
     credentialsMenu.addItem({ command: auth_sdia_command, args: { origin: 'from the menu' }});
     credentialsMenu.addItem({ command: auth_github_command, args: { origin: 'from the menu' }});
+    credentialsMenu.addItem({ command: auth_image_registry_command, args: { origin: 'from the menu' }});
     
     vreMenu.addItem({ submenu: credentialsMenu, type: 'submenu' });
     mainMenu.addMenu(vreMenu, { rank: 100 });

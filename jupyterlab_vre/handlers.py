@@ -6,6 +6,7 @@ import uuid
 from pathlib import Path
 
 import autopep8
+import github3
 import nbformat as nb
 import requests
 from github3 import login
@@ -16,7 +17,8 @@ from tornado import web
 from jupyterlab_vre.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.extractor.extractor import Extractor
 from jupyterlab_vre.faircell import Cell
-from jupyterlab_vre.github.gh_credentials import GHCredentials
+
+from jupyterlab_vre.repository.repository_credentials import RepositoryCredentials
 from jupyterlab_vre.sdia.sdia import SDIA
 from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 from jupyterlab_vre.storage.catalog import Catalog
@@ -64,7 +66,6 @@ standard_library = [
     'random'
 ]
 
-
 ################################################################################
 
 # Extraction
@@ -99,24 +100,25 @@ class ExtractorHandler(APIHandler, Catalog):
         dependencies = extractor.infere_cell_dependencies(source)
         conf_deps = extractor.infere_cell_conf_dependencies(confs)
         dependencies = dependencies + conf_deps
+        node_id = str(uuid.uuid4())[:7]
 
         cell = Cell(
-            title=title,
-            task_name=title.lower().replace(' ', '-'),
-            original_source=source,
-            inputs=ins,
-            outputs=outs,
-            params=params,
-            confs=confs,
-            dependencies=dependencies,
-            container_source=""
+            node_id             = node_id,
+            title               = title,
+            task_name           = title.lower().replace(' ', '-'),
+            original_source     = source,
+            inputs              = ins,
+            outputs             = outs,
+            params              = params,
+            confs               = confs,
+            dependencies        = dependencies,
+            container_source    = ""
         )
 
         cell.integrate_configuration()
         params = list(extractor.extract_cell_params(cell.original_source))
         cell.params = params
 
-        node_id = str(uuid.uuid4())[:7]
         node = ConverterReactFlowChart.get_node(
             node_id,
             title,
@@ -138,7 +140,6 @@ class ExtractorHandler(APIHandler, Catalog):
             'hovered': {},
         }
 
-        cell.node_id = node_id
         cell.chart_obj = chart
 
         Catalog.editor_buffer = copy.deepcopy(cell)
@@ -254,8 +255,19 @@ class CellsHandler(APIHandler, Catalog):
         else:
             os.mkdir(cell_path)
 
+        registry_credentials = Catalog.get_registry_credentials()
+        if not registry_credentials:
+            self.set_status(400)
+            self.write('Registry credentials are not set!')
+            self.write_error('Registry credentials are not set!')
+            self.flush()
+            # or self.render("error.html", reason="You're not authorized"))
+            return
+        logger.debug('registry_credentials: '+str(registry_credentials))
+        image_repo = registry_credentials['url'].split('https://hub.docker.com/u/')[1]
+
         cell_file_name = current_cell.task_name + '.py'
-        dockerfile_name = 'Dockerfile.qcdis.' + current_cell.task_name
+        dockerfile_name = 'Dockerfile.'+image_repo+'.' + current_cell.task_name
         env_name = current_cell.task_name + '-environment.yaml'
 
         part_of_standard_library = load_standard_library_names()
@@ -286,17 +298,32 @@ class CellsHandler(APIHandler, Catalog):
         template_dockerfile.stream(task_name=current_cell.task_name).dump(dockerfile_file_path)
         template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
 
-        token = Catalog.get_gh_token()
-        if not token:
+        gh_credentials = Catalog.get_gh_credentials()
+        if not gh_credentials:
             self.set_status(400)
-            self.write('Github token not set!')
-            self.write_error('Github token not set!')
+            self.write('Github gh_credentials are not set!')
+            self.write_error('Github credentials are not set!')
             self.flush()
             # or self.render("error.html", reason="You're not authorized"))
             return
-
-        gh = login(token=token['token'])
-        repository = gh.repository('QCDIS', 'NaaVRE-container-prestage')
+        logger.debug('gh_credentials: '+str(gh_credentials))
+        gh = login(token=gh_credentials['token'])
+        owner = gh_credentials['url'].split('https://github.com/')[1].split('/')[0]
+        repository_name = gh_credentials['url'].split('https://github.com/')[1].split('/')[1]
+        if '.git' in repository_name:
+            repository_name = repository_name.split('.git')[0]
+        logger.debug('owner: '+owner+' repository_name: '+repository_name)
+        try:
+            repository = gh.repository(owner, repository_name)
+        except github3.exceptions.AuthenticationFailed as ex:
+            self.set_status(400)
+            if hasattr(ex, 'message'):
+                self.write(ex.message)
+            else:
+                self.write(str(ex))
+            self.write_err
+            self.flush()
+            return
 
         last_comm = next(repository.commits(number=1), None)
 
@@ -323,22 +350,20 @@ class CellsHandler(APIHandler, Catalog):
                     )
 
             resp = requests.post(
-                url="https://api.github.com/repos/QCDIS/NaaVRE-container-prestage/actions/workflows/build-push-docker.yml/dispatches",
+                url='https://api.github.com/repos/'+owner+'/'+repository_name+'/actions/workflows/build-push-docker'
+                                                                              '.yml/dispatches',
                 json={
                     "ref": "refs/heads/main",
                     "inputs": {
                         "build_dir": current_cell.task_name,
                         "dockerfile": dockerfile_name,
-                        "image_repo": "qcdis",
+                        "image_repo": image_repo,
                         "image_tag": current_cell.task_name
                     }
                 },
                 verify=False,
-                headers={"Accept": "application/vnd.github.v3+json", "Authorization": "token " + token["token"]}
+                headers={"Accept": "application/vnd.github.v3+json", "Authorization": "token " + gh_credentials['token']}
             )
-
-            print(resp)
-
         self.flush()
 
     @web.authenticated
@@ -378,7 +403,7 @@ class SDIAAuthHandler(APIHandler, SDIA, Catalog):
         error = issubclass(type(res), Exception)
 
         if not error:
-            Catalog.add_credentials(
+            Catalog.add_sdia_credentials(
                 SDIACredentials(
                     username=payload['sdia-auth-username'],
                     password=payload['sdia-auth-password'],
@@ -403,9 +428,28 @@ class GithubAuthHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        if payload and 'github-auth-token' in payload:
+        logger.debug('GithubAuthHandler payload: ' + str(payload))
+        if payload and 'github-auth-token' in payload and 'github-url' in payload:
             Catalog.add_gh_credentials(
-                GHCredentials(token=payload['github-auth-token'])
+                RepositoryCredentials(token=payload['github-auth-token'], url=payload['github-url'])
+            )
+        self.flush()
+
+
+################################################################################
+
+# Image Registry  Auth
+
+################################################################################
+class ImageRegistryAuthHandler(APIHandler, Catalog):
+
+    @web.authenticated
+    async def post(self, *args, **kwargs):
+        payload = self.get_json_body()
+        logger.debug('ImageRegistryAuthHandler payload: ' + str(payload))
+        if payload and 'image-registry-url' in payload:
+            Catalog.add_registry_credentials(
+                RepositoryCredentials(url=payload['image-registry-url'])
             )
         self.flush()
 
@@ -421,7 +465,7 @@ class SDIACredentialsHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def get(self, *args, **kwargs):
-        self.write(json.dumps(Catalog.get_credentials()))
+        self.write(json.dumps(Catalog.get_sdia_credentials()))
         self.flush()
 
 
@@ -467,6 +511,7 @@ class ExportWorkflowHandler(APIHandler):
 
         parser = WorkflowParser(nodes, links)
         cells = parser.get_workflow_cells()
+
         deps_dag = parser.get_dependencies_dag()
 
         for nid, cell in cells.items():
@@ -474,6 +519,13 @@ class ExportWorkflowHandler(APIHandler):
 
         loader = PackageLoader('jupyterlab_vre', 'templates')
         template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
-        template = template_env.get_template('workflow_template.jinja2')
-        template.stream(deps_dag=deps_dag, cells=cells, global_params=set(global_params)).dump('workflow.yaml')
+        template = template_env.get_template('workflow_template_v2.jinja2')
+
+        template.stream(
+            deps_dag=deps_dag, 
+            cells=cells,
+            nodes=nodes,
+            global_params=set(global_params)
+
+        ).dump('workflow.yaml')
         self.flush()

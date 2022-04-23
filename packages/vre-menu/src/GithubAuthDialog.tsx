@@ -9,6 +9,15 @@ export class GithubAuthDialog extends React.Component {
     render(): React.ReactElement {
         return (
             <form className={'github-auth-form'}>
+                <label htmlFor='github-url'>Git repository url:</label>
+                <br/>
+                <input
+                    type='url'
+                    className='auth-form'
+                    id='github-url'
+                    name='github-url'
+                />
+                <br/>
                 <label htmlFor='github-auth-token'>Token:</label>
                 <br/>
                 <input
