@@ -46,7 +46,6 @@ jobs:
     secrets:
       registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
       registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
-
   call-registry-push-dockerhub-laserfarm:
     needs: call-build-container-laserfarm
     uses: ./.repository/workflows/registry-push.yml@main
