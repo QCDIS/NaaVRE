@@ -264,7 +264,7 @@ class CellsHandler(APIHandler, Catalog):
             # or self.render("error.html", reason="You're not authorized"))
             return
         logger.debug('registry_credentials: '+str(registry_credentials))
-        image_repo = registry_credentials['image-registry-url'].split('https://hub.docker.com/u/')[1]
+        image_repo = registry_credentials['url'].split('https://hub.docker.com/u/')[1]
 
         cell_file_name = current_cell.task_name + '.py'
         dockerfile_name = 'Dockerfile.'+image_repo+'.' + current_cell.task_name
