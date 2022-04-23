@@ -1,4 +1,4 @@
-name: make relese
+name: make release
 on:
   push:
     tags:
