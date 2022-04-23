@@ -3,8 +3,9 @@ import json
 from pathlib import Path
 from tinydb import TinyDB, where
 from jupyterlab_vre.faircell import Cell
+from jupyterlab_vre.repository.repository_credentials import RepositoryCredentials
 from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
-from jupyterlab_vre.github.gh_credentials import GHCredentials
+
 
 class Catalog:
 
@@ -17,6 +18,7 @@ class Catalog:
     provision        = db.table('provision')
     sdia_credentials = db.table('sdia_credentials')
     gh_credentials        = db.table('gh_credentials')
+    registry_credentials = db.table('registry_credentials')
     editor_buffer: Cell
 
     @classmethod
@@ -25,7 +27,7 @@ class Catalog:
 
     @classmethod
     def delete_cell_from_title(cls, title: str):
-        cls.cells.remove(where('title') == title);
+        cls.cells.remove(where('title') == title)
 
     @classmethod
     def get_all_cells(cls):
@@ -36,11 +38,21 @@ class Catalog:
         cls.sdia_credentials.insert(cred.__dict__)
 
     @classmethod
-    def add_gh_credentials(cls, cred: GHCredentials):
+    def add_registry_credentials(cls, cred: RepositoryCredentials):
         cls.gh_credentials.insert(cred.__dict__)
 
     @classmethod
-    def get_gh_credentials(cls) -> GHCredentials:
+    def get_registry_credentials(cls) -> RepositoryCredentials:
+        credentials = cls.gh_credentials.all()
+        if len(credentials) > 0:
+            return credentials[0]
+
+    @classmethod
+    def add_gh_credentials(cls, cred: RepositoryCredentials):
+        cls.gh_credentials.insert(cred.__dict__)
+
+    @classmethod
+    def get_gh_credentials(cls) -> RepositoryCredentials:
         credentials = cls.gh_credentials.all()
         if len(credentials) > 0:
             return credentials[0]
