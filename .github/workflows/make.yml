@@ -4,17 +4,17 @@ on:
 
 jobs:
   call-build-wheel:
-    uses: ./.github/workflows/build-wheel.yml@main
+    uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@main
   call-build-container:
     needs: call-build-wheel
-    uses: ./.github/workflows/build-container.yml@main
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
     with:
       wheel_artifact_name: jupyterlab_vre
       dockerfile: Dockerfile
       tag: n-a-a-vre
   call-build-container-laserfarm:
     needs: call-build-wheel
-    uses: ./.github/workflows/build-container.yml@main
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
     with:
       wheel_artifact_name: jupyterlab_vre
       dockerfile: Dockerfile-laserfarm
