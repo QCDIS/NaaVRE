@@ -428,7 +428,7 @@ class GithubAuthHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        logger.debug('GithubAuthHandler payload: ' + payload)
+        logger.debug('GithubAuthHandler payload: ' + str(payload))
         if payload and 'github-auth-token' in payload and 'github-url' in payload:
             Catalog.add_gh_credentials(
                 RepositoryCredentials(token=payload['github-auth-token'], url=payload['github-url'])
@@ -446,7 +446,7 @@ class ImageRegistryAuthHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        logger.debug('ImageRegistryAuthHandler payload: ' + payload)
+        logger.debug('ImageRegistryAuthHandler payload: ' + str(payload))
         if payload and 'image-registry-url' in payload:
             Catalog.add_registry_credentials(
                 RepositoryCredentials(url=payload['image-registry-url'])
