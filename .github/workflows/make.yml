@@ -1,7 +1,6 @@
 name: make
 on:
   [pull_request]
-
 jobs:
   call-build-wheel:
     uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@main
