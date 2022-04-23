@@ -17,7 +17,8 @@ from tornado import web
 from jupyterlab_vre.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.extractor.extractor import Extractor
 from jupyterlab_vre.faircell import Cell
-from jupyterlab_vre.github.gh_credentials import GHCredentials
+
+from jupyterlab_vre.repository.repository_credentials import RepositoryCredentials
 from jupyterlab_vre.sdia.sdia import SDIA
 from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 from jupyterlab_vre.storage.catalog import Catalog
@@ -254,8 +255,19 @@ class CellsHandler(APIHandler, Catalog):
         else:
             os.mkdir(cell_path)
 
+        registry_credentials = Catalog.get_registry_credentials()
+        if not registry_credentials:
+            self.set_status(400)
+            self.write('Registry credentials are not set!')
+            self.write_error('Registry credentials are not set!')
+            self.flush()
+            # or self.render("error.html", reason="You're not authorized"))
+            return
+        logger.debug('registry_credentials: '+str(registry_credentials))
+        image_repo = registry_credentials['url'].split('https://hub.docker.com/u/')[1]
+
         cell_file_name = current_cell.task_name + '.py'
-        dockerfile_name = 'Dockerfile.qcdis.' + current_cell.task_name
+        dockerfile_name = 'Dockerfile.'+image_repo+'.' + current_cell.task_name
         env_name = current_cell.task_name + '-environment.yaml'
 
         part_of_standard_library = load_standard_library_names()
@@ -286,18 +298,18 @@ class CellsHandler(APIHandler, Catalog):
         template_dockerfile.stream(task_name=current_cell.task_name).dump(dockerfile_file_path)
         template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
 
-        credentials = Catalog.get_gh_credentials()
-        if not credentials:
+        gh_credentials = Catalog.get_gh_credentials()
+        if not gh_credentials:
             self.set_status(400)
-            self.write('Github credentials are not set!')
+            self.write('Github gh_credentials are not set!')
             self.write_error('Github credentials are not set!')
             self.flush()
             # or self.render("error.html", reason="You're not authorized"))
             return
-        logger.debug('credentials: '+str(credentials))
-        gh = login(token=credentials['token'])
-        owner = credentials['url'].split('https://github.com/')[1].split('/')[0]
-        repository_name = credentials['url'].split('https://github.com/')[1].split('/')[1]
+        logger.debug('gh_credentials: '+str(gh_credentials))
+        gh = login(token=gh_credentials['token'])
+        owner = gh_credentials['url'].split('https://github.com/')[1].split('/')[0]
+        repository_name = gh_credentials['url'].split('https://github.com/')[1].split('/')[1]
         if '.git' in repository_name:
             repository_name = repository_name.split('.git')[0]
         logger.debug('owner: '+owner+' repository_name: '+repository_name)
@@ -345,12 +357,12 @@ class CellsHandler(APIHandler, Catalog):
                     "inputs": {
                         "build_dir": current_cell.task_name,
                         "dockerfile": dockerfile_name,
-                        "image_repo": "qcdis",
+                        "image_repo": image_repo,
                         "image_tag": current_cell.task_name
                     }
                 },
                 verify=False,
-                headers={"Accept": "application/vnd.github.v3+json", "Authorization": "token " + credentials['token']}
+                headers={"Accept": "application/vnd.github.v3+json", "Authorization": "token " + gh_credentials['token']}
             )
         self.flush()
 
@@ -416,9 +428,28 @@ class GithubAuthHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
+        logger.debug('GithubAuthHandler payload: ' + str(payload))
         if payload and 'github-auth-token' in payload and 'github-url' in payload:
             Catalog.add_gh_credentials(
-                GHCredentials(token=payload['github-auth-token'], url=payload['github-url'])
+                RepositoryCredentials(token=payload['github-auth-token'], url=payload['github-url'])
+            )
+        self.flush()
+
+
+################################################################################
+
+# Image Registry  Auth
+
+################################################################################
+class ImageRegistryAuthHandler(APIHandler, Catalog):
+
+    @web.authenticated
+    async def post(self, *args, **kwargs):
+        payload = self.get_json_body()
+        logger.debug('ImageRegistryAuthHandler payload: ' + str(payload))
+        if payload and 'image-registry-url' in payload:
+            Catalog.add_registry_credentials(
+                RepositoryCredentials(url=payload['image-registry-url'])
             )
         self.flush()
 
