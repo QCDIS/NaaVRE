@@ -59,7 +59,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
     def add_git_token(self, git_token):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
-            payload = {'github-auth-token': git_token}
+            payload = {'repository-auth-token': git_token}
             response = self.fetch('/githubauthhandler', method='POST', body=json.dumps(payload))
         # response_body = json.loads(to_unicode(response.body))
         # self.assertNotEqual(response_body, None)
