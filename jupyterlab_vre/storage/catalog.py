@@ -39,11 +39,11 @@ class Catalog:
 
     @classmethod
     def add_registry_credentials(cls, cred: RepositoryCredentials):
-        cls.gh_credentials.insert(cred.__dict__)
+        cls.registry_credentials.insert(cred.__dict__)
 
     @classmethod
     def get_registry_credentials(cls) -> RepositoryCredentials:
-        credentials = cls.gh_credentials.all()
+        credentials = cls.registry_credentials.all()
         if len(credentials) > 0:
             return credentials[0]
 
