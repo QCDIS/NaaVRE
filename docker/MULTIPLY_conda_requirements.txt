@@ -204,9 +204,9 @@ shapely=1.6.4=py36hec07ddf_1006
 sip=4.19.8=py36hf484d3e_1000
 six=1.12.0=py36_1001
 snowballstemmer=2.0.0=py_0
-sphinx=1.8.4=py36_0
-sphinxcontrib-bibtex=0.4.2=py_0
-sphinxcontrib-websupport=1.1.2=py_0
+sphinx
+sphinxcontrib-bibtex
+sphinxcontrib-websupport
 sqlite=3.30.1=hcee41ef_0
 tensorboard=1.13.1=py36_0
 tensorflow=1.13.1=h76b4ce7_7
