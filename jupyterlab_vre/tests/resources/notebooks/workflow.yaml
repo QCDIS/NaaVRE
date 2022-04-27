@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: workflow-test-
+spec:
+    entrypoint: workflow-test
+    arguments:
+      parameters:
+    templates:
+    - name: workflow-test
+      dag:
+        tasks:
+        - name: title-with-underscore
+          template: title-with-underscore-tmp
+
+    - name: title-with-underscore-tmp
+      container:
+        image: "qcdis/title-with-underscore"
+        command: ["/bin/bash", "-c"]
+        args:
+          - source /venv/bin/activate; python title-with-underscore.py;
