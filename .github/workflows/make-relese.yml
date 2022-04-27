@@ -46,6 +46,16 @@ jobs:
     secrets:
       registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
       registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+  call-registry-push-gitlab-vol2bird:
+    needs: call-build-container-vol2bird
+    uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
+    with:
+      registry: "registry.gitlab.com/qcd1/registry"
+      image_id: "registry.gitlab.com/qcd1/registry/n-a-a-vre-vol2bird"
+      tag: n-a-a-vre-vol2bird
+    secrets:
+      registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+      registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
   call-registry-push-dockerhub-laserfarm:
     needs: call-build-container-laserfarm
     uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
@@ -53,6 +63,16 @@ jobs:
       registry: "https://index.docker.io/v1/"
       image_id: "qcdis/n-a-a-vre-laserfarm"
       tag: n-a-a-vre-laserfarm
+    secrets:
+      registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      registry_password: ${{ secrets.DOCKERHUB_PASSWORD }}
+  call-registry-push-dockerhub-vol2bird:
+    needs: call-build-container-vol2bird
+    uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
+    with:
+      registry: "https://index.docker.io/v1/"
+      image_id: "qcdis/n-a-a-vre-vol2bird"
+      tag: n-a-a-vre-vol2bird
     secrets:
       registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
       registry_password: ${{ secrets.DOCKERHUB_PASSWORD }}
