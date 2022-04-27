@@ -229,9 +229,7 @@ class CellsHandler(APIHandler, Catalog):
                 self.write(parm_name + ' has not type')
                 self.write_error(parm_name + ' has not type')
                 self.flush()
-                # or self.render("error.html", reason="You're not authorized"))
                 return
-                # raise tornado.web.HTTPError(400, reason=parm_name + ' has not type')
 
         compiled_code = template_cell.render(cell=current_cell, deps=deps, types=current_cell.types, confs=confs)
         compiled_code = autopep8.fix_code(compiled_code)
@@ -256,14 +254,13 @@ class CellsHandler(APIHandler, Catalog):
             os.mkdir(cell_path)
 
         registry_credentials = Catalog.get_registry_credentials()
+        logger.debug('registry_credentials: ' + str(registry_credentials))
         if not registry_credentials:
             self.set_status(400)
             self.write('Registry credentials are not set!')
             self.write_error('Registry credentials are not set!')
             self.flush()
-            # or self.render("error.html", reason="You're not authorized"))
             return
-        logger.debug('registry_credentials: '+str(registry_credentials))
         image_repo = registry_credentials['url'].split('https://hub.docker.com/u/')[1]
 
         cell_file_name = current_cell.task_name + '.py'
@@ -299,6 +296,7 @@ class CellsHandler(APIHandler, Catalog):
         template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
 
         gh_credentials = Catalog.get_gh_credentials()
+        logger.debug('gh_credentials: ' + str(gh_credentials))
         if not gh_credentials:
             self.set_status(400)
             self.write('Github gh_credentials are not set!')
@@ -306,7 +304,7 @@ class CellsHandler(APIHandler, Catalog):
             self.flush()
             # or self.render("error.html", reason="You're not authorized"))
             return
-        logger.debug('gh_credentials: '+str(gh_credentials))
+
         gh = login(token=gh_credentials['token'])
         owner = gh_credentials['url'].split('https://github.com/')[1].split('/')[0]
         repository_name = gh_credentials['url'].split('https://github.com/')[1].split('/')[1]
@@ -503,7 +501,7 @@ class ExportWorkflowHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        print(payload)
+        logger.debug('payload: '+str(payload))
         global_params = []
 
         nodes = payload['nodes']
@@ -517,6 +515,15 @@ class ExportWorkflowHandler(APIHandler):
         for nid, cell in cells.items():
             global_params.extend(cell['params'])
 
+        registry_credentials = Catalog.get_registry_credentials()
+        logger.debug('registry_credentials: ' + str(registry_credentials))
+        if not registry_credentials:
+            self.set_status(400)
+            self.write('Registry credentials are not set!')
+            self.write_error('Registry credentials are not set!')
+            self.flush()
+            return
+        image_repo = registry_credentials['url'].split('https://hub.docker.com/u/')[1]
         loader = PackageLoader('jupyterlab_vre', 'templates')
         template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
         template = template_env.get_template('workflow_template_v2.jinja2')
@@ -525,7 +532,8 @@ class ExportWorkflowHandler(APIHandler):
             deps_dag=deps_dag, 
             cells=cells,
             nodes=nodes,
-            global_params=set(global_params)
+            global_params=set(global_params),
+            image_repo=image_repo
 
         ).dump('workflow.yaml')
         self.flush()
