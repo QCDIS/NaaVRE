@@ -31,7 +31,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y libconfuse-dev 
 # get a copy of hlhdf:
 # configure and build hlhdf
 # strange Docker conflict when attempting to install in /opt/radar/hlhdf, therefore in root radar instead
-RUN pip3 install numpy
+RUN pip3 install numpy minio==7.0.3 h5py pandas
 RUN git clone https://github.com/adokter/hlhdf.git \
     && cd hlhdf && ./configure --prefix=/opt/radar --with-hdf5=/usr/include/hdf5/serial,/usr/lib/x86_64-linux-gnu/hdf5/serial \
     && make && make install && cd .. && rm -rf hlhdf
