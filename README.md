@@ -1,5 +1,6 @@
 [![make](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml)
 [![make release](https://github.com/QCDIS/NaaVRE/actions/workflows/make-relese.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/make-relese.yml)
+[![registry push](https://github.com/QCDIS/NaaVRE/actions/workflows/registry-push.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/registry-push.yml)
 # Getting started with NaaVRE
 
 This is a quick start guide to use the NaaVRE.
