@@ -1,3 +1,4 @@
+[![make](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml)
 # Getting started with NaaVRE
 
 This is a quick start guide to use the NaaVRE.
