@@ -220,7 +220,6 @@ class CellsHandler(APIHandler, Catalog):
         template_conda = template_env.get_template('conda_env_template.jinja2')
 
         all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
-        logger.debug('all_vars: ' + str(all_vars))
         for parm_name in all_vars:
             if parm_name not in current_cell.types:
                 logger.error(parm_name + ' has not type')
@@ -511,12 +510,12 @@ class ExportWorkflowHandler(APIHandler):
         cells = parser.get_workflow_cells()
 
         deps_dag = parser.get_dependencies_dag()
+        logger.debug('deps_dag: ' + str(deps_dag))
 
         for nid, cell in cells.items():
             global_params.extend(cell['params'])
 
         registry_credentials = Catalog.get_registry_credentials()
-        logger.debug('registry_credentials: ' + str(registry_credentials))
         if not registry_credentials:
             self.set_status(400)
             self.write('Registry credentials are not set!')
