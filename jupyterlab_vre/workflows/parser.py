@@ -34,7 +34,7 @@ class WorkflowParser:
 
         for nid, node in self.nodes.items():
             for pid, port in node['ports'].items():
-                is_special = node['type'] == 'splitter' or node['type'] == 'merger' 
+                is_special = node['type'] == 'splitter' or node['type'] == 'merger'
                 trailing_id = nid if is_special else node['properties']['og_node_id']
                 self.nodes[nid]['ports'][pid]['id'] = f"{pid}_{trailing_id[:7]}"
 
@@ -51,27 +51,26 @@ class WorkflowParser:
             link['from']['portId'] = link['from']['portId'] + "_" + from_trailing_id[:7]
             link['to']['portId'] = link['to']['portId'] + "_" + to_trailing_id[:7]
 
-
         self.__parse_links()
 
     def __parse_links(self):
 
         for k in self.links:
-
             link = self.links[k]
 
             to_node = self.nodes[link['to']['nodeId']]
             from_node = self.nodes[link['from']['nodeId']]
 
             from_special_node = (from_node['type'] == 'merger' or from_node['type'] == 'splitter')
-            task_name = f'{from_node["type"]}-{from_node["id"][:7]}' if from_special_node else Catalog.get_cell_from_og_node_id(
+            task_name = f'{from_node["type"]}-{from_node["id"][:7]}' if from_special_node else \
+            Catalog.get_cell_from_og_node_id(
                 self.__get_og_node_id(from_node['id']))['task_name'] + "-" + from_node['id'][:7]
 
             self.dependencies[to_node['id']].append({
-                'task_name'     : task_name,
-                'port_id'       : link['from']['portId'],
-                'og_port_id'    : link['to']['portId'],
-                'type'          : from_node['type']
+                'task_name': task_name,
+                'port_id': link['from']['portId'],
+                'og_port_id': link['to']['portId'],
+                'type': from_node['type']
             })
 
     def __get_og_node_id(self, node_id) -> str:
