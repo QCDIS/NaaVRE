@@ -5,11 +5,11 @@
   },
   "scale": 1,
   "nodes": {
-    "1d00f409-f33d-4f5a-ab80-529d13c3c003": {
-      "id": "1d00f409-f33d-4f5a-ab80-529d13c3c003",
+    "6a09a3e0-a44c-4753-b063-e91ae80e55df": {
+      "id": "6a09a3e0-a44c-4753-b063-e91ae80e55df",
       "position": {
-        "x": 130,
-        "y": 285
+        "x": 0,
+        "y": 39
       },
       "orientation": 0,
       "type": "input-output",
@@ -27,7 +27,7 @@
         }
       },
       "properties": {
-        "title": "Fetch Laz Files 30-03-22",
+        "title": "Fetch Laz Files 19-04-22",
         "vars": [
           {
             "name": "laz_files",
@@ -45,7 +45,7 @@
         "outputs": [
           "laz_files"
         ],
-        "og_node_id": "72cea5b",
+        "og_node_id": "c31a712",
         "deps": [
           "",
           "laserfarm"
@@ -56,11 +56,11 @@
         "height": 100
       }
     },
-    "af9fafda-b147-4a86-aa76-865a1535b4e3": {
-      "id": "af9fafda-b147-4a86-aa76-865a1535b4e3",
+    "6755a731-fe96-4d73-8161-0b24b60d8221": {
+      "id": "6755a731-fe96-4d73-8161-0b24b60d8221",
       "position": {
-        "x": 754,
-        "y": 165
+        "x": 496.11669921875,
+        "y": 42
       },
       "orientation": 0,
       "type": "input-output",
@@ -89,7 +89,7 @@
         }
       },
       "properties": {
-        "title": "Retiling 30-03-22",
+        "title": "Retiling 19-04-22",
         "vars": [
           {
             "name": "laz_files",
@@ -105,9 +105,14 @@
           }
         ],
         "params": [
+          "param_min_y",
+          "param_max_y",
+          "param_login",
           "param_hostname",
           "param_password",
-          "param_login"
+          "param_n_tiles_side",
+          "param_max_x",
+          "param_min_x"
         ],
         "inputs": [
           "laz_files"
@@ -115,7 +120,7 @@
         "outputs": [
           "remote_path_retiled"
         ],
-        "og_node_id": "d60deaa",
+        "og_node_id": "1f7a48f",
         "deps": [
           "",
           "laserfarm"
@@ -126,11 +131,11 @@
         "height": 100
       }
     },
-    "6f04b210-3252-403c-ae8a-316d5d9fcef2": {
-      "id": "6f04b210-3252-403c-ae8a-316d5d9fcef2",
+    "dcdf9c8d-82c3-4e5d-b3b6-825a90a6087c": {
+      "id": "dcdf9c8d-82c3-4e5d-b3b6-825a90a6087c",
       "position": {
-        "x": 439,
-        "y": 288
+        "x": 235.11669921875,
+        "y": 47
       },
       "orientation": 0,
       "type": "splitter",
@@ -168,32 +173,116 @@
         "width": 200,
         "height": 100
       }
+    },
+    "e53c3905-ffe1-46dc-9803-b426af95bddc": {
+      "id": "e53c3905-ffe1-46dc-9803-b426af95bddc",
+      "position": {
+        "x": 755.11669921875,
+        "y": 40
+      },
+      "orientation": 0,
+      "type": "input-output",
+      "ports": {
+        "remote_path_retiled": {
+          "properties": {
+            "color": "#53abac"
+          },
+          "id": "remote_path_retiled",
+          "type": "left",
+          "position": {
+            "x": 0.5,
+            "y": 50.5
+          }
+        },
+        "tiles": {
+          "properties": {
+            "color": "#406abf"
+          },
+          "id": "tiles",
+          "type": "right",
+          "position": {
+            "x": 199.5,
+            "y": 50.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Fetch Tiles 19-04-22",
+        "vars": [
+          {
+            "name": "remote_path_retiled",
+            "direction": "input",
+            "type": "datatype",
+            "color": "#53abac"
+          },
+          {
+            "name": "tiles",
+            "direction": "output",
+            "type": "datatype",
+            "color": "#406abf"
+          }
+        ],
+        "params": [
+          "param_hostname",
+          "param_login",
+          "param_password"
+        ],
+        "inputs": [
+          "remote_path_retiled"
+        ],
+        "outputs": [
+          "tiles"
+        ],
+        "og_node_id": "a08a42d",
+        "deps": [
+          "",
+          "laserfarm"
+        ]
+      },
+      "size": {
+        "width": 200,
+        "height": 100
+      }
     }
   },
   "links": {
-    "d867ad70-da7c-4558-80e1-7908b903ffbc": {
-      "id": "d867ad70-da7c-4558-80e1-7908b903ffbc",
+    "344ea217-4b9e-4d5b-8fe8-1bb2b7a1d130": {
+      "id": "344ea217-4b9e-4d5b-8fe8-1bb2b7a1d130",
       "from": {
-        "nodeId": "1d00f409-f33d-4f5a-ab80-529d13c3c003",
+        "nodeId": "6a09a3e0-a44c-4753-b063-e91ae80e55df",
         "portId": "laz_files"
       },
       "to": {
-        "nodeId": "6f04b210-3252-403c-ae8a-316d5d9fcef2",
+        "nodeId": "dcdf9c8d-82c3-4e5d-b3b6-825a90a6087c",
         "portId": "splitter_source"
       }
     },
-    "e4442d91-952b-4a5e-bd26-df833ab12d41": {
-      "id": "e4442d91-952b-4a5e-bd26-df833ab12d41",
+    "0654e065-1296-4b09-82a2-a699116d3e7c": {
+      "id": "0654e065-1296-4b09-82a2-a699116d3e7c",
       "from": {
-        "nodeId": "6f04b210-3252-403c-ae8a-316d5d9fcef2",
-        "portId": "splitter_target"
+        "nodeId": "6755a731-fe96-4d73-8161-0b24b60d8221",
+        "portId": "laz_files"
       },
       "to": {
-        "nodeId": "af9fafda-b147-4a86-aa76-865a1535b4e3",
-        "portId": "laz_files"
+        "nodeId": "dcdf9c8d-82c3-4e5d-b3b6-825a90a6087c",
+        "portId": "splitter_target"
+      }
+    },
+    "a4d2b34f-4a18-416a-81bc-cbe41558f505": {
+      "id": "a4d2b34f-4a18-416a-81bc-cbe41558f505",
+      "from": {
+        "nodeId": "6755a731-fe96-4d73-8161-0b24b60d8221",
+        "portId": "remote_path_retiled"
+      },
+      "to": {
+        "nodeId": "e53c3905-ffe1-46dc-9803-b426af95bddc",
+        "portId": "remote_path_retiled"
       }
     }
   },
-  "selected": {},
+  "selected": {
+    "type": "node",
+    "id": "6a09a3e0-a44c-4753-b063-e91ae80e55df"
+  },
   "hovered": {}
 }
