@@ -6,8 +6,6 @@ USER root
 
 #===== Add pdalpy dependencies ======
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++
-RUN pip uninstall gdal && pip install numpy && pip install GDAL==$(gdal-config --version) --global-option=build_ext --global-option="-I/usr/include/gdal"
-
 #====================================
 
 
@@ -32,10 +30,6 @@ RUN python3 -m pip install --quiet --no-cache-dir https://github.com/QCDIS/Deplo
     https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/multiply_sar_pre_processing-0.1-py3-none-any.whl \
     scipy shapely
 
-RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
-    conda upgrade --yes numpy && \
-    conda update --yes -n base conda && \
-    pip install dask distributed lazperf==1.4.4 && \
-    pip install laserfarm
+RUN pip install GDAL==2.4.2 scipy shapely
 
 CMD ["/usr/local/bin/start-jupyter.sh"]
