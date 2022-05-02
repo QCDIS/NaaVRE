@@ -1,7 +1,7 @@
 #FROM qcdis/miniconda3-multiply as build
 
 #FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e AS runtime
-
+FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e
 USER root
 
 #===== Add pdalpy dependencies ======
