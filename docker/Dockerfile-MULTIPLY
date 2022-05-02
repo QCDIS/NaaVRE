@@ -6,14 +6,8 @@ USER root
 
 #===== Add pdalpy dependencies ======
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++
-RUN apt install software-properties-common -y
-RUN add-apt-repository ppa:ubuntugis/ubuntugis-unstable -y
+RUN pip uninstall gdal && pip install numpy && pip install GDAL==$(gdal-config --version) --global-option=build_ext --global-option="-I/usr/include/gdal"
 
-RUN apt-get install gdal-bin -y
-
-RUN apt-get install python3-gdal -y
-
-RUN apt-get install python3-numpy -y
 #====================================
 
 
