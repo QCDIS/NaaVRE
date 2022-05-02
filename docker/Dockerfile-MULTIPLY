@@ -1,7 +1,6 @@
-FROM qcdis/miniconda3-multiply as build
+#FROM qcdis/miniconda3-multiply as build
 
-
-FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e AS runtime
+#FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e AS runtime
 
 USER root
 
@@ -25,8 +24,6 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
     jupyter serverextension enable --py jupyterlab_vre --user && \
     jupyter lab build --debug;
 
-COPY --from=build /venv /venv
-
-
+RUN python3 -m pip install --quiet --no-cache-dir https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/multiply_core-0.6.1.dev0-py3-none-any.whl https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/multiply_data_access-0.5.2-py3-none-any.whl https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/multiply_inference_engine-0.6.1.dev0-py3-none-any.whl
 
 CMD ["conda activate /venv; /usr/local/bin/start-jupyter.sh"]
