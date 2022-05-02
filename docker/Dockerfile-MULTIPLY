@@ -6,6 +6,7 @@ USER root
 
 #===== Add pdalpy dependencies ======
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++
+RUN apt install install software-properties-common -y
 RUN add-apt-repository ppa:ubuntugis/ubuntugis-unstable -y
 
 RUN apt-get install gdal-bin -y
