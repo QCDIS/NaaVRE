@@ -1,3 +1,4 @@
+python=3.7.0
 nodejs=12.4.0=he1b5a44_0
 gdal=2.4.2=py36h5f563d9_8
 # _libgcc_mutex=0.1=conda_forge
