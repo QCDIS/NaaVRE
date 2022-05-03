@@ -13,6 +13,7 @@ RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 
 USER $NB_USER
 
+RUN conda install nodejs=12.4.0=he1b5a44_0
 RUN conda remove --force -y terminado && \
     python -m pip install --upgrade pip
 
