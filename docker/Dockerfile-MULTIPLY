@@ -2,7 +2,7 @@ FROM jupyterhub/k8s-singleuser-sample:0.8.2
 USER root
 
 #===== Add pdalpy dependencies ======
-RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++ libevent-dev gfortran musl-dev python-gdal
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++ libevent-dev gfortran musl-dev python-gdal libgdal-dev
 #====================================
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
@@ -21,6 +21,7 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
     jupyter serverextension enable --py jupyterlab_vre --user && \
     jupyter lab build --debug;
 
+RUN gdal-config --version
 RUN pip install numpy==1.16 GDAL==2.4.0
 
 CMD ["/usr/local/bin/start-jupyter.sh"]
