@@ -2,7 +2,7 @@ FROM jupyterhub/k8s-singleuser-sample:0.8.2
 USER root
 
 #===== Add pdalpy dependencies ======
-RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++ libevent-dev gfortran musl-dev
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++ libevent-dev gfortran musl-dev python-gdal gdal
 #====================================
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
