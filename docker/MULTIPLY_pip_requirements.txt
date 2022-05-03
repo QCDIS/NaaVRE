@@ -1,8 +1,57 @@
-https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/BRDF_descriptors-1.3-py3-none-any.whl
-https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/KaFKA-0.0.0-py3-none-any.whl
+astor==0.8
+beautifulsoup4==4.6.0
+colorama==0.4
+numpy==1.16
+gdal==2.4
+geojson==2.5
+freetype==2.10
+h5py==2.8.0
+html5lib==1.0.1
+jupyter==1.0
+lightgbm==2.1
+lxml==4.3.2
+matplotlib==2.2
+netcdf4==1.5
+numba==0.46
+pandas==0.22
+psutil==5.6
+pyproj==2.2
+pyyaml==3.12
+recommonmark
+requests==2.18.4
+scipy==1.2.1
+scikit-image==0.15
+scikit-learn==0.20
+setuptools==40.8.0
+shapely==1.6.4
+six==1.12
+tensorflow==1.13
+termcolor
+typing
+webencodings
+xarray==0.13.0
+  # Server
+click==7.0
+inflection==0.3.1
+  # UI
+ipyleaflet==0.10.4
+ipywidgets==7.4.2
+jupyterlab==0.35.4
+nodejs==13.0
+tornado==5.1.1
+  # Docs
+mock==2.0.0
+sphinx==1.8.4
+sphinxcontrib-bibtex==0.4
+    # Testing
+pytest==4.6
+pytest-cov==2.7
 https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/multiply_core-0.6.1.dev0-py3-none-any.whl
 https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/multiply_data_access-0.5.2-py3-none-any.whl
 https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/multiply_inference_engine-0.6.1.dev0-py3-none-any.whl
-https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/multiply_sar_pre_processing-0.1-py3-none-any.whl
-https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/SIAC-2.2.0-py3-none-any.whl
-https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/vm_support-0.2.2-py3-none-any.whl
+#   https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/multiply_sar_pre_processing-0.1-py3-none-any.whl
+#  https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/BRDF_descriptors-1.3-py3-none-any.whl
+#  https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/KaFKA-0.0.0-py3-none-any.whl
+##  https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/SIAC-2.2.0-py2.py3-none-any.whl
+#  https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/SIAC-2.2.0-py3-none-any.whl
+#  https://github.com/QCDIS/Deploy_MULTIPLY/releases/download/0.1/vm_support-0.2.2-py3-none-any.whl

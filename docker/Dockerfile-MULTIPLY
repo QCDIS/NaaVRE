@@ -1,7 +1,9 @@
-FROM qcdis/miniconda3-multiply as build
-
-FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e AS runtime
+FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e
 USER root
+
+#===== Add pdalpy dependencies ======
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++
+#====================================
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
@@ -18,5 +20,7 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
     jupyter serverextension enable --py jupyterlab_vre --user && \
     jupyter lab build --debug;
 
-COPY --from=build /venv /venv
-CMD ["conda activate venv; /usr/local/bin/start-jupyter.sh"]
+RUN COPY MULTIPLY_pip_requirements.txt .
+RUN python3 -m pip install -r MULTIPLY_pip_requirements.txt
+
+CMD ["/usr/local/bin/start-jupyter.sh"]
