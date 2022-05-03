@@ -21,6 +21,6 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
     jupyter serverextension enable --py jupyterlab_vre --user && \
     jupyter lab build --debug;
 
-RUN pip install numpy==1.16 gdal==2.4.4
+RUN pip install numpy==1.16 GDAL==2.4.0
 
 CMD ["/usr/local/bin/start-jupyter.sh"]
