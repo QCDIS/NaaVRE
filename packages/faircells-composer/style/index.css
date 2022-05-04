@@ -9,3 +9,11 @@
 .btn-export-workflow {
     margin: 20px !important;
 }
+
+.lw-panel-editor {
+    margin: 15px;
+    width: 350px;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 5px;
+}
