@@ -1,8 +1,8 @@
 import { requestAPI } from '@jupyter_vre/core';
-import { Avatar, styled, TextField } from '@material-ui/core';
+import { styled, TextField } from '@material-ui/core';
 import { Autocomplete } from '@mui/material';
 import * as React from 'react';
-import DownloadForOffline from '@mui/icons-material/DownloadForOffline';
+import { CellInfo } from './CellInfo';
 import { CellPreview } from './CellPreview';
 import VirtualizedList from './VirtualizedList';
 
@@ -31,26 +31,16 @@ const PreviewWindow = styled('div')({
     flexDirection: 'column'
 })
 
-const CellInfo = styled('div')({
-
-    position: 'absolute',
-    display: 'flex',
-    flexDirection: 'column',
-    width: '100%',
-    height: '230px',
-    paddingTop: '20px',
-    backgroundColor: 'white',
-    bottom: 0
-})
-
 export class CatalogDialog extends React.Component {
 
     state = DefaultState
     cellPreviewElement: React.RefObject<CellPreview>;
+    cellInfoElement: React.RefObject<CellInfo>;
 
     constructor(props: any) {
         super(props);
         this.cellPreviewElement = React.createRef()
+        this.cellInfoElement = React.createRef()
     }
 
     componentDidMount(): void {
@@ -59,7 +49,11 @@ export class CatalogDialog extends React.Component {
 
     onCellSelection = (cell_index: number) => {
 
-        this.cellPreviewElement.current.updateChart(this.state.catalog_elements[cell_index]['chart_obj'])
+        let cell = this.state.catalog_elements[cell_index];
+        let chart = cell['chart_obj'];
+        let node = chart['nodes'][Object.keys(chart['nodes'])[0]];
+        this.cellPreviewElement.current.updateChart(chart);
+        this.cellInfoElement.current.updateCell(node, cell['types']);
     }
 
     getCatalog = async () => {
@@ -89,16 +83,7 @@ export class CatalogDialog extends React.Component {
                 </div>
                 <PreviewWindow>
                     <CellPreview ref={this.cellPreviewElement} />
-                    <CellInfo>
-                        <div style={{ display: 'flex', flexDirection: 'row' }}>
-                            <Avatar>NS</Avatar>
-                            <p style={{ padding: '15px' }}>Name Surname</p>
-                            <DownloadForOffline sx={{ margin: '10px' }} fontSize='medium' />
-                        </div>
-                        <div style={{ marginTop: '20px', textAlign: 'justify', width: '500px' }}>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque dignissim tortor id neque egestas blandit. In hac habitasse platea dictumst. Nam feugiat blandit enim at pharetra. Duis rhoncus urna erat, quis posuere lorem consectetur non. Proin imperdiet lectus id nulla semper sagittis. Etiam ut leo sit amet lacus malesuada dignissim. Aenean ut turpis felis. Donec molestie, libero vitae imperdiet dictum, metus libero ullamcorper turpis, ut euismod mauris nulla a dui. Maecenas efficitur tristique posuere. Sed porta convallis elit, vel pulvinar dolor pulvinar vel. In scelerisque velit in dictum dictum. Praesent eget lacus sapien.
-                        </div>
-                    </CellInfo>
+                    <CellInfo ref={this.cellInfoElement}/>
                 </PreviewWindow>
             </CatalogBody>
         )

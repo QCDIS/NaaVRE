@@ -29,15 +29,18 @@ export class CellPreview extends React.Component {
             (...args: any) => this.setState(func(...args))) as typeof actions
 
         return (
+
             <div>
-                <FlowChart
-                    chart={chart}
-                    callbacks={stateActions}
-                    Components={{
-                        NodeInner: NodeInnerCustom,
-                        Port: PortCustom
-                    }}
-                />
+                <div className={'lw-panel-editor'}>
+                    <FlowChart
+                        chart={chart}
+                        callbacks={stateActions}
+                        Components={{
+                            NodeInner: NodeInnerCustom,
+                            Port: PortCustom
+                        }}
+                    />
+                </div>
             </div>
         )
     }
