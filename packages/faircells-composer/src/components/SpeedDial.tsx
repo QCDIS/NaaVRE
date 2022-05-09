@@ -4,6 +4,7 @@ import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
+import CallSplitIcon from '@mui/icons-material/CallSplit';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import { makeStyles } from '@material-ui/core';
 
@@ -12,8 +13,9 @@ interface BasicSpeedDialProps {
 }
 
 const actions = [
-    { icon: <AutoStoriesIcon />, name: 'Open Catalog', operation: 'open-catalog' },
-    { icon: <FileUploadIcon />, name: 'Export Workflow', operation: 'export-workflow' }
+    { icon: <AutoStoriesIcon />, name: 'Explore Catalogs', operation: 'explore-catalogs' },
+    { icon: <FileUploadIcon />, name: 'Export Workflow', operation: 'export-workflow' },
+    { icon: <CallSplitIcon />, name: 'Parallelization', operation: 'parallelization' }
 ];
 
 const useStyles = makeStyles(() => ({

@@ -12,6 +12,7 @@ import { NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
 import { requestAPI } from '@jupyter_vre/core';
 import BasicSpeedDial from './components/SpeedDial';
 import { CatalogDialog } from './components/CatalogDialog';
+import Workspace from './components/Workspace';
 
 const CenterContent = styled.div`
   display: flex;
@@ -54,20 +55,20 @@ class Composer extends React.Component<IProps, IState> {
 	}
 
 	handleDialSelection = (operation: string) => {
-		
+
 		switch (operation) {
 
-			case "open-catalog":
+			case "explore-catalogs":
 				showDialog(CatalogDialogOptions)
-			break;
+				break;
 
 			case "export-workflow":
-			break;
+				break;
 		}
 	}
 
 	handleChangeScalingFactor = (e: React.ChangeEvent<{}>, newValue: number | number[], node_id: string) => {
-		
+
 		let newNodes = this.state.chart.nodes
 		newNodes[node_id].properties['scalingFactor'] = newValue
 
@@ -82,9 +83,9 @@ class Composer extends React.Component<IProps, IState> {
 	exportWorkflow = async () => {
 
 		const resp = await requestAPI<any>('workflow/export', {
-            body: JSON.stringify(this.state.chart),
-            method: 'POST'
-        });
+			body: JSON.stringify(this.state.chart),
+			method: 'POST'
+		});
 
 		console.log(resp);
 	}
@@ -93,7 +94,7 @@ class Composer extends React.Component<IProps, IState> {
 
 		let id_sel = this.state.chart.selected.id;
 		let node = this.state.chart.nodes[id_sel];
-		
+
 		if (node.type == "splitter" || node.type == "merger") {
 			return (
 				<div>
@@ -131,7 +132,8 @@ class Composer extends React.Component<IProps, IState> {
 								Port: PortCustom
 							}}
 						/>
-						<BasicSpeedDial 
+						<Workspace />
+						<BasicSpeedDial
 							handleDialSelection={this.handleDialSelection}
 						/>
 					</CenterContent>
