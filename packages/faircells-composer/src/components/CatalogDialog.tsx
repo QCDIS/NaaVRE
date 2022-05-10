@@ -18,11 +18,13 @@ const catalogs = [
 interface IState {
     catalog_elements: []
     current_cell: FairCell
+    current_cell_in_workspace: boolean
 }
 
 export const DefaultState: IState = {
     catalog_elements: [],
-    current_cell: null
+    current_cell: null,
+    current_cell_in_workspace: false
 }
 
 const CatalogBody = styled('div')({
@@ -32,6 +34,7 @@ const CatalogBody = styled('div')({
 })
 
 const PreviewWindow = styled('div')({
+    width: '400px',
     display: 'flex',
     flexDirection: 'column',
     overflowY: 'scroll'
@@ -39,6 +42,7 @@ const PreviewWindow = styled('div')({
 
 interface CatalogDialogProps {
     addCellAction: (cell: FairCell) => void
+    isCellInWorkspace: (cell: FairCell) => boolean
 }
 
 export class CatalogDialog extends React.Component<CatalogDialogProps> {
@@ -60,11 +64,21 @@ export class CatalogDialog extends React.Component<CatalogDialogProps> {
     onCellSelection = (cell_index: number) => {
 
         let cell = this.state.catalog_elements[cell_index];
-        this.setState({ current_cell: cell });
         let chart = cell['chart_obj'];
         let node = chart['nodes'][Object.keys(chart['nodes'])[0]];
         this.cellPreviewRef.current.updateChart(chart);
         this.cellInfoRef.current.updateCell(node, cell['types']);
+
+        this.setState({
+            current_cell: cell,
+            current_cell_in_workspace: this.props.isCellInWorkspace(cell)
+        });
+    }
+
+    onCellAddition = () => {
+
+        this.props.addCellAction(this.state.current_cell);
+        this.setState({ current_cell_in_workspace: true })
     }
 
     getCatalog = async () => {
@@ -95,14 +109,19 @@ export class CatalogDialog extends React.Component<CatalogDialogProps> {
                         />
                     </div>
                     <PreviewWindow>
-                        <CellPreview ref={this.cellPreviewRef} />
-                        <CellInfo ref={this.cellInfoRef} />
-                        <Button color="primary"
-                            style={{ margin: '15px' }}
-                            variant="contained"
-                            onClick={() => { this.props.addCellAction(this.state.current_cell) }}>
-                            Add to Workspace
-                        </Button>
+                        <div>
+                            <CellPreview ref={this.cellPreviewRef} />
+                            <CellInfo ref={this.cellInfoRef} />
+                            {this.state.current_cell != null ? (
+                                <Button color="primary"
+                                    disabled={this.state.current_cell_in_workspace}
+                                    style={{ margin: '15px' }}
+                                    variant="contained"
+                                    onClick={this.onCellAddition}>
+                                    Add to Workspace
+                                </Button>
+                            ) : (<div></div>)}
+                        </div>
                     </PreviewWindow>
                 </CatalogBody>
             </ThemeProvider>

@@ -42,10 +42,19 @@ class Composer extends React.Component<IProps, IState> {
 	handleAddCellToWorkspace = (cell: FairCell) => {
 		this.workspaceRef.current.addElement(cell);
 	}
+	
+	handleIsCellInWorkspace = (cell: FairCell) => {
+		return this.workspaceRef.current.hasElement(cell);
+	}
 
 	CatalogDialogOptions: Partial<Dialog.IOptions<any>> = {
 		title: '',
-		body: ReactWidget.create(<CatalogDialog addCellAction={this.handleAddCellToWorkspace}/>) as Dialog.IBodyWidget<any>,
+		body: ReactWidget.create(
+			<CatalogDialog 
+				addCellAction={this.handleAddCellToWorkspace}
+				isCellInWorkspace={this.handleIsCellInWorkspace}
+			/>
+			) as Dialog.IBodyWidget<any>,
 		buttons: []
 	};
 

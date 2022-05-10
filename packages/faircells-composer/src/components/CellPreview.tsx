@@ -6,8 +6,8 @@ import { NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
 
 const defaultChart: IChart = {
     offset: {
-        x: 0,
-        y: 0,
+        x: 1000,
+        y: 1000,
     },
     scale: 1,
     nodes: {},

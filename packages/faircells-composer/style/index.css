@@ -35,3 +35,14 @@
 .jp-Dialog-content, .jp-Dialog-header {
     padding: 0 !important;
 }
+
+.empty-workspace {
+    text-align: center;
+    color: darkgray;
+    margin-top: 200px;
+}
+
+.workspace-item-title {
+    border-bottom: 1px solid lightgray;
+    padding: 5px;
+}
