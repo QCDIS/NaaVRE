@@ -5,7 +5,6 @@ import * as React from 'react'
 const Outer = styled('div')({
   padding: '15px',
   margin: '5px',
-  width: '150px',
   fontSize: '14px',
   border: '1px solid lightgrey',
   borderRadius: '5px'
@@ -17,7 +16,7 @@ export interface ISidebarItemProps {
   properties?: any,
 }
 
-export const SidebarItem = ({ type, ports, properties }: ISidebarItemProps) => {
+export const WorkspaceItem = ({ type, ports, properties }: ISidebarItemProps) => {
 
   return (
     <Outer
