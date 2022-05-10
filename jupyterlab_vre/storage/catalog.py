@@ -10,6 +10,7 @@ from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+
 class Catalog:
     naa_vre_path = os.path.join(str(Path.home()), 'NaaVRE')
     if not os.path.exists(naa_vre_path):
