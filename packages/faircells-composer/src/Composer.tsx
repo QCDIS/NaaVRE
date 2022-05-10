@@ -12,7 +12,8 @@ import { NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
 import { requestAPI } from '@jupyter_vre/core';
 import BasicSpeedDial from './components/SpeedDial';
 import { CatalogDialog } from './components/CatalogDialog';
-import Workspace from './components/Workspace';
+import { Workspace } from './components/Workspace';
+import { FairCell } from './faircell';
 
 const CenterContent = styled.div`
   display: flex;
@@ -31,15 +32,22 @@ export const DefaultState: IState = {
 	chart: chartSimple,
 }
 
-const CatalogDialogOptions: Partial<Dialog.IOptions<any>> = {
-	title: 'Explore Catalog',
-	body: ReactWidget.create(<CatalogDialog />) as Dialog.IBodyWidget<any>,
-	buttons: []
-};
 
 class Composer extends React.Component<IProps, IState> {
 
 	state = DefaultState
+
+	workspaceRef: React.RefObject<Workspace>;
+
+	handleAddCellToWorkspace = (cell: FairCell) => {
+		this.workspaceRef.current.addElement(cell);
+	}
+
+	CatalogDialogOptions: Partial<Dialog.IOptions<any>> = {
+		title: '',
+		body: ReactWidget.create(<CatalogDialog addCellAction={this.handleAddCellToWorkspace}/>) as Dialog.IBodyWidget<any>,
+		buttons: []
+	};
 
 	chartStateActions = mapValues(actions, (func: any) =>
 		(...args: any) => {
@@ -52,6 +60,7 @@ class Composer extends React.Component<IProps, IState> {
 
 	constructor(props: IProps) {
 		super(props);
+		this.workspaceRef = React.createRef();
 	}
 
 	handleDialSelection = (operation: string) => {
@@ -59,7 +68,7 @@ class Composer extends React.Component<IProps, IState> {
 		switch (operation) {
 
 			case "explore-catalogs":
-				showDialog(CatalogDialogOptions)
+				showDialog(this.CatalogDialogOptions)
 				break;
 
 			case "export-workflow":
@@ -132,7 +141,7 @@ class Composer extends React.Component<IProps, IState> {
 								Port: PortCustom
 							}}
 						/>
-						<Workspace />
+						<Workspace ref={this.workspaceRef}/>
 						<BasicSpeedDial
 							handleDialSelection={this.handleDialSelection}
 						/>
