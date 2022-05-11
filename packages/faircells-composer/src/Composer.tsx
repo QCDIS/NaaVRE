@@ -7,13 +7,13 @@ import { mapValues } from 'lodash';
 import { Page, /* SidebarItem */ } from './components';
 import { chartSimple } from './exampleChart';
 import { FlowChart, IChart } from '@mrblenny/react-flow-chart';
-import { /* Button,*/ Slider, ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/core';
 import { NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
-import { requestAPI } from '@jupyter_vre/core';
 import BasicSpeedDial from './components/SpeedDial';
 import { CatalogDialog } from './components/CatalogDialog';
 import { Workspace } from './components/Workspace';
 import { FairCell } from './faircell';
+import { ParallelizationDialog } from './components/ParallelizationDialog';
 
 const CenterContent = styled.div`
   display: flex;
@@ -58,6 +58,15 @@ class Composer extends React.Component<IProps, IState> {
 		buttons: []
 	};
 
+	ParallelizationDialogOptions: Partial<Dialog.IOptions<any>> = {
+		title: '',
+		body: ReactWidget.create(
+			<ParallelizationDialog
+			/>
+			) as Dialog.IBodyWidget<any>,
+		buttons: []
+	};
+
 	chartStateActions = mapValues(actions, (func: any) =>
 		(...args: any) => {
 			let newChartTransformer = func(...args);
@@ -78,63 +87,15 @@ class Composer extends React.Component<IProps, IState> {
 
 			case "explore-catalogs":
 				showDialog(this.CatalogDialogOptions)
-				break;
+			break;
 
 			case "export-workflow":
-				break;
+			break;
+
+			case "parallelization":
+				showDialog(this.ParallelizationDialogOptions)
+			break;
 		}
-	}
-
-	handleChangeScalingFactor = (e: React.ChangeEvent<{}>, newValue: number | number[], node_id: string) => {
-
-		let newNodes = this.state.chart.nodes
-		newNodes[node_id].properties['scalingFactor'] = newValue
-
-		this.setState({
-			chart: {
-				...this.state.chart,
-				nodes: newNodes
-			}
-		})
-	}
-
-	exportWorkflow = async () => {
-
-		const resp = await requestAPI<any>('workflow/export', {
-			body: JSON.stringify(this.state.chart),
-			method: 'POST'
-		});
-
-		console.log(resp);
-	}
-
-	getNodeEditor(): JSX.Element {
-
-		let id_sel = this.state.chart.selected.id;
-		let node = this.state.chart.nodes[id_sel];
-
-		if (node.type == "splitter" || node.type == "merger") {
-			return (
-				<div>
-					<p>Scaling Factor:</p>
-					<Slider
-						onChange={(e, nv) => { this.handleChangeScalingFactor(e, nv, node.id) }}
-						defaultValue={1}
-						value={node.properties['scalingFactor']}
-						aria-labelledby="discrete-slider"
-						valueLabelDisplay="auto"
-						step={1}
-						marks
-						min={1}
-						max={100}
-					/>
-				</div>
-			);
-		}
-
-		return (
-			<p>{node.properties['title']}</p>
-		);
 	}
 
 	render() {
