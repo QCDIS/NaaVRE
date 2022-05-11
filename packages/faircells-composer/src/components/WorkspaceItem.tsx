@@ -4,7 +4,7 @@ import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import * as React from 'react'
 
 const Outer = styled('div')({
-  margin: '5px',
+  margin: '10px',
   fontSize: '14px',
   border: '1px solid lightgrey',
   borderRadius: '5px'
