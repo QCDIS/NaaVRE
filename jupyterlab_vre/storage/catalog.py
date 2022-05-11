@@ -1,3 +1,4 @@
+import logging
 import os
 import json
 from pathlib import Path
@@ -6,18 +7,20 @@ from jupyterlab_vre.faircell import Cell
 from jupyterlab_vre.repository.repository_credentials import RepositoryCredentials
 from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 class Catalog:
-
     naa_vre_path = os.path.join(str(Path.home()), 'NaaVRE')
     if not os.path.exists(naa_vre_path):
         os.mkdir(naa_vre_path)
 
-    db               = TinyDB(os.path.join(naa_vre_path, 'db.json'))
-    cells            = db.table('cells')
-    provision        = db.table('provision')
+    db = TinyDB(os.path.join(naa_vre_path, 'db.json'))
+    cells = db.table('cells')
+    provision = db.table('provision')
     sdia_credentials = db.table('sdia_credentials')
-    gh_credentials        = db.table('gh_credentials')
+    gh_credentials = db.table('gh_credentials')
     registry_credentials = db.table('registry_credentials')
     editor_buffer: Cell
 
@@ -42,6 +45,19 @@ class Catalog:
         cls.registry_credentials.insert(cred.__dict__)
 
     @classmethod
+    def delete_registry_credentials(cls, url: str):
+        cls.registry_credentials.remove(where('url') == url)
+
+    @classmethod
+    def delete_all_registry_credentials(cls):
+        # Looks bad but for now I could not find a way to remove all
+        credentials = cls.registry_credentials.all()
+        ids = []
+        for credential in credentials:
+            ids.append(credential.doc_id)
+        cls.registry_credentials.remove(doc_ids=ids)
+
+    @classmethod
     def get_registry_credentials(cls) -> RepositoryCredentials:
         credentials = cls.registry_credentials.all()
         if len(credentials) > 0:
@@ -56,6 +72,19 @@ class Catalog:
         credentials = cls.gh_credentials.all()
         if len(credentials) > 0:
             return credentials[0]
+
+    @classmethod
+    def delete_all_gh_credentials(cls):
+        # Looks bad but for now I could not find a way to remove all
+        credentials = cls.gh_credentials.all()
+        ids = []
+        for credential in credentials:
+            ids.append(credential.doc_id)
+        cls.gh_credentials.remove(doc_ids=ids)
+
+    @classmethod
+    def delete_gh_credentials(cls, url: str):
+        cls.gh_credentials.remove(where('url') == url)
 
     @classmethod
     def get_credentials_from_username(cls, cred_username) -> SDIACredentials:
