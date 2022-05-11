@@ -14,6 +14,7 @@ import { CatalogDialog } from './components/CatalogDialog';
 import { Workspace } from './components/Workspace';
 import { FairCell } from './faircell';
 import { ParallelizationDialog } from './components/ParallelizationDialog';
+import { CellEditor } from './components/CellEditor';
 
 const CenterContent = styled.div`
   display: flex;
@@ -112,6 +113,7 @@ class Composer extends React.Component<IProps, IState> {
 							}}
 						/>
 						<Workspace ref={this.workspaceRef}/>
+						<CellEditor />
 						<BasicSpeedDial
 							handleDialSelection={this.handleDialSelection}
 						/>
