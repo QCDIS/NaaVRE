@@ -15,7 +15,7 @@ import Paper from '@material-ui/core/Paper';
 import { FormControl, MenuItem, Select, TableBody, ThemeProvider } from "@material-ui/core";
 import { NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
 
-const defaultChart: IChart = { 
+const defaultChart: IChart = {
     offset: {
         x: 0,
         y: 0,
@@ -32,8 +32,8 @@ interface IProps {
 }
 
 interface IState {
-    activeCellIndex : number,
-    chart           : IChart,
+    activeCellIndex: number,
+    chart: IChart,
 }
 
 
@@ -63,7 +63,7 @@ export class CellTracker extends React.Component<IProps, IState> {
     };
 
     exctractor = async (notebookModel: INotebookModel, save = false) => {
-            
+
         const resp = await requestAPI<any>('extractor', {
             body: JSON.stringify({
                 save: save,
@@ -106,7 +106,7 @@ export class CellTracker extends React.Component<IProps, IState> {
         prevProps: Readonly<IProps>,
         prevState: Readonly<IState>,
     ) => {
-        
+
         const preNotebookId = prevProps.notebook ? prevProps.notebook.id : '';
         const notebookId = this.props.notebook ? this.props.notebook.id : '';
 
@@ -130,93 +130,93 @@ export class CellTracker extends React.Component<IProps, IState> {
                             chart={this.state}
                             callbacks={this.stateActions}
                             Components={{
-                                NodeInner   : NodeInnerCustom,
-                                Port        : PortCustom
+                                NodeInner: NodeInnerCustom,
+                                Port: PortCustom
                             }}
                         />
                     </div>
                     {this.currNodeId ? (
                         <div>
-                        <p className={'lw-panel-preview'}>Inputs and Outputs</p>
-                        <TableContainer component={Paper} className={'lw-panel-table'}>
-                            <Table aria-label="simple table">
-                                <TableBody>
-                                {this.state.nodes[this.currNodeId].properties['vars'].map((variable: any) => (
-                                    <TableRow key={variable.name}>
-                                        <TableCell component="th" scope="row">
-                                            <p style={{color: variable.color, fontSize: "1em"}}>{variable.name}</p>
-                                        </TableCell>
-                                        <TableCell component="th" scope="row">
-                                            {variable.direction}
-                                        </TableCell>
-                                        <TableCell component="th" scope="row">
-                                            <FormControl fullWidth>
-                                                <Select
-                                                    labelId="io-types-select-label"
-                                                    id="io-types-select"
-                                                    label="Type"
-                                                    onChange={(event) => {this.typesUpdate(event, variable.name)}}
-                                                >
-                                                    <MenuItem value={'int'}>Integer</MenuItem>
-                                                    <MenuItem value={'float'}>Float</MenuItem>
-                                                    <MenuItem value={'str'}>String</MenuItem>
-                                                    <MenuItem value={'list'}>List</MenuItem>
-                                                </Select>
-                                            </FormControl>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                            </Table>
-                        </TableContainer>
-                        <p className={'lw-panel-preview'}>Parameters</p>
-                        <TableContainer component={Paper} className={'lw-panel-table'}>
-                            <Table aria-label="simple table">
-                                <TableBody>
-                                {this.state.nodes[this.currNodeId].properties['params'].map((param: any) => (
-                                    <TableRow key={param}>
-                                        <TableCell component="th" scope="row">
-                                            {param}
-                                        </TableCell>
-                                        <TableCell component="th" scope="row">
-                                            <FormControl fullWidth>
-                                                <Select
-                                                    labelId="param-types-select-label"
-                                                    id="param-types-select"
-                                                    label="Type"
-                                                    onChange={(event) => {this.typesUpdate(event, param)}}
-                                                >
-                                                    <MenuItem value={'int'}>Integer</MenuItem>
-                                                    <MenuItem value={'float'}>Float</MenuItem>
-                                                    <MenuItem value={'str'}>String</MenuItem>
-                                                    <MenuItem value={'list'}>List</MenuItem>
-                                                </Select>
-                                            </FormControl>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                            </Table>
-                        </TableContainer>
-                        <p className={'lw-panel-preview'}>Dependencies</p>
-                        <TableContainer component={Paper} className={'lw-panel-table'}>
-                            <Table aria-label="simple table">
-                                <TableBody>
-                                {this.state.nodes[this.currNodeId].properties['deps'].map((dep: any) => (
-                                    <TableRow key={dep}>
-                                        <TableCell component="th" scope="row">
-                                            {dep}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                            </Table>
-                        </TableContainer>
+                            <p className={'lw-panel-preview'}>Inputs and Outputs</p>
+                            <TableContainer component={Paper} className={'lw-panel-table'}>
+                                <Table aria-label="simple table">
+                                    <TableBody>
+                                        {this.state.nodes[this.currNodeId].properties['vars'].map((variable: any) => (
+                                            <TableRow key={variable.name}>
+                                                <TableCell component="th" scope="row">
+                                                    <p style={{ color: variable.color, fontSize: "1em" }}>{variable.name}</p>
+                                                </TableCell>
+                                                <TableCell component="th" scope="row">
+                                                    {variable.direction}
+                                                </TableCell>
+                                                <TableCell component="th" scope="row">
+                                                    <FormControl fullWidth>
+                                                        <Select
+                                                            labelId="io-types-select-label"
+                                                            id="io-types-select"
+                                                            label="Type"
+                                                            onChange={(event) => { this.typesUpdate(event, variable.name) }}
+                                                        >
+                                                            <MenuItem value={'int'}>Integer</MenuItem>
+                                                            <MenuItem value={'float'}>Float</MenuItem>
+                                                            <MenuItem value={'str'}>String</MenuItem>
+                                                            <MenuItem value={'list'}>List</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                            <p className={'lw-panel-preview'}>Parameters</p>
+                            <TableContainer component={Paper} className={'lw-panel-table'}>
+                                <Table aria-label="simple table">
+                                    <TableBody>
+                                        {this.state.nodes[this.currNodeId].properties['params'].map((param: any) => (
+                                            <TableRow key={param}>
+                                                <TableCell component="th" scope="row">
+                                                    {param}
+                                                </TableCell>
+                                                <TableCell component="th" scope="row">
+                                                    <FormControl fullWidth>
+                                                        <Select
+                                                            labelId="param-types-select-label"
+                                                            id="param-types-select"
+                                                            label="Type"
+                                                            onChange={(event) => { this.typesUpdate(event, param) }}
+                                                        >
+                                                            <MenuItem value={'int'}>Integer</MenuItem>
+                                                            <MenuItem value={'float'}>Float</MenuItem>
+                                                            <MenuItem value={'str'}>String</MenuItem>
+                                                            <MenuItem value={'list'}>List</MenuItem>
+                                                        </Select>
+                                                    </FormControl>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                            <p className={'lw-panel-preview'}>Dependencies</p>
+                            <TableContainer component={Paper} className={'lw-panel-table'}>
+                                <Table aria-label="simple table">
+                                    <TableBody>
+                                        {this.state.nodes[this.currNodeId].properties['deps'].map((dep: any) => (
+                                            <TableRow key={dep}>
+                                                <TableCell component="th" scope="row">
+                                                    {dep}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
                         </div>
-                    ) :(
+                    ) : (
                         <TableContainer></TableContainer>
                     )}
-                    </div>
+                </div>
             </ThemeProvider>
         );
     }
