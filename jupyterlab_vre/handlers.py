@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import uuid
+from builtins import Exception
 from pathlib import Path
 
 import autopep8
@@ -312,7 +313,7 @@ class CellsHandler(APIHandler, Catalog):
         logger.debug('owner: '+owner+' repository_name: '+repository_name)
         try:
             repository = gh.repository(owner, repository_name)
-        except github3.exceptions.AuthenticationFailed as ex:
+        except Exception as ex:
             self.set_status(400)
             if hasattr(ex, 'message'):
                 self.write(ex.message)
@@ -427,6 +428,8 @@ class GithubAuthHandler(APIHandler, Catalog):
         payload = self.get_json_body()
         logger.debug('GithubAuthHandler payload: ' + str(payload))
         if payload and 'github-auth-token' in payload and 'github-url' in payload:
+            logger.debug('Catalog.delete_all_gh_credentials()')
+            Catalog.delete_all_gh_credentials()
             Catalog.add_gh_credentials(
                 RepositoryCredentials(token=payload['github-auth-token'], url=payload['github-url'])
             )
@@ -445,6 +448,7 @@ class ImageRegistryAuthHandler(APIHandler, Catalog):
         payload = self.get_json_body()
         logger.debug('ImageRegistryAuthHandler payload: ' + str(payload))
         if payload and 'image-registry-url' in payload:
+            Catalog.delete_all_registry_credentials()
             Catalog.add_registry_credentials(
                 RepositoryCredentials(url=payload['image-registry-url'])
             )
