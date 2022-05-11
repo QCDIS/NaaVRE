@@ -37,7 +37,7 @@ export class Workspace extends React.Component {
 
     render() {
         return (
-            <Box sx={{ background: 'white', height: 500, width: 250, transform: 'translateZ(0px)', flexGrow: 1, position: 'absolute', top: 20, left: 20 }}>
+            <Box sx={{ boxShadow: '1px 1px lightgrey', background: 'white', height: 500, width: 200, transform: 'translateZ(0px)', flexGrow: 1, position: 'absolute', top: 20, left: 20 }}>
                 <p className='section-header'>Workspace</p>
                 {this.state.workspace_elements.length == 0 ? 
                 (<div className={'empty-workspace'}>
