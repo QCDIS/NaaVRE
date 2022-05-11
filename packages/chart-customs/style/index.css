@@ -4,9 +4,11 @@
 }
 
 .node-title-container {
-    background-color: lightblue;
+    height: 45px;
+    background-color: aliceblue;
     width: 200px !important;
     text-align: center;
+    border: 1px solid lightgray;
 }
 
 .scaling-node-info {

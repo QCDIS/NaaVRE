@@ -37,6 +37,7 @@ pip-wheel-metadata/
 share/python-wheels/
 .installed.cfg
 *.egg
+*.log
 MANIFEST
 
 # PyInstaller

@@ -2,12 +2,51 @@
     display: flex;
 }
 
-.sidebar-items-container {
-    overflow: scroll;
-    max-height: 250px;
-    min-height: 250px;
+.workspace-items-container {
+    overflow-y: scroll;
+    max-height: 460px;
 }
 
 .btn-export-workflow {
     margin: 20px !important;
+}
+
+.lw-panel-editor {
+    margin: 15px;
+    width: 350px;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 5px;
+}
+
+.section-header {
+    padding: 10px;
+    text-align: center;
+    background: lightseagreen;
+    color: white;
+    font-size: medium;
+}
+
+.add-cell-to-ws {
+    width: 190px;
+    margin: 15px;
+}
+
+.jp-Dialog-content, .jp-Dialog-header {
+    padding: 0 !important;
+}
+
+.empty-workspace {
+    padding: 15px;
+    text-align: center;
+    color: darkgray;
+    margin-top: 150px;
+    line-height: 23px;
+}
+
+.workspace-item-title {
+    height: 45px;
+    border-bottom: 1px solid lightgray;
+    padding: 5px;
+    background: aliceblue;
 }

@@ -131,7 +131,7 @@ class ExtractorHandler(APIHandler, Catalog):
 
         chart = {
             'offset': {
-                'x': -100,
+                'x': 0,
                 'y': 0,
             },
             'scale': 1,
