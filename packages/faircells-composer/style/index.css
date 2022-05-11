@@ -37,12 +37,15 @@
 }
 
 .empty-workspace {
+    padding: 15px;
     text-align: center;
     color: darkgray;
-    margin-top: 200px;
+    margin-top: 150px;
 }
 
 .workspace-item-title {
+    height: 45px;
     border-bottom: 1px solid lightgray;
     padding: 5px;
+    background: aliceblue;
 }

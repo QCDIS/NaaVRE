@@ -40,7 +40,9 @@ export class Workspace extends React.Component {
             <Box sx={{ background: 'white', height: 500, width: 250, transform: 'translateZ(0px)', flexGrow: 1, position: 'absolute', top: 20, left: 20 }}>
                 <p className='section-header'>Workspace</p>
                 {this.state.workspace_elements.length == 0 ? 
-                (<div className={'empty-workspace'}>The workspace is empty</div>) 
+                (<div className={'empty-workspace'}>
+                    The workspace is empty, click on the '+' bottom-right menu and select 'Explore Catalogs' to start adding cells.
+                </div>) 
                 : (
                     <div className={'workspace-items-container'}>
                         {this.state.workspace_elements.map((value, index) => {
