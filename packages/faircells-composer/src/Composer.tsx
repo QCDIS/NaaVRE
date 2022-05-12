@@ -12,7 +12,7 @@ import { NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
 import BasicSpeedDial from './components/SpeedDial';
 import { CatalogDialog } from './components/CatalogDialog';
 import { Workspace } from './components/Workspace';
-import { FairCell } from './faircell';
+import { FairCell } from '@jupyter_vre/core';
 import { ParallelizationDialog } from './components/ParallelizationDialog';
 import { CellEditor } from './components/CellEditor';
 

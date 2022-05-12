@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import * as React from 'react';
-import { FairCell } from '../faircell';
+import { FairCell } from '@jupyter_vre/core';
 
 interface CellEditorProps {
     cell: FairCell
