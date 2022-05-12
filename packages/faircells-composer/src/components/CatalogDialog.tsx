@@ -1,11 +1,9 @@
-import { requestAPI } from '@jupyter_vre/core';
+import { requestAPI, FairCell, CellPreview  } from '@jupyter_vre/core';
 import { Button, styled, TextField, ThemeProvider } from '@material-ui/core';
 import { Autocomplete } from '@mui/material';
 import * as React from 'react';
 import { CellInfo } from './CellInfo';
-import { CellPreview } from './CellPreview';
 import VirtualizedList from './CatalogVirtualizedList';
-import { FairCell } from '../faircell';
 import { theme } from '../Theme';
 
 const catalogs = [
