@@ -38,7 +38,12 @@ class Composer extends React.Component<IProps, IState> {
 
 	state = DefaultState
 
-	workspaceRef: React.RefObject<Workspace>;
+	workspaceRef	: React.RefObject<Workspace>;
+
+	constructor(props: IProps) {
+		super(props);
+		this.workspaceRef = React.createRef();
+	}
 
 	handleAddCellToWorkspace = (cell: FairCell) => {
 		this.workspaceRef.current.addElement(cell);
@@ -46,6 +51,12 @@ class Composer extends React.Component<IProps, IState> {
 	
 	handleIsCellInWorkspace = (cell: FairCell) => {
 		return this.workspaceRef.current.hasElement(cell);
+	}
+
+	getWorkspaceElementFromChartId = (chartId: string): FairCell => {
+
+		let nodeId = this.state.chart.nodes[chartId].properties['og_node_id'];
+		return this.workspaceRef.current.getElement(nodeId);
 	}
 
 	CatalogDialogOptions: Partial<Dialog.IOptions<any>> = {
@@ -77,11 +88,6 @@ class Composer extends React.Component<IProps, IState> {
 			});
 		}) as typeof actions
 
-	constructor(props: IProps) {
-		super(props);
-		this.workspaceRef = React.createRef();
-	}
-
 	handleDialSelection = (operation: string) => {
 
 		switch (operation) {
@@ -99,6 +105,11 @@ class Composer extends React.Component<IProps, IState> {
 		}
 	}
 
+	componentDidUpdate() {
+
+		console.log(this.state.chart);
+	}
+
 	render() {
 		return (
 			<ThemeProvider theme={theme} >
@@ -112,8 +123,12 @@ class Composer extends React.Component<IProps, IState> {
 								Port: PortCustom
 							}}
 						/>
-						<Workspace ref={this.workspaceRef}/>
-						<CellEditor />
+						<Workspace ref={this.workspaceRef} />
+						{ this.state.chart.selected.id && this.state.chart.selected.type == 'node' ? (
+							<CellEditor cell={this.getWorkspaceElementFromChartId(this.state.chart.selected.id)}/>
+						) : 
+						(<div></div>)
+						}
 						<BasicSpeedDial
 							handleDialSelection={this.handleDialSelection}
 						/>

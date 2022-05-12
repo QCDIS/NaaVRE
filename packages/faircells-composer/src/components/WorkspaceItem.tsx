@@ -12,14 +12,14 @@ const Outer = styled('div')({
 
 export interface ISidebarItemProps {
 
-  index             : number,
+  itemKey           : string,
   type              : string,
   ports             : INode['ports'],
   properties?       : any,
-  itemDeleteAction  : (index: number) => void
+  itemDeleteAction  : (key: string) => void
 }
 
-export const WorkspaceItem = ({ index, type, ports, properties, itemDeleteAction }: ISidebarItemProps) => {
+export const WorkspaceItem = ({ itemKey, type, ports, properties, itemDeleteAction }: ISidebarItemProps) => {
 
   return (
     <Outer
@@ -29,7 +29,7 @@ export const WorkspaceItem = ({ index, type, ports, properties, itemDeleteAction
       }}
     >
       <p className={'workspace-item-title'}>{properties['title']}</p>
-      <div style={{ marginTop: '5px', cursor: 'pointer' }} onClick={() => { itemDeleteAction(index) }}>
+      <div style={{ marginTop: '5px', cursor: 'pointer' }} onClick={() => { itemDeleteAction(itemKey) }}>
         <DeleteOutlinedIcon fontSize='small' />
       </div>
     </Outer>

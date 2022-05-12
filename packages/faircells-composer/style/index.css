@@ -27,6 +27,11 @@
     font-size: medium;
 }
 
+.section-header.cell-editor {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
 .add-cell-to-ws {
     width: 190px;
     margin: 15px;
