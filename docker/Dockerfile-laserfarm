@@ -27,7 +27,7 @@ RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
     conda upgrade --yes numpy && \
     conda update --yes -n base conda && \
     pip install dask distributed lazperf==1.4.4 && \
-    pip install laserfarm
+    pip install laserfarm laspy
 #====================================
 
 
