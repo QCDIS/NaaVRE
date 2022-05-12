@@ -4,11 +4,11 @@ import { FairCell } from '../faircell';
 import { WorkspaceItem } from './WorkspaceItem';
 
 interface IState {
-    workspace_elements: FairCell[]
+    workspace_elements: Map<string, FairCell>
 }
 
 export const DefaultState: IState = {
-    workspace_elements: []
+    workspace_elements: new Map<string, FairCell>()
 }
 
 export class Workspace extends React.Component {
@@ -18,48 +18,62 @@ export class Workspace extends React.Component {
     addElement = (element: FairCell) => {
 
         let currElements = this.state.workspace_elements;
-        currElements.push(element);
+        currElements.set(element.node_id, element);
         this.setState({ workspace_elements: currElements })
     }
 
-    removeElement = (index: number) => {
+    removeElement = (key: string) => {
 
         let currElements = this.state.workspace_elements;
-        currElements.splice(index, 1);
+        currElements.delete(key);
         this.setState({ workspace_elements: currElements })
     }
 
     hasElement = (element: FairCell) => {
-        return this.state.workspace_elements.map((el) => {
-            return el.node_id
-        }).includes(element.node_id);
+        return this.state.workspace_elements.has(element.node_id);
+    }
+
+    getElement = (nodeId: string) => {
+        return this.state.workspace_elements.get(nodeId); 
+    }
+
+    renderItems(map: Map<string, FairCell>): JSX.Element[] {
+
+        const items: JSX.Element[] = [];
+
+        map.forEach((value, key) => {
+
+            let nodes = value['chart_obj']['nodes'];
+            let element = nodes[Object.keys(nodes)[0]];
+
+            items.push(
+                <WorkspaceItem
+                    key={key}
+                    itemKey={key}
+                    type={element['type']}
+                    ports={element['ports']}
+                    properties={element['properties']}
+                    itemDeleteAction={this.removeElement}
+                />
+            );
+        });
+
+        return items;
     }
 
     render() {
         return (
-            <Box sx={{ boxShadow: '1px 1px lightgrey', background: 'white', height: 500, width: 200, transform: 'translateZ(0px)', flexGrow: 1, position: 'absolute', top: 20, left: 20 }}>
+            <Box sx={{ boxShadow: '1px 1px lightgrey', background: 'white', height: '100%', width: 250, transform: 'translateZ(0px)', flexGrow: 1, position: 'absolute', top: 0, left: 0 }}>
                 <p className='section-header'>Workspace</p>
-                {this.state.workspace_elements.length == 0 ? 
-                (<div className={'empty-workspace'}>
-                    The workspace is empty, click on the '+' bottom-right menu and select 'Explore Catalogs' to start adding cells.
-                </div>) 
-                : (
-                    <div className={'workspace-items-container'}>
-                        {this.state.workspace_elements.map((value, index) => {
-                            let nodes = value['chart_obj']['nodes']
-                            let element = nodes[Object.keys(nodes)[0]]
-                            return (
-                                <WorkspaceItem
-                                    index={index}
-                                    type={element['type']}
-                                    ports={element['ports']}
-                                    properties={element['properties']}
-                                    itemDeleteAction={this.removeElement}
-                                />
-                            )
-                        })}
-                    </div>
-                )
+                {this.state.workspace_elements.size == 0 ?
+                    (<div className={'empty-workspace'}>
+                        The workspace is empty, click on the '+' bottom-right menu and select 'Explore Catalogs' to start adding cells.
+                    </div>)
+                    : (
+                        <div className={'workspace-items-container'}>
+                            {this.renderItems(this.state.workspace_elements)}
+                        </div>
+                    )
                 }
             </Box>
         )
