@@ -26,7 +26,7 @@ jobs:
         $CONDA/bin/conda install -c conda-forge typescript
     - name: Install nodejs dependencies
       run: |
-        npm install @mrblenny/react-flow-chart@"^0.0.14"
+        npm install @mrblenny/react-flow-chart@"^0.0.14" --force
         npm install @types/node --save-dev
         npm install lerna
         npm install
