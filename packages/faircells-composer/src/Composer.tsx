@@ -15,6 +15,7 @@ import { Workspace } from './components/Workspace';
 import { FairCell } from '@jupyter_vre/core';
 import { ParallelizationDialog } from './components/ParallelizationDialog';
 import { CellEditor } from './components/CellEditor';
+import { Parallelization } from './components/Parallelization';
 
 const CenterContent = styled.div`
   display: flex;
@@ -130,6 +131,7 @@ class Composer extends React.Component<IProps, IState> {
 						) : 
 						(<div></div>)
 						}
+						<Parallelization />
 						<BasicSpeedDial
 							handleDialSelection={this.handleDialSelection}
 						/>
