@@ -32,7 +32,7 @@ jobs:
         npm install
     - name: make
       run: |
-#         npx lerna run build --scope @jupyter_vre/core
+        npx lerna run build --scope @jupyter_vre/core
         make install-backend && make build-frontend && make install-ui && make link-ui
         make release
 
