@@ -102,7 +102,6 @@ class ExtractorHandler(APIHandler, Catalog):
         # conf_deps = extractor.infere_cell_conf_dependencies(confs)
         # dependencies = dependencies + conf_deps
         node_id = str(uuid.uuid4())[:7]
-
         cell = Cell(
             node_id             = node_id,
             title               = title,
