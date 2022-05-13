@@ -8,7 +8,7 @@ import { Page, /* SidebarItem */ } from './components';
 import { chartSimple } from './exampleChart';
 import { FlowChart, IChart } from '@mrblenny/react-flow-chart';
 import { ThemeProvider } from '@material-ui/core';
-import { NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
+import { NodeCustom, NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
 import BasicSpeedDial from './components/SpeedDial';
 import { CatalogDialog } from './components/CatalogDialog';
 import { Workspace } from './components/Workspace';
@@ -119,8 +119,9 @@ class Composer extends React.Component<IProps, IState> {
 							chart={this.state.chart}
 							callbacks={this.chartStateActions}
 							Components={{
-								NodeInner: NodeInnerCustom,
-								Port: PortCustom
+								Node		: NodeCustom,
+								NodeInner	: NodeInnerCustom,
+								Port		: PortCustom
 							}}
 						/>
 						<Workspace ref={this.workspaceRef} />
