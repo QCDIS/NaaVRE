@@ -7,7 +7,6 @@ from builtins import Exception
 from pathlib import Path
 
 import autopep8
-import github3
 import nbformat as nb
 import requests
 from github3 import login
