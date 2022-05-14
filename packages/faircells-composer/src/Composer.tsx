@@ -8,12 +8,14 @@ import { Page, /* SidebarItem */ } from './components';
 import { chartSimple } from './exampleChart';
 import { FlowChart, IChart } from '@mrblenny/react-flow-chart';
 import { ThemeProvider } from '@material-ui/core';
-import { NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
+import { NodeCustom, NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
 import BasicSpeedDial from './components/SpeedDial';
 import { CatalogDialog } from './components/CatalogDialog';
 import { Workspace } from './components/Workspace';
-import { FairCell } from './faircell';
+import { FairCell } from '@jupyter_vre/core';
 import { ParallelizationDialog } from './components/ParallelizationDialog';
+import { CellEditor } from './components/CellEditor';
+import { Parallelization } from './components/Parallelization';
 
 const CenterContent = styled.div`
   display: flex;
@@ -37,7 +39,12 @@ class Composer extends React.Component<IProps, IState> {
 
 	state = DefaultState
 
-	workspaceRef: React.RefObject<Workspace>;
+	workspaceRef	: React.RefObject<Workspace>;
+
+	constructor(props: IProps) {
+		super(props);
+		this.workspaceRef = React.createRef();
+	}
 
 	handleAddCellToWorkspace = (cell: FairCell) => {
 		this.workspaceRef.current.addElement(cell);
@@ -45,6 +52,12 @@ class Composer extends React.Component<IProps, IState> {
 	
 	handleIsCellInWorkspace = (cell: FairCell) => {
 		return this.workspaceRef.current.hasElement(cell);
+	}
+
+	getWorkspaceElementFromChartId = (chartId: string): FairCell => {
+
+		let nodeId = this.state.chart.nodes[chartId].properties['og_node_id'];
+		return this.workspaceRef.current.getElement(nodeId);
 	}
 
 	CatalogDialogOptions: Partial<Dialog.IOptions<any>> = {
@@ -76,11 +89,6 @@ class Composer extends React.Component<IProps, IState> {
 			});
 		}) as typeof actions
 
-	constructor(props: IProps) {
-		super(props);
-		this.workspaceRef = React.createRef();
-	}
-
 	handleDialSelection = (operation: string) => {
 
 		switch (operation) {
@@ -98,6 +106,11 @@ class Composer extends React.Component<IProps, IState> {
 		}
 	}
 
+	componentDidUpdate() {
+
+		console.log(this.state.chart);
+	}
+
 	render() {
 		return (
 			<ThemeProvider theme={theme} >
@@ -107,11 +120,18 @@ class Composer extends React.Component<IProps, IState> {
 							chart={this.state.chart}
 							callbacks={this.chartStateActions}
 							Components={{
-								NodeInner: NodeInnerCustom,
-								Port: PortCustom
+								Node		: NodeCustom,
+								NodeInner	: NodeInnerCustom,
+								Port		: PortCustom
 							}}
 						/>
-						<Workspace ref={this.workspaceRef}/>
+						<Workspace ref={this.workspaceRef} />
+						{ this.state.chart.selected.id && this.state.chart.selected.type == 'node' ? (
+							<CellEditor cell={this.getWorkspaceElementFromChartId(this.state.chart.selected.id)}/>
+						) : 
+						(<div></div>)
+						}
+						<Parallelization />
 						<BasicSpeedDial
 							handleDialSelection={this.handleDialSelection}
 						/>

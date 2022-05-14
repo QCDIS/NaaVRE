@@ -74,9 +74,14 @@ class Extractor:
         return [und for und in cell_undefined if und not in self.imports and und not in self.configurations and und not in self.global_params]
 
 
-    def infere_cell_dependencies(self, cell_source):
+    def infere_cell_dependencies(self, cell_source, confs):
         dependencies = []
-        for name in self.__extract_cell_names(cell_source):
+        names = self.__extract_cell_names(cell_source)
+
+        for ck in confs:
+            names.update(self.__extract_cell_names(confs[ck]))
+
+        for name in names:
             if name in self.imports:
                 dependencies.append(self.imports.get(name))
 

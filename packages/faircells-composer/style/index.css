@@ -27,6 +27,11 @@
     font-size: medium;
 }
 
+.section-header.cell-editor {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
 .add-cell-to-ws {
     width: 190px;
     margin: 15px;
@@ -42,11 +47,4 @@
     color: darkgray;
     margin-top: 150px;
     line-height: 23px;
-}
-
-.workspace-item-title {
-    height: 45px;
-    border-bottom: 1px solid lightgray;
-    padding: 5px;
-    background: aliceblue;
 }
