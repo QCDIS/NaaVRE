@@ -8,9 +8,7 @@ import { theme } from '../Theme';
 
 const catalogs = [
 
-    { label: "LifeWatch ERIC" },
-    { label: "BIOMAC" },
-    { label: "eScience Center" }
+    { label: "Local" }
 ]
 
 interface IState {
