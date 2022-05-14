@@ -2,7 +2,7 @@ import * as React from 'react';
 import { cloneDeep, mapValues } from 'lodash';
 import * as actions from "@mrblenny/react-flow-chart/src/container/actions";
 import { FlowChart, IChart } from "@mrblenny/react-flow-chart"
-import { NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
+import { NodeCustom, NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
 
 const defaultChart: IChart = {
     offset: {
@@ -36,6 +36,7 @@ export class CellPreview extends React.Component {
                         chart={chart}
                         callbacks={stateActions}
                         Components={{
+                            Node: NodeCustom,
                             NodeInner: NodeInnerCustom,
                             Port: PortCustom
                         }}

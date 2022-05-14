@@ -61,7 +61,6 @@ export class CellTracker extends React.Component<IProps, IState> {
             method: 'POST'
         });
 
-        console.log(extractedCell);
         this.setState({ currentCell: extractedCell });
         this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
     }
@@ -124,93 +123,108 @@ export class CellTracker extends React.Component<IProps, IState> {
                     </div>
                     {this.state.currentCell != null ? (
                         <div>
-                            <p className={'lw-panel-preview'}>Inputs</p>
-                            <TableContainer component={Paper} className={'lw-panel-table'}>
-                                <Table aria-label="simple table">
-                                    <TableBody>
-                                        {this.state.currentCell.inputs.map((input: string) => (
-                                            <TableRow key={input}>
-                                                <TableCell component="th" scope="row">
-                                                    <p style={{ fontSize: "1em" }}>{input}</p>
-                                                </TableCell>
-                                                <TableCell component="th" scope="row">
-                                                    <FormControl fullWidth>
-                                                        <Select
-                                                            labelId="io-types-select-label"
-                                                            id="io-types-select"
-                                                            label="Type"
-                                                            onChange={(event) => { this.typesUpdate(event, input) }}
-                                                        >
-                                                            <MenuItem value={'int'}>Integer</MenuItem>
-                                                            <MenuItem value={'float'}>Float</MenuItem>
-                                                            <MenuItem value={'str'}>String</MenuItem>
-                                                            <MenuItem value={'list'}>List</MenuItem>
-                                                        </Select>
-                                                    </FormControl>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                            <p className={'lw-panel-preview'}>Outputs</p>
-                            <TableContainer component={Paper} className={'lw-panel-table'}>
-                                <Table aria-label="simple table">
-                                    <TableBody>
-                                        {this.state.currentCell.outputs.map((output: string) => (
-                                            <TableRow key={output}>
-                                                <TableCell component="th" scope="row">
-                                                    <p style={{ fontSize: "1em" }}>{output}</p>
-                                                </TableCell>
-                                                <TableCell component="th" scope="row">
-                                                    <FormControl fullWidth>
-                                                        <Select
-                                                            labelId="io-types-select-label"
-                                                            id="io-types-select"
-                                                            label="Type"
-                                                            onChange={(event) => { this.typesUpdate(event, output) }}
-                                                        >
-                                                            <MenuItem value={'int'}>Integer</MenuItem>
-                                                            <MenuItem value={'float'}>Float</MenuItem>
-                                                            <MenuItem value={'str'}>String</MenuItem>
-                                                            <MenuItem value={'list'}>List</MenuItem>
-                                                        </Select>
-                                                    </FormControl>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                            <p className={'lw-panel-preview'}>Parameters</p>
-                            <TableContainer component={Paper} className={'lw-panel-table'}>
-                                <Table aria-label="simple table">
-                                    <TableBody>
-                                        {this.state.currentCell.params.map((param: string) => (
-                                            <TableRow key={param}>
-                                                <TableCell component="th" scope="row">
-                                                    {param}
-                                                </TableCell>
-                                                <TableCell component="th" scope="row">
-                                                    <FormControl fullWidth>
-                                                        <Select
-                                                            labelId="param-types-select-label"
-                                                            id="param-types-select"
-                                                            label="Type"
-                                                            onChange={(event) => { this.typesUpdate(event, param) }}
-                                                        >
-                                                            <MenuItem value={'int'}>Integer</MenuItem>
-                                                            <MenuItem value={'float'}>Float</MenuItem>
-                                                            <MenuItem value={'str'}>String</MenuItem>
-                                                            <MenuItem value={'list'}>List</MenuItem>
-                                                        </Select>
-                                                    </FormControl>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+                            {this.state.currentCell.inputs.length > 0 ? (
+                                <div>
+                                    <p className={'lw-panel-preview'}>Inputs</p>
+                                    <TableContainer component={Paper} className={'lw-panel-table'}>
+                                        <Table aria-label="simple table">
+                                            <TableBody>
+                                                {this.state.currentCell.inputs.map((input: string) => (
+                                                    <TableRow key={input}>
+                                                        <TableCell component="th" scope="row">
+                                                            <p style={{ fontSize: "1em" }}>{input}</p>
+                                                        </TableCell>
+                                                        <TableCell component="th" scope="row">
+                                                            <FormControl fullWidth>
+                                                                <Select
+                                                                    labelId="io-types-select-label"
+                                                                    id="io-types-select"
+                                                                    label="Type"
+                                                                    onChange={(event) => { this.typesUpdate(event, input) }}
+                                                                >
+                                                                    <MenuItem value={'int'}>Integer</MenuItem>
+                                                                    <MenuItem value={'float'}>Float</MenuItem>
+                                                                    <MenuItem value={'str'}>String</MenuItem>
+                                                                    <MenuItem value={'list'}>List</MenuItem>
+                                                                </Select>
+                                                            </FormControl>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </div>
+                            ) : (<div></div>)
+                            }
+                            {this.state.currentCell.outputs.length > 0 ? (
+                                <div>
+                                    <p className={'lw-panel-preview'}>Outputs</p>
+                                    <TableContainer component={Paper} className={'lw-panel-table'}>
+                                        <Table aria-label="simple table">
+                                            <TableBody>
+                                                {this.state.currentCell.outputs.map((output: string) => (
+                                                    <TableRow key={output}>
+                                                        <TableCell component="th" scope="row">
+                                                            <p style={{ fontSize: "1em" }}>{output}</p>
+                                                        </TableCell>
+                                                        <TableCell component="th" scope="row">
+                                                            <FormControl fullWidth>
+                                                                <Select
+                                                                    labelId="io-types-select-label"
+                                                                    id="io-types-select"
+                                                                    label="Type"
+                                                                    onChange={(event) => { this.typesUpdate(event, output) }}
+                                                                >
+                                                                    <MenuItem value={'int'}>Integer</MenuItem>
+                                                                    <MenuItem value={'float'}>Float</MenuItem>
+                                                                    <MenuItem value={'str'}>String</MenuItem>
+                                                                    <MenuItem value={'list'}>List</MenuItem>
+                                                                </Select>
+                                                            </FormControl>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </div>
+                            ) : (<div></div>)
+                            }
+                            {this.state.currentCell.params.length > 0 ? (
+                                <div>
+                                    <p className={'lw-panel-preview'}>Parameters</p>
+                                    <TableContainer component={Paper} className={'lw-panel-table'}>
+                                        <Table aria-label="simple table">
+                                            <TableBody>
+                                                {this.state.currentCell.params.map((param: string) => (
+                                                    <TableRow key={param}>
+                                                        <TableCell component="th" scope="row">
+                                                            {param}
+                                                        </TableCell>
+                                                        <TableCell component="th" scope="row">
+                                                            <FormControl fullWidth>
+                                                                <Select
+                                                                    labelId="param-types-select-label"
+                                                                    id="param-types-select"
+                                                                    label="Type"
+                                                                    onChange={(event) => { this.typesUpdate(event, param) }}
+                                                                >
+                                                                    <MenuItem value={'int'}>Integer</MenuItem>
+                                                                    <MenuItem value={'float'}>Float</MenuItem>
+                                                                    <MenuItem value={'str'}>String</MenuItem>
+                                                                    <MenuItem value={'list'}>List</MenuItem>
+                                                                </Select>
+                                                            </FormControl>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </div>
+                            ) : (<div></div>)
+                            }
                             <p className={'lw-panel-preview'}>Dependencies</p>
                             <TableContainer component={Paper} className={'lw-panel-table'}>
                                 <Table aria-label="simple table">
