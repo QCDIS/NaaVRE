@@ -13,8 +13,8 @@ class ConverterReactFlowChart:
 
         node['id']                  = node_id
         node['type']                = 'input-output'
-        position['x']               = 130
-        position['y']               = 50
+        position['x']               = 35
+        position['y']               = 15
         node['position']            = position
         properties['title']         = title
         properties['vars']          = list()
