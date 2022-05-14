@@ -3,38 +3,62 @@ import { IPortDefaultProps } from '@mrblenny/react-flow-chart';
 import * as React from 'react';
 
 
-const PortDefaultOuter = styled.div`
-  width: 25px;
-  height: 25px;
+const PortContainerLeft = styled.div`
+  display: flex;
+  justify-content: flex-start;
+`
+
+const PortContainerRight = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`
+
+const PortDot = styled.div`
+  width: 20px;
+  height: 20px;
   background: ${(props: { color: any; }) => props.color};
   border-radius: 50%;
   cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `
 
-const PortSpecialOuter = styled.div`
-  width: 25px;
-  height: 25px;
-  background: dimgray;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+const PortLabelContainerLeft = styled.div`
+  margin-left: 5px;
+`
+
+const PortLabelContainerRight = styled.div`
+  margin-right: 5px;
+`
+
+const PortLabel = styled.span`
+
+  display: inline-block;
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
 `
 
 export const PortCustom = (props: IPortDefaultProps) => {
-  
-  return (
 
+  return (
     <div>
-      <div>
-        {props.port.properties.special_node == 1 ? 
-          (<PortSpecialOuter />) :
-          (<PortDefaultOuter color={props.port.properties.color} />)
-        }
-      </div>
+      {
+        props.port.type == "left" ? (
+          <PortContainerLeft>
+            <PortDot color={props.port.properties.color} />
+            <PortLabelContainerLeft>
+              <PortLabel>{props.port.id}</PortLabel>
+            </PortLabelContainerLeft>
+          </PortContainerLeft>
+        ) : (
+          <PortContainerRight>
+            <PortLabelContainerRight>
+              <PortLabel>{props.port.id}</PortLabel>
+            </PortLabelContainerRight>
+            <PortDot color={props.port.properties.color} />
+          </PortContainerRight>
+        )
+      }
     </div>
   )
 }

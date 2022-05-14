@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import * as React from 'react';
-import { FairCell } from '../faircell';
+import { FairCell } from '@jupyter_vre/core';
 import { WorkspaceItem } from './WorkspaceItem';
 
 interface IState {
@@ -63,7 +63,7 @@ export class Workspace extends React.Component {
 
     render() {
         return (
-            <Box sx={{ boxShadow: '1px 1px lightgrey', background: 'white', height: '100%', width: 250, transform: 'translateZ(0px)', flexGrow: 1, position: 'absolute', top: 0, left: 0 }}>
+            <Box sx={{ boxShadow: '1px 1px lightgrey', background: 'white', height: '70%', width: 250, transform: 'translateZ(0px)', flexGrow: 1, position: 'absolute', top: 0, left: 0 }}>
                 <p className='section-header'>Workspace</p>
                 {this.state.workspace_elements.size == 0 ?
                     (<div className={'empty-workspace'}>

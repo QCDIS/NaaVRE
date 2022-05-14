@@ -1,8 +1,10 @@
 import hashlib
 import logging
+import json
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
 
 class Cell:
     logger = logging.getLogger(__name__)
@@ -95,3 +97,6 @@ class Cell:
         for c in self.confs:
             resolves.append(self.confs[c])
         return resolves
+
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
