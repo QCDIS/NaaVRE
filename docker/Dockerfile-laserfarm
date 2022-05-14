@@ -9,7 +9,7 @@ RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
-COPY ./notebooks/ /tmp
+COPY ./notebooks/ /tmp/notebooks
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 
@@ -27,7 +27,7 @@ RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
     conda upgrade --yes numpy && \
     conda update --yes -n base conda && \
     pip install dask distributed lazperf==1.4.4 && \
-    pip install laserfarm
+    pip install laserfarm laspy
 #====================================
 
 

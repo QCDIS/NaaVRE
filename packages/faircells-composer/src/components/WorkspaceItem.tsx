@@ -10,16 +10,36 @@ const Outer = styled('div')({
   borderRadius: '5px'
 });
 
+const Title = styled('span')({
+  width: '100%',
+  display: 'inline-block',
+  height: '45px',
+  borderBottom: '1px solid lightgray',
+  padding: '5px',
+  background: 'aliceblue'
+})
+
+const TitleSpecial = styled('span')({
+  width: '100%',
+  display: 'flex',
+  height: '45px',
+  borderBottom: '1px solid lightgray',
+  justifyContent: 'center',
+  alignItems: 'center',
+  background: 'lavender'
+})
+
+
 export interface ISidebarItemProps {
 
-  index             : number,
-  type              : string,
-  ports             : INode['ports'],
-  properties?       : any,
-  itemDeleteAction  : (index: number) => void
+  itemKey: string,
+  type: string,
+  ports: INode['ports'],
+  properties?: any,
+  itemDeleteAction?: (key: string) => void
 }
 
-export const WorkspaceItem = ({ index, type, ports, properties, itemDeleteAction }: ISidebarItemProps) => {
+export const WorkspaceItem = ({ itemKey, type, ports, properties, itemDeleteAction = null }: ISidebarItemProps) => {
 
   return (
     <Outer
@@ -28,10 +48,18 @@ export const WorkspaceItem = ({ index, type, ports, properties, itemDeleteAction
         event.dataTransfer.setData(REACT_FLOW_CHART, JSON.stringify({ type, ports, properties }))
       }}
     >
-      <p className={'workspace-item-title'}>{properties['title']}</p>
-      <div style={{ marginTop: '5px', cursor: 'pointer' }} onClick={() => { itemDeleteAction(index) }}>
-        <DeleteOutlinedIcon fontSize='small' />
-      </div>
+      {type != "splitter" && type != "merger" ? (
+        <div>
+          <Title>{properties['title']}</Title>
+          <div style={{ marginTop: '5px', cursor: 'pointer' }} onClick={() => { itemDeleteAction(itemKey) }}>
+            <DeleteOutlinedIcon fontSize='small' />
+          </div>
+        </div>
+      ) : (
+        <div>
+          <TitleSpecial>{properties['title']}</TitleSpecial>
+        </div>
+      )}
     </Outer>
   )
 }
