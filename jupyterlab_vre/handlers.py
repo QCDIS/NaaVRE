@@ -167,6 +167,22 @@ class TypesHandler(APIHandler, Catalog):
 
 ################################################################################
 
+# Base Image
+
+################################################################################
+
+class BaseImageHandler(APIHandler, Catalog):
+
+    @web.authenticated
+    async def post(self, *args, **kwargs):
+        payload = self.get_json_body()
+        base_image = payload['image']
+        cell = Catalog.editor_buffer
+        print(payload)
+
+
+################################################################################
+
 # Catalog
 
 ################################################################################
