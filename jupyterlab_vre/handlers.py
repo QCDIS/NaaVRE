@@ -516,12 +516,14 @@ class ExportWorkflowHandler(APIHandler):
             global_params.extend(cell['params'])
 
         registry_credentials = Catalog.get_registry_credentials()
+
         if not registry_credentials:
             self.set_status(400)
             self.write('Registry credentials are not set!')
             self.write_error('Registry credentials are not set!')
             self.flush()
             return
+            
         image_repo = registry_credentials['url'].split('https://hub.docker.com/u/')[1]
         loader = PackageLoader('jupyterlab_vre', 'templates')
         template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)

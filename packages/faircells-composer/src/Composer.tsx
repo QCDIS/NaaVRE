@@ -12,8 +12,7 @@ import { NodeCustom, NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-cust
 import BasicSpeedDial from './components/SpeedDial';
 import { CatalogDialog } from './components/CatalogDialog';
 import { Workspace } from './components/Workspace';
-import { FairCell } from '@jupyter_vre/core';
-import { ParallelizationDialog } from './components/ParallelizationDialog';
+import { FairCell, requestAPI } from '@jupyter_vre/core';
 import { CellEditor } from './components/CellEditor';
 import { Parallelization } from './components/Parallelization';
 
@@ -39,7 +38,7 @@ class Composer extends React.Component<IProps, IState> {
 
 	state = DefaultState
 
-	workspaceRef	: React.RefObject<Workspace>;
+	workspaceRef: React.RefObject<Workspace>;
 
 	constructor(props: IProps) {
 		super(props);
@@ -49,7 +48,7 @@ class Composer extends React.Component<IProps, IState> {
 	handleAddCellToWorkspace = (cell: FairCell) => {
 		this.workspaceRef.current.addElement(cell);
 	}
-	
+
 	handleIsCellInWorkspace = (cell: FairCell) => {
 		return this.workspaceRef.current.hasElement(cell);
 	}
@@ -63,20 +62,11 @@ class Composer extends React.Component<IProps, IState> {
 	CatalogDialogOptions: Partial<Dialog.IOptions<any>> = {
 		title: '',
 		body: ReactWidget.create(
-			<CatalogDialog 
+			<CatalogDialog
 				addCellAction={this.handleAddCellToWorkspace}
 				isCellInWorkspace={this.handleIsCellInWorkspace}
 			/>
-			) as Dialog.IBodyWidget<any>,
-		buttons: []
-	};
-
-	ParallelizationDialogOptions: Partial<Dialog.IOptions<any>> = {
-		title: '',
-		body: ReactWidget.create(
-			<ParallelizationDialog
-			/>
-			) as Dialog.IBodyWidget<any>,
+		) as Dialog.IBodyWidget<any>,
 		buttons: []
 	};
 
@@ -93,22 +83,29 @@ class Composer extends React.Component<IProps, IState> {
 
 		switch (operation) {
 
-			case "explore-catalogs":
-				showDialog(this.CatalogDialogOptions)
-			break;
+			case "cells-catalogs":
+				showDialog(this.CatalogDialogOptions);
+				break;
 
 			case "export-workflow":
-			break;
-
-			case "parallelization":
-				showDialog(this.ParallelizationDialogOptions)
-			break;
+				this.exportWorkflow();
+				break;
 		}
+	}
+
+	exportWorkflow = async () => {
+
+		let resp = await requestAPI<any>('workflow/export', {
+			body: JSON.stringify(this.state.chart),
+			method: 'POST'
+		});
+
+		console.log(resp);
 	}
 
 	componentDidUpdate() {
 
-		console.log(this.state.chart);
+		// TODO: Implement chart sanity checks
 	}
 
 	render() {
@@ -120,16 +117,16 @@ class Composer extends React.Component<IProps, IState> {
 							chart={this.state.chart}
 							callbacks={this.chartStateActions}
 							Components={{
-								Node		: NodeCustom,
-								NodeInner	: NodeInnerCustom,
-								Port		: PortCustom
+								Node: NodeCustom,
+								NodeInner: NodeInnerCustom,
+								Port: PortCustom
 							}}
 						/>
 						<Workspace ref={this.workspaceRef} />
-						{ this.state.chart.selected.id && this.state.chart.selected.type == 'node' ? (
-							<CellEditor cell={this.getWorkspaceElementFromChartId(this.state.chart.selected.id)}/>
-						) : 
-						(<div></div>)
+						{this.state.chart.selected.id && this.state.chart.selected.type == 'node' ? (
+							<CellEditor cell={this.getWorkspaceElementFromChartId(this.state.chart.selected.id)} />
+						) :
+							(<div></div>)
 						}
 						<Parallelization />
 						<BasicSpeedDial
