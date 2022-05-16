@@ -25,7 +25,6 @@ from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 from jupyterlab_vre.storage.catalog import Catalog
 from jupyterlab_vre.workflows.parser import WorkflowParser
 
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 module_mapping = {'fnmatch': 'fnmatch2'}
