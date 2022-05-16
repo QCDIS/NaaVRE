@@ -103,6 +103,28 @@ class Composer extends React.Component<IProps, IState> {
 		console.log(resp);
 	}
 
+	getNodeEditor = () => {
+
+		let node = this.state.chart.nodes[this.state.chart.selected.id];
+
+		switch (node.type) {
+
+			case "splitter":
+				return (
+					<div>Splitter</div>
+				);
+
+			case "merger":
+				return (
+					<div>Merger</div>
+				);
+		}
+
+		return (
+			<CellEditor cell={this.getWorkspaceElementFromChartId(this.state.chart.selected.id)} />
+		);
+	}
+
 	componentDidUpdate() {
 
 		// TODO: Implement chart sanity checks
@@ -124,7 +146,7 @@ class Composer extends React.Component<IProps, IState> {
 						/>
 						<Workspace ref={this.workspaceRef} />
 						{this.state.chart.selected.id && this.state.chart.selected.type == 'node' ? (
-							<CellEditor cell={this.getWorkspaceElementFromChartId(this.state.chart.selected.id)} />
+							this.getNodeEditor()
 						) :
 							(<div></div>)
 						}
