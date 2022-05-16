@@ -21,6 +21,15 @@ const PortDot = styled.div`
   cursor: pointer;
 `
 
+const PortDotSpecial = styled.div`
+  margin-top: 20px;
+  width: 25px;
+  height: 25px;
+  background: cadetblue;
+  border-radius: 5px;
+  cursor: pointer;
+`
+
 const PortLabelContainerLeft = styled.div`
   margin-left: 5px;
 `
@@ -40,25 +49,43 @@ const PortLabel = styled.span`
 
 export const PortCustom = (props: IPortDefaultProps) => {
 
+  const getPort = () => {
+
+    if (props.port.properties['special_node']) {
+      return (
+        <PortDotSpecial />
+      )
+    }
+
+    return getStandardPort();
+  }
+
+  const getStandardPort = () => {
+
+    if (props.port.type == "left") {
+      return (
+        <PortContainerLeft>
+          <PortDot color={props.port.properties.color} />
+          <PortLabelContainerLeft>
+            <PortLabel>{props.port.id}</PortLabel>
+          </PortLabelContainerLeft>
+        </PortContainerLeft>
+      )
+    }
+
+    if (props.port.type == "right") {
+      return (
+        <PortContainerRight>
+          <PortLabelContainerRight>
+            <PortLabel>{props.port.id}</PortLabel>
+          </PortLabelContainerRight>
+          <PortDot color={props.port.properties.color} />
+        </PortContainerRight>
+      )
+    }
+  }
+
   return (
-    <div>
-      {
-        props.port.type == "left" ? (
-          <PortContainerLeft>
-            <PortDot color={props.port.properties.color} />
-            <PortLabelContainerLeft>
-              <PortLabel>{props.port.id}</PortLabel>
-            </PortLabelContainerLeft>
-          </PortContainerLeft>
-        ) : (
-          <PortContainerRight>
-            <PortLabelContainerRight>
-              <PortLabel>{props.port.id}</PortLabel>
-            </PortLabelContainerRight>
-            <PortDot color={props.port.properties.color} />
-          </PortContainerRight>
-        )
-      }
-    </div>
+    getPort()
   )
 }
