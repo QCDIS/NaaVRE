@@ -7,7 +7,6 @@ from builtins import Exception
 from pathlib import Path
 
 import autopep8
-import github3
 import nbformat as nb
 import requests
 from github3 import login
@@ -92,7 +91,7 @@ class ExtractorHandler(APIHandler, Catalog):
         source = notebook.cells[cell_index].source
 
         title = source.partition('\n')[0]
-        title = title.replace('#', '').replace('_', '-').strip() if title[0] == "#" else "Untitled"
+        title = title.replace('#', '').replace('_', '-').replace('(','-').replace(')','-').strip() if title[0] == "#" else "Untitled"
 
         ins = set(extractor.infere_cell_inputs(source))
         outs = set(extractor.infere_cell_outputs(source))
@@ -102,7 +101,6 @@ class ExtractorHandler(APIHandler, Catalog):
         # conf_deps = extractor.infere_cell_conf_dependencies(confs)
         # dependencies = dependencies + conf_deps
         node_id = str(uuid.uuid4())[:7]
-
         cell = Cell(
             node_id             = node_id,
             title               = title,
@@ -513,12 +511,14 @@ class ExportWorkflowHandler(APIHandler):
             global_params.extend(cell['params'])
 
         registry_credentials = Catalog.get_registry_credentials()
+
         if not registry_credentials:
             self.set_status(400)
             self.write('Registry credentials are not set!')
             self.write_error('Registry credentials are not set!')
             self.flush()
             return
+            
         image_repo = registry_credentials['url'].split('https://hub.docker.com/u/')[1]
         loader = PackageLoader('jupyterlab_vre', 'templates')
         template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
