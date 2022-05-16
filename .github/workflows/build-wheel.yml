@@ -27,6 +27,7 @@ jobs:
     - name: Install nodejs dependencies
       run: |
         npm install @mui/icons-material
+        npm install @mui/material @emotion/react @emotion/styled
         npm install @mrblenny/react-flow-chart@"^0.0.14" --force
         npm install @types/node --save-dev
         npm install lerna
