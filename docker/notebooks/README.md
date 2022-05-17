@@ -12,7 +12,7 @@ Note that you need to replace the SECRET_TOKEN with the git token provided to yo
 
 ## Containerize notebook cells 
 
-
+Go to '/examples/notebooks/eEcolidar/'. 
 Open the notebook. Next on the left click on the LifeWatch panel.
 
 <img src="https://user-images.githubusercontent.com/9680609/162744335-eea6a0bd-14d5-4ed4-b678-c01e3b71188e.png" width="50%" height="50%">
