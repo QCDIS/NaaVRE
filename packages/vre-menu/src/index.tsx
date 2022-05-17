@@ -5,140 +5,54 @@ import {
 
 import * as React from 'react';
 import { IMainMenu } from '@jupyterlab/mainmenu';
-import { requestAPI } from '@jupyter_vre/core';
 import { Menu } from '@lumino/widgets';
-import { ICommandPalette, showDialog, Dialog } from '@jupyterlab/apputils';
-import { SDIAAuthDialog } from './SDIAAuthDialog';
-import { GithubAuthDialog } from './GithubAuthDialog';
-import { ImageRegistryAuthDialog } from './ImageRegistryAuthDialog';
-import { formDialogWidget } from './formDialogWidget';
-  
-/**
- * Initialization data for the main menu example.
- */
+import { ReactWidget, ICommandPalette, Dialog, showDialog } from '@jupyterlab/apputils';
+import { CredentialsDialog } from './CredentialsDialog';
+
 const extension: JupyterFrontEndPlugin<void> = {
-id: 'main-menu',
-autoStart: true,
-requires: [ICommandPalette, IMainMenu],
-activate: (
-    app: JupyterFrontEnd,
-    palette: ICommandPalette,
-    mainMenu: IMainMenu
-) => {
+    id: 'main-menu',
+    autoStart: true,
+    requires: [ICommandPalette, IMainMenu],
+    activate: (
+        app: JupyterFrontEnd,
+        palette: ICommandPalette,
+        mainMenu: IMainMenu
+    ) => {
 
-    const { commands } = app;
-    const auth_sdia_command = 'vre:cred:sdia-auth';
-    const auth_github_command = 'vre:cred:github-auth';
-    const auth_image_registry_command = 'vre:cred:image-registry-auth';
+        const CredentialsDialogOptions: Partial<Dialog.IOptions<any>> = {
+            title: '',
+            body: ReactWidget.create(
+                <CredentialsDialog />
+            ) as Dialog.IBodyWidget<any>,
+            buttons: []
+        };
 
-    const SDIACredDialogOptions: Partial<Dialog.IOptions<any>> = {
-        title: 'Infrastructure Automator Credentials',
-        body: formDialogWidget(
-          <SDIAAuthDialog />
-        ),
-        buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })],
-        defaultButton: 1
-    };
+        const { commands } = app;
+        const manageCredentialsCommand = 'naavre:manage-credentials';
 
-    const GithubDialogOptions: Partial<Dialog.IOptions<any>> = {
-        title: 'Github Token',
-        body: formDialogWidget(
-          <GithubAuthDialog />
-        ),
-        buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })],
-        defaultButton: 1
-    };
+        commands.addCommand(manageCredentialsCommand, {
+            label: 'Manage Credentials',
+            caption: 'Manage Credentials',
+            execute: (args: any) => {
+                showDialog(CredentialsDialogOptions);
+            }
+        });
 
-    const ImageRegistryAuthDialogOptions: Partial<Dialog.IOptions<any>> = {
-        title: 'Image Registry Auth',
-        body: formDialogWidget(
-          <ImageRegistryAuthDialog />
-        ),
-        buttons: [Dialog.cancelButton(), Dialog.okButton({ label: 'Save' })],
-        defaultButton: 1
-    };
+        const category = 'NaaVRE';
 
-    commands.addCommand(auth_sdia_command, {
-        label: 'SDIA',
-        caption: 'SDIA',
-        execute: (args: any) => {
-            showDialog(SDIACredDialogOptions).then((res: { value: any; }) => {
+        palette.addItem({
+            command: manageCredentialsCommand,
+            category,
+            args: { origin: 'from the palette' }
+        });
 
-                requestAPI<any>('sdia/testauth', {
-                    body: JSON.stringify(res.value),
-                    method: 'POST'
-                }).then((resp: any) => {
-                    console.log(resp);
-                });
-            });
-        }
-    });
+        // Create a menu
+        const vreMenu: Menu = new Menu({ commands });
+        vreMenu.title.label = 'NaaVRE'
+        mainMenu.addMenu(vreMenu, { rank: 80 });
+        vreMenu.addItem({ command: manageCredentialsCommand, args: { origin: 'from the menu' } });
 
-    commands.addCommand(auth_github_command, {
-        label: 'Github',
-        caption: 'Github',
-        execute: (args: any) => {
-            showDialog(GithubDialogOptions).then((res: { value: any; }) => {
-
-                requestAPI<any>('github/savetoken', {
-                    body: JSON.stringify(res.value),
-                    method: 'POST'
-                }).then((resp: any) => {
-                    console.log(resp);
-                });
-            });
-        }
-    });
-
-    commands.addCommand(auth_image_registry_command, {
-        label: 'ImageRegistry',
-        caption: 'ImageRegistry',
-        execute: (args: any) => {
-            showDialog(ImageRegistryAuthDialogOptions).then((res: { value: any; }) => {
-
-                requestAPI<any>('image_registry/savetoken', {
-                    body: JSON.stringify(res.value),
-                    method: 'POST'
-                }).then((resp: any) => {
-                    console.log(resp);
-                });
-            });
-        }
-    });
-
-    const category = 'LifeWatch VRE';
-
-    palette.addItem({
-        command: auth_sdia_command,
-        category,
-        args: { origin: 'from the palette' }
-    });
-
-    palette.addItem({
-        command: auth_github_command,
-        category,
-        args: { origin: 'from the palette' }
-    });
-
-    palette.addItem({
-        command: auth_image_registry_command,
-        category,
-        args: { origin: 'from the palette' }
-    });
-
-    // Create a menu
-    const vreMenu: Menu = new Menu({ commands });
-    vreMenu.title.label = 'LifeWatch VRE';
-
-    const credentialsMenu: Menu = new Menu({ commands });
-    credentialsMenu.title.label = 'Manage Credentials'
-    credentialsMenu.addItem({ command: auth_sdia_command, args: { origin: 'from the menu' }});
-    credentialsMenu.addItem({ command: auth_github_command, args: { origin: 'from the menu' }});
-    credentialsMenu.addItem({ command: auth_image_registry_command, args: { origin: 'from the menu' }});
-    
-    vreMenu.addItem({ submenu: credentialsMenu, type: 'submenu' });
-    mainMenu.addMenu(vreMenu, { rank: 100 });
-}
+    }
 };
 
 export default extension;

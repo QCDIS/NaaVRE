@@ -16,7 +16,7 @@ from tornado import web
 
 from jupyterlab_vre.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.extractor.extractor import Extractor
-from jupyterlab_vre.faircell import Cell
+from jupyterlab_vre.storage.faircell import Cell
 
 from jupyterlab_vre.repository.repository_credentials import RepositoryCredentials
 from jupyterlab_vre.sdia.sdia import SDIA
