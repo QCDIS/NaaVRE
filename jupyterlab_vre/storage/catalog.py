@@ -3,7 +3,7 @@ import os
 import json
 from pathlib import Path
 from tinydb import TinyDB, where
-from jupyterlab_vre.faircell import Cell
+from jupyterlab_vre.storage.faircell import Cell
 from jupyterlab_vre.repository.repository_credentials import RepositoryCredentials
 from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 
@@ -17,11 +17,14 @@ class Catalog:
         os.mkdir(naa_vre_path)
 
     db = TinyDB(os.path.join(naa_vre_path, 'db.json'))
+
     cells = db.table('cells')
+    workflows = db.table('workflows')
     provision = db.table('provision')
     sdia_credentials = db.table('sdia_credentials')
     gh_credentials = db.table('gh_credentials')
     registry_credentials = db.table('registry_credentials')
+
     editor_buffer: Cell
 
     @classmethod
