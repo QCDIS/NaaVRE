@@ -1,4 +1,4 @@
-FROM qcdis/miniconda3-pdal AS build
+FROM {{ base_image }} AS build
 COPY {{ task_name }}-environment.yaml .
 RUN conda env update -f {{ task_name }}-environment.yaml
 RUN conda-pack -n venv -o /tmp/env.tar && \
