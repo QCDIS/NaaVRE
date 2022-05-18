@@ -75,6 +75,8 @@ ENV PATH=${PATH}:/opt/radar/vol2bird/bin:/opt/radar/rsl/bin
 
 #CMD vol2bird
 #=============================================
+COPY ./notebooks/ /tmp/notebooks
+
 USER $NB_USER
 
 RUN conda remove --force -y terminado && \
