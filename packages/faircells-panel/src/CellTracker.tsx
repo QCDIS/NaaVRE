@@ -32,10 +32,10 @@ type SaveState = 'started' | 'completed' | 'failed';
 
 const baseImages = [
 
-    { label: "Basic Python", id: "python" },
-    { label: "Laserfarm", id: "laserfarm" },
-    { label: "vol2 bird", id: "vol2bird" },
-    { label: "MULTIPLY", id: "multiply" }
+    { label: "Basic Python", id: "python:3.8-buster" },
+    { label: "Laserfarm", id: "qcdis/miniconda3-pdal" },
+    { label: "vol2bird", id: "qcdis/python-vol2bird" },
+    { label: "MULTIPLY", id: "qcdis/miniconda3-multiply" }
 ]
 
 export class CellTracker extends React.Component<IProps, IState> {

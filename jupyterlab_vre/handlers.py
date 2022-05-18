@@ -66,6 +66,7 @@ standard_library = [
     'random'
 ]
 
+
 ################################################################################
 
 # Extraction
@@ -91,7 +92,8 @@ class ExtractorHandler(APIHandler, Catalog):
         source = notebook.cells[cell_index].source
 
         title = source.partition('\n')[0]
-        title = title.replace('#', '').replace('_', '-').replace('(','-').replace(')','-').strip() if title[0] == "#" else "Untitled"
+        title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[
+                                                                                                            0] == "#" else "Untitled"
 
         ins = set(extractor.infere_cell_inputs(source))
         outs = set(extractor.infere_cell_outputs(source))
@@ -102,16 +104,16 @@ class ExtractorHandler(APIHandler, Catalog):
         # dependencies = dependencies + conf_deps
         node_id = str(uuid.uuid4())[:7]
         cell = Cell(
-            node_id             = node_id,
-            title               = title,
-            task_name           = title.lower().replace(' ', '-'),
-            original_source     = source,
-            inputs              = ins,
-            outputs             = outs,
-            params              = params,
-            confs               = confs,
-            dependencies        = dependencies,
-            container_source    = ""
+            node_id=node_id,
+            title=title,
+            task_name=title.lower().replace(' ', '-'),
+            original_source=source,
+            inputs=ins,
+            outputs=outs,
+            params=params,
+            confs=confs,
+            dependencies=dependencies,
+            container_source=""
         )
 
         cell.integrate_configuration()
@@ -176,9 +178,10 @@ class BaseImageHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
+        logger.debug('payload: ' + str(payload))
         base_image = payload['image']
         cell = Catalog.editor_buffer
-        print(payload)
+        cell.base_image = base_image
 
 
 ################################################################################
@@ -234,12 +237,19 @@ class CellsHandler(APIHandler, Catalog):
         for parm_name in all_vars:
             if parm_name not in current_cell.types:
                 logger.error(parm_name + ' has not type')
-                msg_json = dict(title=parm_name + ' has not type')
                 self.set_status(400)
                 self.write(parm_name + ' has not type')
                 self.write_error(parm_name + ' has not type')
                 self.flush()
                 return
+
+        if not current_cell.base_image:
+            logger.error(current_cell.task_name + ' has not base image selected')
+            self.set_status(400)
+            self.write(current_cell.task_name + ' has not base image selected')
+            self.write_error(current_cell.task_name + ' has not base image selected')
+            self.flush()
+            return
 
         compiled_code = template_cell.render(cell=current_cell, deps=deps, types=current_cell.types, confs=confs)
         compiled_code = autopep8.fix_code(compiled_code)
@@ -259,7 +269,6 @@ class CellsHandler(APIHandler, Catalog):
                 path = os.path.join(cell_path, files)
                 if os.path.isfile(path):
                     os.remove(path)
-
         else:
             os.mkdir(cell_path)
 
@@ -274,7 +283,7 @@ class CellsHandler(APIHandler, Catalog):
         image_repo = registry_credentials['url'].split('https://hub.docker.com/u/')[1]
 
         cell_file_name = current_cell.task_name + '.py'
-        dockerfile_name = 'Dockerfile.'+image_repo+'.' + current_cell.task_name
+        dockerfile_name = 'Dockerfile.' + image_repo + '.' + current_cell.task_name
         env_name = current_cell.task_name + '-environment.yaml'
 
         part_of_standard_library = load_standard_library_names()
@@ -294,15 +303,14 @@ class CellsHandler(APIHandler, Catalog):
                 if module_name not in part_of_standard_library:
                     set_deps.add(module_name)
 
-        # set_deps = set([dep['module'].split('.')[0] for dep in current_cell.dependencies])
-
         cell_file_path = os.path.join(cell_path, cell_file_name)
         dockerfile_file_path = os.path.join(cell_path, dockerfile_name)
         env_file_path = os.path.join(cell_path, env_name)
         files_info = {cell_file_name: cell_file_path, dockerfile_name: dockerfile_file_path, env_name: env_file_path}
 
         template_cell.stream(cell=current_cell, deps=deps, types=current_cell.types, confs=confs).dump(cell_file_path)
-        template_dockerfile.stream(task_name=current_cell.task_name).dump(dockerfile_file_path)
+        template_dockerfile.stream(task_name=current_cell.task_name, base_image=current_cell.base_image).dump(
+            dockerfile_file_path)
         template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
 
         gh_credentials = Catalog.get_gh_credentials()
@@ -320,7 +328,7 @@ class CellsHandler(APIHandler, Catalog):
         repository_name = gh_credentials['url'].split('https://github.com/')[1].split('/')[1]
         if '.git' in repository_name:
             repository_name = repository_name.split('.git')[0]
-        logger.debug('owner: '+owner+' repository_name: '+repository_name)
+        logger.debug('owner: ' + owner + ' repository_name: ' + repository_name)
         try:
             repository = gh.repository(owner, repository_name)
         except Exception as ex:
@@ -344,10 +352,10 @@ class CellsHandler(APIHandler, Catalog):
                 paths.append(comm_file.path)
 
         if current_cell.task_name in paths:
-            print('Cell is already in repository')
+            logger.debug('Cell is not in repository')
             # TODO: Update file
         else:
-            print('Cell is not in repository')
+            logger.debug('Cell is not in repository')
             for f_name, f_path in files_info.items():
                 with open(f_path, 'rb') as f:
                     content = f.read()
@@ -358,8 +366,8 @@ class CellsHandler(APIHandler, Catalog):
                     )
 
             resp = requests.post(
-                url='https://api.github.com/repos/'+owner+'/'+repository_name+'/actions/workflows/build-push-docker'
-                                                                              '.yml/dispatches',
+                url='https://api.github.com/repos/' + owner + '/' + repository_name + '/actions/workflows/build-push-docker'
+                                                                                      '.yml/dispatches',
                 json={
                     "ref": "refs/heads/main",
                     "inputs": {
@@ -370,7 +378,8 @@ class CellsHandler(APIHandler, Catalog):
                     }
                 },
                 verify=False,
-                headers={"Accept": "application/vnd.github.v3+json", "Authorization": "token " + gh_credentials['token']}
+                headers={"Accept": "application/vnd.github.v3+json",
+                         "Authorization": "token " + gh_credentials['token']}
             )
         self.flush()
 
@@ -486,7 +495,6 @@ class SDIACredentialsHandler(APIHandler, Catalog):
 
 ################################################################################
 
-
 class ProvisionAddHandler(APIHandler, Catalog, SDIA):
 
     @web.authenticated
@@ -497,8 +505,6 @@ class ProvisionAddHandler(APIHandler, Catalog, SDIA):
         credentials = Catalog.get_credentials_from_username(cred_username)
 
         resp = SDIA.provision(credentials, template_id)
-        print(resp)
-
         self.flush()
 
 
@@ -508,13 +514,12 @@ class ProvisionAddHandler(APIHandler, Catalog, SDIA):
 
 ################################################################################
 
-
 class ExportWorkflowHandler(APIHandler):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        logger.debug('payload: '+str(payload))
+        logger.debug('payload: ' + str(payload))
         global_params = []
 
         nodes = payload['nodes']
@@ -537,14 +542,14 @@ class ExportWorkflowHandler(APIHandler):
             self.write_error('Registry credentials are not set!')
             self.flush()
             return
-            
+
         image_repo = registry_credentials['url'].split('https://hub.docker.com/u/')[1]
         loader = PackageLoader('jupyterlab_vre', 'templates')
         template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
         template = template_env.get_template('workflow_template_v2.jinja2')
 
         template.stream(
-            deps_dag=deps_dag, 
+            deps_dag=deps_dag,
             cells=cells,
             nodes=nodes,
             global_params=set(global_params),
