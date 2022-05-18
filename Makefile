@@ -22,8 +22,8 @@ install-backend: build-backend
 	jupyter serverextension enable --py jupyterlab_vre --user
 
 build-frontend: jlpm-install
-	npx lerna run build --scope @jupyter_vre/core
 	npx lerna run build --scope @jupyter_vre/chart-customs
+	npx lerna run build --scope @jupyter_vre/core
 	npx lerna run build --scope @jupyter_vre/components
 	npx lerna run build --scope @jupyter_vre/faicells-composer
 	npx lerna run build --scope @jupyter_vre/faicells-panel

@@ -9,7 +9,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { FormControl, MenuItem, Select, TableBody, ThemeProvider } from "@material-ui/core";
+import { FormControl, MenuItem, Select, TableBody, TextField, ThemeProvider } from "@material-ui/core";
+import { Autocomplete } from '@mui/material';
 
 interface IProps {
     notebook: NotebookPanel;
@@ -29,6 +30,14 @@ const DefaultState: IState = {
 
 type SaveState = 'started' | 'completed' | 'failed';
 
+const baseImages = [
+
+    { label: "Basic Python", id: "python" },
+    { label: "Laserfarm", id: "laserfarm" },
+    { label: "vol2 bird", id: "vol2bird" },
+    { label: "MULTIPLY", id: "multiply" }
+]
+
 export class CellTracker extends React.Component<IProps, IState> {
 
     state = DefaultState;
@@ -45,6 +54,16 @@ export class CellTracker extends React.Component<IProps, IState> {
             body: JSON.stringify({
                 port: port,
                 type: event.target.value
+            }),
+            method: 'POST'
+        });
+    };
+
+    baseImageUpdate = async (value: any) => {
+
+        await requestAPI<any>('baseimage', {
+            body: JSON.stringify({
+                image: value.id
             }),
             method: 'POST'
         });
@@ -243,6 +262,19 @@ export class CellTracker extends React.Component<IProps, IState> {
                                     </TableBody>
                                 </Table>
                             </TableContainer>
+                            <div>
+                                <p className={'lw-panel-preview'}>Base Image</p>
+                                <Autocomplete
+                                    disablePortal
+                                    onChange={(event: any, newValue: any | null) => {
+                                        this.baseImageUpdate(newValue);
+                                    }}
+                                    id="combo-box-demo"
+                                    options={baseImages}
+                                    sx={{ width: 300, margin: '20px' }}
+                                    renderInput={(params) => <TextField {...params} />}
+                                />
+                            </div>
                         </div>
                     ) : (
                         <TableContainer></TableContainer>
