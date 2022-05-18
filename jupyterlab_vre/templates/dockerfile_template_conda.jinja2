@@ -1,4 +1,18 @@
-FROM qcdis/miniconda3-pdal AS build
+{% if base_image == 'qcdis/python-vol2bird' %}
+FROM continuumio/miniconda3 AS build
+COPY {{ task_name }}-environment.yaml .
+RUN conda env update -f {{ task_name }}-environment.yaml
+RUN conda-pack -n venv -o /tmp/env.tar && \
+    mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
+    rm /tmp/env.tar
+RUN /venv/bin/conda-unpack
+
+FROM qcdis/python-vol2bird AS runtime
+RUN apt update -y && apt upgrade -y && apt install jq -y
+COPY --from=build /venv /venv
+COPY {{ task_name }}.py .
+{% else %}
+FROM {{ base_image }} AS build
 COPY {{ task_name }}-environment.yaml .
 RUN conda env update -f {{ task_name }}-environment.yaml
 RUN conda-pack -n venv -o /tmp/env.tar && \
@@ -10,3 +24,6 @@ FROM debian:buster AS runtime
 RUN apt update -y && apt upgrade -y && apt install jq -y
 COPY --from=build /venv /venv
 COPY {{ task_name }}.py .
+{% endif %}
+
+
