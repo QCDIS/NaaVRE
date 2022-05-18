@@ -2,8 +2,7 @@
 
 ## Re-Configure Git and Registry credentials
 
-Start a new launcher and create a new notebook. 
-Create a new cell and add the following command: 
+Start a new launcher open a new terminal, and add the following command: 
 ```python
 python conf_vl_repos.py --force=True --github_url=https://github.com/QCDIS/NaaVRE-container-prestage --github_token=SECRET_TOKEN --registry_url=https://hub.docker.com/u/qcdis
 ```
