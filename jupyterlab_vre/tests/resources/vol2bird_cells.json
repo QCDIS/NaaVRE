@@ -1,0 +1,96 @@
+{
+  "save": false,
+  "cell_index": 1,
+  "notebook": {
+    "metadata": {
+      "orig_nbformat": 4,
+      "kernelspec": {
+        "display_name": "Python 3",
+        "language": "python",
+        "name": "python3"
+      },
+      "language_info": {
+        "codemirror_mode": {
+          "name": "ipython",
+          "version": 3
+        },
+        "file_extension": ".py",
+        "mimetype": "text/x-python",
+        "name": "python",
+        "nbconvert_exporter": "python",
+        "pygments_lexer": "ipython3",
+        "version": "3.9.10"
+      }
+    },
+    "nbformat_minor": 5,
+    "nbformat": 4,
+    "cells": [
+      {
+        "cell_type": "markdown",
+        "source": "## Global Configuration",
+        "metadata": {},
+        "id": "3c9ba85f-c338-4b97-bbb1-088cc5385008"
+      },
+      {
+        "cell_type": "code",
+        "source": "# Conf\nfrom minio import Minio\nfrom minio.error import S3Error\nimport h5py\nimport sys\nimport os\nimport pandas as pd\nimport json\nimport shutil\nimport pathlib\nimport subprocess\nimport re\n\nconf_minio_endpoint = 'SECRET'\nconf_minio_access_key = 'SECRET'\nconf_minio_secret_key = 'SECRET'\nconf_minio_secure = True #bool\nconf_minio_download_dir = './minio_download_dir' #Set this to something relevant to your machine. I'm uncertain how the VRE handles directories but specify a path to download to.\nconf_minio_input_bucket = 'lifewatchin'\nconf_minio_input_prefix = 'NL/DHL/2018/10/03'\nconf_radar_db_source_path = './radar_db_source_path/opera-radars-db.json' # Set this to something relevant to your machine. This needs to target radar_db.json. Found here. It's part of git Radar Cluster @ devel, radar_cluster/conf\nconf_output_dir = './output_dir' # Set this to something relevant to your machine. This needs to specify a path from where to upload from.\n\n\nwith open(conf_radar_db_source_path, mode=\"r\") as f:\n    radar_db_json = json.load(f)\n    radar_db = {}\n# Reorder list to a usable dict with sub dicts which we can search with wmo codes\nfor radar_dict in radar_db_json:\n    try:\n        wmo_code = int(radar_dict.get(\"wmocode\"))\n        radar_db.update({wmo_code: radar_dict})\n    except Exception:  # Happens when there is for ex. no wmo code.\n        pass",
+        "metadata": {},
+        "execution_count": 14,
+        "outputs": [],
+        "id": "31a71c52-a95c-4043-ab91-d6d8bd175b61"
+      },
+      {
+        "cell_type": "markdown",
+        "source": "## Retrieve input file list from conf_minio_prefix and conf_minio_bucket",
+        "metadata": {},
+        "id": "e2c84768-6d6e-47c9-a4b9-5a829d5aa527"
+      },
+      {
+        "cell_type": "code",
+        "source": "#list_objects\n\nminioClient = Minio(endpoint = conf_minio_endpoint,\n                access_key= conf_minio_access_key,\n                secret_key= conf_minio_secret_key,\n                secure= conf_minio_secure)\n\nlist_objects = minioClient.list_objects(bucket_name = conf_minio_input_bucket,\n                                        prefix = conf_minio_input_prefix,\n                                        recursive = True)\nlocal_input_file_paths = []\nfor list_object in list_objects:\n    # Return object_name as str\n    object_name = list_object.object_name\n    # append object name (file name) to download dir\n    local_file_name = \"{}/{}\".format(conf_minio_download_dir,object_name)\n    # fget (file get) the object\n    minioClient.fget_object(\n        bucket_name= list_object.bucket_name,\n        object_name=list_object.object_name,\n        file_path=local_file_name)\n    # append the full file path to the file path list, for future useage\n    local_input_file_paths.append(local_file_name)\n        ",
+        "metadata": {},
+        "execution_count": null,
+        "outputs": [],
+        "id": "26ae53a6-ecf0-4efd-9c28-b13bd670ac0f"
+      },
+      {
+        "cell_type": "markdown",
+        "source": "# Retrieve the input dataset",
+        "metadata": {},
+        "id": "fcacfc07-ecad-4f65-8c90-b8a1e3e2f805"
+      },
+      {
+        "cell_type": "code",
+        "source": "# Create a dataframe to track input and output filenames\n# functions\n# def gen_output_path(ibed_pvol_file_name):\n\n#     \"\"\"\n#     Read a file, determine what the path convention is.\n#     Input is a filename str which is already in the IBED naming convention\n\n#     PVOL:       DEASB_pvol_20190215T0000    >   pvol/DE/ASB/2019/02/15\n#                 DEBOO_pvol_20190215T0000    >   pvol/DE/BOO/2019/02/15\n#                 NLHRW_pvol_20190215T0000    >   pvol/NL/HRW/2019/02/15\n#                 UKCHE_pvol_20190215T0000    >   pvol/UK/CHE/2019/02/15\n#                 BEZAV_pvol_20190215T0000    >   pvol/BE/ZAV/2019/02/15\n#     \"\"\"\n\n#     # dateexpr = r'(\\d{8})(T{0,1})(\\d{4})'\n\n#     # match = re.match(dateexpr,out_pvol_pathibed_pvol_file_name)\n#     # print(match)\n\n#     output_path = \"/\".join(\n#         [\n#             ibed_pvol_file_name[0:2],  # Country\n#             ibed_pvol_file_name[2:5],  # Radar abbreviation\n#             ibed_pvol_file_name[11:15],  # Year\n#             ibed_pvol_file_name[15:17],  # Month\n#             ibed_pvol_file_name[17:19],  # Day\n#             \"\",  # Adding a trailing slash\n#         ]\n#     )\n\n#     return output_path\n\n    \n# def translate_wmo_odim(radar_db, wmo_code):\n#     \"\"\"\"\"\"\n\n#     # class FileTranslatorFileTypeError(LookupError):\n#     #    '''raise this when there's a filetype mismatch derived from h5 file'''\n\n#     if not isinstance(wmo_code, int):\n#         raise ValueError(\"Expecting a wmo_code [int]\")\n#     else:\n#         pass\n\n   \n#     odim_code = (\n#         radar_db.get(wmo_code).get(\"odimcode\").upper().strip()\n#     )  # Apparently, people sometimes forget to remove whitespace..\n#     return odim_code\n\n# def extract_wmo_code(in_path):\n\n#     with h5py.File(in_path, \"r\") as f:\n\n#         # DWD Specific\n\n#         # Main attributes\n#         what = f[\"what\"].attrs\n\n#         # Source block\n#         source = what.get(\"source\")\n#         source = source.decode(\"utf-8\")\n\n#         # Determine if we are dealing with a WMO code or with an ODIM code set\n#         # Example from Germany where source block is set as WMO\n#         # what/source: \"WMO:10103\"\n#         # Example from The Netherlands where source block is set as a combination of ODIM and various codes\n#         # what/source: RAD:NL52,NOD:nlhrw,PLC:Herwijnen\n#         source_list = source.split(sep=\",\")\n\n#     wmo_code = [string for string in source_list if \"WMO\" in string]\n\n#     # Determine if we had exactly one WMO hit\n#     if len(wmo_code) == 1:\n#         wmo_code = wmo_code[0]\n#         wmo_code = wmo_code.replace(\"WMO:\", \"\")\n\n#     # No wmo code found, most likeley dealing with a dutch radar\n#     elif len(wmo_code) == 0:\n#         rad_str = [string for string in source_list if \"RAD\" in string]\n\n#         if len(rad_str) == 1:\n#             rad_str = rad_str[0]\n#         else:\n#             print(\n#                 \"Something went wrong with determining the rad_str and it wasnt WMO either, exiting\"\n#             )\n#             sys.exit(1)\n#         # Split the rad_str\n#         rad_str_split = rad_str.split(\":\")\n#         # [0] = RAD, [1] = rad code\n#         rad_code = rad_str_split[1]\n\n#         rad_codes = {\"NL52\": \"6356\", \"NL51\": \"6234\", \"NL50\": \"6260\"}\n\n#         wmo_code = rad_codes.get(rad_code)\n\n#     return int(wmo_code)\n\n# def dwd_file_translator(radar_db, in_file):\n#     class FileTranslatorFileTypeError(LookupError):\n#         \"\"\"raise this when there's a filetype mismatch derived from h5 file\"\"\"\n\n#     # Available codes. Adjust this to load radardb from ../conf/\n#     wmo_odim_code = {\n#         \"10204\": \"DEEMD\",\n#         \"10103\": \"DEASB\",\n#         \"10169\": \"DEROS\",\n#         \"10132\": \"DEBOO\",\n#         \"10339\": \"DEHNR\",\n#         \"10440\": \"DEFLD\",\n#         \"10629\": \"DEOFT\",\n#         \"10908\": \"DEFBG\",\n#         \"10605\": \"DENHB\",\n#         \"10410\": \"DEESS\",\n#         \"10557\": \"DENEU\",\n#         \"10950\": \"DEMEM\",\n#         \"10873\": \"DEISN\",\n#         \"10832\": \"DETUR\",\n#         \"10780\": \"DEEIS\",\n#         \"10488\": \"DEDRS\",\n#         \"10392\": \"DEPRO\",\n#         \"10356\": \"DEUMD\",\n#         \"06410\": \"BEJAB\",\n#         \"06477\": \"BEWID\",\n#         \"06451\": \"BEZAV\",\n#         \"6356\": \"NLHRW\",\n#         \"6234\": \"NLDHL\",\n#         \"6260\": \"NLDBL\",\n#         \"06194\": \"DKBOR\",\n#         \"06034\": \"DKSIN\",\n#         \"06096\": \"DKROM\",\n#         \"06173\": \"DKSTE\",\n#         \"06103\": \"DKVIR\",\n#     }\n\n#     try:\n#         wmo_code = extract_wmo_code(in_file)\n#         odim_code = translate_wmo_odim(radar_db, wmo_code)\n\n#         with h5py.File(in_file, \"r\") as f:\n\n#             # DWD Specific\n\n#             # Main attributes\n#             what = f[\"what\"].attrs\n\n#             # Date block\n#             date = what.get(\"date\")\n#             date = date.decode(\"utf-8\")\n\n#             # Time block\n#             time = what.get(\"time\")\n#             # time = f['dataset1/what'].attrs['endtime']\n#             time = time.decode(\"utf-8\")\n#             hh = time[:2]\n#             mm = time[2:4]\n#             ss = time[4:]\n\n#             time = time[:-2]  # Do not include seconds\n#             # File type\n#             filetype = what.get(\"object\")\n#             filetype = filetype.decode(\"utf-8\")\n\n#             if filetype != \"PVOL\":\n#                 raise FileTranslatorFileTypeError(\"File type was NOT pvol\")\n\n#         name = [odim_code, filetype.lower(), date + \"T\" + time, str(wmo_code) + \".h5\"]\n#         out_file_name = \"_\".join(name)\n\n#     except Exception as e:\n#         print(e)\n#         print(\"Invalid file, skipping file: {}\".format(in_file))\n#         return None\n#     # Remove None (None stays when we could not open the file..)\n\n#     # out_file_paths = [path.replace(os.path.basename(path),fname) for path,fname in zip(checked_in_file,out_file_name)]\n#     out_file_path = in_file.replace(os.path.basename(in_file), out_file_name)\n\n#     # ibed_out_path = gen_output_path(out_file_name[0])\n#     ibed_out_path = gen_output_path(out_file_name)\n\n#     # out_file_paths = [\"/\".join([\"./out/pvol/\",ibed_out_path,fname]) for fname in out_file_name]\n#     out_file_path = \"/\".join([\"./out/pvol/\", ibed_out_path, out_file_name])\n\n#     return out_file_path\n\ndf = pd.DataFrame()\ndf['source_pvol_path'] = local_input_file_paths    \ndf['out_pvol_file_path'] = [dwd_file_translator(radar_db, path) for path in df[\"source_pvol_path\"]] \n",
+        "metadata": {},
+        "execution_count": null,
+        "outputs": [],
+        "id": "97320fdc-272b-4ba1-bf56-262f400dd278"
+      },
+      {
+        "cell_type": "code",
+        "source": "# def list_unique_dirs(path_list):\n#     \"\"\"\n\n#     path_list: a list with path strings\n#     return: a list with unique directories\n\n#     \"\"\"\n\n#     unique_dirs = list(set([os.path.dirname(path) for path in path_list]))\n\n#     return unique_dirs\n\n\n# list the amount of unique dirs we have, this should be one per dataset\nunique_dir_pvol = list_unique_dirs(df['out_pvol_file_path'])\n# Create an output directory from the first path name for the PVOL's\ngen_output_path(df['out_pvol_file_path'].iloc[0])\n",
+        "metadata": {},
+        "execution_count": null,
+        "outputs": [],
+        "id": "79e0fcfb-f331-4635-af96-bbc30d023b72"
+      },
+      {
+        "cell_type": "code",
+        "source": "# def vol2bird(in_file, out_dir, radar_db, add_version=True, add_sector=False):\n#     # Construct output file\n#     date_regex = \"([0-9]{8})\"\n\n#     if add_version == True:\n#         version = \"v0-3-20\"\n#         suffix = pathlib.Path(in_file).suffix\n#         in_file_name = pathlib.Path(in_file).name\n#         in_file_stem = pathlib.Path(in_file_name).stem\n#         #\n#         out_file_name = in_file_stem.replace(\"pvol\", \"vp\")\n#         out_file_name = \"_\".join([out_file_name, version]) + suffix\n\n#         # odim = odim_code(out_file_name)\n#         wmo = extract_wmo_code(in_file)\n#         odim = translate_wmo_odim(radar_db, wmo)\n\n#         datetime = pd.to_datetime(re.search(date_regex, out_file_name)[0])\n\n#         ibed_path = \"/\".join(\n#             [\n#                 odim[:2],\n#                 odim[2:],\n#                 str(datetime.year),\n#                 str(datetime.month).zfill(2),\n#                 str(datetime.day).zfill(2),\n#             ]\n#         )\n\n#         out_file = \"/\".join([out_dir, ibed_path, out_file_name])\n\n#         # out_file = \"_\".join([out_file[:-len(suffix)], version + suffix])\n\n#     command = [\"vol2bird\", in_file, out_file]\n#     #command = [\"/Users/nicolas_noe/vol2bird/opt/vol2bird/bin/vol2bird\", in_file, out_file]\n\n#     result = subprocess.run(command, stderr=subprocess.DEVNULL)\n\n#     # if result.returncode != 0:\n#     #    print(result)\n#     #    print(\"Something went wrong, exitting\")\n#     #    sys.exit(1)\n#     return [result, in_file, out_file]\n\n# create the output pvol directory\nfor dir_name in unique_dir_pvol:\n    os.makedirs(dir_name, exist_ok=True)\n\n# 'move' the files from old file name to new filename and towards output directory\nfor idx, row in df.iterrows():\n    shutil.copy(row['source_pvol_path'], row['out_pvol_file_path'])\n    \n# Now prepare a column of filenames for the Vertical Profile files which will be generated from the PVOL (output) files\ndf['out_vp_path'] = [row['out_pvol_file_path'].replace(\"pvol\",\"vp\") for idx, row in df.iterrows()]\n\n# Determine unique VP directories\nunique_dir_vp = list_unique_dirs(df['out_vp_path'])\n\n# Create the dir\nfor dir_name in unique_dir_vp:\n    os.makedirs(dir_name, exist_ok=True)\n\n#Initialize an empty column for vol2bird retcodes\ndf['v2b_retcode'] = [None] * len(df)\ndf['out_vp_path'] = [None] * len(df) # This is quite redundant, I'll check this when I'm back. Basically, now we are throwing away our old generated VP paths\n\nout_dir_vp = \"{}/{}\".format(conf_output_dir,'vp')\noutput_file_list = []\n\nfor idx, row in df.iterrows():\n    retcode, input_file, output_file = vol2bird(row['out_pvol_file_path'],\n             out_dir_vp,\n             radar_db)\n    # append output file \n    output_file_list.append(output_file)\n    \n# Upload the data, will be added later. First need to solve using .C code and subprocess calls in VRE.",
+        "metadata": {},
+        "execution_count": null,
+        "outputs": [],
+        "id": "a3657388-2264-405d-b449-59075277d994"
+      },
+      {
+        "cell_type": "code",
+        "source": "",
+        "metadata": {},
+        "execution_count": null,
+        "outputs": [],
+        "id": "f6af6edb-4088-4e03-8328-e135b9590c00"
+      }
+    ]
+  }
+}

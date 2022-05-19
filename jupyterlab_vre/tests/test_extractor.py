@@ -9,7 +9,7 @@ class TestExtractor(TestCase):
 
 
     def test(self):
-        with open('resources/cell_payload.json', 'r') as file:
+        with open('resources/vol2bird_cells.json', 'r') as file:
             payload = json.load(file)
 
         cell_index = payload['cell_index']
