@@ -1,23 +1,20 @@
 import * as React from 'react';
-import { ReactWidget } from '@jupyterlab/apputils';
+import { ReactWidget, Dialog, showDialog } from '@jupyterlab/apputils';
 import * as actions from "@mrblenny/react-flow-chart/src/container/actions";
 import styled from 'styled-components'
 import { theme } from './Theme';
 import { mapValues } from 'lodash';
-import { Page, SidebarItem } from './components';
+import { Page, /* SidebarItem */ } from './components';
 import { chartSimple } from './exampleChart';
 import { FlowChart, IChart } from '@mrblenny/react-flow-chart';
-import { Button, Slider, ThemeProvider } from '@material-ui/core';
-import { NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
-import { requestAPI } from '@jupyter_vre/core';
-import { SidebarSpecialItem } from './components/SidebarSpecialItem';
-
-const LeftContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 0 0 230px;
-  overflow: hidden;
-`
+import { ThemeProvider } from '@material-ui/core';
+import { NodeCustom, NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
+import BasicSpeedDial from './components/SpeedDial';
+import { CatalogDialog } from './components/CatalogDialog';
+import { Workspace } from './components/Workspace';
+import { FairCell, requestAPI } from '@jupyter_vre/core';
+import { CellEditor } from './components/CellEditor';
+import { Parallelization } from './components/Parallelization';
 
 const CenterContent = styled.div`
   display: flex;
@@ -26,57 +23,52 @@ const CenterContent = styled.div`
   overflow: hidden;
 `
 
-const RightContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 0 0 400px;
-  overflow: hidden;
-`
-
-const CatalogSidebar = styled.div`
-	width: 100%;
-	background: white;
-	position: relative;
-	margin: 0;
-	display: flex;
-	flex-direction: column;
-	flex-shrink: 0;
-	`
-
-const InfoSidebar = styled.div`
-	width: 215px;
-	background: white;
-	position: absolute;
-	margin: 20px;
-	display: flex;
-	flex-direction: column;
-	flex-shrink: 0;
-	`
-
-const Message = styled.div`
-	padding: 10px;
-	text-align: center;
-	color: white;
-	font-weight: bold;
-	font-size: larger;
-	background: lightslategrey;
-	`
-
 interface IProps { }
 
 interface IState {
-	catalog_elements: []
 	chart: IChart
 }
 
 export const DefaultState: IState = {
-	catalog_elements: [],
 	chart: chartSimple,
 }
+
 
 class Composer extends React.Component<IProps, IState> {
 
 	state = DefaultState
+
+	workspaceRef: React.RefObject<Workspace>;
+
+	constructor(props: IProps) {
+		super(props);
+		this.workspaceRef = React.createRef();
+	}
+
+	handleAddCellToWorkspace = (cell: FairCell) => {
+		this.workspaceRef.current.addElement(cell);
+	}
+
+	handleIsCellInWorkspace = (cell: FairCell) => {
+		return this.workspaceRef.current.hasElement(cell);
+	}
+
+	getWorkspaceElementFromChartId = (chartId: string): FairCell => {
+
+		let nodeId = this.state.chart.nodes[chartId].properties['og_node_id'];
+		return this.workspaceRef.current.getElement(nodeId);
+	}
+
+	CatalogDialogOptions: Partial<Dialog.IOptions<any>> = {
+		title: '',
+		body: ReactWidget.create(
+			<CatalogDialog
+				addCellAction={this.handleAddCellToWorkspace}
+				isCellInWorkspace={this.handleIsCellInWorkspace}
+			/>
+		) as Dialog.IBodyWidget<any>,
+		buttons: []
+	};
 
 	chartStateActions = mapValues(actions, (func: any) =>
 		(...args: any) => {
@@ -87,185 +79,82 @@ class Composer extends React.Component<IProps, IState> {
 			});
 		}) as typeof actions
 
-	constructor(props: IProps) {
-		super(props);
-	}
+	handleDialSelection = (operation: string) => {
 
-	componentDidMount() {
-		this.getCatalog();
-	}
+		switch (operation) {
 
-	getCatalog = async () => {
+			case "cells-catalogs":
+				showDialog(this.CatalogDialogOptions);
+				break;
 
-		const resp = await requestAPI<any>('catalog/cells/all', {
-			method: 'GET'
-		});
-
-		this.setState({ catalog_elements: resp });
-	}
-
-	handleChangeScalingFactor = (e: React.ChangeEvent<{}>, newValue: number | number[], node_id: string) => {
-		
-		let newNodes = this.state.chart.nodes
-		newNodes[node_id].properties['scalingFactor'] = newValue
-
-		this.setState({
-			chart: {
-				...this.state.chart,
-				nodes: newNodes
-			}
-		})
+			case "export-workflow":
+				this.exportWorkflow();
+				break;
+		}
 	}
 
 	exportWorkflow = async () => {
 
-		const resp = await requestAPI<any>('workflow/export', {
-            body: JSON.stringify(this.state.chart),
-            method: 'POST'
-        });
+		let resp = await requestAPI<any>('workflow/export', {
+			body: JSON.stringify(this.state.chart),
+			method: 'POST'
+		});
 
 		console.log(resp);
 	}
 
-	getNodeEditor(): JSX.Element {
+	getNodeEditor = () => {
 
-		let id_sel = this.state.chart.selected.id;
-		let node = this.state.chart.nodes[id_sel];
-		
-		if (node.type == "splitter" || node.type == "merger") {
-			return (
-				<div>
-					<p>Scaling Factor:</p>
-					<Slider
-						onChange={(e, nv) => { this.handleChangeScalingFactor(e, nv, node.id) }}
-						defaultValue={1}
-						value={node.properties['scalingFactor']}
-						aria-labelledby="discrete-slider"
-						valueLabelDisplay="auto"
-						step={1}
-						marks
-						min={1}
-						max={100}
-					/>
-				</div>
-			);
+		let node = this.state.chart.nodes[this.state.chart.selected.id];
+
+		switch (node.type) {
+
+			case "splitter":
+				return (
+					<div>Splitter</div>
+				);
+
+			case "merger":
+				return (
+					<div>Merger</div>
+				);
 		}
 
 		return (
-			<p>{node.properties['title']}</p>
+			<CellEditor cell={this.getWorkspaceElementFromChartId(this.state.chart.selected.id)} />
 		);
+	}
+
+	componentDidUpdate() {
+
+		// TODO: Implement chart sanity checks
 	}
 
 	render() {
 		return (
 			<ThemeProvider theme={theme} >
 				<Page>
-					<LeftContent>
-						<CatalogSidebar>
-							<Message>
-								Local Catalog
-							</Message>
-							<div className={'sidebar-items-container'}>
-								{this.state.catalog_elements.map((value, index) => {
-									let nodes = value['chart_obj']['nodes']
-									let element = nodes[Object.keys(nodes)[0]]
-									return (
-										<SidebarItem
-											type={element['type']}
-											ports={element['ports']}
-											properties={element['properties']}
-										/>
-									)
-								})}
-							</div>
-						</CatalogSidebar>
-						<CatalogSidebar>
-							<Message>
-								Scaling Nodes
-							</Message>
-							<div className={'sidebar-items-container'}>
-								<SidebarSpecialItem
-									type={'splitter'}
-									ports={{
-										splitter_source: {
-											id: 'splitter_source',
-											type: 'left',
-											properties: {
-												special_node: 1,
-												color: '#000000'
-											}
-										},
-										splitter_target: {
-											id: 'splitter_target',
-											type: 'right',
-											properties: {
-												special_node: 1,
-												color: '#000000'
-											}
-										}
-									}}
-									properties={{
-										'title': 'Splitter',
-										'scalingFactor': 1
-									}}
-								/>
-								<SidebarSpecialItem
-									type={'merger'}
-									ports={{
-										merger_source: {
-											id: 'merger_source',
-											type: 'left',
-											properties: {
-												special_node: 1,
-												color: '#000000'
-											}
-										},
-										merger_target: {
-											id: 'merger_target',
-											type: 'right',
-											properties: {
-												special_node: 1,
-												color: '#000000'
-											}
-										}
-									}}
-									properties={{
-										'title': 'Merger',
-										'scalingFactor': 1
-									}}
-								/>
-							</div>
-						</CatalogSidebar>
-						<div>
-							<Button 
-								className={'btn-export-workflow'} 
-								variant="contained" 
-								color="primary"
-								onClick={this.exportWorkflow}
-								>
-								Export Workflow
-							</Button>
-						</div>
-					</LeftContent>
 					<CenterContent>
 						<FlowChart
 							chart={this.state.chart}
 							callbacks={this.chartStateActions}
 							Components={{
+								Node: NodeCustom,
 								NodeInner: NodeInnerCustom,
 								Port: PortCustom
 							}}
 						/>
+						<Workspace ref={this.workspaceRef} />
+						{this.state.chart.selected.id && this.state.chart.selected.type == 'node' ? (
+							this.getNodeEditor()
+						) :
+							(<div></div>)
+						}
+						<Parallelization />
+						<BasicSpeedDial
+							handleDialSelection={this.handleDialSelection}
+						/>
 					</CenterContent>
-					{ this.state.chart.selected.id && this.state.chart.selected.type == "node" ? (
-					<RightContent>
-						<InfoSidebar>
-							<div className={'info-sidebar-container'}>
-								<div>{this.getNodeEditor()}</div>
-							</div>
-						</InfoSidebar>
-					</RightContent>)
-					: (<div></div>) }
 				</Page>
 			</ThemeProvider>
 		)
