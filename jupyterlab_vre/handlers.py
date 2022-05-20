@@ -14,15 +14,11 @@ from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
 from tornado import web
 
-from jupyterlab_vre.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.extractor.extractor import Extractor
-from jupyterlab_vre.storage.faircell import Cell
-
-from jupyterlab_vre.repository.repository_credentials import RepositoryCredentials
 from jupyterlab_vre.sdia.sdia import SDIA
 from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 from jupyterlab_vre.storage.catalog import Catalog
-from jupyterlab_vre.workflows.parser import WorkflowParser
+from jupyterlab_vre.storage.faircell import Cell
+from jupyterlab_vre.services.parser.parser import WorkflowParser
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -65,121 +61,6 @@ standard_library = [
     'getopt',
     'random'
 ]
-
-################################################################################
-
-# Extraction
-
-################################################################################
-
-class ExtractorHandler(APIHandler, Catalog):
-    logger = logging.getLogger(__name__)
-
-    @web.authenticated
-    async def get(self):
-        msg_json = dict(title="Operation not supported.")
-        self.write(msg_json)
-        self.flush()
-
-    @web.authenticated
-    async def post(self, *args, **kwargs):
-        payload = self.get_json_body()
-        cell_index = payload['cell_index']
-        notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-        extractor = Extractor(notebook)
-
-        source = notebook.cells[cell_index].source
-
-        title = source.partition('\n')[0]
-        title = title.replace('#', '').replace('_', '-').replace('(','-').replace(')','-').strip() if title[0] == "#" else "Untitled"
-
-        ins = set(extractor.infere_cell_inputs(source))
-        outs = set(extractor.infere_cell_outputs(source))
-        params = []
-        confs = extractor.extract_cell_conf_ref(source)
-        dependencies = extractor.infere_cell_dependencies(source, confs)
-        # conf_deps = extractor.infere_cell_conf_dependencies(confs)
-        # dependencies = dependencies + conf_deps
-        node_id = str(uuid.uuid4())[:7]
-        cell = Cell(
-            node_id             = node_id,
-            title               = title,
-            task_name           = title.lower().replace(' ', '-'),
-            original_source     = source,
-            inputs              = ins,
-            outputs             = outs,
-            params              = params,
-            confs               = confs,
-            dependencies        = dependencies,
-            container_source    = ""
-        )
-
-        cell.integrate_configuration()
-        params = list(extractor.extract_cell_params(cell.original_source))
-        cell.params = params
-
-        node = ConverterReactFlowChart.get_node(
-            node_id,
-            title,
-            ins,
-            outs,
-            params,
-            dependencies
-        )
-
-        chart = {
-            'offset': {
-                'x': 0,
-                'y': 0,
-            },
-            'scale': 1,
-            'nodes': {node_id: node},
-            'links': {},
-            'selected': {},
-            'hovered': {},
-        }
-
-        cell.chart_obj = chart
-
-        Catalog.editor_buffer = copy.deepcopy(cell)
-
-        self.write(cell.toJSON())
-
-        self.flush()
-
-
-################################################################################
-
-# Types
-
-################################################################################
-
-class TypesHandler(APIHandler, Catalog):
-
-    @web.authenticated
-    async def post(self, *args, **kwargs):
-        payload = self.get_json_body()
-        port = payload['port']
-        p_type = payload['type']
-        cell = Catalog.editor_buffer
-        cell.types[port] = p_type
-
-
-################################################################################
-
-# Base Image
-
-################################################################################
-
-class BaseImageHandler(APIHandler, Catalog):
-
-    @web.authenticated
-    async def post(self, *args, **kwargs):
-        payload = self.get_json_body()
-        base_image = payload['image']
-        cell = Catalog.editor_buffer
-        print(payload)
-
 
 ################################################################################
 
@@ -305,7 +186,7 @@ class CellsHandler(APIHandler, Catalog):
         template_dockerfile.stream(task_name=current_cell.task_name).dump(dockerfile_file_path)
         template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
 
-        gh_credentials = Catalog.get_gh_credentials()
+        gh_credentials = Catalog.get_all_credentials()
         logger.debug('gh_credentials: ' + str(gh_credentials))
         if not gh_credentials:
             self.set_status(400)
@@ -440,8 +321,8 @@ class GithubAuthHandler(APIHandler, Catalog):
         if payload and 'github-auth-token' in payload and 'github-url' in payload:
             logger.debug('Catalog.delete_all_gh_credentials()')
             Catalog.delete_all_gh_credentials()
-            Catalog.add_gh_credentials(
-                RepositoryCredentials(token=payload['github-auth-token'], url=payload['github-url'])
+            Catalog.add_credentials(
+                TokenCredentials(token=payload['github-auth-token'], url=payload['github-url'])
             )
         self.flush()
 
@@ -460,7 +341,7 @@ class ImageRegistryAuthHandler(APIHandler, Catalog):
         if payload and 'image-registry-url' in payload:
             Catalog.delete_all_registry_credentials()
             Catalog.add_registry_credentials(
-                RepositoryCredentials(url=payload['image-registry-url'])
+                TokenCredentials(url=payload['image-registry-url'])
             )
         self.flush()
 
@@ -501,54 +382,3 @@ class ProvisionAddHandler(APIHandler, Catalog, SDIA):
 
         self.flush()
 
-
-################################################################################
-
-# Workflows
-
-################################################################################
-
-
-class ExportWorkflowHandler(APIHandler):
-
-    @web.authenticated
-    async def post(self, *args, **kwargs):
-        payload = self.get_json_body()
-        logger.debug('payload: '+str(payload))
-        global_params = []
-
-        nodes = payload['nodes']
-        links = payload['links']
-
-        parser = WorkflowParser(nodes, links)
-        cells = parser.get_workflow_cells()
-
-        deps_dag = parser.get_dependencies_dag()
-        logger.debug('deps_dag: ' + str(deps_dag))
-
-        for nid, cell in cells.items():
-            global_params.extend(cell['params'])
-
-        registry_credentials = Catalog.get_registry_credentials()
-
-        if not registry_credentials:
-            self.set_status(400)
-            self.write('Registry credentials are not set!')
-            self.write_error('Registry credentials are not set!')
-            self.flush()
-            return
-            
-        image_repo = registry_credentials['url'].split('https://hub.docker.com/u/')[1]
-        loader = PackageLoader('jupyterlab_vre', 'templates')
-        template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
-        template = template_env.get_template('workflow_template_v2.jinja2')
-
-        template.stream(
-            deps_dag=deps_dag, 
-            cells=cells,
-            nodes=nodes,
-            global_params=set(global_params),
-            image_repo=image_repo
-
-        ).dump('workflow.yaml')
-        self.flush()

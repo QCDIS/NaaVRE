@@ -50,7 +50,7 @@ export class CellTracker extends React.Component<IProps, IState> {
 
     typesUpdate = async (event: React.ChangeEvent<{ name?: string; value: unknown; }>, port: string) => {
 
-        await requestAPI<any>('types', {
+        await requestAPI<any>('containerizer/types', {
             body: JSON.stringify({
                 port: port,
                 type: event.target.value
@@ -61,7 +61,7 @@ export class CellTracker extends React.Component<IProps, IState> {
 
     baseImageUpdate = async (value: any) => {
 
-        await requestAPI<any>('baseimage', {
+        await requestAPI<any>('containerizer/baseimage', {
             body: JSON.stringify({
                 image: value.id
             }),
@@ -71,7 +71,7 @@ export class CellTracker extends React.Component<IProps, IState> {
 
     exctractor = async (notebookModel: INotebookModel, save = false) => {
 
-        const extractedCell = await requestAPI<any>('extractor', {
+        const extractedCell = await requestAPI<any>('containerizer/extract', {
             body: JSON.stringify({
                 save: save,
                 cell_index: this.state.currentCellIndex,

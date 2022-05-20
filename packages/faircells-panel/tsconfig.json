@@ -6,7 +6,7 @@
     "rootDir": "src",
     "target": "es6",
     "types": ["node"],
-    "typeRoots": ["./node_modules/@types"],
+    "typeRoots": ["./node_modules/@types", "../types"],
     "skipLibCheck": true
   },
   "include": ["src/*", "src/*/*"]

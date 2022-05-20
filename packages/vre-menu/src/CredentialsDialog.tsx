@@ -4,6 +4,8 @@ import * as React from 'react';
 import { theme } from './Theme';
 import { TabPanel } from './TabPanel';
 import { GitHubCredPanel } from './GitHubCredPanel';
+import { requestAPI } from '@jupyter_vre/core';
+import { WorkflowCredPanel } from './WorkflowCredPanel';
 
 const CatalogBody = styled('div')({
     display: 'flex',
@@ -14,11 +16,17 @@ const CatalogBody = styled('div')({
 interface CatalogDialogProps { }
 
 interface IState {
-    selectedTab: number
+    selectedTab : number
+    githubCredentials : []
+    workflowCredentials : []
+    registryCredentials : []
 }
 
 const DefaultState: IState = {
-    selectedTab: 0
+    selectedTab : 0,
+    githubCredentials : [],
+    workflowCredentials : [],
+    registryCredentials : []
 }
 
 export class CredentialsDialog extends React.Component<CatalogDialogProps, IState> {
@@ -27,6 +35,25 @@ export class CredentialsDialog extends React.Component<CatalogDialogProps, IStat
 
     handleTabChange(_event: React.ChangeEvent<{}>, newValue: number) {
         this.setState({ selectedTab: newValue });
+    }
+
+    getCredentials = async () => {
+
+        const credentials = await requestAPI<any>('credentials', {
+            method: 'GET'
+        });
+
+        const ghCred = credentials.filter((cred: any) => cred['provider'] == 'github');
+        const wfCred = credentials.filter((cred: any) => cred['provider'] == 'argo');
+
+        this.setState({ 
+            githubCredentials   : ghCred,
+            workflowCredentials : wfCred
+        });
+    }
+
+    componentDidMount(): void {
+        this.getCredentials();
     }
 
     render(): React.ReactElement {
@@ -47,10 +74,10 @@ export class CredentialsDialog extends React.Component<CatalogDialogProps, IStat
                             </Tabs>
                         </Box>
                         <TabPanel value={this.state.selectedTab} index={0}>
-                            <GitHubCredPanel />
+                            <GitHubCredPanel credentials={this.state.githubCredentials}/>
                         </TabPanel>
                         <TabPanel value={this.state.selectedTab} index={1}>
-                            Item Two
+                            <WorkflowCredPanel credentials={this.state.workflowCredentials} />
                         </TabPanel>
                         <TabPanel value={this.state.selectedTab} index={2}>
                             Item Three

@@ -6,7 +6,7 @@ interface IState {
 
 }
 
-interface GitHubCredPanelProps {
+interface WorkflowCredPanelProps {
     credentials: []
 }
 
@@ -15,11 +15,11 @@ const DefaultState: IState = {
 }
 
 
-export class GitHubCredPanel extends React.Component<GitHubCredPanelProps, IState> {
+export class WorkflowCredPanel extends React.Component<WorkflowCredPanelProps, IState> {
 
     state = DefaultState;
 
-    constructor(props: GitHubCredPanelProps) {
+    constructor(props: WorkflowCredPanelProps) {
         super(props);
     }
 

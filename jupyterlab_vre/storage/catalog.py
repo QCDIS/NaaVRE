@@ -2,9 +2,9 @@ import logging
 import os
 import json
 from pathlib import Path
+from jupyterlab_vre.credentials.token_credentials import TokenCredentials
 from tinydb import TinyDB, where
 from jupyterlab_vre.storage.faircell import Cell
-from jupyterlab_vre.repository.repository_credentials import RepositoryCredentials
 from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 
 logger = logging.getLogger(__name__)
@@ -20,9 +20,8 @@ class Catalog:
 
     cells = db.table('cells')
     workflows = db.table('workflows')
-    provision = db.table('provision')
     sdia_credentials = db.table('sdia_credentials')
-    gh_credentials = db.table('gh_credentials')
+    credentials = db.table('credentials')
     registry_credentials = db.table('registry_credentials')
 
     editor_buffer: Cell
@@ -44,7 +43,7 @@ class Catalog:
         cls.sdia_credentials.insert(cred.__dict__)
 
     @classmethod
-    def add_registry_credentials(cls, cred: RepositoryCredentials):
+    def add_registry_credentials(cls, cred: TokenCredentials):
         cls.registry_credentials.insert(cred.__dict__)
 
     @classmethod
@@ -61,33 +60,32 @@ class Catalog:
         cls.registry_credentials.remove(doc_ids=ids)
 
     @classmethod
-    def get_registry_credentials(cls) -> RepositoryCredentials:
+    def get_registry_credentials(cls) -> TokenCredentials:
         credentials = cls.registry_credentials.all()
         if len(credentials) > 0:
             return credentials[0]
 
     @classmethod
-    def add_gh_credentials(cls, cred: RepositoryCredentials):
-        cls.gh_credentials.insert(cred.__dict__)
+    def add_credentials(cls, cred: TokenCredentials):
+        cls.credentials.insert(cred.__dict__)
 
     @classmethod
-    def get_gh_credentials(cls) -> RepositoryCredentials:
-        credentials = cls.gh_credentials.all()
-        if len(credentials) > 0:
-            return credentials[0]
+    def get_all_credentials(cls) -> TokenCredentials:
+        credentials = cls.credentials.all()
+        return credentials
 
     @classmethod
     def delete_all_gh_credentials(cls):
         # Looks bad but for now I could not find a way to remove all
-        credentials = cls.gh_credentials.all()
+        credentials = cls.credentials.all()
         ids = []
         for credential in credentials:
             ids.append(credential.doc_id)
-        cls.gh_credentials.remove(doc_ids=ids)
+        cls.credentials.remove(doc_ids=ids)
 
     @classmethod
     def delete_gh_credentials(cls, url: str):
-        cls.gh_credentials.remove(where('url') == url)
+        cls.credentials.remove(where('url') == url)
 
     @classmethod
     def get_credentials_from_username(cls, cred_username) -> SDIACredentials:
