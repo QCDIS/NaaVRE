@@ -3,7 +3,6 @@ USER root
 
 #===== Add dependencies ======
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++ libevent-dev gfortran musl-dev gdal-bin libgdal-dev
-RUN conda install python=3.7.0
 #====================================
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
@@ -19,6 +18,8 @@ COPY MULTIPLY_pip_requirements.txt .
 RUN conda install --file MULTIPLY_conda_requirements.txt
 RUN conda remove --force -y terminado && \
     python -m pip install --upgrade pip
+
+RUN conda install
 
 RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl && \
     jupyter serverextension enable --py jupyterlab_vre --user && \
