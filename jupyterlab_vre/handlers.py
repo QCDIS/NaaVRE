@@ -63,7 +63,8 @@ standard_library = [
     'io',
     'argparse',
     'getopt',
-    'random'
+    'random',
+    "re"
 ]
 
 
