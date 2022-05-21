@@ -64,7 +64,8 @@ standard_library = [
     'argparse',
     'getopt',
     'random',
-    "re"
+    "re",
+    "json"
 ]
 
 
