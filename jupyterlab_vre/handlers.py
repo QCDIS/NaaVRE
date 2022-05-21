@@ -63,7 +63,9 @@ standard_library = [
     'io',
     'argparse',
     'getopt',
-    'random'
+    'random',
+    "re",
+    "json"
 ]
 
 
@@ -244,11 +246,11 @@ class CellsHandler(APIHandler, Catalog):
                 self.flush()
                 return
 
-        if not current_cell.base_image:
-            logger.error(current_cell.task_name + ' has not base image selected')
+        if not hasattr(current_cell,'base_image'):
+            logger.error(current_cell.task_name + ' has not base image not selected')
             self.set_status(400)
             self.write(current_cell.task_name + ' has not base image selected')
-            self.write_error(current_cell.task_name + ' has not base image selected')
+            self.write_error(current_cell.task_name + ' has not base not image selected')
             self.flush()
             return
 
