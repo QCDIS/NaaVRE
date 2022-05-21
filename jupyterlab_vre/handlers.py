@@ -245,10 +245,10 @@ class CellsHandler(APIHandler, Catalog):
                 return
 
         if not current_cell.base_image:
-            logger.error(current_cell.task_name + ' has not base image selected')
+            logger.error('Base image not selected')
             self.set_status(400)
-            self.write(current_cell.task_name + ' has not base image selected')
-            self.write_error(current_cell.task_name + ' has not base image selected')
+            self.write('Base image not selected')
+            self.write_error('Base image not selected')
             self.flush()
             return
 
