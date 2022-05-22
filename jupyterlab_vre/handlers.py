@@ -314,7 +314,7 @@ class CellsHandler(APIHandler, Catalog):
         template_cell.stream(cell=current_cell, deps=deps, types=current_cell.types, confs=confs).dump(cell_file_path)
         template_dockerfile.stream(task_name=current_cell.task_name, base_image=current_cell.base_image).dump(
             dockerfile_file_path)
-        template_conda.stream(deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
+        template_conda.stream(base_image=current_cell.base_image, deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
 
         gh_credentials = Catalog.get_gh_credentials()
         logger.debug('gh_credentials: ' + str(gh_credentials))
