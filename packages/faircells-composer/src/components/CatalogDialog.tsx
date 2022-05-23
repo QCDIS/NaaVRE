@@ -3,7 +3,7 @@ import { Button, styled, TextField, ThemeProvider } from '@material-ui/core';
 import { Autocomplete } from '@mui/material';
 import * as React from 'react';
 import { CellInfo } from './CellInfo';
-import VirtualizedList from './CatalogVirtualizedList';
+import { VirtualizedList } from '@jupyter_vre/components';
 import { theme } from '../Theme';
 
 const catalogs = [

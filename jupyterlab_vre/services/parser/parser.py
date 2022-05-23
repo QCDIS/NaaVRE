@@ -1,5 +1,5 @@
-from jupyterlab_vre.storage.catalog import Catalog
-from jupyterlab_vre.storage.faircell import Cell
+from jupyterlab_vre.database.database import Catalog
+from jupyterlab_vre.database.cell import Cell
 from collections import defaultdict
 import logging
 

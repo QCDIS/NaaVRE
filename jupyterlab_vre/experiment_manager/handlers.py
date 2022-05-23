@@ -5,10 +5,8 @@ from jupyterlab_vre.services.parser.parser import WorkflowParser
 from jinja2 import Environment, PackageLoader
 
 import nbformat as nb
-from jupyterlab_vre.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.extractor.extractor import Extractor
-from jupyterlab_vre.storage.catalog import Catalog
-from jupyterlab_vre.storage.faircell import Cell
+from jupyterlab_vre.database.database import Catalog
+from jupyterlab_vre.database.cell import Cell
 from notebook.base.handlers import APIHandler
 from tornado import web
 
@@ -31,26 +29,26 @@ class ExportWorkflowHandler(APIHandler):
         for nid, cell in cells.items():
             global_params.extend(cell['params'])
 
-        registry_credentials = Catalog.get_registry_credentials()
+        # registry_credentials = Catalog.get_registry_credentials()
 
-        if not registry_credentials:
-            self.set_status(400)
-            self.write('Registry credentials are not set!')
-            self.write_error('Registry credentials are not set!')
-            self.flush()
-            return
+        # if not registry_credentials:
+        #     self.set_status(400)
+        #     self.write('Registry credentials are not set!')
+        #     self.write_error('Registry credentials are not set!')
+        #     self.flush()
+        #     return
             
-        image_repo = registry_credentials['url'].split('https://hub.docker.com/u/')[1]
-        loader = PackageLoader('jupyterlab_vre', 'templates')
-        template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
-        template = template_env.get_template('workflow_template_v2.jinja2')
+        # image_repo = registry_credentials['url'].split('https://hub.docker.com/u/')[1]
+        # loader = PackageLoader('jupyterlab_vre', 'templates')
+        # template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
+        # template = template_env.get_template('workflow_template_v2.jinja2')
 
-        template.stream(
-            deps_dag=deps_dag, 
-            cells=cells,
-            nodes=nodes,
-            global_params=set(global_params),
-            image_repo=image_repo
+        # template.stream(
+        #     deps_dag=deps_dag, 
+        #     cells=cells,
+        #     nodes=nodes,
+        #     global_params=set(global_params),
+        #     image_repo=image_repo
 
-        ).dump('workflow.yaml')
+        # ).dump('workflow.yaml')
         self.flush()

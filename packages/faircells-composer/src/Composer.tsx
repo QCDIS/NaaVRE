@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import { theme } from './Theme';
 import { mapValues } from 'lodash';
 import { Page, /* SidebarItem */ } from './components';
-import { chartSimple } from './exampleChart';
+import { chartSimple } from './emptyChart';
 import { FlowChart, IChart } from '@mrblenny/react-flow-chart';
 import { ThemeProvider } from '@material-ui/core';
 import { NodeCustom, NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';

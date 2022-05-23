@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from jupyterlab_vre.storage.catalog import Catalog
+from jupyterlab_vre.database.database import Catalog
 
 
 class TestCatalog(TestCase):

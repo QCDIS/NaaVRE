@@ -8,8 +8,15 @@ export declare type FairCell = {
     params              : [];
     confs               : {};
     dependencies        : [];
-    chart_obj           : IChart;
+    chart_obj           : {};
     node_id             : string;
     container_source    : string;
     global_conf         : {};
+}
+
+export declare type Repository = {
+
+    name    : string;
+    url     : string;
+    token   : string;
 }

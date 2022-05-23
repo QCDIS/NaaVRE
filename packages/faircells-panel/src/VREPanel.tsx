@@ -61,7 +61,7 @@ export class VREPanel extends React.Component<IProps> {
 
             try {
 
-                await requestAPI<any>('catalog/cells', {
+                await requestAPI<any>('containerizer/addcell', {
                     body: JSON.stringify({}),
                     method: 'POST'
                 });
