@@ -26,7 +26,7 @@ from jupyterlab_vre.workflows.parser import WorkflowParser
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-module_mapping = {'fnmatch': 'fnmatch2'}
+module_mapping = {'fnmatch': 'fnmatch2', 'webdav3': 'webdavclient3'}
 standard_library = [
     'pathlib',
     'time',
@@ -87,7 +87,7 @@ class ExtractorHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        logger.debug('payload: '+json.dumps(payload))
+        logger.debug('payload: ' + json.dumps(payload))
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
         extractor = Extractor(notebook)
@@ -246,7 +246,7 @@ class CellsHandler(APIHandler, Catalog):
                 self.flush()
                 return
 
-        if not hasattr(current_cell,'base_image'):
+        if not hasattr(current_cell, 'base_image'):
             logger.error(current_cell.task_name + ' has not base image not selected')
             self.set_status(400)
             self.write(current_cell.task_name + ' has not base image selected')
@@ -314,7 +314,8 @@ class CellsHandler(APIHandler, Catalog):
         template_cell.stream(cell=current_cell, deps=deps, types=current_cell.types, confs=confs).dump(cell_file_path)
         template_dockerfile.stream(task_name=current_cell.task_name, base_image=current_cell.base_image).dump(
             dockerfile_file_path)
-        template_conda.stream(base_image=current_cell.base_image, deps=list(set_deps)).dump(os.path.join(cell_path, env_name))
+        template_conda.stream(base_image=current_cell.base_image, deps=list(set_deps)).dump(
+            os.path.join(cell_path, env_name))
 
         gh_credentials = Catalog.get_gh_credentials()
         logger.debug('gh_credentials: ' + str(gh_credentials))
