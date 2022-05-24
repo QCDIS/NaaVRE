@@ -33,6 +33,13 @@ jobs:
       wheel_artifact_name: jupyterlab_vre
       dockerfile: Dockerfile-vol2bird
       tag: n-a-a-vre-vol2bird
+  call-build-container-pytorch:
+    needs: call-build-wheel
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
+    with:
+      wheel_artifact_name: jupyterlab_vre
+      dockerfile: Dockerfile-pytorch
+      tag: n-a-a-vre-pytorch
   call-registry-push-gitlab:
     needs: call-build-container
     uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
@@ -93,5 +100,25 @@ jobs:
     secrets:
       registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
       registry_password: ${{ secrets.DOCKERHUB_PASSWORD }}
+  call-registry-push-dockerhub-pytorch:
+    needs: call-build-container-pytorch
+    uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
+    with:
+      registry: "https://index.docker.io/v1/"
+      image_id: "qcdis/n-a-a-vre-pytorch"
+      tag: n-a-a-vre-pytorch
+    secrets:
+      registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      registry_password: ${{ secrets.DOCKERHUB_PASSWORD }}
+  call-registry-push-gitlab-pytorch:
+    needs: call-build-container-pytorch
+    uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
+    with:
+      registry: "registry.gitlab.com/qcd1/registry"
+      image_id: "registry.gitlab.com/qcd1/registry/n-a-a-vre-pytorch"
+      tag: n-a-a-vre-pytorch
+    secrets:
+      registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+      registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
 
 
