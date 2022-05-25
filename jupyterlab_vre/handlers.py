@@ -65,7 +65,8 @@ standard_library = [
     'getopt',
     'random',
     "re",
-    "json"
+    "json",
+    "copy"
 ]
 
 
