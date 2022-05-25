@@ -22,6 +22,7 @@ install-backend: build-backend
 	jupyter serverextension enable --py jupyterlab_vre --user
 
 build-frontend: jlpm-install
+	npx lerna run build --scope @jupyter_vre/notebook-search
 	npx lerna run build --scope @jupyter_vre/chart-customs
 	npx lerna run build --scope @jupyter_vre/core
 	npx lerna run build --scope @jupyter_vre/components
@@ -36,6 +37,7 @@ jlpm-install:
 
 
 install-ui:
+	$(call INSTALL_LAB_EXTENSION,notebook-search)
 	$(call INSTALL_LAB_EXTENSION,core)
 	$(call INSTALL_LAB_EXTENSION,chart-customs)
 	$(call INSTALL_LAB_EXTENSION,components)
@@ -45,6 +47,7 @@ install-ui:
 	$(call INSTALL_LAB_EXTENSION,infrastructure-automator)
 
 link-ui:
+	$(call LINK_LAB_EXTENSION,notebook-search)
 	$(call LINK_LAB_EXTENSION,core)
 	$(call LINK_LAB_EXTENSION,chart-customs)
 	$(call LINK_LAB_EXTENSION,components)
