@@ -23,6 +23,10 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
 
     state = DefaultState;
 
+    constructor(props: NotebookSearchPanelProps) {
+        super(props);
+    }
+
     onChangeKeyword = (event: React.ChangeEvent<HTMLInputElement>) => {
 
         this.setState({
@@ -50,7 +54,7 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
         });
     };
 
-    render() {
+    render(): React.ReactElement {
 
         return (
             <ThemeProvider theme={theme}>
