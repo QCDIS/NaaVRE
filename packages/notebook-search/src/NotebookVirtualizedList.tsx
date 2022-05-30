@@ -1,8 +1,9 @@
-import * as React from 'react';
+import { Link } from '@material-ui/core';
 import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import * as React from 'react';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 
 function renderRow(props: ListChildComponentProps, clickAction: (cell_index: number) => void) {
@@ -12,7 +13,29 @@ function renderRow(props: ListChildComponentProps, clickAction: (cell_index: num
     <div>
       <ListItem style={style} key={index} component="div" disablePadding>
         <ListItemButton onClick={() => { clickAction(index) }}>
-          <ListItemText primary={data[index]['_source']['name']} />
+          <div>
+            <ListItemText
+              primary={data[index]['_source']['name']}
+              style={{
+                display: 'inline-block',
+                maxWidth: '300px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden !important',
+                textOverflow: 'ellipsis'
+              }}
+            />
+            <Link
+              component="div"
+              style={{
+                display: 'inline-block',
+                maxWidth: '300px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden !important',
+                textOverflow: 'ellipsis'
+              }}>
+              {data[index]['_id']}
+            </Link>
+          </div>
         </ListItemButton>
       </ListItem>
     </div>
