@@ -19,4 +19,4 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
     jupyter serverextension enable --py jupyterlab_s3_browser --user && \
     jupyter lab build --debug;
 
-CMD ["/usr/local/bin/start-jupyter.sh"]
+#CMD ["/usr/local/bin/start-jupyter.sh"]
