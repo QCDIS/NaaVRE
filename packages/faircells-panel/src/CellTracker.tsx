@@ -32,7 +32,7 @@ type SaveState = 'started' | 'completed' | 'failed';
 
 const baseImages = [
 
-    { label: "Basic Python", id: "python:3.8-buster" },
+    { label: "miniconda3", id: "qcdis/miniconda3" },
     { label: "Laserfarm", id: "qcdis/miniconda3-pdal" },
     { label: "vol2bird", id: "qcdis/python-vol2bird" },
     { label: "MULTIPLY", id: "qcdis/miniconda3-multiply" }
