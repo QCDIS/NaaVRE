@@ -215,7 +215,7 @@ def load_module_names_mapping():
             json.dump(module_mapping, module_name_mapping_file, indent=4)
     module_name_mapping_file = open(module_name_mapping_path)
     module_name_mapping = json.load(module_name_mapping_file)
-    return module_name_mapping
+    return module_name_mapping.update(module_mapping)
 
 
 class CellsHandler(APIHandler, Catalog):
