@@ -17,6 +17,6 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
     jupyter serverextension enable --py jupyterlab_vre --user && \
     jupyter lab build --debug;
 
-RUN python -m pip install opencv-python-headless torch torchvision flwr
+RUN python -m pip install opencv-python-headless torch torchvision flwr sklearn
 
 CMD ["/usr/local/bin/start-jupyter.sh"]

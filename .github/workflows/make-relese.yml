@@ -5,7 +5,10 @@ on:
       - '*'
 
 jobs:
+  cleanup-artifacts:
+    uses: QCDIS/NaaVRE/.github/workflows/artifacts-cleanup.yaml@main
   call-build-wheel:
+    needs: cleanup-artifacts
     uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@main
   call-save-in-relese:
     needs: call-build-wheel
@@ -120,5 +123,4 @@ jobs:
     secrets:
       registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
       registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
-
 
