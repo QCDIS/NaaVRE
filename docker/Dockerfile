@@ -15,8 +15,8 @@ RUN conda remove --force -y terminado && \
 
 RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl && \
     jupyter serverextension enable --py jupyterlab_vre --user && \
+    pip install jupyterlab-s3-browser && \
+    jupyter serverextension enable --py jupyterlab_s3_browser && \
     jupyter lab build --debug;
-
-RUN pip install jupyterlab-s3-browser && jupyter serverextension enable --py jupyterlab_s3_browser
 
 CMD ["/usr/local/bin/start-jupyter.sh"]
