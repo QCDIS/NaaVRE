@@ -2,6 +2,10 @@ FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e
 
 USER root
 
+#===== install s3fs ======
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install s3fs
+#====================================
+
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 COPY ./notebooks/ /tmp/notebooks
@@ -19,4 +23,4 @@ RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.
     jupyter serverextension enable --py jupyterlab_s3_browser --user && \
     jupyter lab build --debug;
 
-#CMD ["/usr/local/bin/start-jupyter.sh"]
+CMD ["/usr/local/bin/start-jupyter.sh"]
