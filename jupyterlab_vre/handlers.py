@@ -26,7 +26,11 @@ from jupyterlab_vre.workflows.parser import WorkflowParser
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-module_mapping = {'fnmatch': 'fnmatch2', 'webdav3': 'webdavclient3'}
+module_mapping = {'webdav3': 'webdavclient3',
+                  'torch.nn': 'torch',
+                  'torchvision.models': 'torchvision',
+                  'cv2': 'opencv-python-headless'}
+
 standard_library = [
     'pathlib',
     'time',
