@@ -1,10 +1,13 @@
 import copy
+import importlib
 import json
 import logging
 import os
+import sys
 import uuid
 from builtins import Exception
 from pathlib import Path
+import distro
 
 import autopep8
 import nbformat as nb
@@ -27,47 +30,6 @@ from jupyterlab_vre.workflows.parser import WorkflowParser
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 module_mapping = {'fnmatch': 'fnmatch2', 'webdav3': 'webdavclient3'}
-standard_library = [
-    'pathlib',
-    'time',
-    'os',
-    'fileinput',
-    'tempfile',
-    'glob',
-    'sys',
-    'stat',
-    'filecmp',
-    'linecache',
-    'shutil',
-    'logging',
-    'socket',
-    'array',
-    'ssl',
-    'datetime',
-    'smtplib',
-    'selectors',
-    'asyncio',
-    'sys',
-    'signal',
-    'asynchat',
-    'mmap',
-    'multiprocessing',
-    'concurrent',
-    'urllib',
-    'math',
-    'shlex',
-    'subprocess',
-    'sched',
-    'threading',
-    'dummy_threading',
-    'io',
-    'argparse',
-    'getopt',
-    'random',
-    "re",
-    "json",
-    "copy"
-]
 
 
 ################################################################################
@@ -193,16 +155,16 @@ class BaseImageHandler(APIHandler, Catalog):
 # Catalog
 
 ################################################################################
-
-def load_standard_library_names():
-    standard_library_names_path = os.path.join(str(Path.home()), 'NaaVRE', 'standard_library_names.json')
-    if not os.path.exists(standard_library_names_path):
-        with open(standard_library_names_path, "w") as standard_library_names_file:
-            json.dump(standard_library, standard_library_names_file, indent=4)
-    standard_library_names_file = open(standard_library_names_path)
-    part_of_standard_library = json.load(standard_library_names_file)
-    return part_of_standard_library
-
+def is_standard_module(module_name):
+    if module_name in sys.builtin_module_names:
+        return True
+    installation_path = None
+    try:
+        installation_path = importlib.import_module(module_name).__file__
+    except ImportError:
+        return False
+    linux_os = distro.id()
+    return "dist-packages" not in installation_path if linux_os == "Ubuntu" else "site-packages" not in installation_path
 
 def load_module_names_mapping():
     module_name_mapping_path = os.path.join(str(Path.home()), 'NaaVRE', 'module_name_mapping.json')
@@ -292,7 +254,6 @@ class CellsHandler(APIHandler, Catalog):
         dockerfile_name = 'Dockerfile.' + image_repo + '.' + current_cell.task_name
         env_name = current_cell.task_name + '-environment.yaml'
 
-        part_of_standard_library = load_standard_library_names()
         module_name_mapping = load_module_names_mapping()
         set_deps = set([])
         for dep in current_cell.dependencies:
@@ -306,7 +267,7 @@ class CellsHandler(APIHandler, Catalog):
             if module_name:
                 if module_name in module_name_mapping.keys():
                     module_name = module_name_mapping[module_name]
-                if module_name not in part_of_standard_library:
+                if not is_standard_module(module_name):
                     set_deps.add(module_name)
 
         cell_file_path = os.path.join(cell_path, cell_file_name)

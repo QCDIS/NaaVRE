@@ -4,9 +4,9 @@ on:
 jobs:
   cleanup-artifacts:
     uses: QCDIS/NaaVRE/.github/workflows/artifacts-cleanup.yaml@main
+    needs: cleanup-artifacts
   call-build-wheel:
     uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@main
-    needs: cleanup-artifacts
   call-build-container:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
