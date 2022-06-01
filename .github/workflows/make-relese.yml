@@ -127,4 +127,18 @@ jobs:
     secrets:
       registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
       registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
-
+  delete-docker-images:
+    needs:
+      - call-registry-push-gitlab-pytorch
+      - call-registry-push-dockerhub-pytorch
+      - call-registry-push-dockerhub
+      - call-registry-push-dockerhub-vol2bird
+      - call-registry-push-dockerhub-laserfarm
+      - call-registry-push-gitlab-vol2bird
+      - call-registry-push-gitlab-laserfarm
+    uses: joutvhu/delete-artifact@v1
+    with:
+      name: |                                                                                               
+        action_image_artifact_n-a-a-vre
+        action_image_artifact_n-a-a-vre-laserfarm 
+        action_image_artifact_n-a-a-vre-vol2bird
