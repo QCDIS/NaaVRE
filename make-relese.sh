@@ -19,4 +19,11 @@ sudo docker push qcdis/n-a-a-vre-vol2bird:$1
 sudo docker push qcdis/n-a-a-vre-multiply:$1
 sudo docker push qcdis/n-a-a-vre-pytorch:$1
 
+
+sudo docker push qcdis/n-a-a-vre:latest
+sudo docker push qcdis/n-a-a-vre-laserfarm:latest
+sudo docker push qcdis/n-a-a-vre-vol2bird:latest
+sudo docker push qcdis/n-a-a-vre-multiply:latest
+sudo docker push qcdis/n-a-a-vre-pytorch:latest
+
 cd ../
