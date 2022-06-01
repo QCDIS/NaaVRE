@@ -12,6 +12,9 @@ on:
       wheel_artifact_name:
         required: true
         type: string
+      upload:
+        required: true
+        type: boolean
 
 env:
   DOCKERFILE:  ${{ inputs.dockerfile }}
@@ -35,8 +38,10 @@ jobs:
     - name: Start docker
       run: |
           docker run -d -p 8888:8888 -host=172.17.0.2 $TAG:latest jupyter lab
+    
 
     - name: Upload image
       uses: ishworkh/docker-image-artifact-upload@v1
       with:
         image: ${{ inputs.tag }}
+      if: ${{ inputs.upload }}
