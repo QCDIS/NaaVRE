@@ -2,6 +2,9 @@ name: make
 on:
   [pull_request]
 jobs:
+  cleanup-artifacts:
+    uses: QCDIS/NaaVRE/.github/workflows/artifacts-cleanup.yaml@main
+    needs: cleanup-artifacts
   call-build-wheel:
     uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@main
   call-build-container:
