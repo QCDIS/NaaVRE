@@ -22,6 +22,7 @@ jobs:
       wheel_artifact_name: jupyterlab_vre
       dockerfile: Dockerfile
       tag: n-a-a-vre
+      upload: true
   call-build-container-laserfarm:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
@@ -29,6 +30,7 @@ jobs:
       wheel_artifact_name: jupyterlab_vre
       dockerfile: Dockerfile-laserfarm
       tag: n-a-a-vre-laserfarm
+      upload: true
   call-build-container-vol2bird:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
@@ -36,6 +38,7 @@ jobs:
       wheel_artifact_name: jupyterlab_vre
       dockerfile: Dockerfile-vol2bird
       tag: n-a-a-vre-vol2bird
+      upload: true
   call-build-container-pytorch:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
@@ -43,6 +46,7 @@ jobs:
       wheel_artifact_name: jupyterlab_vre
       dockerfile: Dockerfile-pytorch
       tag: n-a-a-vre-pytorch
+      upload: true
   call-registry-push-gitlab:
     needs: call-build-container
     uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main

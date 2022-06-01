@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Download artifcat
+    - name: Download artifact
       uses: actions/download-artifact@v3
       with:
         name: ${{ inputs.wheel_artifact_name }}
