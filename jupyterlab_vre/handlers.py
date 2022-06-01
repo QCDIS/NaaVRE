@@ -221,6 +221,8 @@ class CellsHandler(APIHandler, Catalog):
         compiled_code = autopep8.fix_code(compiled_code)
         current_cell.container_source = compiled_code
 
+        logger.debug('Delete if exists: '+current_cell.task_name)
+        Catalog.delete_cell_from_task_name(current_cell.task_name)
         Catalog.add_cell(current_cell)
 
         cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
