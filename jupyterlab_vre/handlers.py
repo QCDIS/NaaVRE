@@ -29,7 +29,11 @@ from jupyterlab_vre.workflows.parser import WorkflowParser
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-module_mapping = {'fnmatch': 'fnmatch2', 'webdav3': 'webdavclient3'}
+module_mapping = {
+    "torch.nn": "torch",
+    "torchvision.models": "torchvision",
+    "cv2": "opencv-python-headless"
+}
 
 
 ################################################################################
@@ -166,6 +170,7 @@ def is_standard_module(module_name):
     linux_os = distro.id()
     return "dist-packages" not in installation_path if linux_os == "Ubuntu" else "site-packages" not in installation_path
 
+
 def load_module_names_mapping():
     module_name_mapping_path = os.path.join(str(Path.home()), 'NaaVRE', 'module_name_mapping.json')
     if not os.path.exists(module_name_mapping_path):
@@ -173,7 +178,7 @@ def load_module_names_mapping():
             json.dump(module_mapping, module_name_mapping_file, indent=4)
     module_name_mapping_file = open(module_name_mapping_path)
     module_name_mapping = json.load(module_name_mapping_file)
-    return module_name_mapping
+    return module_name_mapping.update(module_mapping)
 
 
 class CellsHandler(APIHandler, Catalog):
@@ -221,7 +226,7 @@ class CellsHandler(APIHandler, Catalog):
         compiled_code = autopep8.fix_code(compiled_code)
         current_cell.container_source = compiled_code
 
-        logger.debug('Delete if exists: '+current_cell.task_name)
+        logger.debug('Delete if exists: ' + current_cell.task_name)
         Catalog.delete_cell_from_task_name(current_cell.task_name)
         Catalog.add_cell(current_cell)
 
