@@ -10,7 +10,7 @@ jobs:
     uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@main
     needs: cleanup-artifacts
     with:
-      upload: ${{ env.upload_wheel }}
+      upload: false
   call-build-container:
     if: ${{ env.upload_wheel }}
     needs: call-build-wheel
