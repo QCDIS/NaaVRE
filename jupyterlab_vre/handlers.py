@@ -332,11 +332,13 @@ class CellsHandler(APIHandler, Catalog):
                 remote_content = repository.get_contents(path=current_cell.task_name + '/' + f_name)
                 with open(f_path, 'rb') as f:
                     local_content = f.read()
+                    local_hash = githash(local_content)
                     if remote_content.sha != githash(local_content):
                         repository.update_file(
                             path=current_cell.task_name + '/' + f_name,
                             message=current_cell.task_name + ' update',
                             content=local_content,
+                            sha=local_hash
                         )
         elif commit.totalCount <= 0:
             logger.debug('Cell is not in repository')
