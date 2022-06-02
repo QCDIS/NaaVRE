@@ -326,8 +326,10 @@ class CellsHandler(APIHandler, Catalog):
                 paths.append(comm_file.path)
 
         if current_cell.task_name in paths:
-            logger.debug('Cell is not in repository')
-            # TODO: Update file
+
+            for f_name, f_path in files_info.items():
+                logger.debug('Cell is in repository')
+                content = repository.get_contents(current_cell.task_name + '/' + f_name)
         else:
             logger.debug('Cell is not in repository')
             for f_name, f_path in files_info.items():
