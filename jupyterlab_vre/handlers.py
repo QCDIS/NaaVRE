@@ -338,7 +338,7 @@ class CellsHandler(APIHandler, Catalog):
                             path=current_cell.task_name + '/' + f_name,
                             message=current_cell.task_name + ' update',
                             content=local_content,
-                            sha=local_hash
+                            sha=remote_content.sha
                         )
         elif commit.totalCount <= 0:
             logger.debug('Cell is not in repository')
