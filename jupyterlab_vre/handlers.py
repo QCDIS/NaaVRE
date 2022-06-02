@@ -368,6 +368,7 @@ class CellsHandler(APIHandler, Catalog):
         )
         self.flush()
 
+
     @web.authenticated
     async def delete(self, *args, **kwargs):
         payload = self.get_json_body()
