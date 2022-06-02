@@ -57,7 +57,15 @@ class ExtractorHandler(APIHandler, Catalog):
         logger.debug('payload: ' + json.dumps(payload))
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-        extractor = Extractor(notebook)
+        try:
+            extractor = Extractor(notebook)
+        except Exception as ex:
+            logger.error(str(ex))
+            self.set_status(400)
+            self.write(str(ex))
+            self.write_error(str(ex))
+            self.flush()
+            return
 
         source = notebook.cells[cell_index].source
 

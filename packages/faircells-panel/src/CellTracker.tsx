@@ -70,18 +70,24 @@ export class CellTracker extends React.Component<IProps, IState> {
     };
 
     exctractor = async (notebookModel: INotebookModel, save = false) => {
+        try {
+            const extractedCell = await requestAPI<any>('extractor', {
+                body: JSON.stringify({
+                    save: save,
+                    cell_index: this.state.currentCellIndex,
+                    notebook: notebookModel.toJSON()
+                }),
+                method: 'POST'
+            });
+    
+            this.setState({ currentCell: extractedCell });
+            this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
+        } catch (error) {
+            console.log(error);
+            // alert('Error parsing cell code: '+ String(error).replace('{"message": "Unknown HTTP Error"}',''));
+            // this.setState({ currentCell: false });
+        }
 
-        const extractedCell = await requestAPI<any>('extractor', {
-            body: JSON.stringify({
-                save: save,
-                cell_index: this.state.currentCellIndex,
-                notebook: notebookModel.toJSON()
-            }),
-            method: 'POST'
-        });
-
-        this.setState({ currentCell: extractedCell });
-        this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
     }
 
     onActiveCellChanged = (notebook: Notebook, _activeCell: Cell) => {
