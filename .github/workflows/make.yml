@@ -13,6 +13,6 @@ jobs:
       upload: false
   call-build-containers:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-containers.yml@main
+    uses: QCDIS/NaaVRE/.github/workflows/build-containers.yml@190-commit-changes-to-cell
     with:
       upload: false
