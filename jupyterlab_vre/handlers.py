@@ -41,7 +41,7 @@ module_mapping = {
 def githash(contents):
     s = hashlib.sha1()
     s.update(("blob %u\0" % len(contents)).encode('utf-8'))
-    s.update(contents.encode('utf-8'))
+    s.update(contents)
     return s.hexdigest()
 
 
