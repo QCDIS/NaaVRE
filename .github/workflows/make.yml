@@ -12,7 +12,7 @@ jobs:
     with:
       upload: $upload_wheel
   call-build-container:
-    if: $upload_wheel
+    if: ${{ env.upload_wheel }}
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
     with:
