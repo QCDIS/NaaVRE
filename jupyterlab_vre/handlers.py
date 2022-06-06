@@ -12,6 +12,7 @@ import distro
 import autopep8
 import nbformat as nb
 import requests
+import tornado
 from github3 import login
 from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
@@ -35,6 +36,7 @@ module_mapping = {
     "cv2": "opencv-python-headless"
 }
 
+current_user = os.getenv('JUPYTERHUB_USER')
 
 ################################################################################
 
@@ -44,7 +46,7 @@ module_mapping = {
 
 class ExtractorHandler(APIHandler, Catalog):
     logger = logging.getLogger(__name__)
-
+    
     @web.authenticated
     async def get(self):
         msg_json = dict(title="Operation not supported.")
@@ -62,8 +64,9 @@ class ExtractorHandler(APIHandler, Catalog):
         source = notebook.cells[cell_index].source
 
         title = source.partition('\n')[0]
-        title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[
-                                                                                                            0] == "#" else "Untitled"
+        title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[0] == "#" else "Untitled"
+        title = title+'.'+current_user
+        logger.debug('current_user: '+current_user)
 
         ins = set(extractor.infere_cell_inputs(source))
         outs = set(extractor.infere_cell_outputs(source))
