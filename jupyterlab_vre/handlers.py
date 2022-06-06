@@ -37,6 +37,8 @@ module_mapping = {
 }
 
 
+current_username = os.environ['JUPYTERHUB_USER']
+
 # code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
 def githash(contents):
     s = hashlib.sha1()
@@ -81,6 +83,7 @@ class ExtractorHandler(APIHandler, Catalog):
         title = source.partition('\n')[0]
         title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[
                                                                                                             0] == "#" else "Untitled"
+        title = title+'-'+current_username
 
         ins = set(extractor.infere_cell_inputs(source))
         outs = set(extractor.infere_cell_outputs(source))
