@@ -6,7 +6,7 @@ colorhash==1.0.4
 requests==2.27.1
 azure-storage-blob==12.9.0
 tinydb~=4.6.1
-github3.py~=3.0.0
+PyGithub~=1.55
 tornado~=6.1
 notebook~=6.4.8
 PyYAML~=6.0
