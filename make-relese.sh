@@ -7,7 +7,7 @@ make release
 cp dist/jupyterlab_vre-0.1.0-py3-none-any.whl docker/
 
 cd docker
-sudo docker build . --file Dockerfile -t qcdis/n-a-a-vre
+sudo docker build . --file Dockerfile -t qcdis/n-a-a-vre:$1
 sudo docker build . --file Dockerfile-laserfarm -t qcdis/n-a-a-vre-laserfarm:$1
 sudo docker build . --file Dockerfile-vol2bird -t qcdis/n-a-a-vre-vol2bird:$1
 sudo docker build . --file Dockerfile-MULTIPLY -t qcdis/n-a-a-vre-multiply:$1
