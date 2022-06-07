@@ -13,7 +13,6 @@ import autopep8
 import nbformat as nb
 import requests
 import tornado
-from github3 import login
 from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
 from tornado import web
