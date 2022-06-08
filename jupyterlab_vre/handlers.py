@@ -38,7 +38,7 @@ module_mapping = {
 
 
 # code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
-def githash(contents):
+def git_hash(contents):
     s = hashlib.sha1()
     s.update(("blob %u\0" % len(contents)).encode('utf-8'))
     s.update(contents)
@@ -331,8 +331,8 @@ class CellsHandler(APIHandler, Catalog):
                 remote_content = repository.get_contents(path=current_cell.task_name + '/' + f_name)
                 with open(f_path, 'rb') as f:
                     local_content = f.read()
-                    local_hash = githash(local_content)
-                    if remote_content.sha != githash(local_content):
+                    local_hash = git_hash(local_content)
+                    if remote_content.sha != git_hash(local_content):
                         repository.update_file(
                             path=current_cell.task_name + '/' + f_name,
                             message=current_cell.task_name + ' update',
