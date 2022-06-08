@@ -73,12 +73,12 @@ class ExtractorHandler(APIHandler, Catalog):
         title = source.partition('\n')[0]
         title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[
                                                                                                             0] == "#" else "Untitled"
-
-        ins = set(extractor.infere_cell_inputs(source))
-        outs = set(extractor.infere_cell_outputs(source))
+        ins = set(extractor.infer_cell_inputs(source))
+        outs = set(extractor.infer_cell_outputs(source))
         params = []
+        logger.debug('outs: '+str(outs))
         confs = extractor.extract_cell_conf_ref(source)
-        dependencies = extractor.infere_cell_dependencies(source, confs)
+        dependencies = extractor.infer_cell_dependencies(source, confs)
         # conf_deps = extractor.infere_cell_conf_dependencies(confs)
         # dependencies = dependencies + conf_deps
         node_id = str(uuid.uuid4())[:7]
@@ -126,6 +126,58 @@ class ExtractorHandler(APIHandler, Catalog):
 
         self.write(cell.toJSON())
 
+        self.flush()
+
+
+class NotebookExtractorHandler(APIHandler, Catalog):
+    logger = logging.getLogger(__name__)
+
+    @web.authenticated
+    async def get(self):
+        msg_json = dict(title="Operation not supported.")
+        self.write(msg_json)
+        self.flush()
+
+    @web.authenticated
+    async def post(self, *args, **kwargs):
+        payload = self.get_json_body()
+        logger.debug('payload: ' + json.dumps(payload))
+
+        notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
+        extractor = Extractor(notebook)
+        source = ''
+        params = set()
+        confs = set()
+        ins = set()
+        outs = set(extractor.infer_cell_outputs(notebook.cells[len(notebook.cells) - 1].source))
+        for cell_source in extractor.sources:
+            p = extractor.extract_cell_params(cell_source)
+            params.update(p)
+            c = extractor.extract_cell_conf_ref(source)
+            confs.update(c)
+            source += cell_source + '\n'
+
+        title = 'notebook'
+        title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[
+                                                                                                            0] == "#" else "Untitled"
+        dependencies = extractor.infer_cell_dependencies(source, confs)
+
+        node_id = str(uuid.uuid4())[:7]
+        cell = Cell(
+            node_id=node_id,
+            title=title,
+            task_name=title.lower().replace(' ', '-'),
+            original_source=source,
+            inputs=list(ins),
+            outputs=list(outs),
+            params=list(params),
+            confs=list(confs),
+            dependencies=list(dependencies),
+            container_source=""
+        )
+        cell.integrate_configuration()
+        self.write(cell.toJSON())
+        logger.debug('cell: '+str(cell.toJSON()))
         self.flush()
 
 
@@ -366,7 +418,6 @@ class CellsHandler(APIHandler, Catalog):
                      "Authorization": "token " + gh_credentials['token']}
         )
         self.flush()
-
 
     @web.authenticated
     async def delete(self, *args, **kwargs):
