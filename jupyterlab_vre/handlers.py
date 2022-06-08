@@ -1,4 +1,5 @@
 import copy
+import hashlib
 import importlib
 import json
 import logging
@@ -12,7 +13,7 @@ import distro
 import autopep8
 import nbformat as nb
 import requests
-import tornado
+from github import Github
 from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
 from tornado import web
@@ -35,7 +36,14 @@ module_mapping = {
     "cv2": "opencv-python-headless"
 }
 
-current_user = os.getenv('JUPYTERHUB_USER')
+
+# code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
+def git_hash(contents):
+    s = hashlib.sha1()
+    s.update(("blob %u\0" % len(contents)).encode('utf-8'))
+    s.update(contents)
+    return s.hexdigest()
+
 
 ################################################################################
 
@@ -45,7 +53,7 @@ current_user = os.getenv('JUPYTERHUB_USER')
 
 class ExtractorHandler(APIHandler, Catalog):
     logger = logging.getLogger(__name__)
-    
+
     @web.authenticated
     async def get(self):
         msg_json = dict(title="Operation not supported.")
@@ -63,7 +71,8 @@ class ExtractorHandler(APIHandler, Catalog):
         source = notebook.cells[cell_index].source
 
         title = source.partition('\n')[0]
-        title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[0] == "#" else "Untitled"
+        title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[
+                                                                                                            0] == "#" else "Untitled"
 
         ins = set(extractor.infere_cell_inputs(source))
         outs = set(extractor.infere_cell_outputs(source))
@@ -297,14 +306,14 @@ class CellsHandler(APIHandler, Catalog):
             # or self.render("error.html", reason="You're not authorized"))
             return
 
-        gh = login(token=gh_credentials['token'])
+        gh = Github(gh_credentials['token'])
         owner = gh_credentials['url'].split('https://github.com/')[1].split('/')[0]
         repository_name = gh_credentials['url'].split('https://github.com/')[1].split('/')[1]
         if '.git' in repository_name:
             repository_name = repository_name.split('.git')[0]
         logger.debug('owner: ' + owner + ' repository_name: ' + repository_name)
         try:
-            repository = gh.repository(owner, repository_name)
+            repository = gh.get_repo(owner + '/' + repository_name)
         except Exception as ex:
             self.set_status(400)
             if hasattr(ex, 'message'):
@@ -315,20 +324,22 @@ class CellsHandler(APIHandler, Catalog):
             self.flush()
             return
 
-        last_comm = next(repository.commits(number=1), None)
-
-        if last_comm:
-            last_tree_sha = last_comm.commit.tree.sha
-            tree = repository.tree(last_tree_sha)
-            paths = []
-
-            for comm_file in tree.tree:
-                paths.append(comm_file.path)
-
-        if current_cell.task_name in paths:
-            logger.debug('Cell is not in repository')
-            # TODO: Update file
-        else:
+        commit = repository.get_commits(path=current_cell.task_name)
+        if commit.totalCount > 0:
+            logger.debug('Cell is in repository')
+            for f_name, f_path in files_info.items():
+                remote_content = repository.get_contents(path=current_cell.task_name + '/' + f_name)
+                with open(f_path, 'rb') as f:
+                    local_content = f.read()
+                    local_hash = git_hash(local_content)
+                    if remote_content.sha != git_hash(local_content):
+                        repository.update_file(
+                            path=current_cell.task_name + '/' + f_name,
+                            message=current_cell.task_name + ' update',
+                            content=local_content,
+                            sha=remote_content.sha
+                        )
+        elif commit.totalCount <= 0:
             logger.debug('Cell is not in repository')
             for f_name, f_path in files_info.items():
                 with open(f_path, 'rb') as f:
@@ -338,24 +349,24 @@ class CellsHandler(APIHandler, Catalog):
                         message=current_cell.task_name + ' creation',
                         content=content,
                     )
-
-            resp = requests.post(
-                url='https://api.github.com/repos/' + owner + '/' + repository_name + '/actions/workflows/build-push-docker'
-                                                                                      '.yml/dispatches',
-                json={
-                    "ref": "refs/heads/main",
-                    "inputs": {
-                        "build_dir": current_cell.task_name,
-                        "dockerfile": dockerfile_name,
-                        "image_repo": image_repo,
-                        "image_tag": current_cell.task_name
-                    }
-                },
-                verify=False,
-                headers={"Accept": "application/vnd.github.v3+json",
-                         "Authorization": "token " + gh_credentials['token']}
-            )
+        resp = requests.post(
+            url='https://api.github.com/repos/' + owner + '/' + repository_name + '/actions/workflows/build-push-docker'
+                                                                                  '.yml/dispatches',
+            json={
+                "ref": "refs/heads/main",
+                "inputs": {
+                    "build_dir": current_cell.task_name,
+                    "dockerfile": dockerfile_name,
+                    "image_repo": image_repo,
+                    "image_tag": current_cell.task_name
+                }
+            },
+            verify=False,
+            headers={"Accept": "application/vnd.github.v3+json",
+                     "Authorization": "token " + gh_credentials['token']}
+        )
         self.flush()
+
 
     @web.authenticated
     async def delete(self, *args, **kwargs):
