@@ -70,18 +70,25 @@ export class CellTracker extends React.Component<IProps, IState> {
     };
 
     exctractor = async (notebookModel: INotebookModel, save = false) => {
+        try {
+            const extractedCell = await requestAPI<any>('extractor', {
+                body: JSON.stringify({
+                    save: save,
+                    cell_index: this.state.currentCellIndex,
+                    notebook: notebookModel.toJSON()
+                }),
+                method: 'POST'
+            });
+    
+            this.setState({ currentCell: extractedCell });
+            console.log(this.state);
+            this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
+        } catch (error) {
+            console.log(error);
+            // alert('Error parsing cell code: '+ String(error).replace('{"message": "Unknown HTTP Error"}',''));
+            // this.setState({ currentCell: false });
+        }
 
-        const extractedCell = await requestAPI<any>('extractor', {
-            body: JSON.stringify({
-                save: save,
-                cell_index: this.state.currentCellIndex,
-                notebook: notebookModel.toJSON()
-            }),
-            method: 'POST'
-        });
-
-        this.setState({ currentCell: extractedCell });
-        this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
     }
 
     onActiveCellChanged = (notebook: Notebook, _activeCell: Cell) => {
@@ -149,7 +156,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                         <Table aria-label="simple table">
                                             <TableBody>
                                                 {this.state.currentCell.inputs.map((input: string) => (
-                                                    <TableRow key={input}>
+                                                    <TableRow key={this.state.currentCell.node_id + "-" + input}>
                                                         <TableCell component="th" scope="row">
                                                             <p style={{ fontSize: "1em" }}>{input}</p>
                                                         </TableCell>
@@ -157,7 +164,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                             <FormControl fullWidth>
                                                                 <Select
                                                                     labelId="io-types-select-label"
-                                                                    id="io-types-select"
+                                                                    id={this.state.currentCell.node_id + "-" + input + "-select"}
                                                                     label="Type"
                                                                     onChange={(event) => { this.typesUpdate(event, input) }}
                                                                 >
@@ -183,7 +190,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                         <Table aria-label="simple table">
                                             <TableBody>
                                                 {this.state.currentCell.outputs.map((output: string) => (
-                                                    <TableRow key={output}>
+                                                    <TableRow key={this.state.currentCell.node_id + "-" + output}>
                                                         <TableCell component="th" scope="row">
                                                             <p style={{ fontSize: "1em" }}>{output}</p>
                                                         </TableCell>
@@ -191,7 +198,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                             <FormControl fullWidth>
                                                                 <Select
                                                                     labelId="io-types-select-label"
-                                                                    id="io-types-select"
+                                                                    id={this.state.currentCell.node_id + "-" + output + "-select"}
                                                                     label="Type"
                                                                     onChange={(event) => { this.typesUpdate(event, output) }}
                                                                 >
@@ -217,7 +224,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                         <Table aria-label="simple table">
                                             <TableBody>
                                                 {this.state.currentCell.params.map((param: string) => (
-                                                    <TableRow key={param}>
+                                                    <TableRow key={this.state.currentCell.node_id + "-" + param}>
                                                         <TableCell component="th" scope="row">
                                                             {param}
                                                         </TableCell>
@@ -225,7 +232,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                             <FormControl fullWidth>
                                                                 <Select
                                                                     labelId="param-types-select-label"
-                                                                    id="param-types-select"
+                                                                    id={this.state.currentCell.node_id + "-" + param + "-select"}
                                                                     label="Type"
                                                                     onChange={(event) => { this.typesUpdate(event, param) }}
                                                                 >
