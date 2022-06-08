@@ -306,7 +306,6 @@ class CellsHandler(APIHandler, Catalog):
             # or self.render("error.html", reason="You're not authorized"))
             return
 
-        # = login(token=gh_credentials['token'])
         gh = Github(gh_credentials['token'])
         owner = gh_credentials['url'].split('https://github.com/')[1].split('/')[0]
         repository_name = gh_credentials['url'].split('https://github.com/')[1].split('/')[1]
