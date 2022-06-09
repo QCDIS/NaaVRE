@@ -154,7 +154,7 @@ class NotebookExtractorHandler(APIHandler, Catalog):
             confs.update(c)
             source += cell_source + '\n'
 
-        title = notebook.cells[0].source.partition('\n')[0]
+        title = 'notebook-'+notebook.cells[0].source.partition('\n')[0]
         title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[
                                                                                                             0] == "#" else "Untitled"
         dependencies = extractor.infer_cell_dependencies(source, confs)
