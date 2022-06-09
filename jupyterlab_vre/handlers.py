@@ -297,7 +297,6 @@ def build_templates(cell=None, files_info=None):
         files_info['dockerfile']['path'])
     template_conda.stream(base_image=cell.base_image, deps=list(set_deps)).dump(files_info['environment']['path'])
 
-
 def get_files_info(cell=None, image_repo=None):
     cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
     if not os.path.exists(cells_path):
@@ -463,7 +462,7 @@ class CellsHandler(APIHandler, Catalog):
                 "ref": "refs/heads/main",
                 "inputs": {
                     "build_dir": current_cell.task_name,
-                    "dockerfile": files_info['dockerfile']['name'],
+                    "dockerfile": files_info['dockerfile']['file_name'],
                     "image_repo": image_repo,
                     "image_tag": current_cell.task_name
                 }
