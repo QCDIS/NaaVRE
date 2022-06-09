@@ -141,8 +141,6 @@ class NotebookExtractorHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        logger.debug('payload: ' + json.dumps(payload))
-
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
         extractor = Extractor(notebook)
         source = ''
@@ -157,7 +155,7 @@ class NotebookExtractorHandler(APIHandler, Catalog):
             confs.update(c)
             source += cell_source + '\n'
 
-        title = 'notebook'
+        title = notebook.cells[0].source.partition('\n')[0]
         title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[
                                                                                                             0] == "#" else "Untitled"
         dependencies = extractor.infer_cell_dependencies(source, confs)
@@ -176,8 +174,29 @@ class NotebookExtractorHandler(APIHandler, Catalog):
             container_source=""
         )
         cell.integrate_configuration()
+        node = ConverterReactFlowChart.get_node(
+            node_id,
+            title,
+            ins,
+            outs,
+            params,
+            dependencies
+        )
+
+        chart = {
+            'offset': {
+                'x': 0,
+                'y': 0,
+            },
+            'scale': 1,
+            'nodes': {node_id: node},
+            'links': {},
+            'selected': {},
+            'hovered': {},
+        }
+        cell.chart_obj = chart
+        Catalog.editor_buffer = copy.deepcopy(cell)
         self.write(cell.toJSON())
-        logger.debug('cell: '+str(cell.toJSON()))
         self.flush()
 
 
