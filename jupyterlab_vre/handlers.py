@@ -262,6 +262,7 @@ def load_module_names_mapping():
 
 
 def build_templates(cell=None, files_info=None):
+    logger.debug('files_info: '+str(files_info))
     module_name_mapping = load_module_names_mapping()
     set_deps = set([])
     for dep in cell.dependencies:
@@ -294,8 +295,7 @@ def build_templates(cell=None, files_info=None):
                          confs=cell.generate_configuration()).dump(files_info['cell']['path'])
     template_dockerfile.stream(task_name=cell.task_name, base_image=cell.base_image).dump(
         files_info['dockerfile']['path'])
-    template_conda.stream(base_image=cell.base_image, deps=list(set_deps)).dump(
-        os.path.join(files_info['dockerfile']['path'], files_info['environment']['file_name']))
+    template_conda.stream(base_image=cell.base_image, deps=list(set_deps)).dump(files_info['environment']['path'])
 
 
 def get_files_info(cell=None, image_repo=None):
@@ -408,7 +408,6 @@ class CellsHandler(APIHandler, Catalog):
             self.flush()
             # or self.render("error.html", reason="You're not authorized"))
             return
-
 
         gh = Github(gh_credentials['token'])
         owner = gh_credentials['url'].split('https://github.com/')[1].split('/')[0]
