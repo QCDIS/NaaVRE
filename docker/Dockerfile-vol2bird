@@ -78,7 +78,7 @@ ENV PATH=${PATH}:/opt/radar/vol2bird/bin:/opt/radar/rsl/bin
 #=============================================
 COPY ./notebooks/ /tmp/notebooks
 
-USER $NB_USER
+USER $NB_USERs
 
 RUN conda remove --force -y terminado && \
     python -m pip install --upgrade pip
