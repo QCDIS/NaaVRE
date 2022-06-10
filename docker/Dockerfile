@@ -15,8 +15,7 @@ USER $NB_USER
 RUN conda remove --force -y terminado && \
     python -m pip install --upgrade pip
 
-RUN pip install jupyterlab-github jupyter-videochat && \
-    jupyter serverextension enable --py jupyterlab_github --user && \
+RUN pip install jupyterlab-git jupyter-videochat && \
     jupyter serverextension enable --py jupyter_videochat --user && \
     jupyter lab build --debug;
 
