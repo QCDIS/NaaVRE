@@ -15,13 +15,13 @@ USER $NB_USER
 RUN conda remove --force -y terminado && \
     python -m pip install --upgrade pip
 
-RUN pip install jupyterlab-github jupyter-videochat && \
-    jupyter serverextension enable --py jupyterlab_github --user && \
-    jupyter serverextension enable --py jupyter_videochat --user && \
-    jupyter lab build --debug;
-
 RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl && \
-    jupyter serverextension enable --py jupyterlab_vre --user && \
-    jupyter lab build --debug;
+    jupyter serverextension enable --py jupyterlab_vre --user
+
+RUN pip install jupyterlab-github jupyter-videochat && \
+    jupyter serverextension enable --py jupyter_videochat --user && \
+    jupyter serverextension enable --py jupyterlab_github --user
+
+RUN jupyter lab build --debug;
 
 CMD ["/usr/local/bin/start-jupyter.sh"]
