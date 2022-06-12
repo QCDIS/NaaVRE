@@ -36,6 +36,8 @@ module_mapping = {
     "cv2": "opencv-python-headless"
 }
 
+current_username = os.environ['JUPYTERHUB_USER']
+
 
 # code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
 def git_hash(contents):
@@ -73,6 +75,8 @@ class ExtractorHandler(APIHandler, Catalog):
         title = source.partition('\n')[0]
         title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[
                                                                                                             0] == "#" else "Untitled"
+        if current_username:
+            title += '.'+current_username
         ins = set(extractor.infer_cell_inputs(source))
         outs = set(extractor.infer_cell_outputs(source))
         params = []
