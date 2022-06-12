@@ -71,7 +71,7 @@ export class CellTracker extends React.Component<IProps, IState> {
 
     exctractor = async (notebookModel: INotebookModel, save = false) => {
         try {
-            const extractedCell = await requestAPI<any>('extractor', {
+            const extractedCell = await requestAPI<any>('notebookExtractor', {
                 body: JSON.stringify({
                     save: save,
                     cell_index: this.state.currentCellIndex,

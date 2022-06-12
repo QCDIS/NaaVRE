@@ -4,7 +4,7 @@ from notebook.utils import url_path_join
 from .handlers import BaseImageHandler, ExtractorHandler, CellsHandler, \
     CatalogGetAllHandler, ExportWorkflowHandler, SDIAAuthHandler, \
     SDIACredentialsHandler, TypesHandler, ProvisionAddHandler, \
-    GithubAuthHandler, ImageRegistryAuthHandler
+    GithubAuthHandler, ImageRegistryAuthHandler, NotebookExtractorHandler
 
 
 def _jupyter_server_extension_paths():
@@ -19,6 +19,7 @@ def load_jupyter_server_extension(lab_app):
 
     lab_app.web_app.add_handlers(host_pattern, [
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/extractor'), ExtractorHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebookExtractor'), NotebookExtractorHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/types'), TypesHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/baseimage'), BaseImageHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/sdia/testauth'), SDIAAuthHandler),

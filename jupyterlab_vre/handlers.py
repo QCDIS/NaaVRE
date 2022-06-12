@@ -31,16 +31,17 @@ from jupyterlab_vre.workflows.parser import WorkflowParser
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 module_mapping = {
-    "torch.nn": "torch",
-    "torchvision.models": "torchvision",
-    "cv2": "opencv-python-headless"
+    'torch.nn': 'torch',
+    'torchvision.models': 'torchvision',
+    'cv2': 'opencv-python-headless',
+    'webdav3':'webdavclient3'
 }
 
 
 # code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
 def git_hash(contents):
     s = hashlib.sha1()
-    s.update(("blob %u\0" % len(contents)).encode('utf-8'))
+    s.update(('blob %u\0' % len(contents)).encode('utf-8'))
     s.update(contents)
     return s.hexdigest()
 
@@ -56,14 +57,14 @@ class ExtractorHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def get(self):
-        msg_json = dict(title="Operation not supported.")
+        msg_json = dict(title='Operation not supported.')
         self.write(msg_json)
         self.flush()
 
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        logger.debug('payload: ' + json.dumps(payload))
+        logger.debug('ExtractorHandler. payload: ' + json.dumps(payload))
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
         extractor = Extractor(notebook)
@@ -72,7 +73,7 @@ class ExtractorHandler(APIHandler, Catalog):
 
         title = source.partition('\n')[0]
         title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[
-                                                                                                            0] == "#" else "Untitled"
+                                                                                                            0] == '#' else 'Untitled'
         ins = set(extractor.infer_cell_inputs(source))
         outs = set(extractor.infer_cell_outputs(source))
         params = []
@@ -92,7 +93,7 @@ class ExtractorHandler(APIHandler, Catalog):
             params=params,
             confs=confs,
             dependencies=dependencies,
-            container_source=""
+            container_source=''
         )
 
         cell.integrate_configuration()
@@ -133,13 +134,14 @@ class NotebookExtractorHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def get(self):
-        msg_json = dict(title="Operation not supported.")
+        msg_json = dict(title='Operation not supported.')
         self.write(msg_json)
         self.flush()
 
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
+        logger.debug('NotebookExtractorHandler. payload: '+str(payload))
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
         extractor = Extractor(notebook)
         source = ''
@@ -156,7 +158,9 @@ class NotebookExtractorHandler(APIHandler, Catalog):
 
         title = 'notebook-' + notebook.cells[0].source.partition('\n')[0]
         title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[
-                                                                                                            0] == "#" else "Untitled"
+                                                                                                            0] == '#' else 'Untitled'
+
+        logger.debug('NotebookExtractorHandler. title: ' + str(title))
         dependencies = extractor.infer_cell_dependencies(source, confs)
 
         node_id = str(uuid.uuid4())[:7]
@@ -170,7 +174,7 @@ class NotebookExtractorHandler(APIHandler, Catalog):
             params=list(params),
             confs=list(confs),
             dependencies=list(dependencies),
-            container_source=""
+            container_source=''
         )
         cell.integrate_configuration()
         node = ConverterReactFlowChart.get_node(
@@ -195,7 +199,7 @@ class NotebookExtractorHandler(APIHandler, Catalog):
         }
         cell.chart_obj = chart
         Catalog.editor_buffer = copy.deepcopy(cell)
-        logger.debug('cell: ' + str(cell.toJSON()))
+        logger.debug('NotebookExtractorHandler. cell: ' + str(cell.toJSON()))
         self.write(cell.toJSON())
         self.flush()
 
@@ -228,7 +232,7 @@ class BaseImageHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        logger.debug('payload: ' + str(payload))
+        logger.debug('BaseImageHandler. payload: ' + str(payload))
         base_image = payload['image']
         cell = Catalog.editor_buffer
         cell.base_image = base_image
@@ -248,13 +252,13 @@ def is_standard_module(module_name):
     except ImportError:
         return False
     linux_os = distro.id()
-    return "dist-packages" not in installation_path if linux_os == "Ubuntu" else "site-packages" not in installation_path
+    return 'dist-packages' not in installation_path if linux_os == 'Ubuntu' else 'site-packages' not in installation_path
 
 
 def load_module_names_mapping():
     module_name_mapping_path = os.path.join(str(Path.home()), 'NaaVRE', 'module_name_mapping.json')
     if not os.path.exists(module_name_mapping_path):
-        with open(module_name_mapping_path, "w") as module_name_mapping_file:
+        with open(module_name_mapping_path, 'w') as module_name_mapping_file:
             json.dump(module_mapping, module_name_mapping_file, indent=4)
     module_name_mapping_file = open(module_name_mapping_path)
     loaded_module_name_mapping = json.load(module_name_mapping_file)
@@ -337,7 +341,7 @@ class CellsHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def get(self):
-        msg_json = dict(title="Operation not supported.")
+        msg_json = dict(title='Operation not supported.')
         self.write(msg_json)
         self.flush()
 
@@ -405,7 +409,7 @@ class CellsHandler(APIHandler, Catalog):
             self.write('Github gh_credentials are not set!')
             self.write_error('Github credentials are not set!')
             self.flush()
-            # or self.render("error.html", reason="You're not authorized"))
+            # or self.render('error.html', reason='You're not authorized'))
             return
 
         gh = Github(gh_credentials['token'])
@@ -459,17 +463,17 @@ class CellsHandler(APIHandler, Catalog):
             url='https://api.github.com/repos/' + owner + '/' + repository_name + '/actions/workflows/build-push-docker'
                                                                                   '.yml/dispatches',
             json={
-                "ref": "refs/heads/main",
-                "inputs": {
-                    "build_dir": current_cell.task_name,
-                    "dockerfile": files_info['dockerfile']['file_name'],
-                    "image_repo": image_repo,
-                    "image_tag": current_cell.task_name
+                'ref': 'refs/heads/main',
+                'inputs': {
+                    'build_dir': current_cell.task_name,
+                    'dockerfile': files_info['dockerfile']['file_name'],
+                    'image_repo': image_repo,
+                    'image_tag': current_cell.task_name
                 }
             },
             verify=False,
-            headers={"Accept": "application/vnd.github.v3+json",
-                     "Authorization": "token " + gh_credentials['token']}
+            headers={'Accept': 'application/vnd.github.v3+json',
+                     'Authorization': 'token ' + gh_credentials['token']}
         )
         self.flush()
 
@@ -488,7 +492,7 @@ class CatalogGetAllHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-        msg_json = dict(title="Operation not supported.")
+        msg_json = dict(title='Operation not supported.')
         self.write(msg_json)
         self.flush()
 
@@ -609,7 +613,7 @@ class ExportWorkflowHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        logger.debug('payload: ' + str(payload))
+        logger.debug('ExportWorkflowHandler. payload: ' + str(payload))
         global_params = []
 
         nodes = payload['nodes']
