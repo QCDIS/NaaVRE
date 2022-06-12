@@ -34,7 +34,7 @@ module_mapping = {
     'torch.nn': 'torch',
     'torchvision.models': 'torchvision',
     'cv2': 'opencv-python-headless',
-    'webdav3':'webdavclient3'
+    'webdav3': 'webdavclient3'
 }
 
 
@@ -141,7 +141,7 @@ class NotebookExtractorHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        logger.debug('NotebookExtractorHandler. payload: '+str(payload))
+        logger.debug('NotebookExtractorHandler. payload: ' + str(payload))
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
         extractor = Extractor(notebook)
         source = ''
@@ -149,6 +149,7 @@ class NotebookExtractorHandler(APIHandler, Catalog):
         confs = set()
         ins = set()
         outs = set(extractor.infer_cell_outputs(notebook.cells[len(notebook.cells) - 1].source))
+        title = ''
         for cell_source in extractor.sources:
             p = extractor.extract_cell_params(cell_source)
             params.update(p)
@@ -156,11 +157,11 @@ class NotebookExtractorHandler(APIHandler, Catalog):
             confs.update(c)
             source += cell_source + '\n'
 
-        title = 'notebook-' + notebook.cells[0].source.partition('\n')[0]
-        title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[
-                                                                                                            0] == '#' else 'Untitled'
+            if not title:
+                title = cell_source.partition('\n')[0]
+                title = 'notebook-'+title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[0] == '#' \
+                    else 'Untitled'
 
-        logger.debug('NotebookExtractorHandler. title: ' + str(title))
         dependencies = extractor.infer_cell_dependencies(source, confs)
 
         node_id = str(uuid.uuid4())[:7]
@@ -244,6 +245,7 @@ class BaseImageHandler(APIHandler, Catalog):
 
 ################################################################################
 def is_standard_module(module_name):
+    logger.debug('module_name: '+module_name)
     if module_name in sys.builtin_module_names:
         return True
     installation_path = None
