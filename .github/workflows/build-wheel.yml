@@ -30,7 +30,7 @@ jobs:
     - name: Install nodejs dependencies
       run: |
         npm install lerna
-        npm install
+        npm install --legacy-peer-deps
     - name: make
       run: |
         npx lerna run build --scope @jupyter_vre/chart-customs
