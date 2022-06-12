@@ -39,7 +39,6 @@ module_mapping = {
 if 'JUPYTERHUB_USER' in os.environ:
     current_username = os.environ['JUPYTERHUB_USER']
 
-
 # code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
 def git_hash(contents):
     s = hashlib.sha1()
