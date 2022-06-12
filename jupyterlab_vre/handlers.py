@@ -40,6 +40,7 @@ current_username = ''
 if 'JUPYTERHUB_USER' in os.environ:
     current_username = os.environ['JUPYTERHUB_USER']
 
+
 # code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
 def git_hash(contents):
     s = hashlib.sha1()
@@ -76,7 +77,7 @@ class ExtractorHandler(APIHandler, Catalog):
         title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[
                                                                                                             0] == "#" else "Untitled"
         if current_username:
-            title += '.'+current_username
+            title += '.' + current_username
         ins = set(extractor.infer_cell_inputs(source))
         outs = set(extractor.infer_cell_outputs(source))
         params = []
@@ -158,7 +159,7 @@ class NotebookExtractorHandler(APIHandler, Catalog):
             confs.update(c)
             source += cell_source + '\n'
 
-        title = 'notebook-'+notebook.cells[0].source.partition('\n')[0]
+        title = 'notebook-' + notebook.cells[0].source.partition('\n')[0]
         title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[
                                                                                                             0] == "#" else "Untitled"
         dependencies = extractor.infer_cell_dependencies(source, confs)
@@ -266,7 +267,7 @@ def load_module_names_mapping():
 
 
 def build_templates(cell=None, files_info=None):
-    logger.debug('files_info: '+str(files_info))
+    logger.debug('files_info: ' + str(files_info))
     module_name_mapping = load_module_names_mapping()
     set_deps = set([])
     for dep in cell.dependencies:
@@ -300,6 +301,7 @@ def build_templates(cell=None, files_info=None):
     template_dockerfile.stream(task_name=cell.task_name, base_image=cell.base_image).dump(
         files_info['dockerfile']['path'])
     template_conda.stream(base_image=cell.base_image, deps=list(set_deps)).dump(files_info['environment']['path'])
+
 
 def get_files_info(cell=None, image_repo=None):
     cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
