@@ -52,7 +52,6 @@ def git_hash(contents):
 # Extraction
 
 ################################################################################
-
 class ExtractorHandler(APIHandler, Catalog):
     logger = logging.getLogger(__name__)
 
