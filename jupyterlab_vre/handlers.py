@@ -37,10 +37,8 @@ module_mapping = {
 }
 
 
-current_username = os.environ['JUPYTERHUB_USER']
-
 # code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
-def githash(contents):
+def git_hash(contents):
     s = hashlib.sha1()
     s.update(("blob %u\0" % len(contents)).encode('utf-8'))
     s.update(contents)
@@ -68,28 +66,19 @@ class ExtractorHandler(APIHandler, Catalog):
         logger.debug('payload: ' + json.dumps(payload))
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-        try:
-            extractor = Extractor(notebook)
-        except Exception as ex:
-            logger.error(str(ex))
-            self.set_status(400)
-            self.write(str(ex))
-            self.write_error(str(ex))
-            self.flush()
-            return
+        extractor = Extractor(notebook)
 
         source = notebook.cells[cell_index].source
 
         title = source.partition('\n')[0]
         title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[
                                                                                                             0] == "#" else "Untitled"
-        title = title+'-'+current_username
-
-        ins = set(extractor.infere_cell_inputs(source))
-        outs = set(extractor.infere_cell_outputs(source))
+        ins = set(extractor.infer_cell_inputs(source))
+        outs = set(extractor.infer_cell_outputs(source))
         params = []
+        logger.debug('outs: ' + str(outs))
         confs = extractor.extract_cell_conf_ref(source)
-        dependencies = extractor.infere_cell_dependencies(source, confs)
+        dependencies = extractor.infer_cell_dependencies(source, confs)
         # conf_deps = extractor.infere_cell_conf_dependencies(confs)
         # dependencies = dependencies + conf_deps
         node_id = str(uuid.uuid4())[:7]
@@ -136,7 +125,77 @@ class ExtractorHandler(APIHandler, Catalog):
         Catalog.editor_buffer = copy.deepcopy(cell)
 
         self.write(cell.toJSON())
+        self.flush()
 
+
+class NotebookExtractorHandler(APIHandler, Catalog):
+    logger = logging.getLogger(__name__)
+
+    @web.authenticated
+    async def get(self):
+        msg_json = dict(title="Operation not supported.")
+        self.write(msg_json)
+        self.flush()
+
+    @web.authenticated
+    async def post(self, *args, **kwargs):
+        payload = self.get_json_body()
+        notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
+        extractor = Extractor(notebook)
+        source = ''
+        params = set()
+        confs = set()
+        ins = set()
+        outs = set(extractor.infer_cell_outputs(notebook.cells[len(notebook.cells) - 1].source))
+        for cell_source in extractor.sources:
+            p = extractor.extract_cell_params(cell_source)
+            params.update(p)
+            c = extractor.extract_cell_conf_ref(source)
+            confs.update(c)
+            source += cell_source + '\n'
+
+        title = 'notebook-'+notebook.cells[0].source.partition('\n')[0]
+        title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[
+                                                                                                            0] == "#" else "Untitled"
+        dependencies = extractor.infer_cell_dependencies(source, confs)
+
+        node_id = str(uuid.uuid4())[:7]
+        cell = Cell(
+            node_id=node_id,
+            title=title,
+            task_name=title.lower().replace(' ', '-'),
+            original_source=source,
+            inputs=list(ins),
+            outputs=list(outs),
+            params=list(params),
+            confs=list(confs),
+            dependencies=list(dependencies),
+            container_source=""
+        )
+        cell.integrate_configuration()
+        node = ConverterReactFlowChart.get_node(
+            node_id,
+            title,
+            ins,
+            outs,
+            params,
+            dependencies
+        )
+
+        chart = {
+            'offset': {
+                'x': 0,
+                'y': 0,
+            },
+            'scale': 1,
+            'nodes': {node_id: node},
+            'links': {},
+            'selected': {},
+            'hovered': {},
+        }
+        cell.chart_obj = chart
+        Catalog.editor_buffer = copy.deepcopy(cell)
+        self.write(cell.toJSON())
         self.flush()
 
 
@@ -202,6 +261,75 @@ def load_module_names_mapping():
     return loaded_module_name_mapping
 
 
+def build_templates(cell=None, files_info=None):
+    logger.debug('files_info: '+str(files_info))
+    module_name_mapping = load_module_names_mapping()
+    set_deps = set([])
+    for dep in cell.dependencies:
+        if 'module' in dep and dep['module']:
+            if '.' in dep['module']:
+                module_name = dep['module'].split('.')[0]
+            else:
+                module_name = dep['module']
+        elif 'name' in dep and dep['name']:
+            module_name = dep['name']
+        if module_name:
+            if module_name in module_name_mapping.keys():
+                module_name = module_name_mapping[module_name]
+            if not is_standard_module(module_name):
+                set_deps.add(module_name)
+
+    loader = PackageLoader('jupyterlab_vre', 'templates')
+    template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
+
+    template_cell = template_env.get_template('cell_template.jinja2')
+    template_dockerfile = template_env.get_template('dockerfile_template_conda.jinja2')
+    template_conda = template_env.get_template('conda_env_template.jinja2')
+
+    compiled_code = template_cell.render(cell=cell, deps=cell.generate_dependencies(), types=cell.types,
+                                         confs=cell.generate_configuration())
+    compiled_code = autopep8.fix_code(compiled_code)
+    cell.container_source = compiled_code
+
+    template_cell.stream(cell=cell, deps=cell.generate_dependencies(), types=cell.types,
+                         confs=cell.generate_configuration()).dump(files_info['cell']['path'])
+    template_dockerfile.stream(task_name=cell.task_name, base_image=cell.base_image).dump(
+        files_info['dockerfile']['path'])
+    template_conda.stream(base_image=cell.base_image, deps=list(set_deps)).dump(files_info['environment']['path'])
+
+def get_files_info(cell=None, image_repo=None):
+    cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
+    if not os.path.exists(cells_path):
+        os.mkdir(cells_path)
+    cell_path = os.path.join(cells_path, cell.task_name)
+
+    cell_file_name = cell.task_name + '.py'
+    dockerfile_name = 'Dockerfile.' + image_repo + '.' + cell.task_name
+    environment_file_name = cell.task_name + '-environment.yaml'
+
+    if os.path.exists(cell_path):
+        for files in os.listdir(cell_path):
+            path = os.path.join(cell_path, files)
+            if os.path.isfile(path):
+                os.remove(path)
+    else:
+        os.mkdir(cell_path)
+
+    cell_file_path = os.path.join(cell_path, cell_file_name)
+    dockerfile_file_path = os.path.join(cell_path, dockerfile_name)
+    env_file_path = os.path.join(cell_path, environment_file_name)
+    return {'cell': {
+        'file_name': cell_file_name,
+        'path': cell_file_path},
+        'dockerfile': {
+            'file_name': dockerfile_name,
+            'path': dockerfile_file_path},
+        'environment': {
+            'file_name': environment_file_name,
+            'path': env_file_path}
+    }
+
+
 class CellsHandler(APIHandler, Catalog):
     logger = logging.getLogger(__name__)
 
@@ -218,12 +346,6 @@ class CellsHandler(APIHandler, Catalog):
         deps = current_cell.generate_dependencies()
         confs = current_cell.generate_configuration()
         current_cell.clean_code()
-        loader = PackageLoader('jupyterlab_vre', 'templates')
-        template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
-
-        template_cell = template_env.get_template('cell_template.jinja2')
-        template_dockerfile = template_env.get_template('dockerfile_template_conda.jinja2')
-        template_conda = template_env.get_template('conda_env_template.jinja2')
 
         all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
         for parm_name in all_vars:
@@ -242,10 +364,6 @@ class CellsHandler(APIHandler, Catalog):
             self.write_error(current_cell.task_name + ' has not base not image selected')
             self.flush()
             return
-
-        compiled_code = template_cell.render(cell=current_cell, deps=deps, types=current_cell.types, confs=confs)
-        compiled_code = autopep8.fix_code(compiled_code)
-        current_cell.container_source = compiled_code
 
         logger.debug('Delete if exists: ' + current_cell.task_name)
         Catalog.delete_cell_from_task_name(current_cell.task_name)
@@ -276,36 +394,9 @@ class CellsHandler(APIHandler, Catalog):
             return
         image_repo = registry_credentials['url'].split('https://hub.docker.com/u/')[1]
 
-        cell_file_name = current_cell.task_name + '.py'
-        dockerfile_name = 'Dockerfile.' + image_repo + '.' + current_cell.task_name
-        env_name = current_cell.task_name + '-environment.yaml'
+        files_info = get_files_info(cell=current_cell, image_repo=image_repo)
 
-        module_name_mapping = load_module_names_mapping()
-        set_deps = set([])
-        for dep in current_cell.dependencies:
-            if 'module' in dep and dep['module']:
-                if '.' in dep['module']:
-                    module_name = dep['module'].split('.')[0]
-                else:
-                    module_name = dep['module']
-            elif 'name' in dep and dep['name']:
-                module_name = dep['name']
-            if module_name:
-                if module_name in module_name_mapping.keys():
-                    module_name = module_name_mapping[module_name]
-                if not is_standard_module(module_name):
-                    set_deps.add(module_name)
-
-        cell_file_path = os.path.join(cell_path, cell_file_name)
-        dockerfile_file_path = os.path.join(cell_path, dockerfile_name)
-        env_file_path = os.path.join(cell_path, env_name)
-        files_info = {cell_file_name: cell_file_path, dockerfile_name: dockerfile_file_path, env_name: env_file_path}
-
-        template_cell.stream(cell=current_cell, deps=deps, types=current_cell.types, confs=confs).dump(cell_file_path)
-        template_dockerfile.stream(task_name=current_cell.task_name, base_image=current_cell.base_image).dump(
-            dockerfile_file_path)
-        template_conda.stream(base_image=current_cell.base_image, deps=list(set_deps)).dump(
-            os.path.join(cell_path, env_name))
+        build_templates(cell=current_cell, files_info=files_info)
 
         gh_credentials = Catalog.get_gh_credentials()
         logger.debug('gh_credentials: ' + str(gh_credentials))
@@ -317,7 +408,6 @@ class CellsHandler(APIHandler, Catalog):
             # or self.render("error.html", reason="You're not authorized"))
             return
 
-        # = login(token=gh_credentials['token'])
         gh = Github(gh_credentials['token'])
         owner = gh_credentials['url'].split('https://github.com/')[1].split('/')[0]
         repository_name = gh_credentials['url'].split('https://github.com/')[1].split('/')[1]
@@ -339,12 +429,14 @@ class CellsHandler(APIHandler, Catalog):
         commit = repository.get_commits(path=current_cell.task_name)
         if commit.totalCount > 0:
             logger.debug('Cell is in repository')
-            for f_name, f_path in files_info.items():
+            for f_type, f_info in files_info.items():
+                f_name = f_info['file_name']
+                f_path = f_info['path']
                 remote_content = repository.get_contents(path=current_cell.task_name + '/' + f_name)
                 with open(f_path, 'rb') as f:
                     local_content = f.read()
-                    local_hash = githash(local_content)
-                    if remote_content.sha != githash(local_content):
+                    local_hash = git_hash(local_content)
+                    if remote_content.sha != git_hash(local_content):
                         repository.update_file(
                             path=current_cell.task_name + '/' + f_name,
                             message=current_cell.task_name + ' update',
@@ -353,7 +445,9 @@ class CellsHandler(APIHandler, Catalog):
                         )
         elif commit.totalCount <= 0:
             logger.debug('Cell is not in repository')
-            for f_name, f_path in files_info.items():
+            for f_type, f_info in files_info.items():
+                f_name = f_info['file_name']
+                f_path = f_info['path']
                 with open(f_path, 'rb') as f:
                     content = f.read()
                     repository.create_file(
@@ -368,7 +462,7 @@ class CellsHandler(APIHandler, Catalog):
                 "ref": "refs/heads/main",
                 "inputs": {
                     "build_dir": current_cell.task_name,
-                    "dockerfile": dockerfile_name,
+                    "dockerfile": files_info['dockerfile']['file_name'],
                     "image_repo": image_repo,
                     "image_tag": current_cell.task_name
                 }
@@ -378,7 +472,6 @@ class CellsHandler(APIHandler, Catalog):
                      "Authorization": "token " + gh_credentials['token']}
         )
         self.flush()
-
 
     @web.authenticated
     async def delete(self, *args, **kwargs):

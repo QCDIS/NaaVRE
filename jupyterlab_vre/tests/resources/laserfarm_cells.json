@@ -1,0 +1,271 @@
+{
+  "save": false,
+  "cell_index": 6,
+  "notebook": {
+    "metadata": {
+      "kernelspec": {
+        "display_name": "Python 3",
+        "language": "python",
+        "name": "python3"
+      },
+      "language_info": {
+        "codemirror_mode": {
+          "name": "ipython",
+          "version": 3
+        },
+        "file_extension": ".py",
+        "mimetype": "text/x-python",
+        "name": "python",
+        "nbconvert_exporter": "python",
+        "pygments_lexer": "ipython3",
+        "version": "3.9.12"
+      }
+    },
+    "nbformat_minor": 5,
+    "nbformat": 4,
+    "cells": [
+      {
+        "cell_type": "code",
+        "source": "import fnmatch\nimport json\nimport getpass\nimport os\nimport pathlib\nimport datetime\nimport laspy\n\n\nimport time\nimport requests\n                    \nfrom dask.distributed import LocalCluster, SSHCluster \nfrom laserfarm import Retiler, DataProcessing, GeotiffWriter, MacroPipeline\nfrom laserfarm.remote_utils import get_wdclient, get_info_remote, list_remote",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 13,
+        "outputs": [],
+        "id": "854c645f-a14b-49ca-a9f5-cb49de30006a"
+      },
+      {
+        "cell_type": "markdown",
+        "source": "## Global Configuration",
+        "metadata": {},
+        "id": "3b32a2c7-6bc3-4a23-a7f3-be6163358654"
+      },
+      {
+        "cell_type": "code",
+        "source": "# Configurations spiros\n\nimport fnmatch\nimport json\nimport getpass\nimport os\nimport pathlib\nimport datetime\n                    \nfrom dask.distributed import LocalCluster, SSHCluster \nfrom laserfarm import Retiler, DataProcessing, GeotiffWriter, MacroPipeline\nfrom laserfarm.remote_utils import get_wdclient, get_info_remote, list_remote\n\nconf_remote_path_root = pathlib.Path('/webdav')\nconf_remote_path_ahn = pathlib.Path('/webdav/ahn')\nconf_remote_path_split = pathlib.Path('/webdav/split')\nconf_remote_path_retiled = pathlib.Path('/webdav/retiled/')\nconf_remote_path_norm = pathlib.Path('/webdav/norm/')\nconf_remote_path_targets = pathlib.Path('/webdav/targets')\nconf_local_tmp = pathlib.Path('/tmp')\n\n\nparam_hostname = ''\nparam_login = ''\nparam_password = ''\n\nparam_feature_name = 'perc_95_normalized_height'\nparam_validate_precision = '0.00001'\nparam_tile_mesh_size = '10.'\nparam_filter_type= 'select_equal'\nparam_attribute = 'raw_classification'\nparam_min_x = '-113107.81'\nparam_max_x = '398892.19'\nparam_min_y = '214783.87'\nparam_max_y = '726783.87'\nparam_n_tiles_side = '512'\nparam_apply_filter_value = '1'\nparam_laz_compression_factor = '7'\nparam_max_filesize = '262144000'  # desired max file size (in bytes)\n\nconf_wd_opts = { 'webdav_hostname': param_hostname, 'webdav_login': param_login, 'webdav_password': param_password}\n\n\nparam_grafana_base_url = ''\nparam_grafana_token = ''\n\nconf_notebook_name = ''\nconf_grafana_verify_ssl = True",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 43,
+        "outputs": [],
+        "id": "efe9bea7-2750-4882-9dc5-5e4b4adbf273"
+      },
+      {
+        "cell_type": "markdown",
+        "source": "## Fetching Laz Files from remote WebDAV",
+        "metadata": {},
+        "id": "70913967-81e0-4b22-8b4d-aa1b3f5f2707"
+      },
+      {
+        "cell_type": "code",
+        "source": "# Fetch Laz Files 01-06-22\n\ndef send_annotation(start=None,end=None,message=None,tags=None):\n    if not tags:\n        tags = []\n    \n    tags.append(conf_notebook_name)\n    \n    headers = {\n        'Accept':'application/json',\n        'Content-Type': 'application/json',\n        'Authorization': 'Bearer '+param_grafana_token\n    }\n    \n    data ={\n      \"time\":start,\n      \"timeEnd\":end,\n      \"created\": end,\n      \"tags\":tags,\n      \"text\": message\n    }\n    resp = requests.post(param_grafana_base_url+'/api/annotations',verify=conf_grafana_verify_ssl,headers=headers,json=data)\n\n\nstart = int(round(time.time() * 1000))\n\nlaz_files = [f for f in list_remote(get_wdclient(conf_wd_opts), conf_remote_path_ahn.as_posix())\n             if f.lower().endswith('.laz')]\nend = int(round(time.time() * 1000))\nsend_annotation(start=start,end=end,message='Fetch Laz Files 01-06-22')",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 44,
+        "outputs": [
+          {
+            "name": "stdout",
+            "output_type": "stream",
+            "text": "b'{\"id\":3,\"message\":\"Annotation added\"}'\n"
+          }
+        ],
+        "id": "30c8f77b-e28a-4b3b-aa29-5b18619251a5"
+      },
+      {
+        "cell_type": "markdown",
+        "source": "## Splitting big files into smaller files before retiling\nThis step can be added if the original files are too large for normal VMs to process",
+        "metadata": {
+          "tags": []
+        },
+        "id": "d5a0973e-42e3-47c9-9382-8e30f2086771"
+      },
+      {
+        "cell_type": "code",
+        "source": "# split big files 01-60-22\n\nimport numpy as np\n\ndef send_annotation(start=None,end=None,message=None,tags=None):\n    if not tags:\n        tags = []\n    \n    tags.append(conf_notebook_name)\n    \n    headers = {\n        'Accept':'application/json',\n        'Content-Type': 'application/json',\n        'Authorization': 'Bearer '+param_grafana_token\n    }\n    \n    data ={\n      \"time\":start,\n      \"timeEnd\":end,\n      \"created\": end,\n      \"tags\":tags,\n      \"text\": message\n    }\n    resp = requests.post(param_grafana_base_url+'/api/annotations',verify=conf_grafana_verify_ssl,headers=headers,json=data)\n    \n\ndef save_chunk_to_laz_file(in_filename, \n                           out_filename, \n                           offset, \n                           n_points):\n    \"\"\"Read points from a LAS/LAZ file and write them to a new file.\"\"\"\n    \n    points = np.array([])\n    \n    with laspy.open(in_filename) as in_file:\n        with laspy.open(out_filename, \n                        mode=\"w\", \n                        header=in_file.header) as out_file:\n            in_file.seek(offset)\n            points = in_file.read_points(n_points)\n            out_file.write_points(points)\n    return len(points)\n\ndef split_strategy(filename, max_filesize):\n    \"\"\"Set up splitting strategy for a LAS/LAZ file.\"\"\"\n    with laspy.open(filename) as f:\n        bytes_per_point = (\n            f.header.point_format.num_standard_bytes +\n            f.header.point_format.num_extra_bytes\n        )\n        n_points = f.header.point_count\n    n_points_target = int(\n        max_filesize * int(param_laz_compression_factor) / bytes_per_point\n    )\n    stem, ext = os.path.splitext(filename)\n    return [\n        (filename, f\"{stem}-{n}{ext}\", offset, n_points_target)\n        for n, offset in enumerate(range(0, n_points, n_points_target))\n    ]\n\n##################### Don't know how to run this sequentially ################################\nfrom webdav3.client import Client\n\nstart = int(round(time.time() * 1000))\n\nclient = Client(conf_wd_opts)\nclient.mkdir(conf_remote_path_split.as_posix())\n\n\nremote_path_split = conf_remote_path_split\n\nfile = laz_files\n# for file in laz_files:\n\nclient.download_sync(remote_path=os.path.join(conf_remote_path_ahn,file), local_path=file)\ninps = split_strategy(file, int(param_max_filesize))\nfor inp in inps:\n    save_chunk_to_laz_file(*inp)\nclient.upload_sync(remote_path=os.path.join(conf_remote_path_split,file), local_path=file)\n\nfor f in os.listdir('.'):\n    if not f.endswith('.LAZ'):\n        continue\n    os.remove(os.path.join('.', f))\n    \nsplit_laz_files = laz_files\n\nend = int(round(time.time() * 1000))\nsend_annotation(start=start,end=end,message='split big files 01-60-22')",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 47,
+        "outputs": [
+          {
+            "ename": "TypeError",
+            "evalue": "join() argument must be str, bytes, or os.PathLike object, not 'list'",
+            "output_type": "error",
+            "traceback": [
+              "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+              "\u001b[0;31mTypeError\u001b[0m                                 Traceback (most recent call last)",
+              "Input \u001b[0;32mIn [47]\u001b[0m, in \u001b[0;36m<cell line: 75>\u001b[0;34m()\u001b[0m\n\u001b[1;32m     72\u001b[0m file \u001b[38;5;241m=\u001b[39m laz_files\n\u001b[1;32m     73\u001b[0m \u001b[38;5;66;03m# for file in laz_files:\u001b[39;00m\n\u001b[0;32m---> 75\u001b[0m client\u001b[38;5;241m.\u001b[39mdownload_sync(remote_path\u001b[38;5;241m=\u001b[39m\u001b[43mos\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mpath\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mjoin\u001b[49m\u001b[43m(\u001b[49m\u001b[43mconf_remote_path_ahn\u001b[49m\u001b[43m,\u001b[49m\u001b[43mfile\u001b[49m\u001b[43m)\u001b[49m, local_path\u001b[38;5;241m=\u001b[39mfile)\n\u001b[1;32m     76\u001b[0m inps \u001b[38;5;241m=\u001b[39m split_strategy(file, \u001b[38;5;28mint\u001b[39m(param_max_filesize))\n\u001b[1;32m     77\u001b[0m \u001b[38;5;28;01mfor\u001b[39;00m inp \u001b[38;5;129;01min\u001b[39;00m inps:\n",
+              "File \u001b[0;32m/opt/conda/lib/python3.9/posixpath.py:90\u001b[0m, in \u001b[0;36mjoin\u001b[0;34m(a, *p)\u001b[0m\n\u001b[1;32m     88\u001b[0m             path \u001b[38;5;241m+\u001b[39m\u001b[38;5;241m=\u001b[39m sep \u001b[38;5;241m+\u001b[39m b\n\u001b[1;32m     89\u001b[0m \u001b[38;5;28;01mexcept\u001b[39;00m (\u001b[38;5;167;01mTypeError\u001b[39;00m, \u001b[38;5;167;01mAttributeError\u001b[39;00m, \u001b[38;5;167;01mBytesWarning\u001b[39;00m):\n\u001b[0;32m---> 90\u001b[0m     \u001b[43mgenericpath\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_check_arg_types\u001b[49m\u001b[43m(\u001b[49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[38;5;124;43mjoin\u001b[39;49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43ma\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[38;5;241;43m*\u001b[39;49m\u001b[43mp\u001b[49m\u001b[43m)\u001b[49m\n\u001b[1;32m     91\u001b[0m     \u001b[38;5;28;01mraise\u001b[39;00m\n\u001b[1;32m     92\u001b[0m \u001b[38;5;28;01mreturn\u001b[39;00m path\n",
+              "File \u001b[0;32m/opt/conda/lib/python3.9/genericpath.py:152\u001b[0m, in \u001b[0;36m_check_arg_types\u001b[0;34m(funcname, *args)\u001b[0m\n\u001b[1;32m    150\u001b[0m         hasbytes \u001b[38;5;241m=\u001b[39m \u001b[38;5;28;01mTrue\u001b[39;00m\n\u001b[1;32m    151\u001b[0m     \u001b[38;5;28;01melse\u001b[39;00m:\n\u001b[0;32m--> 152\u001b[0m         \u001b[38;5;28;01mraise\u001b[39;00m \u001b[38;5;167;01mTypeError\u001b[39;00m(\u001b[38;5;124mf\u001b[39m\u001b[38;5;124m'\u001b[39m\u001b[38;5;132;01m{\u001b[39;00mfuncname\u001b[38;5;132;01m}\u001b[39;00m\u001b[38;5;124m() argument must be str, bytes, or \u001b[39m\u001b[38;5;124m'\u001b[39m\n\u001b[1;32m    153\u001b[0m                         \u001b[38;5;124mf\u001b[39m\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mos.PathLike object, not \u001b[39m\u001b[38;5;132;01m{\u001b[39;00ms\u001b[38;5;241m.\u001b[39m\u001b[38;5;18m__class__\u001b[39m\u001b[38;5;241m.\u001b[39m\u001b[38;5;18m__name__\u001b[39m\u001b[38;5;132;01m!r}\u001b[39;00m\u001b[38;5;124m'\u001b[39m) \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;28mNone\u001b[39m\n\u001b[1;32m    154\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m hasstr \u001b[38;5;129;01mand\u001b[39;00m hasbytes:\n\u001b[1;32m    155\u001b[0m     \u001b[38;5;28;01mraise\u001b[39;00m \u001b[38;5;167;01mTypeError\u001b[39;00m(\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124mCan\u001b[39m\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mt mix strings and bytes in path components\u001b[39m\u001b[38;5;124m\"\u001b[39m) \u001b[38;5;28;01mfrom\u001b[39;00m \u001b[38;5;28mNone\u001b[39m\n",
+              "\u001b[0;31mTypeError\u001b[0m: join() argument must be str, bytes, or os.PathLike object, not 'list'"
+            ]
+          }
+        ],
+        "id": "9c935cbc-02b1-4f0a-a616-c2258a19931d"
+      },
+      {
+        "cell_type": "markdown",
+        "source": "## Retiling of big files into smaller tiles",
+        "metadata": {},
+        "id": "caad5d0f-2cbb-4889-ae63-3972626db753"
+      },
+      {
+        "cell_type": "code",
+        "source": "# Retiling 01-06-22\n\ndef send_annotation(start=None,end=None,message=None,tags=None):\n    if not tags:\n        tags = []\n    \n    tags.append(conf_notebook_name)\n    \n    headers = {\n        'Accept':'application/json',\n        'Content-Type': 'application/json',\n        'Authorization': 'Bearer '+param_grafana_token\n    }\n    \n    data ={\n      \"time\":start,\n      \"timeEnd\":end,\n      \"created\": end,\n      \"tags\":tags,\n      \"text\": message\n    }\n    resp = requests.post(param_grafana_base_url+'/api/annotations',verify=conf_grafana_verify_ssl,headers=headers,json=data)\n    \n    \nstart = int(round(time.time() * 1000))\nremote_path_retiled = str(conf_remote_path_retiled)\n\ngrid_retile = {\n    'min_x': float(param_min_x),\n    'max_x': float(param_max_x),\n    'min_y': float(param_min_y),\n    'max_y': float(param_max_y),\n    'n_tiles_side': int(param_n_tiles_side)\n}\n\n\nretiling_input = {\n    'setup_local_fs': {'tmp_folder': conf_local_tmp.as_posix()},\n    'pullremote': conf_remote_path_split.as_posix(),\n    'set_grid': grid_retile,\n    'split_and_redistribute': {},\n    'validate': {},\n    'pushremote': conf_remote_path_retiled.as_posix(),\n    'cleanlocalfs': {}\n}\n\n\n# try:\n#     get_ipython\n#     file = laz_files[0]\n# except:\n#     file = laz_files\n    \n# for file in laz_files:\nfile = split_laz_files\nretiler = Retiler(file.replace('\"',''),label=file).config(retiling_input).setup_webdav_client(conf_wd_opts)\nretiler_output = retiler.run()\n\nend = int(round(time.time() * 1000))\nsend_annotation(start=start,end=end,message='Retiling 01-06-22')",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 8,
+        "outputs": [
+          {
+            "name": "stderr",
+            "output_type": "stream",
+            "text": "2022-06-02 10:35:16,570 -           laserfarm.pipeline_remote_data -       INFO - Input dir set to /tmp/C_19HZ2.LAZ_input\n2022-06-02 10:35:16,574 -           laserfarm.pipeline_remote_data -       INFO - Output dir set to /tmp/C_19HZ2.LAZ_output\n2022-06-02 10:35:16,578 -           laserfarm.pipeline_remote_data -       INFO - Pulling from WebDAV /webdav/split/C_19HZ2.LAZ ...\n2022-06-02 10:35:17,870 -           laserfarm.pipeline_remote_data -       INFO - ... pulling completed.\n2022-06-02 10:35:17,872 -                        laserfarm.retiler -       INFO - Setting up the target grid\n2022-06-02 10:35:17,875 -                        laserfarm.retiler -       INFO - Splitting file /tmp/C_19HZ2.LAZ_input/C_19HZ2.LAZ with PDAL ...\n2022-06-02 10:35:18,029 -                        laserfarm.retiler -       INFO - ... splitting completed.\n2022-06-02 10:35:18,031 -                        laserfarm.retiler -       INFO - Redistributing files to tiles ...\n2022-06-02 10:35:18,032 -                        laserfarm.retiler -       INFO - ... file C_19HZ2_1.LAZ to tile_248_285\n2022-06-02 10:35:18,033 -                        laserfarm.retiler -       INFO - ... redistributing completed.\n2022-06-02 10:35:18,034 -                        laserfarm.retiler -       INFO - Validating split ...\n2022-06-02 10:35:18,036 -                        laserfarm.retiler -       INFO - ... 66663 points in parent file\n2022-06-02 10:35:18,037 -                        laserfarm.retiler -       INFO - ... 66663 points in C_19HZ2_1.LAZ\n2022-06-02 10:35:18,038 -                        laserfarm.retiler -       INFO - ... split validation completed.\n2022-06-02 10:35:18,039 -           laserfarm.pipeline_remote_data -       INFO - Pushing to WebDAV /webdav/retiled ...\n2022-06-02 10:35:21,536 -           laserfarm.pipeline_remote_data -       INFO - ... pushing completed.\n2022-06-02 10:35:21,537 -           laserfarm.pipeline_remote_data -       INFO - Removing input and output folders\n"
+          }
+        ],
+        "id": "034685db-0dda-48f9-98f3-fd38ae2525ca"
+      },
+      {
+        "cell_type": "markdown",
+        "source": "## Fetching retilied files (tiles) from remote WebDAV",
+        "metadata": {},
+        "id": "d6cb76ea-4dfe-4fe1-8533-b88df6e19ef0"
+      },
+      {
+        "cell_type": "code",
+        "source": "# Fetch Tiles 01-06-22\nremote_path_retiled\ntiles = [t.strip('/') for t in list_remote(get_wdclient(conf_wd_opts), conf_remote_path_retiled.as_posix())\n         if fnmatch.fnmatch(t, 'tile_*_*/')]",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 6,
+        "outputs": [],
+        "id": "d9598142-9943-4bc2-aeae-d0661c5342d2"
+      },
+      {
+        "cell_type": "markdown",
+        "source": "## Normalization - normalize all the point cloud",
+        "metadata": {},
+        "id": "07a4fae4-dad1-4a0f-b606-f8ec2563a2f9"
+      },
+      {
+        "cell_type": "markdown",
+        "source": "This step is added as the previous notebook did not include this step. The two cells below are the original code deployed on SURF using macroPipline function, so it needs to be modified in order to be containerized.",
+        "metadata": {},
+        "id": "a670a06f-1a41-4909-9a0b-e88c8326a17f"
+      },
+      {
+        "cell_type": "code",
+        "source": "# normalization 01-06-22\nimport copy\n\ndef send_annotation(start=None,end=None,message=None,tags=None):\n    if not tags:\n        tags = []\n    \n    tags.append(conf_notebook_name)\n    \n    headers = {\n        'Accept':'application/json',\n        'Content-Type': 'application/json',\n        'Authorization': 'Bearer '+param_grafana_token\n    }\n    \n    data ={\n      \"time\":start,\n      \"timeEnd\":end,\n      \"created\": end,\n      \"tags\":tags,\n      \"text\": message\n    }\n    resp = requests.post(param_grafana_base_url+'/api/annotations',verify=conf_grafana_verify_ssl,headers=headers,json=data)\n\n\nstart = int(round(time.time() * 1000))\n\n\ntiles\n\nremote_path_norm = str(conf_remote_path_norm)\n\nnormalization_input = {\n    'setup_local_fs': {'tmp_folder': conf_local_tmp.as_posix()},\n    'pullremote': conf_remote_path_retiled.as_posix(),\n    'load': {'attributes': 'all'},\n    # Filter out artifically high points - give overflow error when writing\n    'apply_filter': {'filter_type':'select_below',\n                     'attribute': 'z',\n                     'threshold': 10000.},  # remove non-physically heigh points\n    'normalize': 1,\n    'clear_cache' : {},\n    'pushremote': conf_remote_path_norm.as_posix(),\n}\n\n# write input dictionary to JSON file\nwith open('normalize.json', 'w') as f:\n    json.dump(normalization_input, f)\n    \n\n# add pipeline list to macro-pipeline object and set the corresponding labels\ntile = tiles\n# for tile in tiles:\nnormalization_input_ = copy.deepcopy(normalization_input)\nnormalization_input_['export_point_cloud'] = {'filename': '{}.laz'.format(tile),'overwrite': True}\ndp = DataProcessing(tile, label=tile).config(normalization_input_).setup_webdav_client(conf_wd_opts)\ndp.run()\n\nend = int(round(time.time() * 1000))\nsend_annotation(start=start,end=end,message='normalization 01-06-22')\n",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 7,
+        "outputs": [
+          {
+            "name": "stderr",
+            "output_type": "stream",
+            "text": "2022-05-25 12:02:06,726 -           laserfarm.pipeline_remote_data -       INFO - Input dir set to /tmp/tile_278_391_input\n2022-05-25 12:02:06,727 -           laserfarm.pipeline_remote_data -       INFO - Output dir set to /tmp/tile_278_391_output\n2022-05-25 12:02:06,730 -           laserfarm.pipeline_remote_data -       INFO - Pulling from WebDAV /webdav/retiled/tile_278_391 ...\n2022-05-25 12:02:09,637 -           laserfarm.pipeline_remote_data -       INFO - ... pulling completed.\n2022-05-25 12:02:09,639 -                laserfarm.data_processing -       INFO - Loading point cloud data ...\n2022-05-25 12:02:09,640 -                laserfarm.data_processing -       INFO - ... loading /tmp/tile_278_391_input/tile_278_391/C_01GN2_1.LAZ\n2022-05-25 12:02:12,979 -                laserfarm.data_processing -       INFO - ... loading completed.\n2022-05-25 12:02:12,981 -                laserfarm.data_processing -       INFO - Normalizing point-cloud heights ...\n2022-05-25 12:02:13,855 -                                     root -       INFO - Cylinder size in Bytes: 3056136558.191318\n2022-05-25 12:02:13,856 -                                     root -       INFO - Memory size in Bytes: 16819240960\n2022-05-25 12:02:13,857 -                                     root -       INFO - Start tree creation\n2022-05-25 12:02:14,318 -                                     root -       INFO - Done with env tree creation\n2022-05-25 12:02:14,403 -                                     root -       INFO - Done with target tree creation\n2022-05-25 12:02:33,126 -                laserfarm.data_processing -       INFO - ... normalization completed.\n2022-05-25 12:02:33,128 -                laserfarm.data_processing -       INFO - Filtering point-cloud data\n2022-05-25 12:02:33,700 -                laserfarm.data_processing -       INFO - Exporting environment point-cloud ...\n2022-05-25 12:02:33,702 -                laserfarm.data_processing -       INFO - ... exporting /tmp/tile_278_391_output/tile_278_391.laz\n2022-05-25 12:02:35,247 -                laserfarm.data_processing -       INFO - ... exporting completed.\n2022-05-25 12:02:35,249 -                laserfarm.data_processing -       INFO - Clearing cached KDTrees ...\n2022-05-25 12:02:35,252 -           laserfarm.pipeline_remote_data -       INFO - Pushing to WebDAV /webdav/norm ...\n2022-05-25 12:02:39,674 -           laserfarm.pipeline_remote_data -       INFO - ... pushing completed.\n"
+          }
+        ],
+        "id": "32537f33-f563-4b29-aeb4-507e97588952"
+      },
+      {
+        "cell_type": "markdown",
+        "source": "## Fetching normalized files (tiles) from remote WebDAV",
+        "metadata": {},
+        "id": "c5619aac-f36a-4509-8d92-258e2da56122"
+      },
+      {
+        "cell_type": "code",
+        "source": "# Fetch norm Tiles 01-06-22\nremote_path_norm\nnorm_tiles = [t.strip('/') for t in list_remote(get_wdclient(conf_wd_opts), conf_remote_path_norm.as_posix())\n         if fnmatch.fnmatch(t, 'tile_*_*.laz')]",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 8,
+        "outputs": [],
+        "id": "6b4e0ec1-e139-494b-9c76-b8c32cf0e2b4"
+      },
+      {
+        "cell_type": "markdown",
+        "source": "## Extract features - extract defined features from normalized tiles",
+        "metadata": {},
+        "id": "364c1c49-e148-4809-8a99-b962e8e5b490"
+      },
+      {
+        "cell_type": "code",
+        "source": "# Feature Extraction 01-06-22\n\ndef send_annotation(start=None,end=None,message=None,tags=None):\n    if not tags:\n        tags = []\n    \n    tags.append(conf_notebook_name)\n    \n    headers = {\n        'Accept':'application/json',\n        'Content-Type': 'application/json',\n        'Authorization': 'Bearer '+param_grafana_token\n    }\n    \n    data ={\n      \"time\":start,\n      \"timeEnd\":end,\n      \"created\": end,\n      \"tags\":tags,\n      \"text\": message\n    }\n    resp = requests.post(param_grafana_base_url+'/api/annotations',verify=conf_grafana_verify_ssl,headers=headers,json=data)\n\n\nstart = int(round(time.time() * 1000))\n\n\nfeatures = [param_feature_name]\n\ntile_mesh_size = float(param_tile_mesh_size)\n\ngrid_feature = {\n    'min_x': float(param_min_x),\n    'max_x': float(param_max_x),\n    'min_y': float(param_min_y),\n    'max_y': float(param_max_y),\n    'n_tiles_side': int(param_n_tiles_side)\n}\n\nfeature_extraction_input = {\n    'setup_local_fs': {'tmp_folder': conf_local_tmp.as_posix()},\n    'pullremote': conf_remote_path_norm.as_posix(),\n    'load': {'attributes': [param_attribute]},\n    'normalize': 1,\n    'apply_filter': {\n        'filter_type': param_filter_type, \n        'attribute': param_attribute,\n        'value': [int(param_apply_filter_value)]#ground surface (2), water (9), buildings (6), artificial objects (26), and unclassified (1)\n    },\n    'generate_targets': {\n        'tile_mesh_size' : tile_mesh_size,\n        'validate' : True,\n        'validate_precision': float(param_validate_precision),\n        **grid_feature\n    },\n    'extract_features': {\n        'feature_names': features,\n        'volume_type': 'cell',\n        'volume_size': tile_mesh_size\n    },\n    'export_targets': {\n        'attributes': features,\n        'multi_band_files': False\n    },\n    'pushremote': conf_remote_path_targets.as_posix(),\n#     'cleanlocalfs': {}\n}    \n\nt = norm_tiles\n# for t in norm_tiles:\nstem, _ = os.path.splitext(t)\nidx = [int(el) for el in (stem.split('_')[1:])]\nprocessing = DataProcessing(t, tile_index=idx,label=stem).config(feature_extraction_input).setup_webdav_client(conf_wd_opts)\nprocessing.run()\n\nend = int(round(time.time() * 1000))\nsend_annotation(start=start,end=end,message='Feature Extraction 01-06-22')",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 9,
+        "outputs": [
+          {
+            "name": "stderr",
+            "output_type": "stream",
+            "text": "2022-05-25 12:02:42,438 -           laserfarm.pipeline_remote_data -       INFO - Input dir set to /tmp/tile_287_378_input\n2022-05-25 12:02:42,439 -           laserfarm.pipeline_remote_data -       INFO - Output dir set to /tmp/tile_287_378_output\n2022-05-25 12:02:42,440 -           laserfarm.pipeline_remote_data -       INFO - Pulling from WebDAV /webdav/norm/tile_287_378.laz ...\n2022-05-25 12:02:43,646 -           laserfarm.pipeline_remote_data -       INFO - ... pulling completed.\n2022-05-25 12:02:43,648 -                laserfarm.data_processing -       INFO - Loading point cloud data ...\n2022-05-25 12:02:43,648 -                laserfarm.data_processing -       INFO - ... loading /tmp/tile_287_378_input/tile_287_378.laz\n2022-05-25 12:02:43,735 -                laserfarm.data_processing -       INFO - ... loading completed.\n2022-05-25 12:02:43,736 -                laserfarm.data_processing -       INFO - Normalizing point-cloud heights ...\n2022-05-25 12:02:43,763 -                                     root -       INFO - Cylinder size in Bytes: 82802329.25213549\n2022-05-25 12:02:43,764 -                                     root -       INFO - Memory size in Bytes: 16819240960\n2022-05-25 12:02:43,764 -                                     root -       INFO - Start tree creation\n2022-05-25 12:02:43,793 -                                     root -       INFO - Done with env tree creation\n2022-05-25 12:02:43,796 -                                     root -       INFO - Done with target tree creation\n2022-05-25 12:02:44,702 -                laserfarm.data_processing -       INFO - ... normalization completed.\n2022-05-25 12:02:44,703 -                laserfarm.data_processing -       INFO - Filtering point-cloud data\n2022-05-25 12:02:44,705 -                laserfarm.data_processing -       INFO - Setting up the target grid\n2022-05-25 12:02:44,706 -                laserfarm.data_processing -       INFO - Checking whether points belong to cell (287,378)\n2022-05-25 12:02:44,707 -                laserfarm.data_processing -       INFO - Generating target point mesh with 10.0m spacing \n2022-05-25 12:02:44,708 -                laserfarm.data_processing -       INFO - Building volume of type cell\n2022-05-25 12:02:44,709 -                laserfarm.data_processing -       INFO - Constructing neighborhoods\n2022-05-25 12:02:44,710 -                laserfarm.data_processing -       INFO - Starting feature extraction ...\n2022-05-25 12:02:44,711 -                                     root -       INFO - Cylinder size in Bytes: 6408849013.323179\n2022-05-25 12:02:44,712 -                                     root -       INFO - Memory size in Bytes: 16819240960\n2022-05-25 12:02:44,712 -                                     root -       INFO - Start tree creation\n2022-05-25 12:02:44,713 -                                     root -       INFO - Done with env tree creation\n2022-05-25 12:02:44,715 -                                     root -       INFO - Done with target tree creation\n2022-05-25 12:02:44,727 -                                     root -       INFO - Extracting feature(s) \"['perc_95_normalized_height']\"\n2022-05-25 12:02:44,786 -                                     root -       INFO - Extracting feature(s) \"['perc_95_normalized_height']\" took 0.06 seconds\n2022-05-25 12:02:44,788 -                laserfarm.data_processing -       INFO - ... feature extraction completed.\n2022-05-25 12:02:44,789 -                laserfarm.data_processing -       INFO - Exporting target point-cloud ...\n2022-05-25 12:02:44,790 -                laserfarm.data_processing -       INFO - ... exporting /tmp/tile_287_378_output/perc_95_normalized_height/tile_287_378.ply\n2022-05-25 12:02:44,899 -                laserfarm.data_processing -       INFO - ... exporting completed.\n2022-05-25 12:02:44,900 -           laserfarm.pipeline_remote_data -       INFO - Pushing to WebDAV /webdav/targets ...\n2022-05-25 12:02:47,476 -           laserfarm.pipeline_remote_data -       INFO - ... pushing completed.\n"
+          }
+        ],
+        "id": "52636f93-5279-45a8-9f66-460e300f47c4"
+      },
+      {
+        "cell_type": "markdown",
+        "source": "## GeoTIFF export - generate GeoTIFF raster layer a",
+        "metadata": {},
+        "id": "fb1374ed-5c88-4686-b266-6e7610471059"
+      },
+      {
+        "cell_type": "code",
+        "source": "# GeoTIFF Export 01-06-22\n\ndef send_annotation(start=None,end=None,message=None,tags=None):\n    if not tags:\n        tags = []\n    \n    tags.append(conf_notebook_name)\n    \n    headers = {\n        'Accept':'application/json',\n        'Content-Type': 'application/json',\n        'Authorization': 'Bearer '+param_grafana_token\n    }\n    \n    data ={\n      \"time\":start,\n      \"timeEnd\":end,\n      \"created\": end,\n      \"tags\":tags,\n      \"text\": message\n    }\n    resp = requests.post(param_grafana_base_url+'/api/annotations',verify=conf_grafana_verify_ssl,headers=headers,json=data)\n\n\nstart = int(round(time.time() * 1000))\n\n\nfeature = features\n\nremote_path_geotiffs = conf_remote_path_ahn.parent / 'geotiffs'\n\n# setup input dictionary to configure the GeoTIFF export pipeline\ngeotiff_export_input = {\n    'setup_local_fs': {'tmp_folder': conf_local_tmp.as_posix()},\n    'pullremote': conf_remote_path_targets.as_posix(),\n    'parse_point_cloud': {},\n    'data_split': {'xSub': 1, 'ySub': 1},\n    'create_subregion_geotiffs': {'output_handle': 'geotiff'},\n    'pushremote': remote_path_geotiffs.as_posix(),\n    'cleanlocalfs': {}   \n}\n\nwriter = GeotiffWriter(input_dir=param_feature_name, bands=param_feature_name,label=param_feature_name).config(geotiff_export_input).setup_webdav_client(conf_wd_opts)\nwriter.run()\nend = int(round(time.time() * 1000))\nsend_annotation(start=start,end=end,message='GeoTIFF Export 01-06-22')",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 10,
+        "outputs": [
+          {
+            "name": "stderr",
+            "output_type": "stream",
+            "text": "2022-05-25 12:02:53,786 -           laserfarm.pipeline_remote_data -       INFO - Input dir set to /tmp/perc_95_normalized_height_input\n2022-05-25 12:02:53,787 -           laserfarm.pipeline_remote_data -       INFO - Output dir set to /tmp/perc_95_normalized_height_output\n2022-05-25 12:02:53,788 -           laserfarm.pipeline_remote_data -       INFO - Pulling from WebDAV /webdav/targets/perc_95_normalized_height ...\n2022-05-25 12:03:17,449 -           laserfarm.pipeline_remote_data -       INFO - ... pulling completed.\n2022-05-25 12:03:17,452 -                 laserfarm.geotiff_writer -       INFO - 27 PLY files found\n2022-05-25 12:03:17,508 -                 laserfarm.geotiff_writer -       INFO - No. of points per file: 10000\n2022-05-25 12:03:17,510 -                 laserfarm.geotiff_writer -       INFO - Resolution: (10.0m x 10.0m)\n2022-05-25 12:03:17,510 -                 laserfarm.geotiff_writer -       INFO - Splitting data into (1x1) sub-regions\n2022-05-25 12:03:17,511 -                 laserfarm.geotiff_writer -       INFO - Processing sub-region GeoTiff no. 0 ...\n2022-05-25 12:03:17,512 -                 laserfarm.geotiff_writer -       INFO - ... number of constituent tiles: 27\n2022-05-25 12:03:28,479 -                 laserfarm.geotiff_writer -       INFO - ... processing of sub-region completed.\n2022-05-25 12:03:28,480 -           laserfarm.pipeline_remote_data -       INFO - Pushing to WebDAV /webdav/geotiffs ...\n2022-05-25 12:03:31,623 -           laserfarm.pipeline_remote_data -       INFO - ... pushing completed.\n2022-05-25 12:03:31,626 -           laserfarm.pipeline_remote_data -       INFO - Removing input and output folders\n"
+          }
+        ],
+        "id": "63ae4e5f-1a8a-4a50-a221-9302053e8092"
+      },
+      {
+        "cell_type": "code",
+        "source": "print(remote_path_geotiffs)",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 11,
+        "outputs": [
+          {
+            "name": "stdout",
+            "output_type": "stream",
+            "text": "/webdav/geotiffs\n"
+          }
+        ],
+        "id": "346152b3-b2da-4be7-8137-e9ba2f8f6075"
+      },
+      {
+        "cell_type": "code",
+        "source": "",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": null,
+        "outputs": [],
+        "id": "a63c1c23-bb5d-4763-96bb-65ca815909fc"
+      },
+      {
+        "cell_type": "code",
+        "source": "",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": null,
+        "outputs": [],
+        "id": "82d29b2c-e684-49be-83ec-51fb56bf1a9b"
+      }
+    ]
+  }
+}
