@@ -36,6 +36,7 @@ module_mapping = {
     "cv2": "opencv-python-headless"
 }
 
+current_username = ''
 if 'JUPYTERHUB_USER' in os.environ:
     current_username = os.environ['JUPYTERHUB_USER']
 
