@@ -154,7 +154,7 @@ class NotebookExtractorHandler(APIHandler, Catalog):
             confs.update(c)
             source += cell_source + '\n'
 
-        title = 'notebook-'+notebook.cells[0].source.partition('\n')[0]
+        title = 'notebook-' + notebook.cells[0].source.partition('\n')[0]
         title = title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[
                                                                                                             0] == "#" else "Untitled"
         dependencies = extractor.infer_cell_dependencies(source, confs)
@@ -195,6 +195,7 @@ class NotebookExtractorHandler(APIHandler, Catalog):
         }
         cell.chart_obj = chart
         Catalog.editor_buffer = copy.deepcopy(cell)
+        logger.debug('cell: ' + str(cell.toJSON()))
         self.write(cell.toJSON())
         self.flush()
 
@@ -262,7 +263,7 @@ def load_module_names_mapping():
 
 
 def build_templates(cell=None, files_info=None):
-    logger.debug('files_info: '+str(files_info))
+    logger.debug('files_info: ' + str(files_info))
     module_name_mapping = load_module_names_mapping()
     set_deps = set([])
     for dep in cell.dependencies:
@@ -296,6 +297,7 @@ def build_templates(cell=None, files_info=None):
     template_dockerfile.stream(task_name=cell.task_name, base_image=cell.base_image).dump(
         files_info['dockerfile']['path'])
     template_conda.stream(base_image=cell.base_image, deps=list(set_deps)).dump(files_info['environment']['path'])
+
 
 def get_files_info(cell=None, image_repo=None):
     cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
@@ -343,8 +345,6 @@ class CellsHandler(APIHandler, Catalog):
     async def post(self, *args, **kwargs):
 
         current_cell = Catalog.editor_buffer
-        deps = current_cell.generate_dependencies()
-        confs = current_cell.generate_configuration()
         current_cell.clean_code()
 
         all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
