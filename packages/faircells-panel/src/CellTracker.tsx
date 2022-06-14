@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { requestAPI, FairCell, CellPreview } from '@jupyter_vre/core';
 import { INotebookModel, Notebook, NotebookPanel } from '@jupyterlab/notebook';
+import { ReactWidget, Dialog, showDialog } from '@jupyterlab/apputils';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { Cell } from '@jupyterlab/cells';
 import Table from '@material-ui/core/Table';
@@ -9,8 +10,9 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { FormControl, MenuItem, Select, TableBody, TextField, ThemeProvider } from "@material-ui/core";
+import { Button, FormControl, MenuItem, Select, TableBody, TextField, ThemeProvider } from "@material-ui/core";
 import { Autocomplete } from '@mui/material';
+import { AddCellDialog } from './AddCellDialog';
 
 interface IProps {
     notebook: NotebookPanel;
@@ -48,9 +50,22 @@ export class CellTracker extends React.Component<IProps, IState> {
         this.cellPreviewRef = React.createRef();
     }
 
+    AddCellDialogOptions: Partial<Dialog.IOptions<any>> = {
+        title: '',
+        body: ReactWidget.create(
+            <AddCellDialog />
+        ) as Dialog.IBodyWidget<any>,
+        buttons: []
+    };
+
+    handleCreateCell = () => {
+
+        showDialog(this.AddCellDialogOptions);
+    };
+
     typesUpdate = async (event: React.ChangeEvent<{ name?: string; value: unknown; }>, port: string) => {
 
-        await requestAPI<any>('types', {
+        await requestAPI<any>('containerizer/types', {
             body: JSON.stringify({
                 port: port,
                 type: event.target.value
@@ -61,7 +76,7 @@ export class CellTracker extends React.Component<IProps, IState> {
 
     baseImageUpdate = async (value: any) => {
 
-        await requestAPI<any>('baseimage', {
+        await requestAPI<any>('containerizer/baseimage', {
             body: JSON.stringify({
                 image: value.id
             }),
@@ -70,25 +85,18 @@ export class CellTracker extends React.Component<IProps, IState> {
     };
 
     exctractor = async (notebookModel: INotebookModel, save = false) => {
-        try {
-            const extractedCell = await requestAPI<any>('extractor', {
-                body: JSON.stringify({
-                    save: save,
-                    cell_index: this.state.currentCellIndex,
-                    notebook: notebookModel.toJSON()
-                }),
-                method: 'POST'
-            });
-    
-            this.setState({ currentCell: extractedCell });
-            console.log(this.state);
-            this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
-        } catch (error) {
-            console.log(error);
-            // alert('Error parsing cell code: '+ String(error).replace('{"message": "Unknown HTTP Error"}',''));
-            // this.setState({ currentCell: false });
-        }
 
+        const extractedCell = await requestAPI<any>('containerizer/extract', {
+            body: JSON.stringify({
+                save: save,
+                cell_index: this.state.currentCellIndex,
+                notebook: notebookModel.toJSON()
+            }),
+            method: 'POST'
+        });
+
+        this.setState({ currentCell: extractedCell });
+        this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
     }
 
     onActiveCellChanged = (notebook: Notebook, _activeCell: Cell) => {
@@ -251,24 +259,29 @@ export class CellTracker extends React.Component<IProps, IState> {
                                 </div>
                             ) : (<div></div>)
                             }
-                            <p className={'lw-panel-preview'}>Dependencies</p>
-                            <TableContainer component={Paper} className={'lw-panel-table'}>
-                                <Table aria-label="simple table">
-                                    <TableBody>
-                                        {this.state.currentCell.dependencies.map((dep: any) => (
-                                            <TableRow>
-                                                <TableCell component="th" scope="row">
-                                                    {dep['module'] != '' ? (
-                                                        dep['module'] + " • " + dep['name']
-                                                    ) : (
-                                                        dep['name']
-                                                    )}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+                            {this.state.currentCell.dependencies.length > 0 ? (
+                                <div>
+                                    <p className={'lw-panel-preview'}>Dependencies</p>
+                                    <TableContainer component={Paper} className={'lw-panel-table'}>
+                                        <Table aria-label="simple table">
+                                            <TableBody>
+                                                {this.state.currentCell.dependencies.map((dep: any) => (
+                                                    <TableRow>
+                                                        <TableCell component="th" scope="row">
+                                                            {dep['module'] != '' ? (
+                                                                dep['module'] + " • " + dep['name']
+                                                            ) : (
+                                                                dep['name']
+                                                            )}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </div>
+                            ) : (<div></div>)
+                            }
                             <div>
                                 <p className={'lw-panel-preview'}>Base Image</p>
                                 <Autocomplete
@@ -278,7 +291,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                     }}
                                     id="combo-box-demo"
                                     options={baseImages}
-                                    sx={{ width: 300, margin: '20px' }}
+                                    sx={{ width: 330, margin: '20px' }}
                                     renderInput={(params) => <TextField {...params} />}
                                 />
                             </div>
@@ -286,6 +299,14 @@ export class CellTracker extends React.Component<IProps, IState> {
                     ) : (
                         <TableContainer></TableContainer>
                     )}
+                    <div>
+                        <Button variant="contained"
+                            className={'lw-panel-button'}
+                            onClick={this.handleCreateCell}
+                            color="primary">
+                            Create
+                        </Button>
+                    </div>
                 </div>
             </ThemeProvider>
         );

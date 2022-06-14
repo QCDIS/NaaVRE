@@ -22,7 +22,7 @@ interface VirtualizedListProps {
     items           : []
 }
 
-export default function VirtualizedList({ items, clickAction }: VirtualizedListProps) {
+export function VirtualizedList({ items, clickAction }: VirtualizedListProps) {
   return (
     <Box
       sx={{ width: '100%', height: '100%', maxWidth: 360, bgcolor: 'background.paper' }}

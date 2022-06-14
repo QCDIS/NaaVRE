@@ -1,10 +1,15 @@
-from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
-from ._version import __version__ 
 from notebook.utils import url_path_join
-from .handlers import BaseImageHandler, ExtractorHandler, CellsHandler, \
-    CatalogGetAllHandler, ExportWorkflowHandler, NotebookExtractorHandler, SDIAAuthHandler, \
-    SDIACredentialsHandler, TypesHandler, ProvisionAddHandler, \
-    GithubAuthHandler, ImageRegistryAuthHandler
+
+from jupyterlab_vre.component_containerizer.handlers import (BaseImageHandler,
+                                                             CellsHandler,
+                                                             ExtractorHandler,
+                                                             TypesHandler)
+from jupyterlab_vre.experiment_manager.handlers import ExportWorkflowHandler
+from jupyterlab_vre.repositories.handlers import RepositoryHandler
+from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
+
+from ._version import __version__
+from .handlers import CatalogGetAllHandler
 
 
 def _jupyter_server_extension_paths():
@@ -18,18 +23,13 @@ def load_jupyter_server_extension(lab_app):
     host_pattern = '.*$'
 
     lab_app.web_app.add_handlers(host_pattern, [
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/extractor'), ExtractorHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/nbextractor'), NotebookExtractorHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/types'), TypesHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/baseimage'), BaseImageHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/sdia/testauth'), SDIAAuthHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/sdia/credentials'), SDIACredentialsHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/github/savetoken'), GithubAuthHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/image_registry/savetoken'), ImageRegistryAuthHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/catalog/cells'), CellsHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/extract'), ExtractorHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/types'), TypesHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/baseimage'), BaseImageHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/addcell'), CellsHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/catalog/cells/all'), CatalogGetAllHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/catalog/provision/add'), ProvisionAddHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/workflow/export'), ExportWorkflowHandler)
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/expmanager/export'), ExportWorkflowHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/repositories/?'), RepositoryHandler)
     ])
     
     lab_app.log.info("Registered FAIR-Cells extension at URL path /vre")
