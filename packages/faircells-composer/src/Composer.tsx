@@ -4,17 +4,16 @@ import * as actions from "@mrblenny/react-flow-chart/src/container/actions";
 import styled from 'styled-components'
 import { theme } from './Theme';
 import { mapValues } from 'lodash';
-import { Page, /* SidebarItem */ } from './components';
 import { chartSimple } from './emptyChart';
 import { FlowChart, IChart } from '@mrblenny/react-flow-chart';
 import { ThemeProvider } from '@material-ui/core';
 import { NodeCustom, NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
-import BasicSpeedDial from './components/SpeedDial';
-import { CatalogDialog } from './components/CatalogDialog';
-import { Workspace } from './components/Workspace';
+import { CatalogDialog } from './CatalogDialog';
 import { FairCell, requestAPI } from '@jupyter_vre/core';
-import { CellEditor } from './components/CellEditor';
-import { Parallelization } from './components/Parallelization';
+import { CellEditor, Page } from '@jupyter_vre/components';
+import { Workspace } from './Workspace';
+import { Parallelization } from './Parallelization';
+import BasicSpeedDial from './SpeedDial';
 
 const CenterContent = styled.div`
   display: flex;

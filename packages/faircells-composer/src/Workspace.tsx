@@ -43,7 +43,7 @@ export class Workspace extends React.Component {
 
         map.forEach((value, key) => {
 
-            let nodes = value['chart_obj']['nodes'];
+            let nodes = value.chart_obj.nodes;
             let element = nodes[Object.keys(nodes)[0]];
 
             items.push(
