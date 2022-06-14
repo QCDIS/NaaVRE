@@ -1,3 +1,19 @@
+{% if base_image == 'qcdis/python-vol2bird' %}
+name: venv
+channels:
+  - conda-forge
+  - defaults
+  {% if deps|length > 0 %}
+dependencies:
+  - pip
+  - python=3.9
+  - pip:
+  {% for d in deps %}
+    - {{ d }}
+  {% endfor %}
+{% endif %}
+
+{% else %}
 name: venv
 channels:
   - conda-forge
@@ -9,4 +25,5 @@ dependencies:
   {% for d in deps %}
     - {{ d }}
   {% endfor %}
+{% endif %}
 {% endif %}
