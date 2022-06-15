@@ -3,11 +3,9 @@ import {
     JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
-import * as React from 'react';
 import { IMainMenu } from '@jupyterlab/mainmenu';
 import { Menu } from '@lumino/widgets';
-import { ReactWidget, ICommandPalette, Dialog, showDialog } from '@jupyterlab/apputils';
-import { CredentialsDialog } from './CredentialsDialog';
+import { ICommandPalette } from '@jupyterlab/apputils';
 
 const extension: JupyterFrontEndPlugin<void> = {
     id: 'main-menu',
@@ -19,29 +17,22 @@ const extension: JupyterFrontEndPlugin<void> = {
         mainMenu: IMainMenu
     ) => {
 
-        const CredentialsDialogOptions: Partial<Dialog.IOptions<any>> = {
-            title: '',
-            body: ReactWidget.create(
-                <CredentialsDialog />
-            ) as Dialog.IBodyWidget<any>,
-            buttons: []
-        };
-
         const { commands } = app;
-        const manageCredentialsCommand = 'naavre:manage-credentials';
+        const commandSettings = 'naavre:settings';
 
-        commands.addCommand(manageCredentialsCommand, {
-            label: 'Manage Credentials',
-            caption: 'Manage Credentials',
+        commands.addCommand(commandSettings, {
+            label: 'Settings',
+            caption: 'Settings',
             execute: (args: any) => {
-                showDialog(CredentialsDialogOptions);
+                
+                // TODO: Open dedicated settings page
             }
         });
 
         const category = 'NaaVRE';
 
         palette.addItem({
-            command: manageCredentialsCommand,
+            command: commandSettings,
             category,
             args: { origin: 'from the palette' }
         });
@@ -50,7 +41,7 @@ const extension: JupyterFrontEndPlugin<void> = {
         const vreMenu: Menu = new Menu({ commands });
         vreMenu.title.label = 'NaaVRE'
         mainMenu.addMenu(vreMenu, { rank: 80 });
-        vreMenu.addItem({ command: manageCredentialsCommand, args: { origin: 'from the menu' } });
+        vreMenu.addItem({ command: commandSettings, args: { origin: 'from the menu' } });
 
     }
 };

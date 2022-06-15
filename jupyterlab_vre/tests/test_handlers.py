@@ -7,9 +7,8 @@ from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, GithubAuthHandler, ExportWorkflowHandler
-from jupyterlab_vre.handlers import NotebookExtractorHandler
-from jupyterlab_vre.storage.faircell import Cell
-from jupyterlab_vre.storage.catalog import Catalog
+from jupyterlab_vre.database.cell import Cell
+from jupyterlab_vre.database.database import Catalog
 
 
 def delete_all_cells():
