@@ -29,7 +29,7 @@ export class NotebookContainerizerDialog extends React.Component<NotebookContain
         super(props);
     }
 
-    exctractor = async (notebookModel: INotebookModel, save = false) => {
+    exctractor = async (notebookModel: INotebookModel, _save = false) => {
         try {
             const resp = await requestAPI<any>('nbcontainerizer/extract', {
                 body: JSON.stringify({

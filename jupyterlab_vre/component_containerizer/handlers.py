@@ -14,6 +14,7 @@ import distro
 import nbformat as nb
 import requests
 from github import Github
+from github.GithubException import UnknownObjectException
 from github3 import login
 from jinja2 import Environment, PackageLoader
 from jupyterlab_vre.database.cell import Cell
@@ -35,6 +36,8 @@ module_mapping = {
 }
 
 # code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
+
+
 def git_hash(contents):
     s = hashlib.sha1()
     s.update(('blob %u\0' % len(contents)).encode('utf-8'))
@@ -135,7 +138,7 @@ class BaseImageHandler(APIHandler, Catalog):
         payload = self.get_json_body()
         base_image = payload['image']
         cell = Catalog.editor_buffer
-        print(payload)
+        cell.base_image = base_image
 
 
 class CellsHandler(APIHandler, Catalog):
@@ -151,7 +154,8 @@ class CellsHandler(APIHandler, Catalog):
     async def post(self, *args, **kwargs):
 
         payload = self.get_json_body()
-        repo_name = payload['repo_name']
+        repository_name = payload['repository_name']
+        registry_name = payload['registry_name']
         current_cell = Catalog.editor_buffer
         current_cell.clean_code()
 
@@ -167,10 +171,12 @@ class CellsHandler(APIHandler, Catalog):
                 return
 
         if not hasattr(current_cell, 'base_image'):
-            logger.error(current_cell.task_name + ' has not base image not selected')
+            logger.error(current_cell.task_name +
+                         ' has not base image not selected')
             self.set_status(400)
             self.write(current_cell.task_name + ' has not base image selected')
-            self.write_error(current_cell.task_name + ' has not base not image selected')
+            self.write_error(current_cell.task_name +
+                             ' has not base not image selected')
             self.flush()
             return
 
@@ -193,7 +199,8 @@ class CellsHandler(APIHandler, Catalog):
         else:
             os.mkdir(cell_path)
 
-        registry_credentials = Catalog.get_registry_credentials_from_name()
+        registry_credentials = Catalog.get_registry_credentials_from_name(
+            registry_name)
         logger.debug('registry_credentials: ' + str(registry_credentials))
         if not registry_credentials:
             self.set_status(400)
@@ -201,14 +208,15 @@ class CellsHandler(APIHandler, Catalog):
             self.write_error('Registry credentials are not set!')
             self.flush()
             return
-        image_repo = registry_credentials['url'].split('https://hub.docker.com/u/')[1]
+        image_repo = registry_credentials['url'].split(
+            'https://hub.docker.com/u/')[1]
 
         files_info = get_files_info(cell=current_cell, image_repo=image_repo)
 
         build_templates(cell=current_cell, files_info=files_info)
 
-        repository = Catalog.get_repository_from_name(repo_name)
-        logger.debug('gh_credentials: ' + str(repository))
+        repository = Catalog.get_repository_from_name(repository_name)
+        print(type(repository))
         if not repository:
             self.set_status(400)
             self.write('Github gh_credentials are not set!')
@@ -217,12 +225,16 @@ class CellsHandler(APIHandler, Catalog):
             # or self.render('error.html', reason='You're not authorized'))
             return
 
+        repo_token = repository['token']
+
         gh = Github(repository['token'])
         owner = repository['url'].split('https://github.com/')[1].split('/')[0]
-        repository_name = repository['url'].split('https://github.com/')[1].split('/')[1]
+        repository_name = repository['url'].split(
+            'https://github.com/')[1].split('/')[1]
         if '.git' in repository_name:
             repository_name = repository_name.split('.git')[0]
-        logger.debug('owner: ' + owner + ' repository_name: ' + repository_name)
+        logger.debug('owner: ' + owner +
+                     ' repository_name: ' + repository_name)
         try:
             repository = gh.get_repo(owner + '/' + repository_name)
         except Exception as ex:
@@ -236,51 +248,78 @@ class CellsHandler(APIHandler, Catalog):
             return
 
         commit = repository.get_commits(path=current_cell.task_name)
+
         if commit.totalCount > 0:
-            logger.debug('Cell is in repository')
-            for f_type, f_info in files_info.items():
-                f_name = f_info['file_name']
-                f_path = f_info['path']
-                remote_content = repository.get_contents(path=current_cell.task_name + '/' + f_name)
-                with open(f_path, 'rb') as f:
-                    local_content = f.read()
-                    local_hash = git_hash(local_content)
-                    if remote_content.sha != git_hash(local_content):
-                        repository.update_file(
-                            path=current_cell.task_name + '/' + f_name,
-                            message=current_cell.task_name + ' update',
-                            content=local_content,
-                            sha=remote_content.sha
-                        )
+            try:
+                update_cell_in_repository(current_cell, repository, files_info)
+            except UnknownObjectException as ex:
+                create_cell_in_repository(current_cell, repository, files_info)
+
+
         elif commit.totalCount <= 0:
-            logger.debug('Cell is not in repository')
-            for f_type, f_info in files_info.items():
-                f_name = f_info['file_name']
-                f_path = f_info['path']
-                with open(f_path, 'rb') as f:
-                    content = f.read()
-                    repository.create_file(
-                        path=current_cell.task_name + '/' + f_name,
-                        message=current_cell.task_name + ' creation',
-                        content=content,
-                    )
-        resp = requests.post(
-            url='https://api.github.com/repos/' + owner + '/' + repository_name + '/actions/workflows/build-push-docker'
-                                                                                  '.yml/dispatches',
-            json={
-                'ref': 'refs/heads/main',
-                'inputs': {
-                    'build_dir': current_cell.task_name,
-                    'dockerfile': files_info['dockerfile']['file_name'],
-                    'image_repo': image_repo,
-                    'image_tag': current_cell.task_name
-                }
-            },
-            verify=False,
-            headers={'Accept': 'application/vnd.github.v3+json',
-                     'Authorization': 'token ' + repository['token']}
+            create_cell_in_repository(current_cell, repository, files_info)
+
+        resp = dispatch_github_workflow(
+            owner, 
+            repository_name, 
+            current_cell, 
+            files_info, 
+            repo_token,
+            image_repo
         )
+
         self.flush()
+
+
+def create_cell_in_repository(cell, repository, files_info):
+    for f_type, f_info in files_info.items():
+        f_name = f_info['file_name']
+        f_path = f_info['path']
+        with open(f_path, 'rb') as f:
+            content = f.read()
+            repository.create_file(
+                path=cell.task_name + '/' + f_name,
+                message=cell.task_name + ' creation',
+                content=content,
+            )
+
+
+def update_cell_in_repository(cell, repository, files_info):
+    for f_type, f_info in files_info.items():
+        f_name = f_info['file_name']
+        f_path = f_info['path']
+        remote_content = repository.get_contents(
+            path=cell.task_name + '/' + f_name)
+        with open(f_path, 'rb') as f:
+            local_content = f.read()
+            local_hash = git_hash(local_content)
+            if remote_content.sha != git_hash(local_content):
+                repository.update_file(
+                    path=cell.task_name + '/' + f_name,
+                    message=cell.task_name + ' update',
+                    content=local_content,
+                    sha=remote_content.sha
+                )
+
+
+def dispatch_github_workflow(owner, repository_name, cell, files_info, repository_token, image):
+    return requests.post(
+        url='https://api.github.com/repos/' + owner + '/' +
+        repository_name + '/actions/workflows/build-push-docker'
+        '.yml/dispatches',
+        json={
+            'ref': 'refs/heads/main',
+            'inputs': {
+                'build_dir': cell.task_name,
+                'dockerfile': files_info['dockerfile']['file_name'],
+                'image_repo': image,
+                'image_tag': cell.task_name
+            }
+        },
+        verify=False,
+        headers={'Accept': 'application/vnd.github.v3+json',
+                'Authorization': 'token ' + repository_token}
+    )
 
 
 def is_standard_module(module_name):
@@ -297,7 +336,8 @@ def is_standard_module(module_name):
 
 
 def load_module_names_mapping():
-    module_name_mapping_path = os.path.join(str(Path.home()), 'NaaVRE', 'module_name_mapping.json')
+    module_name_mapping_path = os.path.join(
+        str(Path.home()), 'NaaVRE', 'module_name_mapping.json')
     if not os.path.exists(module_name_mapping_path):
         with open(module_name_mapping_path, 'w') as module_name_mapping_file:
             json.dump(module_mapping, module_name_mapping_file, indent=4)
@@ -326,10 +366,12 @@ def build_templates(cell=None, files_info=None):
                 set_deps.add(module_name)
 
     loader = PackageLoader('jupyterlab_vre', 'templates')
-    template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
+    template_env = Environment(
+        loader=loader, trim_blocks=True, lstrip_blocks=True)
 
     template_cell = template_env.get_template('cell_template.jinja2')
-    template_dockerfile = template_env.get_template('dockerfile_template_conda.jinja2')
+    template_dockerfile = template_env.get_template(
+        'dockerfile_template_conda.jinja2')
     template_conda = template_env.get_template('conda_env_template.jinja2')
 
     compiled_code = template_cell.render(cell=cell, deps=cell.generate_dependencies(), types=cell.types,
@@ -341,7 +383,8 @@ def build_templates(cell=None, files_info=None):
                          confs=cell.generate_configuration()).dump(files_info['cell']['path'])
     template_dockerfile.stream(task_name=cell.task_name, base_image=cell.base_image).dump(
         files_info['dockerfile']['path'])
-    template_conda.stream(base_image=cell.base_image, deps=list(set_deps)).dump(files_info['environment']['path'])
+    template_conda.stream(base_image=cell.base_image, deps=list(
+        set_deps)).dump(files_info['environment']['path'])
 
 
 def get_files_info(cell=None, image_repo=None):

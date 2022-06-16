@@ -38,10 +38,6 @@ export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
         this.getRegistries();
     }
 
-    handleConfirm = async () => {
-        console.log("confirm");
-    }
-
     allSelected = () => {
         console.log(this.state);
         return (this.state.selected_repository != '' && this.state.selected_registry != '');
@@ -71,6 +67,17 @@ export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
         ));
 
         this.setState({ registries: items });
+    }
+
+    createCell = async () => {
+
+        await requestAPI<any>('containerizer/addcell', {
+            body: JSON.stringify({
+                repository_name: this.state.selected_repository,
+                registry_name: this.state.selected_registry
+            }),
+            method: 'POST'
+        });
     }
 
     render(): React.ReactElement {
@@ -109,7 +116,7 @@ export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
                     />
                     <Button variant="contained"
                         style={{ marginTop: '20px' }}
-                        onClick={this.handleConfirm}
+                        onClick={this.createCell}
                         disabled={!this.allSelected()}
                         color="primary">
                         Confirm
