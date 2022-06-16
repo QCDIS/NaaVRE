@@ -22,12 +22,14 @@ interface IState {
 
     currentCellIndex: number
     currentCell: FairCell
+    typeSelections: { [type: string]: boolean }
 }
 
 const DefaultState: IState = {
 
     currentCellIndex: -1,
-    currentCell: null
+    currentCell: null,
+    typeSelections: {}
 }
 
 type SaveState = 'started' | 'completed' | 'failed';
@@ -63,6 +65,22 @@ export class CellTracker extends React.Component<IProps, IState> {
         showDialog(this.AddCellDialogOptions);
     };
 
+    allTypesSelected = () => {
+
+        if (Object.values(this.state.typeSelections).length > 0) {
+
+            return (
+                Object.values(this.state.typeSelections).reduce(
+                    (prev, curr) => {
+                        return prev && curr
+                    }
+                )
+            )
+        }
+
+        return false;
+    };
+
     typesUpdate = async (event: React.ChangeEvent<{ name?: string; value: unknown; }>, port: string) => {
 
         await requestAPI<any>('containerizer/types', {
@@ -72,6 +90,15 @@ export class CellTracker extends React.Component<IProps, IState> {
             }),
             method: 'POST'
         });
+
+        let currTypeSelections = this.state.typeSelections
+        currTypeSelections[port] = true
+
+        this.setState({
+            typeSelections: currTypeSelections
+        })
+
+        console.log(this.state.typeSelections);
     };
 
     baseImageUpdate = async (value: any) => {
@@ -96,6 +123,22 @@ export class CellTracker extends React.Component<IProps, IState> {
         });
 
         this.setState({ currentCell: extractedCell });
+        let typeSelections: { [type: string]: boolean } = {}
+
+        this.state.currentCell.inputs.forEach((el: string) => {
+            typeSelections[el] = false
+        })
+
+        this.state.currentCell.outputs.forEach((el: string) => {
+            typeSelections[el] = false
+        })
+
+        this.state.currentCell.params.forEach((el: string) => {
+            typeSelections[el] = false
+        })
+
+        this.setState({ typeSelections: typeSelections })
+
         this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
     }
 
@@ -286,7 +329,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                 <p className={'lw-panel-preview'}>Base Image</p>
                                 <Autocomplete
                                     disablePortal
-                                    onChange={(event: any, newValue: any | null) => {
+                                    onChange={(_event: any, newValue: any | null) => {
                                         this.baseImageUpdate(newValue);
                                     }}
                                     id="combo-box-demo"
@@ -303,7 +346,8 @@ export class CellTracker extends React.Component<IProps, IState> {
                         <Button variant="contained"
                             className={'lw-panel-button'}
                             onClick={this.handleCreateCell}
-                            color="primary">
+                            color="primary"
+                            disabled={!this.allTypesSelected()}>
                             Create
                         </Button>
                     </div>

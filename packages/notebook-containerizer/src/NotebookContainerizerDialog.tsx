@@ -31,7 +31,7 @@ export class NotebookContainerizerDialog extends React.Component<NotebookContain
 
     exctractor = async (notebookModel: INotebookModel, save = false) => {
         try {
-            const resp = await requestAPI<any>('nbextractor', {
+            const resp = await requestAPI<any>('nbcontainerizer/extract', {
                 body: JSON.stringify({
                     notebook: notebookModel.toJSON()
                 }),
@@ -42,8 +42,6 @@ export class NotebookContainerizerDialog extends React.Component<NotebookContain
             
         } catch (error) {
             console.log(error);
-            // alert('Error parsing cell code: '+ String(error).replace('{"message": "Unknown HTTP Error"}',''));
-            // this.setState({ currentCell: false });
         }
 
     }
