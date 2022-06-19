@@ -1,82 +1,28 @@
-import copy
 import json
 import logging
 import os
-import uuid
-from builtins import Exception
 from pathlib import Path
 
-import autopep8
-import nbformat as nb
-import requests
-from github3 import login
-from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
 from tornado import web
 
-from jupyterlab_vre.sdia.sdia import SDIA
-from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 from jupyterlab_vre.database.database import Catalog
-from jupyterlab_vre.database.cell import Cell
-from jupyterlab_vre.services.parser.parser import WorkflowParser
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-module_mapping = {'fnmatch': 'fnmatch2'}
-standard_library = [
-    'pathlib',
-    'time',
-    'os',
-    'fileinput',
-    'tempfile',
-    'glob',
-    'sys',
-    'stat',
-    'filecmp',
-    'linecache',
-    'shutil',
-    'logging',
-    'socket',
-    'array',
-    'ssl',
-    'datetime',
-    'smtplib',
-    'selectors',
-    'asyncio',
-    'sys',
-    'signal',
-    'asynchat',
-    'mmap',
-    'multiprocessing',
-    'concurrent',
-    'urllib',
-    'math',
-    'shlex',
-    'subprocess',
-    'sched',
-    'threading',
-    'dummy_threading',
-    'io',
-    'argparse',
-    'getopt',
-    'random'
-]
+module_mapping = {
+    'torch.nn': 'torch',
+    'torchvision.models': 'torchvision',
+    'cv2': 'opencv-python-headless',
+    'webdav3': 'webdavclient3'
+}
+
 
 ################################################################################
 
 # Catalog
 
 ################################################################################
-
-def load_standard_library_names():
-    standard_library_names_path = os.path.join(str(Path.home()), 'NaaVRE', 'standard_library_names.json')
-    if not os.path.exists(standard_library_names_path):
-        with open(standard_library_names_path, "w") as standard_library_names_file:
-            json.dump(standard_library, standard_library_names_file, indent=4)
-    standard_library_names_file = open(standard_library_names_path)
-    part_of_standard_library = json.load(standard_library_names_file)
-    return part_of_standard_library
-
 
 def load_module_names_mapping():
     module_name_mapping_path = os.path.join(str(Path.home()), 'NaaVRE', 'module_name_mapping.json')
