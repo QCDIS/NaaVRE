@@ -21,3 +21,9 @@ export declare type Repository = {
     url     : string;
     token   : string;
 }
+
+export declare type Registry = {
+
+    name    : string;
+    url     : string;
+}
