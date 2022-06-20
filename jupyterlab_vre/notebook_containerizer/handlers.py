@@ -1,6 +1,7 @@
 import copy
 import json
 import logging
+import os
 import uuid
 
 import nbformat as nb
@@ -45,6 +46,8 @@ class NotebookExtractorHandler(APIHandler, Catalog):
                 title = cell_source.partition('\n')[0]
                 title = 'notebook-'+title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[0] == '#' \
                     else 'Untitled'
+                if 'JUPYTERHUB_USER' in os.environ:
+                    title += '-' + os.environ['JUPYTERHUB_USER']
 
         dependencies = extractor.infere_cell_dependencies(source, confs)
 
