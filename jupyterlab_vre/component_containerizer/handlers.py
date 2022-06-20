@@ -63,6 +63,7 @@ class ExtractorHandler(APIHandler, Catalog):
             '_', '-').replace('(', '-').replace(')', '-').strip() if title[0] == "#" else "Untitled"
 
         if 'JUPYTERHUB_USER' in os.environ:
+            logger.debug('-------------------------Adding uusername-------------------------')
             title += '-'+os.environ['JUPYTERHUB_USER']
 
         ins = set(extractor.infere_cell_inputs(source))
