@@ -89,7 +89,6 @@ export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
                     <p className={'lw-panel-preview'}>Repository</p>
                     <Autocomplete
                         onInputChange={(_event: React.SyntheticEvent<Element, Event>, value: string, _reason: AutocompleteInputChangeReason) => {
-
                             this.setState({
                                 selected_repository: value
                             });
@@ -103,7 +102,6 @@ export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
                     <p className={'lw-panel-preview'}>Registry</p>
                     <Autocomplete
                         onInputChange={(_event: React.SyntheticEvent<Element, Event>, value: string, _reason: AutocompleteInputChangeReason) => {
-
                             this.setState({
                                 selected_registry: value
                             });
