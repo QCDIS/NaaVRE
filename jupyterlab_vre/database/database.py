@@ -77,6 +77,15 @@ class Catalog:
         cls.gh_credentials.remove(doc_ids=ids)
 
     @classmethod
+    def delete_all_registry_credentials(cls):
+        # Looks bad but for now I could not find a way to remove all
+        credentials = cls.registry_credentials.all()
+        ids = []
+        for credential in credentials:
+            ids.append(credential.doc_id)
+        cls.registry_credentials.remove(doc_ids=ids)
+
+    @classmethod
     def add_gh_credentials(cls, cred: Repository):
         cls.gh_credentials.insert(cred.__dict__)
 
