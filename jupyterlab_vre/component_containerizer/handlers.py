@@ -152,13 +152,11 @@ class CellsHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-
         payload = self.get_json_body()
         repository_name = payload['repository_name']
         registry_name = payload['registry_name']
         current_cell = Catalog.editor_buffer
         current_cell.clean_code()
-
         all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
 
         for parm_name in all_vars:

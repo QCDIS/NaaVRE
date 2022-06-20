@@ -1,7 +1,7 @@
 import logging
 
-from jupyterlab_vre.storage.catalog import Catalog
-from jupyterlab_vre.repository.repository_credentials import RepositoryCredentials
+from jupyterlab_vre.database.database import Catalog
+from jupyterlab_vre.repositories.repository import Repository
 import argparse
 
 logger = logging.getLogger(__name__)
@@ -23,6 +23,8 @@ github_url = args.github_url
 github_token = args.github_token
 
 registry_url = args.registry_url
+
+
 # registry_token = args.registry_token
 
 
@@ -47,8 +49,8 @@ def add_registry_credentials(force_replace, registry_credentials):
 
 
 if __name__ == '__main__':
-    input_repository_credentials = RepositoryCredentials(url=github_url, token=github_token)
+    input_repository_credentials = Repository('Git', github_url, github_token)
     add_gh_credentials(force_replace=force, repository_credentials=input_repository_credentials)
 
-    input_registry_credentials = RepositoryCredentials(url=registry_url, token=None)
+    input_registry_credentials = Repository('Docker', registry_url, None)
     add_registry_credentials(force_replace=force, registry_credentials=input_registry_credentials)
