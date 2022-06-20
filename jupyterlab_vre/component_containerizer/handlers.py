@@ -15,7 +15,6 @@ import nbformat as nb
 import requests
 from github import Github
 from github.GithubException import UnknownObjectException
-from github3 import login
 from jinja2 import Environment, PackageLoader
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.database import Catalog
@@ -23,7 +22,6 @@ from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.extractor import Extractor
 from notebook.base.handlers import APIHandler
 from tornado import web
-
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -35,9 +33,8 @@ module_mapping = {
     'webdav3': 'webdavclient3'
 }
 
+
 # code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
-
-
 def git_hash(contents):
     s = hashlib.sha1()
     s.update(('blob %u\0' % len(contents)).encode('utf-8'))
@@ -61,10 +58,13 @@ class ExtractorHandler(APIHandler, Catalog):
         extractor = Extractor(notebook)
 
         source = notebook.cells[cell_index].source
-
         title = source.partition('\n')[0]
         title = title.replace('#', '').replace(
             '_', '-').replace('(', '-').replace(')', '-').strip() if title[0] == "#" else "Untitled"
+
+        if 'JUPYTERHUB_USER' in os.environ:
+            logger.debug('-------------------------Adding uusername-------------------------')
+            title += '-'+os.environ['JUPYTERHUB_USER']
 
         ins = set(extractor.infere_cell_inputs(source))
         outs = set(extractor.infere_cell_outputs(source))
@@ -260,10 +260,10 @@ class CellsHandler(APIHandler, Catalog):
             create_cell_in_repository(current_cell, repository, files_info)
 
         resp = dispatch_github_workflow(
-            owner, 
-            repository_name, 
-            current_cell, 
-            files_info, 
+            owner,
+            repository_name,
+            current_cell,
+            files_info,
             repo_token,
             image_repo
         )
@@ -305,8 +305,8 @@ def update_cell_in_repository(cell, repository, files_info):
 def dispatch_github_workflow(owner, repository_name, cell, files_info, repository_token, image):
     return requests.post(
         url='https://api.github.com/repos/' + owner + '/' +
-        repository_name + '/actions/workflows/build-push-docker'
-        '.yml/dispatches',
+            repository_name + '/actions/workflows/build-push-docker'
+                              '.yml/dispatches',
         json={
             'ref': 'refs/heads/main',
             'inputs': {
@@ -318,12 +318,12 @@ def dispatch_github_workflow(owner, repository_name, cell, files_info, repositor
         },
         verify=False,
         headers={'Accept': 'application/vnd.github.v3+json',
-                'Authorization': 'token ' + repository_token}
+                 'Authorization': 'token ' + repository_token}
     )
 
 
 def is_standard_module(module_name):
-    logger.debug('module_name: '+module_name)
+    logger.debug('module_name: ' + module_name)
     if module_name in sys.builtin_module_names:
         return True
     installation_path = None

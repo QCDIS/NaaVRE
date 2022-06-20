@@ -1,17 +1,17 @@
 import copy
 import json
 import logging
+import os
 import uuid
 
 import nbformat as nb
-from github3 import login
-from jinja2 import Environment, PackageLoader
+from notebook.base.handlers import APIHandler
+from tornado import web
+
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.extractor import Extractor
-from notebook.base.handlers import APIHandler
-from tornado import web
 
 
 class NotebookExtractorHandler(APIHandler, Catalog):
@@ -46,6 +46,8 @@ class NotebookExtractorHandler(APIHandler, Catalog):
                 title = cell_source.partition('\n')[0]
                 title = 'notebook-'+title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[0] == '#' \
                     else 'Untitled'
+                if 'JUPYTERHUB_USER' in os.environ:
+                    title += '-' + os.environ['JUPYTERHUB_USER']
 
         dependencies = extractor.infere_cell_dependencies(source, confs)
 
