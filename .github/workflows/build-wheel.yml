@@ -33,9 +33,10 @@ jobs:
         npm install --force
     - name: make
       run: |
-        npx lerna run build --scope @jupyter_vre/chart-customs
-        npx lerna run build --scope @jupyter_vre/components
         npx lerna run build --scope @jupyter_vre/core
+        npx lerna run build --scope @jupyter_vre/chart-customs
+        npx lerna run build --scope @jupyter_vre/core
+        npx lerna run build --scope @jupyter_vre/components
         make install-backend && make build-frontend && make install-ui && make link-ui
         make release
     - name: 'Upload wheel artifact'
