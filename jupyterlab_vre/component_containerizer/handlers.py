@@ -31,7 +31,7 @@ module_mapping = {
     'torchvision.models': 'torchvision',
     'cv2': 'opencv-python-headless',
     'webdav3': 'webdavclient3',
-    'laserfarm': 'laserfarm=0.1.4'
+    'laserfarm': 'laserfarm==0.1.4'
 }
 
 
