@@ -31,7 +31,7 @@ module_mapping = {
     'torchvision.models': 'torchvision',
     'cv2': 'opencv-python-headless',
     'webdav3': 'webdavclient3',
-    'laserfarm':'laserfarm=0.1.4'
+    'laserfarm': 'laserfarm=0.1.4'
 }
 
 
@@ -64,7 +64,7 @@ class ExtractorHandler(APIHandler, Catalog):
             '_', '-').replace('(', '-').replace(')', '-').strip() if title[0] == "#" else "Untitled"
 
         if 'JUPYTERHUB_USER' in os.environ:
-            title += '-'+os.environ['JUPYTERHUB_USER']
+            title += '-' + os.environ['JUPYTERHUB_USER']
 
         ins = set(extractor.infere_cell_inputs(source))
         outs = set(extractor.infere_cell_outputs(source))
