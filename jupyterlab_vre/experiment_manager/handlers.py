@@ -39,16 +39,17 @@ class ExportWorkflowHandler(APIHandler):
         #     return
             
         # image_repo = registry_credentials['url'].split('https://hub.docker.com/u/')[1]
-        # loader = PackageLoader('jupyterlab_vre', 'templates')
-        # template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
-        # template = template_env.get_template('workflow_template_v2.jinja2')
+        loader = PackageLoader('jupyterlab_vre', 'templates')
+        template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
+        template = template_env.get_template('workflow_template_v2.jinja2')
 
-        # template.stream(
-        #     deps_dag=deps_dag, 
-        #     cells=cells,
-        #     nodes=nodes,
-        #     global_params=set(global_params),
-        #     image_repo=image_repo
+        template.stream(
+            deps_dag=deps_dag, 
+            cells=cells,
+            nodes=nodes,
+            global_params=set(global_params),
+            image_repo='test_image'
 
-        # ).dump('workflow.yaml')
+        ).dump('workflow.yaml')
+        
         self.flush()

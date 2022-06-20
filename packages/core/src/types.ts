@@ -1,3 +1,4 @@
+import { IChart } from "@mrblenny/react-flow-chart";
 
 export declare type FairCell = {
     title               : string;
@@ -8,7 +9,7 @@ export declare type FairCell = {
     params              : [];
     confs               : {};
     dependencies        : [];
-    chart_obj           : {};
+    chart_obj           : IChart;
     node_id             : string;
     container_source    : string;
     global_conf         : {};
