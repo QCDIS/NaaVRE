@@ -87,6 +87,7 @@ class Catalog:
 
     @classmethod
     def add_gh_credentials(cls, cred: Repository):
+        cls.repositories.insert(cred.__dict__)
         cls.gh_credentials.insert(cred.__dict__)
 
     @classmethod
