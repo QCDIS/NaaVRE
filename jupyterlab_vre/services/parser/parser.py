@@ -37,6 +37,10 @@ class WorkflowParser:
                         raise Exception('Error while parsing ' + nodes[node]['properties']['title'])
                     elif 'properties' not in nodes[node]:
                         raise Exception('Error while parsing ' + nodes[node] + ' has no properties')
+                    elif 'og_node_id' not in nodes[node]['properties']:
+                        raise Exception('Error while parsing node id: ' + node + ' has no og_node_id')
+                    else:
+                        raise Exception('Error while parsing node id: ' + node)
 
         for nid, node in self.nodes.items():
             for pid, port in node['ports'].items():

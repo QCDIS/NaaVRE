@@ -46,9 +46,16 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 payload = json.load(read_file)
             response = self.fetch('/notebookextractorhandler', method='POST', body=json.dumps(payload))
 
-    def test_export_workflow_handler(self):
+    def test_export_laserfarm_workflow_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
             with open('resources/workflows/laserfarm.json', 'r') as read_file:
+                payload = json.load(read_file)
+            response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
+
+    def test_export_laserfarm_error_workflow_handler(self):
+        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+            m.return_value = 'cookie'
+            with open('resources/workflows/laserfarm_error.json', 'r') as read_file:
                 payload = json.load(read_file)
             response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))

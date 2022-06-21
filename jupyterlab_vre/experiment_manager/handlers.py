@@ -23,7 +23,7 @@ class ExportWorkflowHandler(APIHandler):
         try:
             parser = WorkflowParser(nodes, links)
         except Exception as ex:
-            logger.error(str(ex) + 'payload: ' + json.dumps(payload))
+            logger.error(str(ex) + ' payload: ' + json.dumps(payload))
             self.set_status(400)
             self.write(str(ex))
             self.write_error(str(ex))
