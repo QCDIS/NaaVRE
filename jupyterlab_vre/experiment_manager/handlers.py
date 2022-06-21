@@ -29,16 +29,16 @@ class ExportWorkflowHandler(APIHandler):
         for nid, cell in cells.items():
             global_params.extend(cell['params'])
 
-        # registry_credentials = Catalog.get_registry_credentials()
+        registry_credentials = Catalog.get_registry_credentials()
 
-        # if not registry_credentials:
-        #     self.set_status(400)
-        #     self.write('Registry credentials are not set!')
-        #     self.write_error('Registry credentials are not set!')
-        #     self.flush()
-        #     return
+        if not registry_credentials:
+            self.set_status(400)
+            self.write('Registry credentials are not set!')
+            self.write_error('Registry credentials are not set!')
+            self.flush()
+            return
             
-        # image_repo = registry_credentials['url'].split('https://hub.docker.com/u/')[1]
+        image_repo = registry_credentials['url'].split('https://hub.docker.com/u/')[1]
         loader = PackageLoader('jupyterlab_vre', 'templates')
         template_env = Environment(loader=loader, trim_blocks=True, lstrip_blocks=True)
         template = template_env.get_template('workflow_template_v2.jinja2')
@@ -48,8 +48,7 @@ class ExportWorkflowHandler(APIHandler):
             cells=cells,
             nodes=nodes,
             global_params=set(global_params),
-            image_repo='test_image'
-
+            image_repo=image_repo
         ).dump('workflow.yaml')
         
         self.flush()
