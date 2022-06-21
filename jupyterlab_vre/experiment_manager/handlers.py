@@ -1,3 +1,4 @@
+import json
 import logging
 
 from jinja2 import Environment, PackageLoader
@@ -10,8 +11,8 @@ from jupyterlab_vre.services.parser.parser import WorkflowParser
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-class ExportWorkflowHandler(APIHandler):
 
+class ExportWorkflowHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
@@ -19,8 +20,16 @@ class ExportWorkflowHandler(APIHandler):
 
         nodes = payload['nodes']
         links = payload['links']
+        try:
+            parser = WorkflowParser(nodes, links)
+        except Exception as ex:
+            logger.error(str(ex) + 'payload: ' + json.dumps(payload))
+            self.set_status(400)
+            self.write(str(ex))
+            self.write_error(str(ex))
+            self.flush()
+            return
 
-        parser = WorkflowParser(nodes, links)
         cells = parser.get_workflow_cells()
 
         deps_dag = parser.get_dependencies_dag()

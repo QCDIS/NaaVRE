@@ -93,13 +93,16 @@ class Composer extends React.Component<IProps, IState> {
 	}
 
 	exportWorkflow = async () => {
-
-		let resp = await requestAPI<any>('expmanager/export', {
-			body: JSON.stringify(this.state.chart),
-			method: 'POST'
-		});
-
-		console.log(resp);
+		try {
+			let resp = await requestAPI<any>('expmanager/export', {
+				body: JSON.stringify(this.state.chart),
+				method: 'POST'
+			});
+			console.log(resp);
+		} catch (error) {
+			console.log(error);
+			alert('Error exporting the workflow: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+		}
 	}
 
 	getNodeEditor = () => {
