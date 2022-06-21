@@ -6,135 +6,443 @@ spec:
     entrypoint: workflow-test
     arguments:
       parameters:
-      - name: param_hostname
+      - name: param_filter_type
         value: ''
-      - name: param_max_y
+      - name: param_feature_name
+        value: ''
+      - name: param_min_y
         value: ''
       - name: param_n_tiles_side
         value: ''
-      - name: param_max_x
+      - name: param_remote_path_ahn
         value: ''
-      - name: param_login
-        value: ''
-      - name: param_password
+      - name: param_attribute
         value: ''
       - name: param_min_x
         value: ''
-      - name: param_min_y
+      - name: param_validate_precision
+        value: ''
+      - name: param_password
+        value: ''
+      - name: param_laz_compression_factor
+        value: ''
+      - name: param_login
+        value: ''
+      - name: param_max_x
+        value: ''
+      - name: param_tile_mesh_size
+        value: ''
+      - name: param_hostname
+        value: ''
+      - name: param_apply_filter_value
+        value: ''
+      - name: param_max_filesize
+        value: ''
+      - name: param_max_y
         value: ''
     templates:
     - name: workflow-test
       dag:
         tasks:
-        - name: fetch-laz-files-19-04-22-6a09a3e
-          template: fetch-laz-files-19-04-22-6a09a3e-tmp
+        - name: fetch-laz-files-01-06-22-76fd597
+          template: fetch-laz-files-01-06-22-76fd597-tmp
           arguments:
             parameters:
+            - {name: param_login, value: "{{workflow.parameters.param_login}}"}
+            - {name: param_remote_path_ahn, value: "{{workflow.parameters.param_remote_path_ahn}}"}
             - {name: param_hostname, value: "{{workflow.parameters.param_hostname}}"}
             - {name: param_password, value: "{{workflow.parameters.param_password}}"}
-            - {name: param_login, value: "{{workflow.parameters.param_login}}"}
-        - name: retiling-19-04-22-6755a73
-          template: retiling-19-04-22-6755a73-tmp
+        - name: splitter-9042b13
+          dependencies: [ fetch-laz-files-01-06-22-76fd597 ]
+          template: splitter-9042b13-tmp
           arguments:
             parameters:
-            - {name: param_min_y, value: "{{workflow.parameters.param_min_y}}"}
-            - {name: param_max_y, value: "{{workflow.parameters.param_max_y}}"}
-            - {name: param_login, value: "{{workflow.parameters.param_login}}"}
+            - {name: laz_files_e7a6e76, value: "{{tasks.fetch-laz-files-01-06-22-76fd597.outputs.parameters.laz_files_e7a6e76}}"}
+        - name: split-big-files-01-60-22-544f044
+          dependencies: [ splitter-9042b13 ]
+          template: split-big-files-01-60-22-544f044-tmp
+          arguments:
+            parameters:
+            - {name: splitter_target_9042b13, value: "{{item}}"}
             - {name: param_hostname, value: "{{workflow.parameters.param_hostname}}"}
+            - {name: param_remote_path_ahn, value: "{{workflow.parameters.param_remote_path_ahn}}"}
             - {name: param_password, value: "{{workflow.parameters.param_password}}"}
-            - {name: param_n_tiles_side, value: "{{workflow.parameters.param_n_tiles_side}}"}
+            - {name: param_login, value: "{{workflow.parameters.param_login}}"}
+            - {name: param_max_filesize, value: "{{workflow.parameters.param_max_filesize}}"}
+            - {name: param_laz_compression_factor, value: "{{workflow.parameters.param_laz_compression_factor}}"}
+          withParam: "{{tasks.splitter-9042b13.outputs.parameters.splitter_target_9042b13}}"
+        - name: splitter-3c3d74f
+          dependencies: [ split-big-files-01-60-22-544f044 ]
+          template: splitter-3c3d74f-tmp
+          arguments:
+            parameters:
+            - {name: split_laz_files_82d0855, value: "{{tasks.split-big-files-01-60-22-544f044.outputs.parameters.split_laz_files_82d0855}}"}
+        - name: retiling-01-06-22-5fd7692
+          dependencies: [ splitter-3c3d74f ]
+          template: retiling-01-06-22-5fd7692-tmp
+          arguments:
+            parameters:
+            - {name: splitter_target_3c3d74f, value: "{{item}}"}
             - {name: param_max_x, value: "{{workflow.parameters.param_max_x}}"}
+            - {name: param_max_y, value: "{{workflow.parameters.param_max_y}}"}
+            - {name: param_n_tiles_side, value: "{{workflow.parameters.param_n_tiles_side}}"}
             - {name: param_min_x, value: "{{workflow.parameters.param_min_x}}"}
-        - name: splitter-dcdf9c8
-          dependencies: [ fetch-laz-files-19-04-22-6a09a3e,  retiling-19-04-22-6755a73 ]
-          template: splitter-dcdf9c8-tmp
-          arguments:
-            parameters:
-            - {name: laz_files_c31a712, value: "{{tasks.fetch-laz-files-19-04-22-6a09a3e.outputs.parameters.laz_files_c31a712}}"}
-            - {name: laz_files_1f7a48f, value: "{{tasks.retiling-19-04-22-6755a73.outputs.parameters.laz_files_1f7a48f}}"}
-        - name: fetch-tiles-19-04-22-e53c390
-          dependencies: [ retiling-19-04-22-6755a73 ]
-          template: fetch-tiles-19-04-22-e53c390-tmp
-          arguments:
-            parameters:
-            - {name: remote_path_retiled_1f7a48f, value: "{{tasks.retiling-19-04-22-6755a73.outputs.parameters.remote_path_retiled_1f7a48f}}"}
-            - {name: param_hostname, value: "{{workflow.parameters.param_hostname}}"}
+            - {name: param_min_y, value: "{{workflow.parameters.param_min_y}}"}
             - {name: param_login, value: "{{workflow.parameters.param_login}}"}
             - {name: param_password, value: "{{workflow.parameters.param_password}}"}
+            - {name: param_hostname, value: "{{workflow.parameters.param_hostname}}"}
+          withParam: "{{tasks.splitter-3c3d74f.outputs.parameters.splitter_target_3c3d74f}}"
+        - name: fetch-tiles-01-06-22-5c5b7a4
+          dependencies: [ retiling-01-06-22-5fd7692 ]
+          template: fetch-tiles-01-06-22-5c5b7a4-tmp
+          arguments:
+            parameters:
+            - {name: remote_path_retiled_7c1e363, value: "{{tasks.retiling-01-06-22-5fd7692.outputs.parameters.remote_path_retiled_7c1e363}}"}
+            - {name: param_password, value: "{{workflow.parameters.param_password}}"}
+            - {name: param_login, value: "{{workflow.parameters.param_login}}"}
+            - {name: param_hostname, value: "{{workflow.parameters.param_hostname}}"}
+        - name: splitter-7f209ae
+          dependencies: [ fetch-tiles-01-06-22-5c5b7a4 ]
+          template: splitter-7f209ae-tmp
+          arguments:
+            parameters:
+            - {name: tiles_09a2123, value: "{{tasks.fetch-tiles-01-06-22-5c5b7a4.outputs.parameters.tiles_09a2123}}"}
+        - name: normalization-01-06-22-b90284c
+          dependencies: [ splitter-7f209ae ]
+          template: normalization-01-06-22-b90284c-tmp
+          arguments:
+            parameters:
+            - {name: splitter_target_7f209ae, value: "{{item}}"}
+            - {name: param_password, value: "{{workflow.parameters.param_password}}"}
+            - {name: param_login, value: "{{workflow.parameters.param_login}}"}
+            - {name: param_hostname, value: "{{workflow.parameters.param_hostname}}"}
+          withParam: "{{tasks.splitter-7f209ae.outputs.parameters.splitter_target_7f209ae}}"
+        - name: fetch-norm-tiles-01-06-22-f1c19e2
+          dependencies: [ normalization-01-06-22-b90284c ]
+          template: fetch-norm-tiles-01-06-22-f1c19e2-tmp
+          arguments:
+            parameters:
+            - {name: remote_path_norm_cd06205, value: "{{tasks.normalization-01-06-22-b90284c.outputs.parameters.remote_path_norm_cd06205}}"}
+            - {name: param_password, value: "{{workflow.parameters.param_password}}"}
+            - {name: param_login, value: "{{workflow.parameters.param_login}}"}
+            - {name: param_hostname, value: "{{workflow.parameters.param_hostname}}"}
+        - name: splitter-7282c5d
+          dependencies: [ fetch-norm-tiles-01-06-22-f1c19e2 ]
+          template: splitter-7282c5d-tmp
+          arguments:
+            parameters:
+            - {name: norm_tiles_c2c5465, value: "{{tasks.fetch-norm-tiles-01-06-22-f1c19e2.outputs.parameters.norm_tiles_c2c5465}}"}
+        - name: feature-extraction-01-06-22-7c03e2a
+          dependencies: [ splitter-7282c5d ]
+          template: feature-extraction-01-06-22-7c03e2a-tmp
+          arguments:
+            parameters:
+            - {name: splitter_target_7282c5d, value: "{{item}}"}
+            - {name: param_max_x, value: "{{workflow.parameters.param_max_x}}"}
+            - {name: param_filter_type, value: "{{workflow.parameters.param_filter_type}}"}
+            - {name: param_tile_mesh_size, value: "{{workflow.parameters.param_tile_mesh_size}}"}
+            - {name: param_feature_name, value: "{{workflow.parameters.param_feature_name}}"}
+            - {name: param_max_y, value: "{{workflow.parameters.param_max_y}}"}
+            - {name: param_n_tiles_side, value: "{{workflow.parameters.param_n_tiles_side}}"}
+            - {name: param_attribute, value: "{{workflow.parameters.param_attribute}}"}
+            - {name: param_min_x, value: "{{workflow.parameters.param_min_x}}"}
+            - {name: param_min_y, value: "{{workflow.parameters.param_min_y}}"}
+            - {name: param_validate_precision, value: "{{workflow.parameters.param_validate_precision}}"}
+            - {name: param_login, value: "{{workflow.parameters.param_login}}"}
+            - {name: param_password, value: "{{workflow.parameters.param_password}}"}
+            - {name: param_apply_filter_value, value: "{{workflow.parameters.param_apply_filter_value}}"}
+            - {name: param_hostname, value: "{{workflow.parameters.param_hostname}}"}
+          withParam: "{{tasks.splitter-7282c5d.outputs.parameters.splitter_target_7282c5d}}"
+        - name: geotiff-export-01-06-22-c096e2e
+          dependencies: [ feature-extraction-01-06-22-7c03e2a ]
+          template: geotiff-export-01-06-22-c096e2e-tmp
+          arguments:
+            parameters:
+            - {name: features_03911e1, value: "{{tasks.feature-extraction-01-06-22-7c03e2a.outputs.parameters.features_03911e1}}"}
+            - {name: param_password, value: "{{workflow.parameters.param_password}}"}
+            - {name: param_login, value: "{{workflow.parameters.param_login}}"}
+            - {name: param_feature_name, value: "{{workflow.parameters.param_feature_name}}"}
+            - {name: param_hostname, value: "{{workflow.parameters.param_hostname}}"}
 
-    - name: fetch-laz-files-19-04-22-6a09a3e-tmp
+    - name: fetch-laz-files-01-06-22-76fd597-tmp
       outputs:
         parameters:
-          - name: laz_files_c31a712
+          - name: laz_files_e7a6e76
             valueFrom:
-              path: /tmp/laz_files_c31a712.json
+              path: /tmp/laz_files_e7a6e76.json
       container:
-        image: "skoulouz/fetch-laz-files-19-04-22"
+        image: "qcdis/fetch-laz-files-01-06-22"
         command: ["/bin/bash", "-c"]
         args:
-          - source /venv/bin/activate; python fetch-laz-files-19-04-22.py
+          - source /venv/bin/activate; python fetch-laz-files-01-06-22.py
+            --param_login "{{workflow.parameters.param_login}}"
+            --param_remote_path_ahn "{{workflow.parameters.param_remote_path_ahn}}"
             --param_hostname "{{workflow.parameters.param_hostname}}"
             --param_password "{{workflow.parameters.param_password}}"
-            --param_login "{{workflow.parameters.param_login}}"
-            --id "c31a712";
-    - name: retiling-19-04-22-6755a73-tmp
-      outputs:
-        parameters:
-          - name: remote_path_retiled_1f7a48f
-            valueFrom:
-              path: /tmp/remote_path_retiled_1f7a48f.json
-      container:
-        image: "skoulouz/retiling-19-04-22"
-        command: ["/bin/bash", "-c"]
-        args:
-          - source /venv/bin/activate; python retiling-19-04-22.py
-            --param_min_y "{{workflow.parameters.param_min_y}}"
-            --param_max_y "{{workflow.parameters.param_max_y}}"
-            --param_login "{{workflow.parameters.param_login}}"
-            --param_hostname "{{workflow.parameters.param_hostname}}"
-            --param_password "{{workflow.parameters.param_password}}"
-            --param_n_tiles_side "{{workflow.parameters.param_n_tiles_side}}"
-            --param_max_x "{{workflow.parameters.param_max_x}}"
-            --param_min_x "{{workflow.parameters.param_min_x}}"
-            --id "1f7a48f";
-    - name: splitter-dcdf9c8-tmp
+            --id "e7a6e76";
+    - name: splitter-9042b13-tmp
       inputs:
         parameters:
-        - name: laz_files_c31a712
-        - name: laz_files_1f7a48f
+        - name: laz_files_e7a6e76
       outputs:
         parameters:
-          - name: splitter_target_dcdf9c8
+          - name: splitter_target_9042b13
             valueFrom:
-              path: /tmp/splitter_target_dcdf9c8.json
+              path: /tmp/splitter_target_9042b13.json
       script:
         image: python:alpine3.9
         command: [python]
         source: |
           import json
-          laz_files_c31a712 = {{inputs.parameters.laz_files_c31a712}}
-          f_out = open("/tmp/splitter_target_dcdf9c8.json", "w")
-          f_out.write(json.dumps(laz_files_c31a712))
+          laz_files_e7a6e76 = {{inputs.parameters.laz_files_e7a6e76}}
+          f_out = open("/tmp/splitter_target_9042b13.json", "w")
+          f_out.write(json.dumps(laz_files_e7a6e76))
           f_out.close()
-    - name: fetch-tiles-19-04-22-e53c390-tmp
+    - name: split-big-files-01-60-22-544f044-tmp
       inputs:
         parameters:
-        - name: remote_path_retiled_1f7a48f
+        - name: splitter_target_9042b13
         - name: param_hostname
-        - name: param_login
+        - name: param_remote_path_ahn
         - name: param_password
+        - name: param_login
+        - name: param_max_filesize
+        - name: param_laz_compression_factor
       outputs:
         parameters:
-          - name: tiles_a08a42d
+          - name: split_laz_files_82d0855
             valueFrom:
-              path: /tmp/tiles_a08a42d.json
+              path: /tmp/split_laz_files_82d0855.json
       container:
-        image: "skoulouz/fetch-tiles-19-04-22"
+        image: "qcdis/split-big-files-01-60-22"
         command: ["/bin/bash", "-c"]
         args:
-          - source /venv/bin/activate; python fetch-tiles-19-04-22.py
-            --remote "{{inputs.parameters.remote_path_retiled_1f7a48f}}"
+          - source /venv/bin/activate; python split-big-files-01-60-22.py
+            --laz "{{inputs.parameters.splitter_target_9042b13}}"
             --param_hostname "{{workflow.parameters.param_hostname}}"
+            --param_remote_path_ahn "{{workflow.parameters.param_remote_path_ahn}}"
+            --param_password "{{workflow.parameters.param_password}}"
+            --param_login "{{workflow.parameters.param_login}}"
+            --param_max_filesize "{{workflow.parameters.param_max_filesize}}"
+            --param_laz_compression_factor "{{workflow.parameters.param_laz_compression_factor}}"
+            --id "82d0855";
+    - name: splitter-3c3d74f-tmp
+      inputs:
+        parameters:
+        - name: split_laz_files_82d0855
+      outputs:
+        parameters:
+          - name: splitter_target_3c3d74f
+            valueFrom:
+              path: /tmp/splitter_target_3c3d74f.json
+      script:
+        image: python:alpine3.9
+        command: [python]
+        source: |
+          import json
+          split_laz_files_82d0855 = {{inputs.parameters.split_laz_files_82d0855}}
+          f_out = open("/tmp/splitter_target_3c3d74f.json", "w")
+          f_out.write(json.dumps(split_laz_files_82d0855))
+          f_out.close()
+    - name: retiling-01-06-22-5fd7692-tmp
+      inputs:
+        parameters:
+        - name: splitter_target_3c3d74f
+        - name: param_max_x
+        - name: param_max_y
+        - name: param_n_tiles_side
+        - name: param_min_x
+        - name: param_min_y
+        - name: param_login
+        - name: param_password
+        - name: param_hostname
+      outputs:
+        parameters:
+          - name: remote_path_retiled_7c1e363
+            valueFrom:
+              path: /tmp/remote_path_retiled_7c1e363.json
+      container:
+        image: "qcdis/retiling-01-06-22"
+        command: ["/bin/bash", "-c"]
+        args:
+          - source /venv/bin/activate; python retiling-01-06-22.py
+            --split "{{inputs.parameters.splitter_target_3c3d74f}}"
+            --param_max_x "{{workflow.parameters.param_max_x}}"
+            --param_max_y "{{workflow.parameters.param_max_y}}"
+            --param_n_tiles_side "{{workflow.parameters.param_n_tiles_side}}"
+            --param_min_x "{{workflow.parameters.param_min_x}}"
+            --param_min_y "{{workflow.parameters.param_min_y}}"
             --param_login "{{workflow.parameters.param_login}}"
             --param_password "{{workflow.parameters.param_password}}"
-            --id "a08a42d";
+            --param_hostname "{{workflow.parameters.param_hostname}}"
+            --id "7c1e363";
+    - name: fetch-tiles-01-06-22-5c5b7a4-tmp
+      inputs:
+        parameters:
+        - name: remote_path_retiled_7c1e363
+        - name: param_password
+        - name: param_login
+        - name: param_hostname
+      outputs:
+        parameters:
+          - name: tiles_09a2123
+            valueFrom:
+              path: /tmp/tiles_09a2123.json
+      container:
+        image: "qcdis/fetch-tiles-01-06-22"
+        command: ["/bin/bash", "-c"]
+        args:
+          - source /venv/bin/activate; python fetch-tiles-01-06-22.py
+            --remote "{{inputs.parameters.remote_path_retiled_7c1e363}}"
+            --param_password "{{workflow.parameters.param_password}}"
+            --param_login "{{workflow.parameters.param_login}}"
+            --param_hostname "{{workflow.parameters.param_hostname}}"
+            --id "09a2123";
+    - name: splitter-7f209ae-tmp
+      inputs:
+        parameters:
+        - name: tiles_09a2123
+      outputs:
+        parameters:
+          - name: splitter_target_7f209ae
+            valueFrom:
+              path: /tmp/splitter_target_7f209ae.json
+      script:
+        image: python:alpine3.9
+        command: [python]
+        source: |
+          import json
+          tiles_09a2123 = {{inputs.parameters.tiles_09a2123}}
+          f_out = open("/tmp/splitter_target_7f209ae.json", "w")
+          f_out.write(json.dumps(tiles_09a2123))
+          f_out.close()
+    - name: normalization-01-06-22-b90284c-tmp
+      inputs:
+        parameters:
+        - name: splitter_target_7f209ae
+        - name: param_password
+        - name: param_login
+        - name: param_hostname
+      outputs:
+        parameters:
+          - name: remote_path_norm_cd06205
+            valueFrom:
+              path: /tmp/remote_path_norm_cd06205.json
+      container:
+        image: "qcdis/normalization-01-06-22"
+        command: ["/bin/bash", "-c"]
+        args:
+          - source /venv/bin/activate; python normalization-01-06-22.py
+            --tiles "{{inputs.parameters.splitter_target_7f209ae}}"
+            --param_password "{{workflow.parameters.param_password}}"
+            --param_login "{{workflow.parameters.param_login}}"
+            --param_hostname "{{workflow.parameters.param_hostname}}"
+            --id "cd06205";
+    - name: fetch-norm-tiles-01-06-22-f1c19e2-tmp
+      inputs:
+        parameters:
+        - name: remote_path_norm_cd06205
+        - name: param_password
+        - name: param_login
+        - name: param_hostname
+      outputs:
+        parameters:
+          - name: norm_tiles_c2c5465
+            valueFrom:
+              path: /tmp/norm_tiles_c2c5465.json
+      container:
+        image: "qcdis/fetch-norm-tiles-01-06-22"
+        command: ["/bin/bash", "-c"]
+        args:
+          - source /venv/bin/activate; python fetch-norm-tiles-01-06-22.py
+            --remote "{{inputs.parameters.remote_path_norm_cd06205}}"
+            --param_password "{{workflow.parameters.param_password}}"
+            --param_login "{{workflow.parameters.param_login}}"
+            --param_hostname "{{workflow.parameters.param_hostname}}"
+            --id "c2c5465";
+    - name: splitter-7282c5d-tmp
+      inputs:
+        parameters:
+        - name: norm_tiles_c2c5465
+      outputs:
+        parameters:
+          - name: splitter_target_7282c5d
+            valueFrom:
+              path: /tmp/splitter_target_7282c5d.json
+      script:
+        image: python:alpine3.9
+        command: [python]
+        source: |
+          import json
+          norm_tiles_c2c5465 = {{inputs.parameters.norm_tiles_c2c5465}}
+          f_out = open("/tmp/splitter_target_7282c5d.json", "w")
+          f_out.write(json.dumps(norm_tiles_c2c5465))
+          f_out.close()
+    - name: feature-extraction-01-06-22-7c03e2a-tmp
+      inputs:
+        parameters:
+        - name: splitter_target_7282c5d
+        - name: param_max_x
+        - name: param_filter_type
+        - name: param_tile_mesh_size
+        - name: param_feature_name
+        - name: param_max_y
+        - name: param_n_tiles_side
+        - name: param_attribute
+        - name: param_min_x
+        - name: param_min_y
+        - name: param_validate_precision
+        - name: param_login
+        - name: param_password
+        - name: param_apply_filter_value
+        - name: param_hostname
+      outputs:
+        parameters:
+          - name: features_03911e1
+            valueFrom:
+              path: /tmp/features_03911e1.json
+      container:
+        image: "qcdis/feature-extraction-01-06-22"
+        command: ["/bin/bash", "-c"]
+        args:
+          - source /venv/bin/activate; python feature-extraction-01-06-22.py
+            --norm "{{inputs.parameters.splitter_target_7282c5d}}"
+            --param_max_x "{{workflow.parameters.param_max_x}}"
+            --param_filter_type "{{workflow.parameters.param_filter_type}}"
+            --param_tile_mesh_size "{{workflow.parameters.param_tile_mesh_size}}"
+            --param_feature_name "{{workflow.parameters.param_feature_name}}"
+            --param_max_y "{{workflow.parameters.param_max_y}}"
+            --param_n_tiles_side "{{workflow.parameters.param_n_tiles_side}}"
+            --param_attribute "{{workflow.parameters.param_attribute}}"
+            --param_min_x "{{workflow.parameters.param_min_x}}"
+            --param_min_y "{{workflow.parameters.param_min_y}}"
+            --param_validate_precision "{{workflow.parameters.param_validate_precision}}"
+            --param_login "{{workflow.parameters.param_login}}"
+            --param_password "{{workflow.parameters.param_password}}"
+            --param_apply_filter_value "{{workflow.parameters.param_apply_filter_value}}"
+            --param_hostname "{{workflow.parameters.param_hostname}}"
+            --id "03911e1";
+    - name: geotiff-export-01-06-22-c096e2e-tmp
+      inputs:
+        parameters:
+        - name: features_03911e1
+        - name: param_password
+        - name: param_login
+        - name: param_feature_name
+        - name: param_hostname
+      outputs:
+        parameters:
+          - name: remote_path_geotiffs_5dbc87a
+            valueFrom:
+              path: /tmp/remote_path_geotiffs_5dbc87a.json
+      container:
+        image: "qcdis/geotiff-export-01-06-22"
+        command: ["/bin/bash", "-c"]
+        args:
+          - source /venv/bin/activate; python geotiff-export-01-06-22.py
+            --features "{{inputs.parameters.features_03911e1}}"
+            --param_password "{{workflow.parameters.param_password}}"
+            --param_login "{{workflow.parameters.param_login}}"
+            --param_feature_name "{{workflow.parameters.param_feature_name}}"
+            --param_hostname "{{workflow.parameters.param_hostname}}"
+            --id "5dbc87a";
