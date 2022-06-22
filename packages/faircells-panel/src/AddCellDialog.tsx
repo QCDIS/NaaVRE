@@ -70,14 +70,19 @@ export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
     }
 
     createCell = async () => {
-
-        await requestAPI<any>('containerizer/addcell', {
-            body: JSON.stringify({
-                repository_name: this.state.selected_repository,
-                registry_name: this.state.selected_registry
-            }),
-            method: 'POST'
-        });
+        try {
+            let resp = await requestAPI<any>('containerizer/addcell', {
+                body: JSON.stringify({
+                    repository_name: this.state.selected_repository,
+                    registry_name: this.state.selected_registry
+                }),
+                method: 'POST'
+            });
+            console.log(resp);
+        } catch (error) {
+            console.log(error);
+            alert('Error createing the cell : ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+        }
     }
 
     render(): React.ReactElement {
