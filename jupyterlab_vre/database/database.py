@@ -33,13 +33,11 @@ class Catalog:
     @classmethod
     def delete_cell_from_task_name(cls, task_name: str):
         cell = cls.cells.search(where('task_name') == task_name)
-        logger.debug('Will delete : ' + str(cell))
         cls.cells.remove(where('task_name') == task_name)
 
     @classmethod
     def delete_cell_from_title(cls, title: str):
         cell = cls.cells.search(where('title') == title)
-        logger.debug('Will delete : ' + str(cell))
         cls.cells.remove(where('title') == title)
 
     @classmethod
