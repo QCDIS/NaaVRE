@@ -5,9 +5,7 @@
 
 This is a quick start guide to use the NaaVRE.
 
-
-https://user-images.githubusercontent.com/9680609/175039462-4a9db9a5-2b5e-4c13-be5e-7b5ee6283f89.mp4
-
+https://user-images.githubusercontent.com/9680609/175041369-3af397d9-8b2c-40fa-a639-d643a9d15abf.mp4
 
 
 ## Log in to NaaVRE
