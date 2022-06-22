@@ -35,7 +35,18 @@ class ExportWorkflowHandler(APIHandler):
         deps_dag = parser.get_dependencies_dag()
 
         for nid, cell in cells.items():
-            global_params.extend(cell['params'])
+            try:
+                global_params.extend(cell['params'])
+            except Exception as ex:
+                msg = str(cell)
+                if 'params' not in cell:
+                    msg += ' has no params'
+                logger.error(str(ex) + msg + ' payload: ' + json.dumps(payload))
+                self.set_status(400)
+                self.write(str(ex))
+                self.write_error(str(ex))
+                self.flush()
+                return
 
         registry_credentials = Catalog.get_registry_credentials()
 
