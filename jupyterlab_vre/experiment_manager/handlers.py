@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 
 from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
@@ -69,3 +70,11 @@ class ExportWorkflowHandler(APIHandler):
         ).dump('workflow.yaml')
 
         self.flush()
+
+
+class ExecuteWorkflowHandler(APIHandler):
+    @web.authenticated
+    async def post(self, *args, **kwargs):
+        payload = self.get_json_body()
+        if 'WORKFLOW_ENG_ACCESS_TOKEN' in os.environ:
+            workflow_eng_access_token = os.environ['WORKFLOW_ENG_ACCESS_TOKEN']
