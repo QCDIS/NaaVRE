@@ -127,7 +127,7 @@ class ExecuteWorkflowHandler(APIHandler):
         print(workflow_json_string)
 
         resp = requests.post(
-            'http://localhost:8000/api/workflows/submit/',
+            'https://https://lfw-ds001-i022.lifewatch.dev:32443/vre-api/api/workflows/submit/',
             data = workflow_json_string,
             headers = {
                 'Authorization': f"Bearer {naavre_api_token}",
