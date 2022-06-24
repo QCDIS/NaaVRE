@@ -97,8 +97,6 @@ export class CellTracker extends React.Component<IProps, IState> {
         this.setState({
             typeSelections: currTypeSelections
         })
-
-        console.log(this.state.typeSelections);
     };
 
     baseImageUpdate = async (value: any) => {

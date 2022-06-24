@@ -14,6 +14,7 @@ import { CellEditor, Page } from '@jupyter_vre/components';
 import { Workspace } from './Workspace';
 import { Parallelization } from './Parallelization';
 import BasicSpeedDial from './SpeedDial';
+import { ExecuteWorkflowDialog } from './ExecuteWorkflowDialog';
 
 const CenterContent = styled.div`
   display: flex;
@@ -58,12 +59,45 @@ class Composer extends React.Component<IProps, IState> {
 		return this.workspaceRef.current.getElement(nodeId);
 	}
 
+
+	executeWorkflow = async (values: { [param: string]: any }) => {
+
+		const body = JSON.stringify({
+			chart: this.state.chart,
+			params: values
+		})
+
+		try {
+			let resp = await requestAPI<any>('expmanager/execute', {
+				body: body,
+				method: 'POST'
+			});
+			console.log(resp);
+		} catch (error) {
+			console.log(error);
+			alert('Error exporting the workflow: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+		}
+
+	}
+
+
 	CatalogDialogOptions: Partial<Dialog.IOptions<any>> = {
 		title: '',
 		body: ReactWidget.create(
 			<CatalogDialog
 				addCellAction={this.handleAddCellToWorkspace}
 				isCellInWorkspace={this.handleIsCellInWorkspace}
+			/>
+		) as Dialog.IBodyWidget<any>,
+		buttons: []
+	};
+
+	ExecuteWorkflowDialogOptions: Partial<Dialog.IOptions<any>> = {
+		title: '',
+		body: ReactWidget.create(
+			<ExecuteWorkflowDialog
+				chart={this.state.chart}
+				executeAction={this.executeWorkflow}
 			/>
 		) as Dialog.IBodyWidget<any>,
 		buttons: []
@@ -89,12 +123,16 @@ class Composer extends React.Component<IProps, IState> {
 			case "export-workflow":
 				this.exportWorkflow();
 				break;
+
+			case "execute-workflow":
+				showDialog(this.ExecuteWorkflowDialogOptions);
+				break;
 		}
 	}
 
 	exportWorkflow = async () => {
 		try {
-			let resp = await requestAPI<any>('expmanager/export', {
+			let resp = await requestAPI<any>('expmanager/execute', {
 				body: JSON.stringify(this.state.chart),
 				method: 'POST'
 			});

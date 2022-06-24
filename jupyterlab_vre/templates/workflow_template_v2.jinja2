@@ -6,9 +6,9 @@ spec:
     entrypoint: workflow-test
     arguments:
       parameters:
-      {% for p in global_params %}
+      {% for p, value in global_params.items() %}
       - name: {{ p }}
-        value: ''
+        value: {{ value }}
       {% endfor %}
     templates:
     - name: workflow-test

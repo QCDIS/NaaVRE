@@ -214,7 +214,7 @@ class CellsHandler(APIHandler, Catalog):
         build_templates(cell=current_cell, files_info=files_info)
 
         repository = Catalog.get_repository_from_name(repository_name)
-        print(type(repository))
+
         if not repository:
             self.set_status(400)
             self.write('Github gh_credentials are not set!')
@@ -241,7 +241,6 @@ class CellsHandler(APIHandler, Catalog):
                 self.write(ex.message)
             else:
                 self.write(str(ex))
-            self.write_err
             self.flush()
             return
 

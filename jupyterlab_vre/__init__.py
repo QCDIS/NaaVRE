@@ -6,7 +6,7 @@ from jupyterlab_vre.component_containerizer.handlers import (BaseImageHandler,
                                                              CellsHandler,
                                                              ExtractorHandler,
                                                              TypesHandler)
-from jupyterlab_vre.experiment_manager.handlers import ExportWorkflowHandler
+from jupyterlab_vre.experiment_manager.handlers import ExecuteWorkflowHandler, ExportWorkflowHandler
 from jupyterlab_vre.repositories.handlers import RepositoriesHandler
 from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 
@@ -32,6 +32,7 @@ def load_jupyter_server_extension(lab_app):
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/addcell'), CellsHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/catalog/cells/all'), CatalogGetAllHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/expmanager/export'), ExportWorkflowHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/expmanager/execute'), ExecuteWorkflowHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/repositories/?'), RepositoriesHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/registries/?'), RegistriesHandler)
     ])
