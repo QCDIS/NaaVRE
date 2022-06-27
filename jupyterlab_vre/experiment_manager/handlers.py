@@ -124,10 +124,11 @@ class ExecuteWorkflowHandler(APIHandler):
             "workflow": workflow_doc
         })
 
-        print(workflow_json_string)
-
+        vre_api_endpoint = os.getenv('VRE_API_ENDPOINT')
+        if not vre_api_endpoint:
+            vre_api_endpoint = 'http://localhost/vre-api/api/workflows/submit/'
         resp = requests.post(
-            'https://lfw-ds001-i022.lifewatch.dev:32443/vre-api/api/workflows/submit/',
+            vre_api_endpoint,
             data = workflow_json_string,
             headers = {
                 'Authorization': f"Bearer {naavre_api_token}",
