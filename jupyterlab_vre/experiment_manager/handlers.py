@@ -22,55 +22,55 @@ class ExportWorkflowHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
 
-        try:
+        # try:
 
-            payload = self.get_json_body()
+        payload = self.get_json_body()
 
-            nodes = payload['nodes']
-            links = payload['links']
+        nodes = payload['nodes']
+        links = payload['links']
 
-            parser = WorkflowParser(nodes, links)
+        parser = WorkflowParser(nodes, links)
 
-            cells = parser.get_workflow_cells()
-            deps_dag = parser.get_dependencies_dag()
+        cells = parser.get_workflow_cells()
+        deps_dag = parser.get_dependencies_dag()
 
-            global_params = []
-            for _nid, cell in cells:
-                global_params.extend(cell['params'])
+        global_params = []
+        for _nid, cell in cells:
+            global_params.extend(cell['params'])
 
-            registry_credentials = Catalog.get_registry_credentials()
+        registry_credentials = Catalog.get_registry_credentials()
 
-            if not registry_credentials:
-                self.set_status(400)
-                self.write('Registry credentials are not set!')
-                self.write_error('Registry credentials are not set!')
-                self.flush()
-                return
-
-            image_repo = registry_credentials[0]['url'].split(
-                'https://hub.docker.com/u/')[1]
-            loader = PackageLoader('jupyterlab_vre', 'templates')
-            template_env = Environment(
-                loader=loader, trim_blocks=True, lstrip_blocks=True)
-            template = template_env.get_template('workflow_template_v2.jinja2')
-
-            template.stream(
-                deps_dag=deps_dag,
-                cells=cells,
-                nodes=nodes,
-                global_params=set(global_params),
-                image_repo=image_repo
-            ).dump('workflow.yaml')
-
-            self.flush()
-
-        except Exception as ex:
-            logger.error(str(ex) + ' payload: ' + json.dumps(payload))
+        if not registry_credentials:
             self.set_status(400)
-            self.write(str(ex))
-            self.write_error(str(ex))
+            self.write('Registry credentials are not set!')
+            self.write_error('Registry credentials are not set!')
             self.flush()
             return
+
+        image_repo = registry_credentials[0]['url'].split(
+            'https://hub.docker.com/u/')[1]
+        loader = PackageLoader('jupyterlab_vre', 'templates')
+        template_env = Environment(
+            loader=loader, trim_blocks=True, lstrip_blocks=True)
+        template = template_env.get_template('workflow_template_v2.jinja2')
+
+        template.stream(
+            deps_dag=deps_dag,
+            cells=cells,
+            nodes=nodes,
+            global_params=set(global_params),
+            image_repo=image_repo
+        ).dump('workflow.yaml')
+
+        self.flush()
+
+        # except Exception as ex:
+        #     logger.error(str(ex) + ' payload: ' + json.dumps(payload))
+        #     self.set_status(400)
+        #     self.write(str(ex))
+        #     self.write_error(str(ex))
+        #     self.flush()
+        #     return
 
 
 class ExecuteWorkflowHandler(APIHandler):
