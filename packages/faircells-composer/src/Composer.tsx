@@ -132,7 +132,7 @@ class Composer extends React.Component<IProps, IState> {
 
 	exportWorkflow = async () => {
 		try {
-			let resp = await requestAPI<any>('expmanager/execute', {
+			let resp = await requestAPI<any>('expmanager/export', {
 				body: JSON.stringify(this.state.chart),
 				method: 'POST'
 			});

@@ -214,7 +214,6 @@ class CellsHandler(APIHandler, Catalog):
         build_templates(cell=current_cell, files_info=files_info)
 
         repository = Catalog.get_repository_from_name(repository_name)
-
         if not repository:
             self.set_status(400)
             self.write('Github gh_credentials are not set!')
@@ -224,8 +223,7 @@ class CellsHandler(APIHandler, Catalog):
             return
 
         repo_token = repository['token']
-
-        gh = Github(repository['token'])
+        gh = Github(repo_token)
         owner = repository['url'].split('https://github.com/')[1].split('/')[0]
         repository_name = repository['url'].split(
             'https://github.com/')[1].split('/')[1]
@@ -236,6 +234,7 @@ class CellsHandler(APIHandler, Catalog):
         try:
             repository = gh.get_repo(owner + '/' + repository_name)
         except Exception as ex:
+            logger.error(str(ex))
             self.set_status(400)
             if hasattr(ex, 'message'):
                 self.write(ex.message)
@@ -243,7 +242,6 @@ class CellsHandler(APIHandler, Catalog):
                 self.write(str(ex))
             self.flush()
             return
-
         commit = repository.get_commits(path=current_cell.task_name)
 
         if commit.totalCount > 0:
@@ -320,7 +318,6 @@ def dispatch_github_workflow(owner, repository_name, cell, files_info, repositor
 
 
 def is_standard_module(module_name):
-    logger.debug('module_name: ' + module_name)
     if module_name in sys.builtin_module_names:
         return True
     installation_path = None
