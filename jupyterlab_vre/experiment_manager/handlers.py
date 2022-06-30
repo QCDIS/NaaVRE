@@ -126,7 +126,7 @@ class ExecuteWorkflowHandler(APIHandler):
 
         vre_api_endpoint = os.getenv('VRE_API_ENDPOINT')
         if not vre_api_endpoint:
-            vre_api_endpoint = 'http://localhost/vre-api/api/workflows/submit/'
+            vre_api_endpoint = 'http://localhost:8000/api/workflows/submit/'
         resp = requests.post(
             vre_api_endpoint,
             data = workflow_json_string,
