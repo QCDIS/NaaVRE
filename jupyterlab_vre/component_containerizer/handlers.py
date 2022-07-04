@@ -158,115 +158,113 @@ class CellsHandler(APIHandler, Catalog):
         current_cell = Catalog.editor_buffer
         current_cell.clean_code()
 
-        print(current_cell)
+        all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
 
-        # all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
+        for parm_name in all_vars:
+            if parm_name not in current_cell.types:
+                logger.error(parm_name + ' has not type')
+                self.set_status(400)
+                self.write(parm_name + ' has not type')
+                self.write_error(parm_name + ' has not type')
+                self.flush()
+                return
 
-        # for parm_name in all_vars:
-        #     if parm_name not in current_cell.types:
-        #         logger.error(parm_name + ' has not type')
-        #         self.set_status(400)
-        #         self.write(parm_name + ' has not type')
-        #         self.write_error(parm_name + ' has not type')
-        #         self.flush()
-        #         return
+        if not hasattr(current_cell, 'base_image'):
+            logger.error(current_cell.task_name +
+                         ' has not base image not selected')
+            self.set_status(400)
+            self.write(current_cell.task_name + ' has not base image selected')
+            self.write_error(current_cell.task_name +
+                             ' has not base not image selected')
+            self.flush()
+            return
 
-        # if not hasattr(current_cell, 'base_image'):
-        #     logger.error(current_cell.task_name +
-        #                  ' has not base image not selected')
-        #     self.set_status(400)
-        #     self.write(current_cell.task_name + ' has not base image selected')
-        #     self.write_error(current_cell.task_name +
-        #                      ' has not base not image selected')
-        #     self.flush()
-        #     return
+        logger.debug('Delete if exists: ' + current_cell.task_name)
+        Catalog.delete_cell_from_task_name(current_cell.task_name)
+        Catalog.add_cell(current_cell)
 
-        # logger.debug('Delete if exists: ' + current_cell.task_name)
-        # Catalog.delete_cell_from_task_name(current_cell.task_name)
-        # Catalog.add_cell(current_cell)
+        cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
 
-        # cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
+        if not os.path.exists(cells_path):
+            os.mkdir(cells_path)
 
-        # if not os.path.exists(cells_path):
-        #     os.mkdir(cells_path)
+        cell_path = os.path.join(cells_path, current_cell.task_name)
 
-        # cell_path = os.path.join(cells_path, current_cell.task_name)
+        if os.path.exists(cell_path):
+            for files in os.listdir(cell_path):
+                path = os.path.join(cell_path, files)
+                if os.path.isfile(path):
+                    os.remove(path)
+        else:
+            os.mkdir(cell_path)
 
-        # if os.path.exists(cell_path):
-        #     for files in os.listdir(cell_path):
-        #         path = os.path.join(cell_path, files)
-        #         if os.path.isfile(path):
-        #             os.remove(path)
-        # else:
-        #     os.mkdir(cell_path)
+        registry_credentials = Catalog.get_registry_credentials_from_name(
+            registry_name)
+        logger.debug('registry_credentials: ' + str(registry_credentials))
+        if not registry_credentials:
+            self.set_status(400)
+            self.write('Registry credentials are not set!')
+            self.write_error('Registry credentials are not set!')
+            self.flush()
+            return
+        image_repo = registry_credentials['url'].split(
+            'https://hub.docker.com/u/')[1]
 
-        # registry_credentials = Catalog.get_registry_credentials_from_name(
-        #     registry_name)
-        # logger.debug('registry_credentials: ' + str(registry_credentials))
-        # if not registry_credentials:
-        #     self.set_status(400)
-        #     self.write('Registry credentials are not set!')
-        #     self.write_error('Registry credentials are not set!')
-        #     self.flush()
-        #     return
-        # image_repo = registry_credentials['url'].split(
-        #     'https://hub.docker.com/u/')[1]
+        files_info = get_files_info(cell=current_cell, image_repo=image_repo)
 
-        # files_info = get_files_info(cell=current_cell, image_repo=image_repo)
+        build_templates(cell=current_cell, files_info=files_info)
 
-        # build_templates(cell=current_cell, files_info=files_info)
+        repository = Catalog.get_repository_from_name(repository_name)
 
-        # repository = Catalog.get_repository_from_name(repository_name)
+        if not repository:
+            self.set_status(400)
+            self.write('Github gh_credentials are not set!')
+            self.write_error('Github credentials are not set!')
+            self.flush()
+            # or self.render('error.html', reason='You're not authorized'))
+            return
 
-        # if not repository:
-        #     self.set_status(400)
-        #     self.write('Github gh_credentials are not set!')
-        #     self.write_error('Github credentials are not set!')
-        #     self.flush()
-        #     # or self.render('error.html', reason='You're not authorized'))
-        #     return
+        repo_token = repository['token']
 
-        # repo_token = repository['token']
+        gh = Github(repository['token'])
+        owner = repository['url'].split('https://github.com/')[1].split('/')[0]
+        repository_name = repository['url'].split(
+            'https://github.com/')[1].split('/')[1]
+        if '.git' in repository_name:
+            repository_name = repository_name.split('.git')[0]
+        logger.debug('owner: ' + owner +
+                     ' repository_name: ' + repository_name)
+        try:
+            repository = gh.get_repo(owner + '/' + repository_name)
+        except Exception as ex:
+            self.set_status(400)
+            if hasattr(ex, 'message'):
+                self.write(ex.message)
+            else:
+                self.write(str(ex))
+            self.flush()
+            return
 
-        # gh = Github(repository['token'])
-        # owner = repository['url'].split('https://github.com/')[1].split('/')[0]
-        # repository_name = repository['url'].split(
-        #     'https://github.com/')[1].split('/')[1]
-        # if '.git' in repository_name:
-        #     repository_name = repository_name.split('.git')[0]
-        # logger.debug('owner: ' + owner +
-        #              ' repository_name: ' + repository_name)
-        # try:
-        #     repository = gh.get_repo(owner + '/' + repository_name)
-        # except Exception as ex:
-        #     self.set_status(400)
-        #     if hasattr(ex, 'message'):
-        #         self.write(ex.message)
-        #     else:
-        #         self.write(str(ex))
-        #     self.flush()
-        #     return
+        commit = repository.get_commits(path=current_cell.task_name)
 
-        # commit = repository.get_commits(path=current_cell.task_name)
-
-        # if commit.totalCount > 0:
-        #     try:
-        #         update_cell_in_repository(current_cell, repository, files_info)
-        #     except UnknownObjectException as ex:
-        #         create_cell_in_repository(current_cell, repository, files_info)
+        if commit.totalCount > 0:
+            try:
+                update_cell_in_repository(current_cell, repository, files_info)
+            except UnknownObjectException as ex:
+                create_cell_in_repository(current_cell, repository, files_info)
 
 
-        # elif commit.totalCount <= 0:
-        #     create_cell_in_repository(current_cell, repository, files_info)
+        elif commit.totalCount <= 0:
+            create_cell_in_repository(current_cell, repository, files_info)
 
-        # resp = dispatch_github_workflow(
-        #     owner,
-        #     repository_name,
-        #     current_cell,
-        #     files_info,
-        #     repo_token,
-        #     image_repo
-        # )
+        resp = dispatch_github_workflow(
+            owner,
+            repository_name,
+            current_cell,
+            files_info,
+            repo_token,
+            image_repo
+        )
 
         self.flush()
 
@@ -323,7 +321,6 @@ def dispatch_github_workflow(owner, repository_name, cell, files_info, repositor
 
 
 def is_standard_module(module_name):
-    logger.debug('module_name: ' + module_name)
     if module_name in sys.builtin_module_names:
         return True
     installation_path = None
