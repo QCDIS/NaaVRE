@@ -59,28 +59,6 @@ class Composer extends React.Component<IProps, IState> {
 		return this.workspaceRef.current.getElement(nodeId);
 	}
 
-
-	executeWorkflow = async (values: { [param: string]: any }) => {
-
-		const body = JSON.stringify({
-			chart: this.state.chart,
-			params: values
-		})
-
-		try {
-			let resp = await requestAPI<any>('expmanager/execute', {
-				body: body,
-				method: 'POST'
-			});
-			console.log(resp);
-		} catch (error) {
-			console.log(error);
-			alert('Error exporting the workflow: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
-		}
-
-	}
-
-
 	CatalogDialogOptions: Partial<Dialog.IOptions<any>> = {
 		title: '',
 		body: ReactWidget.create(
@@ -97,7 +75,6 @@ class Composer extends React.Component<IProps, IState> {
 		body: ReactWidget.create(
 			<ExecuteWorkflowDialog
 				chart={this.state.chart}
-				executeAction={this.executeWorkflow}
 			/>
 		) as Dialog.IBodyWidget<any>,
 		buttons: []
@@ -132,7 +109,7 @@ class Composer extends React.Component<IProps, IState> {
 
 	exportWorkflow = async () => {
 		try {
-			let resp = await requestAPI<any>('expmanager/execute', {
+			let resp = await requestAPI<any>('expmanager/export', {
 				body: JSON.stringify(this.state.chart),
 				method: 'POST'
 			});

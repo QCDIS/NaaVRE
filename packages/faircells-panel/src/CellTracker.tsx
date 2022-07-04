@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { requestAPI, FairCell, CellPreview } from '@jupyter_vre/core';
 import { INotebookModel, Notebook, NotebookPanel } from '@jupyterlab/notebook';
-import { ReactWidget, Dialog, showDialog } from '@jupyterlab/apputils';
+// import { ReactWidget, Dialog, showDialog } from '@jupyterlab/apputils';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { Cell } from '@jupyterlab/cells';
 import Table from '@material-ui/core/Table';
@@ -12,7 +12,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { Button, FormControl, MenuItem, Select, TableBody, TextField, ThemeProvider } from "@material-ui/core";
 import { Autocomplete } from '@mui/material';
-import { AddCellDialog } from './AddCellDialog';
+// import { AddCellDialog } from './AddCellDialog';
 
 interface IProps {
     notebook: NotebookPanel;
@@ -20,6 +20,8 @@ interface IProps {
 
 interface IState {
 
+    loading: boolean
+    baseImageSelected: boolean
     currentCellIndex: number
     currentCell: FairCell
     typeSelections: { [type: string]: boolean }
@@ -27,6 +29,8 @@ interface IState {
 
 const DefaultState: IState = {
 
+    loading: false,
+    baseImageSelected: false,
     currentCellIndex: -1,
     currentCell: null,
     typeSelections: {}
@@ -52,18 +56,21 @@ export class CellTracker extends React.Component<IProps, IState> {
         this.cellPreviewRef = React.createRef();
     }
 
-    AddCellDialogOptions: Partial<Dialog.IOptions<any>> = {
-        title: '',
-        body: ReactWidget.create(
-            <AddCellDialog />
-        ) as Dialog.IBodyWidget<any>,
-        buttons: []
-    };
-
-    handleCreateCell = () => {
-
-        showDialog(this.AddCellDialogOptions);
-    };
+    createCell = async () => {
+        try {
+            let resp = await requestAPI<any>('containerizer/addcell', {
+                body: JSON.stringify({
+                    repository_name: '',
+                    registry_name: ''
+                }),
+                method: 'POST'
+            });
+            console.log(resp);
+        } catch (error) {
+            console.log(error);
+            alert('Error createing the cell : ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+        }
+    }
 
     allTypesSelected = () => {
 
@@ -107,6 +114,8 @@ export class CellTracker extends React.Component<IProps, IState> {
             }),
             method: 'POST'
         });
+        
+        this.setState({ baseImageSelected: true });
     };
 
     exctractor = async (notebookModel: INotebookModel, save = false) => {
@@ -343,9 +352,9 @@ export class CellTracker extends React.Component<IProps, IState> {
                     <div>
                         <Button variant="contained"
                             className={'lw-panel-button'}
-                            onClick={this.handleCreateCell}
+                            onClick={this.createCell}
                             color="primary"
-                            disabled={!this.allTypesSelected()}>
+                            disabled={!this.allTypesSelected() || !this.state.baseImageSelected || this.state.loading}>
                             Create
                         </Button>
                     </div>

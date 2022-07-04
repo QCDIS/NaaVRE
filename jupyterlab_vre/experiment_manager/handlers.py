@@ -22,55 +22,45 @@ class ExportWorkflowHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
 
-        try:
+        payload = self.get_json_body()
 
-            payload = self.get_json_body()
+        nodes = payload['nodes']
+        links = payload['links']
 
-            nodes = payload['nodes']
-            links = payload['links']
+        parser = WorkflowParser(nodes, links)
 
-            parser = WorkflowParser(nodes, links)
+        cells = parser.get_workflow_cells()
+        deps_dag = parser.get_dependencies_dag()
 
-            cells = parser.get_workflow_cells()
-            deps_dag = parser.get_dependencies_dag()
+        global_params = []
+        for _nid, cell in cells.items():
+            global_params.extend(cell['params'])
 
-            global_params = []
-            for _nid, cell in cells:
-                global_params.extend(cell['params'])
+        registry_credentials = Catalog.get_registry_credentials()
 
-            registry_credentials = Catalog.get_registry_credentials()
-
-            if not registry_credentials:
-                self.set_status(400)
-                self.write('Registry credentials are not set!')
-                self.write_error('Registry credentials are not set!')
-                self.flush()
-                return
-
-            image_repo = registry_credentials[0]['url'].split(
-                'https://hub.docker.com/u/')[1]
-            loader = PackageLoader('jupyterlab_vre', 'templates')
-            template_env = Environment(
-                loader=loader, trim_blocks=True, lstrip_blocks=True)
-            template = template_env.get_template('workflow_template_v2.jinja2')
-
-            template.stream(
-                deps_dag=deps_dag,
-                cells=cells,
-                nodes=nodes,
-                global_params=set(global_params),
-                image_repo=image_repo
-            ).dump('workflow.yaml')
-
-            self.flush()
-
-        except Exception as ex:
-            logger.error(str(ex) + ' payload: ' + json.dumps(payload))
+        if not registry_credentials:
             self.set_status(400)
-            self.write(str(ex))
-            self.write_error(str(ex))
+            self.write('Registry credentials are not set!')
+            self.write_error('Registry credentials are not set!')
             self.flush()
             return
+
+        image_repo = registry_credentials[0]['url'].split(
+            'https://hub.docker.com/u/')[1]
+        loader = PackageLoader('jupyterlab_vre', 'templates')
+        template_env = Environment(
+            loader=loader, trim_blocks=True, lstrip_blocks=True)
+        template = template_env.get_template('workflow_template_v2.jinja2')
+
+        template.stream(
+            deps_dag=deps_dag,
+            cells=cells,
+            nodes=nodes,
+            global_params=set(global_params),
+            image_repo=image_repo
+        ).dump('workflow.yaml')
+
+        self.flush()
 
 
 class ExecuteWorkflowHandler(APIHandler):
@@ -81,7 +71,9 @@ class ExecuteWorkflowHandler(APIHandler):
         chart = payload['chart']
         params = payload['params']
 
-        naavre_api_token = os.getenv('NAAVRE_API_TOKEN')
+        API_ENDPOINT = os.getenv('API_ENDPOINT')
+        NAAVRE_API_TOKEN = os.getenv('NAAVRE_API_TOKEN')
+        VLAB_SLUG = os.getenv('VLAB_SLUG')
 
         nodes = chart['nodes']
         links = chart['links']
@@ -112,6 +104,7 @@ class ExecuteWorkflowHandler(APIHandler):
         template = template_env.get_template('workflow_template_v2.jinja2')
 
         template = template.render(
+            vlab_slug=VLAB_SLUG,
             deps_dag=deps_dag,
             cells=cells,
             nodes=nodes,
@@ -120,21 +113,22 @@ class ExecuteWorkflowHandler(APIHandler):
         )
 
         workflow_doc = yaml.safe_load(template)
-        workflow_json_string = json.dumps({
-            "workflow": workflow_doc
-        })
 
-        print(workflow_json_string)
+        req_body = {
+            "vlab": VLAB_SLUG,
+            "workflow_payload": {
+                "workflow": workflow_doc
+            }
+        }
 
         resp = requests.post(
-            'https://lfw-ds001-i022.lifewatch.dev:32443/vre-api/api/workflows/submit/',
-            data = workflow_json_string,
-            headers = {
-                'Authorization': f"Bearer {naavre_api_token}",
+            f"{API_ENDPOINT}/api/workflows/submit/",
+            data=json.dumps(req_body),
+            headers={
+                'Authorization': f"Bearer {NAAVRE_API_TOKEN}",
                 'Content-Type': 'application/json'
             }
         )
 
-        print(resp)
-
+        self.write(resp.json())
         self.flush()

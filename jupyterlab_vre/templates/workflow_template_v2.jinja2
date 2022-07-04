@@ -2,6 +2,8 @@ apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
   generateName: workflow-test-
+  labels:
+    vlab_slug: {{ vlab_slug }}
 spec:
     entrypoint: workflow-test
     arguments:
