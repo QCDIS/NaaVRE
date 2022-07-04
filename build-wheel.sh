@@ -3,7 +3,6 @@
 conda activate jupyterlab
 
 #make install-backend && make build-frontend && make install-ui && make link-ui
-npx lerna run build --scope @jupyter_vre/core
 npx lerna run build --scope @jupyter_vre/chart-customs
 npx lerna run build --scope @jupyter_vre/core
 npx lerna run build --scope @jupyter_vre/components
