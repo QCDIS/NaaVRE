@@ -207,6 +207,7 @@ class CellsHandler(APIHandler, Catalog):
             self.write_error('Registry credentials are not set!')
             self.flush()
             return
+
         image_repo = registry_credentials['url'].split(
             'https://hub.docker.com/u/')[1]
 

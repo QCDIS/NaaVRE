@@ -81,7 +81,7 @@ export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
             console.log(resp);
         } catch (error) {
             console.log(error);
-            alert('Error createing the cell : ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+            alert('Error creating  cell : ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
         }
     }
 
