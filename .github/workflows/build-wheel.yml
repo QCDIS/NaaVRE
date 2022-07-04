@@ -33,7 +33,6 @@ jobs:
         npm install --force
     - name: make
       run: |
-        npx lerna run build --scope @jupyter_vre/core
         npx lerna run build --scope @jupyter_vre/chart-customs
         npx lerna run build --scope @jupyter_vre/core
         npx lerna run build --scope @jupyter_vre/components
