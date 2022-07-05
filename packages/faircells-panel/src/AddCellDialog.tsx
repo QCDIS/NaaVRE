@@ -1,10 +1,10 @@
 
-import { Button, styled, TextField, ThemeProvider } from '@material-ui/core';
-import { Repository, requestAPI } from '@jupyter_vre/core';
-import { Autocomplete, AutocompleteInputChangeReason } from '@mui/material';
+import { requestAPI } from '@jupyter_vre/core';
+import { CircularProgress, styled, ThemeProvider } from '@material-ui/core';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { green } from '@mui/material/colors';
 import * as React from 'react';
 import { theme } from './Theme';
-import { Registry } from '@jupyter_vre/core/lib/types';
 
 const CatalogBody = styled('div')({
     padding: '20px',
@@ -16,17 +16,11 @@ const CatalogBody = styled('div')({
 interface AddCellDialogProps { }
 
 interface IState {
-    repositories: Repository[]
-    registries: Registry[]
-    selected_repository: string
-    selected_registry: string
+    loading: boolean
 }
 
 const DefaultState: IState = {
-    repositories: [],
-    registries: [],
-    selected_repository: '',
-    selected_registry: ''
+    loading: true
 }
 
 export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
@@ -34,51 +28,19 @@ export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
     state = DefaultState;
 
     componentDidMount(): void {
-        this.getRepositories();
-        this.getRegistries();
-    }
-
-    allSelected = () => {
-        console.log(this.state);
-        return (this.state.selected_repository != '' && this.state.selected_registry != '');
-    }
-
-    getRepositories = async () => {
-
-        const repositories = await requestAPI<any>('repositories', {
-            method: 'GET'
-        });
-
-        const items = repositories.map((repo: Repository) => (
-            { "label": repo.name, "item": repo }
-        ));
-
-        this.setState({ repositories: items });
-    }
-
-    getRegistries = async () => {
-
-        const registries = await requestAPI<any>('registries', {
-            method: 'GET'
-        });
-
-        const items = registries.map((registry: Registry) => (
-            { "label": registry.name, "item": registry }
-        ));
-
-        this.setState({ registries: items });
+        this.createCell()
     }
 
     createCell = async () => {
         try {
-            let resp = await requestAPI<any>('containerizer/addcell', {
-                body: JSON.stringify({
-                    repository_name: this.state.selected_repository,
-                    registry_name: this.state.selected_registry
-                }),
+
+            await requestAPI<any>('containerizer/addcell', {
+                body: JSON.stringify({}),
                 method: 'POST'
             });
-            console.log(resp);
+
+            this.setState({ loading: false });
+
         } catch (error) {
             console.log(error);
             alert('Error createing the cell : ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
@@ -89,41 +51,27 @@ export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
 
         return (
             <ThemeProvider theme={theme}>
+                
                 <p className='section-header'>Create Cell</p>
                 <CatalogBody>
-                    <p className={'lw-panel-preview'}>Repository</p>
-                    <Autocomplete
-                        onInputChange={(_event: React.SyntheticEvent<Element, Event>, value: string, _reason: AutocompleteInputChangeReason) => {
-                            this.setState({
-                                selected_repository: value
-                            });
-                        }}
-                        disablePortal
-                        id="combo-box-demo"
-                        options={this.state.repositories}
-                        sx={{ width: 300, margin: '10px' }}
-                        renderInput={(params) => <TextField {...params} label="" />}
-                    />
-                    <p className={'lw-panel-preview'}>Registry</p>
-                    <Autocomplete
-                        onInputChange={(_event: React.SyntheticEvent<Element, Event>, value: string, _reason: AutocompleteInputChangeReason) => {
-                            this.setState({
-                                selected_registry: value
-                            });
-                        }}
-                        disablePortal
-                        id="combo-box-demo"
-                        options={this.state.registries}
-                        sx={{ width: 300, margin: '10px' }}
-                        renderInput={(params) => <TextField {...params} label="" />}
-                    />
-                    <Button variant="contained"
-                        style={{ marginTop: '20px' }}
-                        onClick={this.createCell}
-                        disabled={!this.allSelected()}
-                        color="primary">
-                        Confirm
-                    </Button>
+                {!this.state.loading ? (
+                    <div style={{display: "flex", flexDirection: "row", alignItems: "center"}}>
+                        <div className='cell-submit-box'>
+                            <CheckCircleOutlineIcon
+                                fontSize='large'
+                                sx={{ color: green[500] }}
+                            />
+                            <p className='cell-submit-text'>
+                                The cell has been successfully created!
+                            </p>
+                        </div>
+                    </div>
+                    ) :
+                    (<div>
+                        <CircularProgress />
+                        <p>Creating or updating cell ..</p>
+                    </div>)
+                }
                 </CatalogBody>
             </ThemeProvider>
         )

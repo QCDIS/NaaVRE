@@ -80,3 +80,20 @@
     margin-bottom: -10px;
     margin-left: 10px;
 }
+
+.cell-submit-link {
+    color: #106ba3;
+    text-decoration: underline;
+}
+
+.cell-submit-text {
+    font-size: medium;
+    margin: 10px;
+}
+
+.cell-submit-box {
+    padding: 10px;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}

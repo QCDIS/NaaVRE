@@ -152,9 +152,7 @@ class CellsHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-        payload = self.get_json_body()
-        repository_name = payload['repository_name']
-        registry_name = payload['registry_name']
+        
         current_cell = Catalog.editor_buffer
         current_cell.clean_code()
 
@@ -198,37 +196,23 @@ class CellsHandler(APIHandler, Catalog):
         else:
             os.mkdir(cell_path)
 
-        registry_credentials = Catalog.get_registry_credentials_from_name(
-            registry_name)
-        logger.debug('registry_credentials: ' + str(registry_credentials))
-        if not registry_credentials:
-            self.set_status(400)
-            self.write('Registry credentials are not set!')
-            self.write_error('Registry credentials are not set!')
-            self.flush()
-            return
-        image_repo = registry_credentials['url'].split(
+        registry_credentials = registry_credentials = Catalog.get_registry_credentials()
+        logger.debug('registry_credentials: ' + str(registry_credentials[0]))
+
+        image_repo = registry_credentials[0]['url'].split(
             'https://hub.docker.com/u/')[1]
 
         files_info = get_files_info(cell=current_cell, image_repo=image_repo)
 
         build_templates(cell=current_cell, files_info=files_info)
 
-        repository = Catalog.get_repository_from_name(repository_name)
+        repository = Catalog.get_repositories()
 
-        if not repository:
-            self.set_status(400)
-            self.write('Github gh_credentials are not set!')
-            self.write_error('Github credentials are not set!')
-            self.flush()
-            # or self.render('error.html', reason='You're not authorized'))
-            return
+        repo_token = repository[0]['token']
 
-        repo_token = repository['token']
-
-        gh = Github(repository['token'])
-        owner = repository['url'].split('https://github.com/')[1].split('/')[0]
-        repository_name = repository['url'].split(
+        gh = Github(repository[0]['token'])
+        owner = repository[0]['url'].split('https://github.com/')[1].split('/')[0]
+        repository_name = repository[0]['url'].split(
             'https://github.com/')[1].split('/')[1]
         if '.git' in repository_name:
             repository_name = repository_name.split('.git')[0]
