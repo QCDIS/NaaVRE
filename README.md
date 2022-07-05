@@ -268,32 +268,21 @@ git checkout <BRANCH_NAME>
 
 Go to the project folder and install nodejs dependencies :
 ```shell 
-npm install @mrblenny/react-flow-chart@"^0.0.14"
-npm install @types/node --save-dev
-npm install lerna
-npm install
+npm install lerna --force
+npm install --force
 ```
-Build the frontend:
+Build the backend and frontend:
 ```shell
+npx lerna run build --scope @jupyter_vre/chart-customs
 npx lerna run build --scope @jupyter_vre/core
-npx lerna run build
+npx lerna run build --scope @jupyter_vre/components
+make install-backend && make build-frontend && make install-ui && make link-ui
 ```
 
-Start a jupyterlab instance:
+Build the extension  and start a jupyterlab instance:
 ```shell
-jupyter lab --debug --watch
+jupyter lab build && jupyter lab --debug --watch
 ```
-
-Build the extension 
-```
-jupyter lab build 
-```
-
-Stop the previous instance and restart:
-```shell
-jupyter lab --debug --watch
-```
-
 
 Build wheel file for release:
 ```shell
