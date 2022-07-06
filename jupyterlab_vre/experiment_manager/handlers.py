@@ -19,6 +19,8 @@ logger.setLevel(logging.DEBUG)
 
 
 class ExportWorkflowHandler(APIHandler):
+    logger = logging.getLogger(__name__)
+
     @web.authenticated
     async def post(self, *args, **kwargs):
 
@@ -64,6 +66,8 @@ class ExportWorkflowHandler(APIHandler):
 
 
 class ExecuteWorkflowHandler(APIHandler):
+    logger = logging.getLogger(__name__)
+
     @web.authenticated
     async def post(self, *args, **kwargs):
 
@@ -71,9 +75,34 @@ class ExecuteWorkflowHandler(APIHandler):
         chart = payload['chart']
         params = payload['params']
 
-        API_ENDPOINT = os.getenv('API_ENDPOINT')
-        NAAVRE_API_TOKEN = os.getenv('NAAVRE_API_TOKEN')
-        VLAB_SLUG = os.getenv('VLAB_SLUG')
+        api_endpoint = os.getenv('API_ENDPOINT')
+        logger.debug('API_ENDPOINT: ' + api_endpoint)
+        print(api_endpoint)
+        if not api_endpoint:
+            logger.error('NaaVRE API endpoint environment variable "API_ENDPOINT" is not set!')
+            self.set_status(400)
+            self.write('NaaVRE API endpoint is not set!')
+            self.write_error('NaaVRE API endpoint environment variable "API_ENDPOINT" is not set!')
+            self.flush()
+            return
+
+        naavre_api_token = os.getenv('NAAVRE_API_TOKEN')
+        if not naavre_api_token:
+            logger.error('NaaVRE API token environment variable "NAAVRE_API_TOKEN" is not set!')
+            self.set_status(400)
+            self.write('NaaVRE API token is not set!')
+            self.write_error('VNaaVRE API token environment variable "NAAVRE_API_TOKEN" is not set!')
+            self.flush()
+            return
+
+        vlab_slug = os.getenv('VLAB_SLUG')
+        if not vlab_slug:
+            logger.error('VL name is not set!')
+            self.set_status(400)
+            self.write('VL name is not set!')
+            self.write_error('VL name environment variable "VLAB_SLUG" is not set!')
+            self.flush()
+            return
 
         nodes = chart['nodes']
         links = chart['links']
@@ -104,7 +133,7 @@ class ExecuteWorkflowHandler(APIHandler):
         template = template_env.get_template('workflow_template_v2.jinja2')
 
         template = template.render(
-            vlab_slug=VLAB_SLUG,
+            vlab_slug=vlab_slug,
             deps_dag=deps_dag,
             cells=cells,
             nodes=nodes,
@@ -115,17 +144,17 @@ class ExecuteWorkflowHandler(APIHandler):
         workflow_doc = yaml.safe_load(template)
 
         req_body = {
-            "vlab": VLAB_SLUG,
+            "vlab": vlab_slug,
             "workflow_payload": {
                 "workflow": workflow_doc
             }
         }
 
         resp = requests.post(
-            f"{API_ENDPOINT}/api/workflows/submit/",
+            f"{api_endpoint}/api/workflows/submit/",
             data=json.dumps(req_body),
             headers={
-                'Authorization': f"Bearer {NAAVRE_API_TOKEN}",
+                'Authorization': f"Bearer {naavre_api_token}",
                 'Content-Type': 'application/json'
             }
         )
