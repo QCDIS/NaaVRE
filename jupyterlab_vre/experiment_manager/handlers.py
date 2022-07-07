@@ -149,6 +149,7 @@ class ExecuteWorkflowHandler(APIHandler):
                 "workflow": workflow_doc
             }
         }
+        logger.debug('API request body: ' + (str(req_body)))
 
         resp = requests.post(
             f"{api_endpoint}/api/workflows/submit/",
@@ -158,6 +159,6 @@ class ExecuteWorkflowHandler(APIHandler):
                 'Content-Type': 'application/json'
             }
         )
-
+        logger.debug('API response: ' + (str(resp)))
         self.write(resp.json())
         self.flush()
