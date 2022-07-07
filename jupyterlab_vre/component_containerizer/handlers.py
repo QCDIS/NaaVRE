@@ -26,13 +26,7 @@ from tornado import web
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-module_mapping = {
-    'torch.nn': 'torch',
-    'torchvision.models': 'torchvision',
-    'cv2': 'opencv-python-headless',
-    'webdav3': 'webdavclient3',
-    'laserfarm': 'laserfarm==0.1.4'
-}
+
 
 
 # code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
