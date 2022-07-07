@@ -26,9 +26,6 @@ from tornado import web
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-
-
-
 # code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
 def git_hash(contents):
     s = hashlib.sha1()
@@ -311,6 +308,9 @@ def is_standard_module(module_name):
 
 
 def load_module_names_mapping():
+    module_mapping_url = os.getenv('MODULE_MAPPING_URL')
+    resp = requests.get(module_mapping_url)
+    module_mapping = json.loads(resp.text)
     module_name_mapping_path = os.path.join(
         str(Path.home()), 'NaaVRE', 'module_name_mapping.json')
     if not os.path.exists(module_name_mapping_path):
