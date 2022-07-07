@@ -149,6 +149,7 @@ class ExecuteWorkflowHandler(APIHandler):
                 "workflow": workflow_doc
             }
         }
+        print('API request body: ' + (str(req_body)))
         logger.debug('API request body: ' + (str(req_body)))
 
         resp = requests.post(
@@ -160,5 +161,6 @@ class ExecuteWorkflowHandler(APIHandler):
             }
         )
         logger.debug('API response: ' + (str(resp)))
+        print('API response: ' + (str(resp)))
         self.write(resp.json())
         self.flush()
