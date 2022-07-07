@@ -162,5 +162,7 @@ class ExecuteWorkflowHandler(APIHandler):
         )
         logger.debug('API response: ' + (str(resp)))
         print('API response: ' + (str(resp)))
+        print('API JSON response: ' + (str(resp.json())))
+
         self.write(resp.json())
         self.flush()
