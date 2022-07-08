@@ -3,7 +3,7 @@ on:
   [pull_request]
 jobs:
   call-build-wheel:
-    uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@main
+    uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@270-build-error
     with:
       upload: false
   call-build-container:
