@@ -19,13 +19,11 @@ logger.setLevel(logging.DEBUG)
 
 
 class ExportWorkflowHandler(APIHandler):
-    logger = logging.getLogger(__name__)
 
     @web.authenticated
     async def post(self, *args, **kwargs):
 
         payload = self.get_json_body()
-
         nodes = payload['nodes']
         links = payload['links']
 
@@ -34,12 +32,11 @@ class ExportWorkflowHandler(APIHandler):
         cells = parser.get_workflow_cells()
         deps_dag = parser.get_dependencies_dag()
 
-        global_params = []
+        global_params = {}
         for _nid, cell in cells.items():
-            global_params.extend(cell['params'])
+            global_params[(cell['params'])] = ''
 
         registry_credentials = Catalog.get_registry_credentials()
-
         if not registry_credentials:
             self.set_status(400)
             self.write('Registry credentials are not set!')
@@ -77,7 +74,7 @@ class ExecuteWorkflowHandler(APIHandler):
 
         api_endpoint = os.getenv('API_ENDPOINT')
         logger.debug('API_ENDPOINT: ' + api_endpoint)
-        print(api_endpoint)
+        print('API_ENDPOINT: '+str(api_endpoint))
         if not api_endpoint:
             logger.error('NaaVRE API endpoint environment variable "API_ENDPOINT" is not set!')
             self.set_status(400)
@@ -87,6 +84,7 @@ class ExecuteWorkflowHandler(APIHandler):
             return
 
         naavre_api_token = os.getenv('NAAVRE_API_TOKEN')
+        print('NAAVRE_API_TOKEN: ' + str(naavre_api_token))
         if not naavre_api_token:
             logger.error('NaaVRE API token environment variable "NAAVRE_API_TOKEN" is not set!')
             self.set_status(400)
@@ -96,6 +94,7 @@ class ExecuteWorkflowHandler(APIHandler):
             return
 
         vlab_slug = os.getenv('VLAB_SLUG')
+        print('vlab_slug: ' + vlab_slug)
         if not vlab_slug:
             logger.error('VL name is not set!')
             self.set_status(400)
@@ -117,7 +116,7 @@ class ExecuteWorkflowHandler(APIHandler):
             global_params.extend(cell['params'])
 
         registry_credentials = Catalog.get_registry_credentials()
-
+        print('l22')
         if not registry_credentials:
             self.set_status(400)
             self.write('Registry credentials are not set!')
@@ -132,6 +131,8 @@ class ExecuteWorkflowHandler(APIHandler):
             loader=loader, trim_blocks=True, lstrip_blocks=True)
         template = template_env.get_template('workflow_template_v2.jinja2')
 
+        print('l137')
+
         template = template.render(
             vlab_slug=vlab_slug,
             deps_dag=deps_dag,
@@ -140,7 +141,6 @@ class ExecuteWorkflowHandler(APIHandler):
             global_params=params,
             image_repo=image_repo
         )
-
         workflow_doc = yaml.safe_load(template)
 
         req_body = {
@@ -149,9 +149,7 @@ class ExecuteWorkflowHandler(APIHandler):
                 "workflow": workflow_doc
             }
         }
-        print('API request body: ' + (str(req_body)))
-        logger.debug('API request body: ' + (str(req_body)))
-
+        print(json.dumps(req_body))
         resp = requests.post(
             f"{api_endpoint}/api/workflows/submit/",
             data=json.dumps(req_body),
@@ -160,7 +158,6 @@ class ExecuteWorkflowHandler(APIHandler):
                 'Content-Type': 'application/json'
             }
         )
-        logger.debug('API response: ' + (str(resp)))
-        print('API response: ' + (str(resp)))
+
         self.write(resp.json())
         self.flush()
