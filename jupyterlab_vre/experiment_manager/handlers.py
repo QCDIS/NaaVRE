@@ -56,7 +56,7 @@ class ExportWorkflowHandler(APIHandler):
             deps_dag=deps_dag,
             cells=cells,
             nodes=nodes,
-            global_params=set(global_params),
+            global_params=global_params,
             image_repo=image_repo
         ).dump('workflow.yaml')
 
