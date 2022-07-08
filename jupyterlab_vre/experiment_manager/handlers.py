@@ -1,12 +1,9 @@
 import json
-from ntpath import join
 import yaml
 import logging
 import os
-from typing import List
 
 from jinja2 import Environment, PackageLoader
-from jupyterlab_vre.database.cell import Cell
 from notebook.base.handlers import APIHandler
 import requests
 from tornado import web
