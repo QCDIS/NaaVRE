@@ -22,6 +22,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install flake8 pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f test-requirements.txt ]; then pip install -r test-requirements.txt; fi
         $CONDA/bin/conda install jupyterlab nodejs yarn
         $CONDA/bin/conda install -c conda-forge typescript
     - name: Install nodejs dependencies
@@ -30,7 +33,6 @@ jobs:
         npm install --force
     - name: make
       run: |
-        npx lerna run build
         npx lerna run build --scope @jupyter_vre/chart-customs
         npx lerna run build --scope @jupyter_vre/core
         npx lerna run build --scope @jupyter_vre/components
