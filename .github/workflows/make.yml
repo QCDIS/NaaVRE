@@ -5,7 +5,7 @@ jobs:
   call-build-wheel:
     uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@main
     with:
-      upload: false
+      upload: true
   call-build-container:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
