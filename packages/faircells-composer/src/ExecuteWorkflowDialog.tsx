@@ -71,11 +71,10 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
                 body: body,
                 method: 'POST'
             });
-
             this.setState({
                 submitted_workflow: resp
             })
-
+            console.log(this.state)
         } catch (error) {
             console.log(error);
             alert('Error exporting the workflow: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
