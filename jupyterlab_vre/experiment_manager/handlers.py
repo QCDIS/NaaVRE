@@ -19,13 +19,11 @@ logger.setLevel(logging.DEBUG)
 
 
 class ExportWorkflowHandler(APIHandler):
-    logger = logging.getLogger(__name__)
 
     @web.authenticated
     async def post(self, *args, **kwargs):
 
         payload = self.get_json_body()
-
         nodes = payload['nodes']
         links = payload['links']
 
@@ -34,12 +32,11 @@ class ExportWorkflowHandler(APIHandler):
         cells = parser.get_workflow_cells()
         deps_dag = parser.get_dependencies_dag()
 
-        global_params = []
+        global_params = {}
         for _nid, cell in cells.items():
-            global_params.extend(cell['params'])
+            global_params[(cell['params'])] = ''
 
         registry_credentials = Catalog.get_registry_credentials()
-
         if not registry_credentials:
             self.set_status(400)
             self.write('Registry credentials are not set!')
@@ -87,7 +84,7 @@ class ExecuteWorkflowHandler(APIHandler):
             return
 
         naavre_api_token = os.getenv('NAAVRE_API_TOKEN')
-        print('API_ENDPOINT: ' + str(naavre_api_token))
+        print('NAAVRE_API_TOKEN: ' + str(naavre_api_token))
         if not naavre_api_token:
             logger.error('NaaVRE API token environment variable "NAAVRE_API_TOKEN" is not set!')
             self.set_status(400)
@@ -144,9 +141,7 @@ class ExecuteWorkflowHandler(APIHandler):
             global_params=params,
             image_repo=image_repo
         )
-        print('l145')
         workflow_doc = yaml.safe_load(template)
-        print('workflow_doc: ' + str(workflow_doc))
 
         req_body = {
             "vlab": vlab_slug,
@@ -154,14 +149,7 @@ class ExecuteWorkflowHandler(APIHandler):
                 "workflow": workflow_doc
             }
         }
-        print('API request body: ' + (str(req_body)))
-        logger.debug('API request body: ' + (str(req_body)))
-
-        print('l158')
-        logger.debug('api_endpoint: ' + (str(api_endpoint)))
-        print('api_endpoint: ' + (str(api_endpoint)))
-        print('-*-----------------------------------------------------------')
-
+        print(json.dumps(req_body))
         resp = requests.post(
             f"{api_endpoint}/api/workflows/submit/",
             data=json.dumps(req_body),
@@ -170,11 +158,6 @@ class ExecuteWorkflowHandler(APIHandler):
                 'Content-Type': 'application/json'
             }
         )
-
-        print('-*-----------------------------------------------------------')
-        logger.debug('API response: ' + (str(resp)))
-        print('API response: ' + (str(resp)))
-        print('-*-----------------------------------------------------------')
 
         self.write(resp.json())
         self.flush()
