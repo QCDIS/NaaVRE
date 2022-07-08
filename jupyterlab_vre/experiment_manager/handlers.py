@@ -34,7 +34,8 @@ class ExportWorkflowHandler(APIHandler):
 
         global_params = {}
         for _nid, cell in cells.items():
-            global_params[(cell['params'])] = ''
+            for param_name in cell['params']:
+                global_params[param_name] = ''
 
         registry_credentials = Catalog.get_registry_credentials()
         if not registry_credentials:

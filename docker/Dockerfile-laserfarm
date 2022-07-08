@@ -33,6 +33,7 @@ RUN pip install jupyterlab-github jupyter-videochat && \
     jupyter serverextension enable --py jupyter_videochat --user && \
     jupyter serverextension enable --py jupyterlab_github --user
 
+RUN pip install matplotlib folium cartopy icoscp pangaeapy
 
 RUN jupyter lab build --debug;
 
