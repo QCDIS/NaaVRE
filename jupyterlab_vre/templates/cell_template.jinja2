@@ -22,7 +22,13 @@ args = arg_parser.parse_args()
 id = args.id
 
 {% for in_var in cell.inputs|sort %}
+{% if types[in_var] != 'list' %}
+import json
+{{ in_var }} = json.loads(args.{{ in_var }})
+{% else %}
+{% if types[in_var] != 'list' %}
 {{ in_var }} = args.{{ in_var }}
+{% endif %}
 {% endfor %}
 
 {% for param in cell.params|sort %}
