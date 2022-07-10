@@ -310,6 +310,7 @@ def is_standard_module(module_name):
 
 
 def load_module_names_mapping():
+    module_mapping = {}
     module_mapping_url = os.getenv('MODULE_MAPPING_URL')
     if module_mapping_url:
         resp = requests.get(module_mapping_url)
