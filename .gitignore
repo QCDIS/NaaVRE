@@ -39,6 +39,7 @@ share/python-wheels/
 *.egg
 *.log
 MANIFEST
+docker/jupyterlab_vre-0.1.0-py3-none-any.whl
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -112,3 +113,4 @@ dmypy.json
 
 # OSX files
 .DS_Store
+/package-lock.json

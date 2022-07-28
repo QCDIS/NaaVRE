@@ -5,8 +5,13 @@ on:
       - '*'
 
 jobs:
+  cleanup-artifacts:
+    uses: QCDIS/NaaVRE/.github/workflows/artifacts-cleanup.yaml@main
   call-build-wheel:
+    needs: cleanup-artifacts
     uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@main
+    with:
+      upload: true
   call-save-in-relese:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/save-wheel-in-release.yml@main
@@ -19,6 +24,7 @@ jobs:
       wheel_artifact_name: jupyterlab_vre
       dockerfile: Dockerfile
       tag: n-a-a-vre
+      upload: true
   call-build-container-laserfarm:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
@@ -26,6 +32,7 @@ jobs:
       wheel_artifact_name: jupyterlab_vre
       dockerfile: Dockerfile-laserfarm
       tag: n-a-a-vre-laserfarm
+      upload: true
   call-build-container-vol2bird:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
@@ -33,6 +40,15 @@ jobs:
       wheel_artifact_name: jupyterlab_vre
       dockerfile: Dockerfile-vol2bird
       tag: n-a-a-vre-vol2bird
+      upload: true
+  call-build-container-pytorch:
+    needs: call-build-wheel
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
+    with:
+      wheel_artifact_name: jupyterlab_vre
+      dockerfile: Dockerfile-pytorch
+      tag: n-a-a-vre-pytorch
+      upload: true
   call-registry-push-gitlab:
     needs: call-build-container
     uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
@@ -93,5 +109,23 @@ jobs:
     secrets:
       registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
       registry_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-
+  call-registry-push-dockerhub-pytorch:
+    needs: call-build-container-pytorch
+    uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
+    with:
+      registry: "https://index.docker.io/v1/"
+      image_id: "qcdis/n-a-a-vre-pytorch"
+      tag: n-a-a-vre-pytorch
+    secrets:
+      registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      registry_password: ${{ secrets.DOCKERHUB_PASSWORD }}
+  call-registry-push-gitlab-pytorch:
+    needs: call-build-container-pytorch
+    uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
+    with:
+      registry: "registry.gitlab.com/qcd1/registry"
+      image_id: "registry.gitlab.com/qcd1/registry/n-a-a-vre-pytorch"
+      tag: n-a-a-vre-pytorch
+    secrets:
+      registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+      registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}

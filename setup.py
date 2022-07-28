@@ -36,7 +36,16 @@ setup_args = dict(
         "tinydb",
         "pyyaml",
         "azure-storage-blob",
-        "github3.py"
+        "PyGithub~=1.55",
+        "wheel==0.37.0",
+        "setuptools_rust==1.1.2",
+        "colorhash==1.0.4",
+        "requests==2.27.1",
+        "tornado~=6.1",
+        "notebook~=6.4.8",
+        "PyYAML~=6.0",
+        "setuptools~=57.0.0",
+        "distro~=1.7.0"
     ],
     zip_safe=False,
     include_package_data=True,

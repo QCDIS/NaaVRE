@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { requestAPI, FairCell, CellPreview } from '@jupyter_vre/core';
 import { INotebookModel, Notebook, NotebookPanel } from '@jupyterlab/notebook';
+import { ReactWidget, Dialog, showDialog } from '@jupyterlab/apputils';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { Cell } from '@jupyterlab/cells';
 import Table from '@material-ui/core/Table';
@@ -9,8 +10,9 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { FormControl, MenuItem, Select, TableBody, TextField, ThemeProvider } from "@material-ui/core";
+import { Button, FormControl, MenuItem, Select, TableBody, TextField, ThemeProvider } from "@material-ui/core";
 import { Autocomplete } from '@mui/material';
+import { AddCellDialog } from './AddCellDialog';
 
 interface IProps {
     notebook: NotebookPanel;
@@ -18,25 +20,39 @@ interface IProps {
 
 interface IState {
 
+    loading: boolean
+    baseImageSelected: boolean
     currentCellIndex: number
     currentCell: FairCell
+    typeSelections: { [type: string]: boolean }
 }
 
 const DefaultState: IState = {
 
+    loading: false,
+    baseImageSelected: false,
     currentCellIndex: -1,
-    currentCell: null
+    currentCell: null,
+    typeSelections: {}
 }
 
 type SaveState = 'started' | 'completed' | 'failed';
 
 const baseImages = [
 
-    { label: "Basic Python", id: "python:3.8-buster" },
+    { label: "miniconda3", id: "qcdis/miniconda3" },
     { label: "Laserfarm", id: "qcdis/miniconda3-pdal" },
     { label: "vol2bird", id: "qcdis/python-vol2bird" },
     { label: "MULTIPLY", id: "qcdis/miniconda3-multiply" }
 ]
+
+const AddCellDialogOptions: Partial<Dialog.IOptions<any>> = {
+    title: '',
+    body: ReactWidget.create(
+        <AddCellDialog />
+    ) as Dialog.IBodyWidget<any>,
+    buttons: []
+};
 
 export class CellTracker extends React.Component<IProps, IState> {
 
@@ -48,30 +64,59 @@ export class CellTracker extends React.Component<IProps, IState> {
         this.cellPreviewRef = React.createRef();
     }
 
+    handleCreateCell = async () => {
+        showDialog(AddCellDialogOptions)
+    }
+
+    allTypesSelected = () => {
+
+        if (Object.values(this.state.typeSelections).length > 0) {
+
+            return (
+                Object.values(this.state.typeSelections).reduce(
+                    (prev, curr) => {
+                        return prev && curr
+                    }
+                )
+            )
+        }
+
+        return false;
+    };
+
     typesUpdate = async (event: React.ChangeEvent<{ name?: string; value: unknown; }>, port: string) => {
 
-        await requestAPI<any>('types', {
+        await requestAPI<any>('containerizer/types', {
             body: JSON.stringify({
                 port: port,
                 type: event.target.value
             }),
             method: 'POST'
         });
+
+        let currTypeSelections = this.state.typeSelections
+        currTypeSelections[port] = true
+
+        this.setState({
+            typeSelections: currTypeSelections
+        })
     };
 
     baseImageUpdate = async (value: any) => {
 
-        await requestAPI<any>('baseimage', {
+        await requestAPI<any>('containerizer/baseimage', {
             body: JSON.stringify({
                 image: value.id
             }),
             method: 'POST'
         });
+        
+        this.setState({ baseImageSelected: true });
     };
 
     exctractor = async (notebookModel: INotebookModel, save = false) => {
 
-        const extractedCell = await requestAPI<any>('extractor', {
+        const extractedCell = await requestAPI<any>('containerizer/extract', {
             body: JSON.stringify({
                 save: save,
                 cell_index: this.state.currentCellIndex,
@@ -81,6 +126,22 @@ export class CellTracker extends React.Component<IProps, IState> {
         });
 
         this.setState({ currentCell: extractedCell });
+        let typeSelections: { [type: string]: boolean } = {}
+
+        this.state.currentCell.inputs.forEach((el: string) => {
+            typeSelections[el] = false
+        })
+
+        this.state.currentCell.outputs.forEach((el: string) => {
+            typeSelections[el] = false
+        })
+
+        this.state.currentCell.params.forEach((el: string) => {
+            typeSelections[el] = false
+        })
+
+        this.setState({ typeSelections: typeSelections })
+
         this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
     }
 
@@ -149,7 +210,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                         <Table aria-label="simple table">
                                             <TableBody>
                                                 {this.state.currentCell.inputs.map((input: string) => (
-                                                    <TableRow key={input}>
+                                                    <TableRow key={this.state.currentCell.node_id + "-" + input}>
                                                         <TableCell component="th" scope="row">
                                                             <p style={{ fontSize: "1em" }}>{input}</p>
                                                         </TableCell>
@@ -157,7 +218,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                             <FormControl fullWidth>
                                                                 <Select
                                                                     labelId="io-types-select-label"
-                                                                    id="io-types-select"
+                                                                    id={this.state.currentCell.node_id + "-" + input + "-select"}
                                                                     label="Type"
                                                                     onChange={(event) => { this.typesUpdate(event, input) }}
                                                                 >
@@ -183,7 +244,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                         <Table aria-label="simple table">
                                             <TableBody>
                                                 {this.state.currentCell.outputs.map((output: string) => (
-                                                    <TableRow key={output}>
+                                                    <TableRow key={this.state.currentCell.node_id + "-" + output}>
                                                         <TableCell component="th" scope="row">
                                                             <p style={{ fontSize: "1em" }}>{output}</p>
                                                         </TableCell>
@@ -191,7 +252,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                             <FormControl fullWidth>
                                                                 <Select
                                                                     labelId="io-types-select-label"
-                                                                    id="io-types-select"
+                                                                    id={this.state.currentCell.node_id + "-" + output + "-select"}
                                                                     label="Type"
                                                                     onChange={(event) => { this.typesUpdate(event, output) }}
                                                                 >
@@ -217,7 +278,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                         <Table aria-label="simple table">
                                             <TableBody>
                                                 {this.state.currentCell.params.map((param: string) => (
-                                                    <TableRow key={param}>
+                                                    <TableRow key={this.state.currentCell.node_id + "-" + param}>
                                                         <TableCell component="th" scope="row">
                                                             {param}
                                                         </TableCell>
@@ -225,7 +286,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                             <FormControl fullWidth>
                                                                 <Select
                                                                     labelId="param-types-select-label"
-                                                                    id="param-types-select"
+                                                                    id={this.state.currentCell.node_id + "-" + param + "-select"}
                                                                     label="Type"
                                                                     onChange={(event) => { this.typesUpdate(event, param) }}
                                                                 >
@@ -244,34 +305,39 @@ export class CellTracker extends React.Component<IProps, IState> {
                                 </div>
                             ) : (<div></div>)
                             }
-                            <p className={'lw-panel-preview'}>Dependencies</p>
-                            <TableContainer component={Paper} className={'lw-panel-table'}>
-                                <Table aria-label="simple table">
-                                    <TableBody>
-                                        {this.state.currentCell.dependencies.map((dep: any) => (
-                                            <TableRow>
-                                                <TableCell component="th" scope="row">
-                                                    {dep['module'] != '' ? (
-                                                        dep['module'] + " • " + dep['name']
-                                                    ) : (
-                                                        dep['name']
-                                                    )}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+                            {this.state.currentCell.dependencies.length > 0 ? (
+                                <div>
+                                    <p className={'lw-panel-preview'}>Dependencies</p>
+                                    <TableContainer component={Paper} className={'lw-panel-table'}>
+                                        <Table aria-label="simple table">
+                                            <TableBody>
+                                                {this.state.currentCell.dependencies.map((dep: any) => (
+                                                    <TableRow>
+                                                        <TableCell component="th" scope="row">
+                                                            {dep['module'] != '' ? (
+                                                                dep['module'] + " • " + dep['name']
+                                                            ) : (
+                                                                dep['name']
+                                                            )}
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </div>
+                            ) : (<div></div>)
+                            }
                             <div>
                                 <p className={'lw-panel-preview'}>Base Image</p>
                                 <Autocomplete
                                     disablePortal
-                                    onChange={(event: any, newValue: any | null) => {
+                                    onChange={(_event: any, newValue: any | null) => {
                                         this.baseImageUpdate(newValue);
                                     }}
                                     id="combo-box-demo"
                                     options={baseImages}
-                                    sx={{ width: 300, margin: '20px' }}
+                                    sx={{ width: 330, margin: '20px' }}
                                     renderInput={(params) => <TextField {...params} />}
                                 />
                             </div>
@@ -279,6 +345,15 @@ export class CellTracker extends React.Component<IProps, IState> {
                     ) : (
                         <TableContainer></TableContainer>
                     )}
+                    <div>
+                        <Button variant="contained"
+                            className={'lw-panel-button'}
+                            onClick={this.handleCreateCell}
+                            color="primary"
+                            disabled={!this.allTypesSelected() || !this.state.baseImageSelected || this.state.loading}>
+                            Create
+                        </Button>
+                    </div>
                 </div>
             </ThemeProvider>
         );

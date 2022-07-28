@@ -1,0 +1,64 @@
+{
+  "offset": {
+    "x": 0,
+    "y": 0
+  },
+  "scale": 1,
+  "nodes": {
+    "5df9a027-305c-430e-8ac5-a23ed0f1cec3": {
+      "id": "5df9a027-305c-430e-8ac5-a23ed0f1cec3",
+      "position": {
+        "x": 751,
+        "y": 344
+      },
+      "orientation": 0,
+      "type": "input-output",
+      "ports": {
+        "laz_files": {
+          "properties": {
+            "color": "#e0cc6c"
+          },
+          "id": "laz_files",
+          "type": "right",
+          "position": {
+            "x": 220,
+            "y": 74.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Fetch Laz Files-dev_skoulouzis",
+        "vars": [
+          {
+            "name": "laz_files",
+            "direction": "output",
+            "type": "datatype",
+            "color": "#e0cc6c"
+          }
+        ],
+        "params": [
+          "param_hostname",
+          "param_remote_path_ahn",
+          "param_login",
+          "param_password"
+        ],
+        "inputs": [],
+        "outputs": [
+          "laz_files"
+        ],
+        "og_node_id": "1d1f099",
+        "deps": [
+          "laserfarm",
+          ""
+        ]
+      },
+      "size": {
+        "width": 250,
+        "height": 150
+      }
+    }
+  },
+  "links": {},
+  "selected": {},
+  "hovered": {}
+}

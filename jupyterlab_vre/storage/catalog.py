@@ -1,11 +1,10 @@
 import logging
 import os
-import json
 from pathlib import Path
 from tinydb import TinyDB, where
-from jupyterlab_vre.storage.faircell import Cell
-from jupyterlab_vre.repository.repository_credentials import RepositoryCredentials
-from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
+
+from jupyterlab_vre.database.cell import Cell
+from jupyterlab_vre.repositories.repository import Repository
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -32,7 +31,13 @@ class Catalog:
         cls.cells.insert(cell.__dict__)
 
     @classmethod
+    def delete_cell_from_task_name(cls, task_name: str):
+        cell = cls.cells.search(where('task_name') == task_name)
+        cls.cells.remove(where('task_name') == task_name)
+
+    @classmethod
     def delete_cell_from_title(cls, title: str):
+        cell = cls.cells.search(where('title') == title)
         cls.cells.remove(where('title') == title)
 
     @classmethod
@@ -40,11 +45,7 @@ class Catalog:
         return cls.cells.all()
 
     @classmethod
-    def add_sdia_credentials(cls, cred: SDIACredentials):
-        cls.sdia_credentials.insert(cred.__dict__)
-
-    @classmethod
-    def add_registry_credentials(cls, cred: RepositoryCredentials):
+    def add_registry_credentials(cls, cred: Repository):
         cls.registry_credentials.insert(cred.__dict__)
 
     @classmethod
@@ -61,17 +62,17 @@ class Catalog:
         cls.registry_credentials.remove(doc_ids=ids)
 
     @classmethod
-    def get_registry_credentials(cls) -> RepositoryCredentials:
+    def get_registry_credentials(cls) -> Repository:
         credentials = cls.registry_credentials.all()
         if len(credentials) > 0:
             return credentials[0]
 
     @classmethod
-    def add_gh_credentials(cls, cred: RepositoryCredentials):
+    def add_gh_credentials(cls, cred: Repository):
         cls.gh_credentials.insert(cred.__dict__)
 
     @classmethod
-    def get_gh_credentials(cls) -> RepositoryCredentials:
+    def get_gh_credentials(cls) -> Repository:
         credentials = cls.gh_credentials.all()
         if len(credentials) > 0:
             return credentials[0]
@@ -89,11 +90,6 @@ class Catalog:
     def delete_gh_credentials(cls, url: str):
         cls.gh_credentials.remove(where('url') == url)
 
-    @classmethod
-    def get_credentials_from_username(cls, cred_username) -> SDIACredentials:
-        res = cls.sdia_credentials.search(where('username') == cred_username)
-        if res:
-            return res[0]
 
     @classmethod
     def get_sdia_credentials(cls):

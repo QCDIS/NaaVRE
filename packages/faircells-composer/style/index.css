@@ -48,3 +48,20 @@
     margin-top: 150px;
     line-height: 23px;
 }
+
+.wf-submit-link {
+    color: #106ba3;
+    text-decoration: underline;
+}
+
+.wf-submit-text {
+    font-size: medium;
+    margin: 10px;
+}
+
+.wf-submit-box {
+    padding: 10px;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
