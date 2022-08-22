@@ -69,7 +69,7 @@ oset==0.1.3 #==py_1
 pandas==1.4.2 #==py39h1832856_2
 pbr==5.9.0 #==pyhd8ed1ab_0
 pexpect==4.8.0 #==pyh9f0ad1d_2
-pillow==9.2.0 #==py39hae2aec6_1
+pillow==9.1.1 #==py39hae2aec6_1
 pip==22.1.2 #==pyhd8ed1ab_0
 pluggy==1.0.0 #==py39hf3d152e_3
 protobuf>=3.14.0 #==3.20.1 #==py39h5a03fae_0
@@ -86,6 +86,7 @@ pytest-cov #==3.0.0==pyhd8ed1ab_0
 python-dateutil==2.8.2 #==pyhd8ed1ab_0
 pywavelets==1.3.0 #==py39hd257fcd_1
 recommonmark==0.7.1 #==pyhd8ed1ab_0
+requests==2.28.0 #==pyhd8ed1ab_0
 rtree==1.0.0 #==py39hb102c33_1
 scikit-image>=0.19.2 ##====0.19.3 #==py39hde0f152_0
 scipy==1.8.1 #==py39he49c0e8_0
@@ -110,8 +111,8 @@ xarray==2022.3.0 #==pyhd8ed1ab_0
 zipp==3.8.0 #==pyhd8ed1ab_0
 zstd==1.5.2 #==h8a70e8d_1
 typing==3.7.4.3 #==pyhd8ed1ab_0
-sentinelhub==3.7.0
-sentinelhub[AWS]==3.7.0
+sentinelhub
+
 #
 # json-c==0.16
 # libopenblas==0.3.20 #==pthreads_h78a6416_0
