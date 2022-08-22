@@ -42,6 +42,8 @@ class ExportWorkflowHandler(APIHandler):
             self.flush()
             return
 
+        vlab_slug = os.getenv('VLAB_SLUG')
+
         image_repo = registry_credentials[0]['url'].split(
             'https://hub.docker.com/u/')[1]
         loader = PackageLoader('jupyterlab_vre', 'templates')
@@ -50,6 +52,7 @@ class ExportWorkflowHandler(APIHandler):
         template = template_env.get_template('workflow_template_v2.jinja2')
 
         template.stream(
+            vlab_slug=vlab_slug,
             deps_dag=deps_dag,
             cells=cells,
             nodes=nodes,

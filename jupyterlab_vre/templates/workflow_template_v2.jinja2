@@ -88,7 +88,7 @@ spec:
         image: "{{ image_repo }}/{{ cells[nid]['task_name'] }}"
         command: ["/bin/bash", "-c"]
         args:
-          - source /venv/bin/activate; python {{ cells[nid]['task_name'] }}.py{{ ";" if deps_dag[nid]|length == 0 and params|length == 0}}
+          - source /venv/bin/activate; python {{ cells[nid]['task_name'] }}.py
             {% for d in deps_dag[nid] %}
             {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
             {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}

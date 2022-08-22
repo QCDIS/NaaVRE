@@ -39,7 +39,9 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
         const nodes = props.chart.nodes;
 
         Object.keys(nodes).forEach((nid) => {
-            this.global_params.push(...nodes[nid].properties['params']);
+            if (nodes[nid].properties['params']) {
+                this.global_params.push(...nodes[nid].properties['params']);
+            }
         });
     }
 
