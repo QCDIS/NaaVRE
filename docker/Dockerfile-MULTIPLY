@@ -47,6 +47,7 @@ RUN git clone https://github.com/JorisTimmermans/atmospheric_correction.git
 WORKDIR atmospheric_correction
 RUN python setup.py develop
 
+
 WORKDIR $HOME
 RUN git clone https://github.com/JorisTimmermans/data-access.git
 WORKDIR data-access
@@ -90,6 +91,7 @@ WORKDIR BRDF_descriptors
 RUN python setup.py develop
 
 
+WORKDIR $HOME
 RUN jupyter lab build --debug;
 
 CMD ["/usr/local/bin/start-jupyter.sh"]
