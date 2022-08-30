@@ -47,6 +47,7 @@ RUN git clone https://github.com/JorisTimmermans/atmospheric_correction.git
 WORKDIR atmospheric_correction
 RUN python setup.py develop
 
+
 WORKDIR $HOME
 RUN git clone https://github.com/JorisTimmermans/data-access.git
 WORKDIR data-access
@@ -58,9 +59,9 @@ RUN git clone https://github.com/JorisTimmermans/multiply-core.git
 WORKDIR multiply-core
 RUN python setup.py develop
 
-
+RUN ls
 WORKDIR $HOME
-RUN git clone https://github.com/multiply-org/inference-engine.git
+RUN git clone https://github.com/QCDIS/inference-engine.git
 WORKDIR inference-engine
 RUN python setup.py develop
 
@@ -74,7 +75,23 @@ RUN git clone https://github.com/JorisTimmermans/vm-support.git
 WORKDIR vm-support
 RUN python setup.py develop
 
+WORKDIR $HOME
+RUN git clone https://github.com/multiply-org/multiply-orchestration.git
+WORKDIR multiply-orchestration
+RUN python setup.py develop
 
+WORKDIR $HOME
+RUN git clone https://github.com/QCDIS/KaFKA-InferenceEngine.git
+WORKDIR KaFKA-InferenceEngine
+RUN python setup.py develop
+
+WORKDIR $HOME
+RUN git clone https://github.com/QCDIS/BRDF_descriptors.git
+WORKDIR BRDF_descriptors
+RUN python setup.py develop
+
+
+WORKDIR $HOME
 RUN jupyter lab build --debug;
 
 CMD ["/usr/local/bin/start-jupyter.sh"]
