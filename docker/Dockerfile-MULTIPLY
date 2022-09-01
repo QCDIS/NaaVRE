@@ -19,27 +19,6 @@ COPY ./notebooks/ /tmp/notebooks
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 
-USER $NB_USER
-
-RUN conda remove --force -y terminado && \
-    python -m pip install --upgrade pip
-
-RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl && \
-    jupyter serverextension enable --py jupyterlab_vre --user
-
-
-#===== Add pdalpy dependencies ======
-RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
-    conda upgrade --yes numpy && \
-    conda update --yes -n base conda && \
-    pip install dask distributed lazperf==1.4.4 && \
-    pip install laserfarm laspy
-#====================================
-
-RUN pip install jupyterlab-github jupyter-videochat && \
-    jupyter serverextension enable --py jupyter_videochat --user && \
-    jupyter serverextension enable --py jupyterlab_github --user
-
 COPY MULTIPLY_pip_requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
@@ -89,6 +68,28 @@ WORKDIR $HOME
 RUN git clone https://github.com/QCDIS/BRDF_descriptors.git
 WORKDIR BRDF_descriptors
 RUN python setup.py develop
+
+
+USER $NB_USER
+
+RUN conda remove --force -y terminado && \
+    python -m pip install --upgrade pip
+
+RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl && \
+    jupyter serverextension enable --py jupyterlab_vre --user
+
+
+#===== Add pdalpy dependencies ======
+RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
+    conda upgrade --yes numpy && \
+    conda update --yes -n base conda && \
+    pip install dask distributed lazperf==1.4.4 && \
+    pip install laserfarm laspy
+#====================================
+
+RUN pip install jupyterlab-github jupyter-videochat && \
+    jupyter serverextension enable --py jupyter_videochat --user && \
+    jupyter serverextension enable --py jupyterlab_github --user
 
 
 WORKDIR $HOME
