@@ -30,7 +30,6 @@ build-frontend: jlpm-install
 	npx lerna run build --scope @jupyter_vre/faicells-composer
 	npx lerna run build --scope @jupyter_vre/faicells-panel
 	npx lerna run build --scope @jupyter_vre/vre-menu
-	npx lerna run build --scope @jupyter_vre/infrastructure-automator
 
 
 jlpm-install:
@@ -46,7 +45,6 @@ install-ui:
 	$(call INSTALL_LAB_EXTENSION,faircells-composer)
 	$(call INSTALL_LAB_EXTENSION,faircells-panel)
 	$(call INSTALL_LAB_EXTENSION,vre-menu)
-	$(call INSTALL_LAB_EXTENSION,infrastructure-automator)
 
 link-ui:
 	$(call LINK_LAB_EXTENSION,notebook-search)
@@ -57,7 +55,6 @@ link-ui:
 	$(call LINK_LAB_EXTENSION,faircells-composer)
 	$(call LINK_LAB_EXTENSION,faircells-panel)
 	$(call LINK_LAB_EXTENSION,vre-menu)
-	$(call LINK_LAB_EXTENSION,infrastructure-automator)
 
 dist-ui: build-frontend
 	mkdir -p dist
@@ -67,7 +64,6 @@ dist-ui: build-frontend
 	$(call PACKAGE_LAB_EXTENSION,faircells-composer)
 	$(call PACKAGE_LAB_EXTENSION,faircells-panel)
 	$(call PACKAGE_LAB_EXTENSION,vre-menu)
-	$(call PACKAGE_LAB_EXTENSION,infrastructure-automator)
 
 release: dist-ui build-backend
 	

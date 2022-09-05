@@ -1,10 +1,14 @@
 from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 from ._version import __version__ 
 from notebook.utils import url_path_join
-from .handlers import BaseImageHandler, ExtractorHandler, CellsHandler, \
-    CatalogGetAllHandler, ExportWorkflowHandler, SDIAAuthHandler, \
-    SDIACredentialsHandler, TypesHandler, ProvisionAddHandler, \
-    GithubAuthHandler, ImageRegistryAuthHandler
+
+from .component_containerizer.handlers import ExtractorHandler, TypesHandler, BaseImageHandler, CellsHandler
+from .experiment_manager.handlers import ExportWorkflowHandler, ExecuteWorkflowHandler
+from .handlers import CatalogGetAllHandler
+from .notebook_containerizer.handlers import NotebookExtractorHandler
+from .notebook_search.handlers import NotebookSearchHandler
+from .registries.handlers import RegistriesHandler
+from .repositories.handlers import RepositoriesHandler
 
 
 def _jupyter_server_extension_paths():
@@ -18,18 +22,17 @@ def load_jupyter_server_extension(lab_app):
     host_pattern = '.*$'
 
     lab_app.web_app.add_handlers(host_pattern, [
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/extractor'), ExtractorHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebooksearch'), NotebookSearchHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/types'), TypesHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/baseimage'), BaseImageHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/sdia/testauth'), SDIAAuthHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/sdia/credentials'), SDIACredentialsHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/github/savetoken'), GithubAuthHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/image_registry/savetoken'), ImageRegistryAuthHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/catalog/cells'), CellsHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/extract'), ExtractorHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/nbcontainerizer/extract'), NotebookExtractorHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/types'), TypesHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/baseimage'), BaseImageHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/addcell'), CellsHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/catalog/cells/all'), CatalogGetAllHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/catalog/provision/add'), ProvisionAddHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/workflow/export'), ExportWorkflowHandler)
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/expmanager/export'), ExportWorkflowHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/expmanager/execute'), ExecuteWorkflowHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/repositories/?'), RepositoriesHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/registries/?'), RegistriesHandler)
     ])
     
     lab_app.log.info("Registered FAIR-Cells extension at URL path /vre")
