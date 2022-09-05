@@ -1,0 +1,868 @@
+{
+  "offset": {
+    "x": 0,
+    "y": 0
+  },
+  "scale": 1,
+  "nodes": {
+    "1350255b-e160-493b-b4a0-e021c6c422d1": {
+      "id": "1350255b-e160-493b-b4a0-e021c6c422d1",
+      "position": {
+        "x": 22,
+        "y": 19
+      },
+      "orientation": 0,
+      "type": "input-output",
+      "ports": {
+        "laz_files": {
+          "properties": {
+            "color": "#e0cc6c"
+          },
+          "id": "laz_files_e7a6e76",
+          "type": "right",
+          "position": {
+            "x": 220,
+            "y": 74.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Fetch Laz Files 01-06-22",
+        "vars": [
+          {
+            "name": "laz_files",
+            "direction": "output",
+            "type": "datatype",
+            "color": "#e0cc6c"
+          }
+        ],
+        "params": [
+          "param_login",
+          "param_remote_path_ahn",
+          "param_hostname",
+          "param_password"
+        ],
+        "inputs": [],
+        "outputs": [
+          "laz_files"
+        ],
+        "og_node_id": "e7a6e76",
+        "deps": [
+          "laserfarm",
+          ""
+        ]
+      },
+      "size": {
+        "width": 250,
+        "height": 150
+      }
+    },
+    "5e37d254-b7b8-4054-a73d-054076aede21": {
+      "id": "5e37d254-b7b8-4054-a73d-054076aede21",
+      "position": {
+        "x": 351.99999999999994,
+        "y": 43.79874213836478
+      },
+      "orientation": 0,
+      "type": "splitter",
+      "ports": {
+        "splitter_source": {
+          "id": "splitter_source_5e37d25",
+          "type": "left",
+          "properties": {
+            "special_node": 1,
+            "color": "#000000"
+          },
+          "position": {
+            "x": 0.5,
+            "y": 49.5
+          }
+        },
+        "splitter_target": {
+          "id": "splitter_target_5e37d25",
+          "type": "right",
+          "properties": {
+            "special_node": 1,
+            "color": "#000000"
+          },
+          "position": {
+            "x": 197.5,
+            "y": 49.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Splitter",
+        "scalingFactor": 1
+      },
+      "size": {
+        "width": 200,
+        "height": 100
+      }
+    },
+    "207ba6c7-da25-455f-8f3d-de1cf6e38b50": {
+      "id": "207ba6c7-da25-455f-8f3d-de1cf6e38b50",
+      "position": {
+        "x": 608.6037735849061,
+        "y": 27.446540880503125
+      },
+      "orientation": 0,
+      "type": "input-output",
+      "ports": {
+        "laz_files": {
+          "properties": {
+            "color": "#e0cc6c"
+          },
+          "id": "laz_files_82d0855",
+          "type": "left",
+          "position": {
+            "x": 28,
+            "y": 74.5
+          }
+        },
+        "split_laz_files": {
+          "properties": {
+            "color": "#5382ac"
+          },
+          "id": "split_laz_files_82d0855",
+          "type": "right",
+          "position": {
+            "x": 201.5,
+            "y": 74.5
+          }
+        }
+      },
+      "properties": {
+        "title": "split big files 01-60-22",
+        "vars": [
+          {
+            "name": "laz_files",
+            "direction": "input",
+            "type": "datatype",
+            "color": "#e0cc6c"
+          },
+          {
+            "name": "split_laz_files",
+            "direction": "output",
+            "type": "datatype",
+            "color": "#5382ac"
+          }
+        ],
+        "params": [
+          "param_hostname",
+          "param_remote_path_ahn",
+          "param_password",
+          "param_login",
+          "param_max_filesize",
+          "param_laz_compression_factor"
+        ],
+        "inputs": [
+          "laz_files"
+        ],
+        "outputs": [
+          "split_laz_files"
+        ],
+        "og_node_id": "82d0855",
+        "deps": [
+          "",
+          "webdav3"
+        ]
+      },
+      "size": {
+        "width": 250,
+        "height": 150
+      }
+    },
+    "1b160b82-3eb5-4b57-981b-aae71ba8c437": {
+      "id": "1b160b82-3eb5-4b57-981b-aae71ba8c437",
+      "position": {
+        "x": 921.8113207547168,
+        "y": 43.79874213836477
+      },
+      "orientation": 0,
+      "type": "splitter",
+      "ports": {
+        "splitter_source": {
+          "id": "splitter_source_1b160b8",
+          "type": "left",
+          "properties": {
+            "special_node": 1,
+            "color": "#000000"
+          },
+          "position": {
+            "x": 0.5,
+            "y": 49.5
+          }
+        },
+        "splitter_target": {
+          "id": "splitter_target_1b160b8",
+          "type": "right",
+          "properties": {
+            "special_node": 1,
+            "color": "#000000"
+          },
+          "position": {
+            "x": 197.5,
+            "y": 49.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Splitter",
+        "scalingFactor": 1
+      },
+      "size": {
+        "width": 200,
+        "height": 100
+      }
+    },
+    "cdbb0c0d-9aa1-4678-bc48-d664218bbb8c": {
+      "id": "cdbb0c0d-9aa1-4678-bc48-d664218bbb8c",
+      "position": {
+        "x": 0,
+        "y": 209.83647798742138
+      },
+      "orientation": 0,
+      "type": "input-output",
+      "ports": {
+        "split_laz_files": {
+          "properties": {
+            "color": "#5382ac"
+          },
+          "id": "split_laz_files_7c1e363",
+          "type": "left",
+          "position": {
+            "x": 46.5,
+            "y": 74.5
+          }
+        },
+        "remote_path_retiled": {
+          "properties": {
+            "color": "#53abac"
+          },
+          "id": "remote_path_retiled_7c1e363",
+          "type": "right",
+          "position": {
+            "x": 197.5,
+            "y": 74.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Retiling 01-06-22",
+        "vars": [
+          {
+            "name": "split_laz_files",
+            "direction": "input",
+            "type": "datatype",
+            "color": "#5382ac"
+          },
+          {
+            "name": "remote_path_retiled",
+            "direction": "output",
+            "type": "datatype",
+            "color": "#53abac"
+          }
+        ],
+        "params": [
+          "param_max_x",
+          "param_max_y",
+          "param_n_tiles_side",
+          "param_min_x",
+          "param_min_y",
+          "param_login",
+          "param_password",
+          "param_hostname"
+        ],
+        "inputs": [
+          "split_laz_files"
+        ],
+        "outputs": [
+          "remote_path_retiled"
+        ],
+        "og_node_id": "7c1e363",
+        "deps": [
+          "",
+          "laserfarm"
+        ]
+      },
+      "size": {
+        "width": 250,
+        "height": 150
+      }
+    },
+    "2ee55146-15c9-4e0d-bc83-0bc78a62616b": {
+      "id": "2ee55146-15c9-4e0d-bc83-0bc78a62616b",
+      "position": {
+        "x": 388.4779874213837,
+        "y": 231.22012578616352
+      },
+      "orientation": 0,
+      "type": "input-output",
+      "ports": {
+        "remote_path_retiled": {
+          "properties": {
+            "color": "#53abac"
+          },
+          "id": "remote_path_retiled_09a2123",
+          "type": "left",
+          "position": {
+            "x": 50.5,
+            "y": 74.5
+          }
+        },
+        "tiles": {
+          "properties": {
+            "color": "#406abf"
+          },
+          "id": "tiles_09a2123",
+          "type": "right",
+          "position": {
+            "x": 233,
+            "y": 74.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Fetch Tiles 01-06-22",
+        "vars": [
+          {
+            "name": "remote_path_retiled",
+            "direction": "input",
+            "type": "datatype",
+            "color": "#53abac"
+          },
+          {
+            "name": "tiles",
+            "direction": "output",
+            "type": "datatype",
+            "color": "#406abf"
+          }
+        ],
+        "params": [
+          "param_password",
+          "param_login",
+          "param_hostname"
+        ],
+        "inputs": [
+          "remote_path_retiled"
+        ],
+        "outputs": [
+          "tiles"
+        ],
+        "og_node_id": "09a2123",
+        "deps": [
+          "laserfarm",
+          ""
+        ]
+      },
+      "size": {
+        "width": 250,
+        "height": 150
+      }
+    },
+    "b2db8050-5822-4ed5-8dd1-b535768c6c66": {
+      "id": "b2db8050-5822-4ed5-8dd1-b535768c6c66",
+      "position": {
+        "x": 985.9622641509435,
+        "y": 212.35220125786165
+      },
+      "orientation": 0,
+      "type": "input-output",
+      "ports": {
+        "tiles": {
+          "properties": {
+            "color": "#406abf"
+          },
+          "id": "tiles_cd06205",
+          "type": "left",
+          "position": {
+            "x": 15,
+            "y": 74.5
+          }
+        },
+        "remote_path_norm": {
+          "properties": {
+            "color": "#a1c587"
+          },
+          "id": "remote_path_norm_cd06205",
+          "type": "right",
+          "position": {
+            "x": 197.5,
+            "y": 74.5
+          }
+        }
+      },
+      "properties": {
+        "title": "normalization 01-06-22",
+        "vars": [
+          {
+            "name": "tiles",
+            "direction": "input",
+            "type": "datatype",
+            "color": "#406abf"
+          },
+          {
+            "name": "remote_path_norm",
+            "direction": "output",
+            "type": "datatype",
+            "color": "#a1c587"
+          }
+        ],
+        "params": [
+          "param_password",
+          "param_login",
+          "param_hostname"
+        ],
+        "inputs": [
+          "tiles"
+        ],
+        "outputs": [
+          "remote_path_norm"
+        ],
+        "og_node_id": "cd06205",
+        "deps": [
+          "",
+          "laserfarm"
+        ]
+      },
+      "size": {
+        "width": 250,
+        "height": 150
+      }
+    },
+    "9bb65470-7b39-49e2-a260-923f79bb5340": {
+      "id": "9bb65470-7b39-49e2-a260-923f79bb5340",
+      "position": {
+        "x": 706.7169811320754,
+        "y": 237.50943396226418
+      },
+      "orientation": 0,
+      "type": "splitter",
+      "ports": {
+        "splitter_source": {
+          "id": "splitter_source_9bb6547",
+          "type": "left",
+          "properties": {
+            "special_node": 1,
+            "color": "#000000"
+          },
+          "position": {
+            "x": 0.5,
+            "y": 49.5
+          }
+        },
+        "splitter_target": {
+          "id": "splitter_target_9bb6547",
+          "type": "right",
+          "properties": {
+            "special_node": 1,
+            "color": "#000000"
+          },
+          "position": {
+            "x": 197.5,
+            "y": 49.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Splitter",
+        "scalingFactor": 1
+      },
+      "size": {
+        "width": 200,
+        "height": 100
+      }
+    },
+    "7cf85ac4-93f5-4a03-8631-6b7bf59ccd9d": {
+      "id": "7cf85ac4-93f5-4a03-8631-6b7bf59ccd9d",
+      "position": {
+        "x": 0,
+        "y": 408.57861635220127
+      },
+      "orientation": 0,
+      "type": "input-output",
+      "ports": {
+        "remote_path_norm": {
+          "properties": {
+            "color": "#a1c587"
+          },
+          "id": "remote_path_norm_c2c5465",
+          "type": "left",
+          "position": {
+            "x": 50.5,
+            "y": 74.5
+          }
+        },
+        "norm_tiles": {
+          "properties": {
+            "color": "#936b1f"
+          },
+          "id": "norm_tiles_c2c5465",
+          "type": "right",
+          "position": {
+            "x": 211,
+            "y": 74.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Fetch norm Tiles 01-06-22",
+        "vars": [
+          {
+            "name": "remote_path_norm",
+            "direction": "input",
+            "type": "datatype",
+            "color": "#a1c587"
+          },
+          {
+            "name": "norm_tiles",
+            "direction": "output",
+            "type": "datatype",
+            "color": "#936b1f"
+          }
+        ],
+        "params": [
+          "param_password",
+          "param_login",
+          "param_hostname"
+        ],
+        "inputs": [
+          "remote_path_norm"
+        ],
+        "outputs": [
+          "norm_tiles"
+        ],
+        "og_node_id": "c2c5465",
+        "deps": [
+          "laserfarm",
+          ""
+        ]
+      },
+      "size": {
+        "width": 250,
+        "height": 150
+      }
+    },
+    "071deaa2-52ed-4aae-9f58-b9abf49073a4": {
+      "id": "071deaa2-52ed-4aae-9f58-b9abf49073a4",
+      "position": {
+        "x": 383.4465408805031,
+        "y": 419.8993710691822
+      },
+      "orientation": 0,
+      "type": "splitter",
+      "ports": {
+        "splitter_source": {
+          "id": "splitter_source_071deaa",
+          "type": "left",
+          "properties": {
+            "special_node": 1,
+            "color": "#000000"
+          },
+          "position": {
+            "x": 0.5,
+            "y": 49.5
+          }
+        },
+        "splitter_target": {
+          "id": "splitter_target_071deaa",
+          "type": "right",
+          "properties": {
+            "special_node": 1,
+            "color": "#000000"
+          },
+          "position": {
+            "x": 197.5,
+            "y": 49.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Splitter",
+        "scalingFactor": 1
+      },
+      "size": {
+        "width": 200,
+        "height": 100
+      }
+    },
+    "d364ef06-40e4-41bb-82ba-2aa1a41f4d9e": {
+      "id": "d364ef06-40e4-41bb-82ba-2aa1a41f4d9e",
+      "position": {
+        "x": 694.1383647798742,
+        "y": 418.64150943396237
+      },
+      "orientation": 0,
+      "type": "input-output",
+      "ports": {
+        "norm_tiles": {
+          "properties": {
+            "color": "#936b1f"
+          },
+          "id": "norm_tiles_03911e1",
+          "type": "left",
+          "position": {
+            "x": 37,
+            "y": 74.5
+          }
+        },
+        "features": {
+          "properties": {
+            "color": "#1f7a93"
+          },
+          "id": "features_03911e1",
+          "type": "right",
+          "position": {
+            "x": 218.5,
+            "y": 74.5
+          }
+        }
+      },
+      "properties": {
+        "title": "Feature Extraction 01-06-22",
+        "vars": [
+          {
+            "name": "norm_tiles",
+            "direction": "input",
+            "type": "datatype",
+            "color": "#936b1f"
+          },
+          {
+            "name": "features",
+            "direction": "output",
+            "type": "datatype",
+            "color": "#1f7a93"
+          }
+        ],
+        "params": [
+          "param_max_x",
+          "param_filter_type",
+          "param_tile_mesh_size",
+          "param_feature_name",
+          "param_max_y",
+          "param_n_tiles_side",
+          "param_attribute",
+          "param_min_x",
+          "param_min_y",
+          "param_validate_precision",
+          "param_login",
+          "param_password",
+          "param_apply_filter_value",
+          "param_hostname"
+        ],
+        "inputs": [
+          "norm_tiles"
+        ],
+        "outputs": [
+          "features"
+        ],
+        "og_node_id": "03911e1",
+        "deps": [
+          "",
+          "laserfarm"
+        ]
+      },
+      "size": {
+        "width": 250,
+        "height": 150
+      }
+    },
+    "8672fc95-f2e1-4474-8a6f-898491b812c2": {
+      "id": "8672fc95-f2e1-4474-8a6f-898491b812c2",
+      "position": {
+        "x": 1050.1132075471705,
+        "y": 426.1886792452829
+      },
+      "orientation": 0,
+      "type": "input-output",
+      "ports": {
+        "features": {
+          "properties": {
+            "color": "#1f7a93"
+          },
+          "id": "features_5dbc87a",
+          "type": "left",
+          "position": {
+            "x": 29.5,
+            "y": 74.5
+          }
+        },
+        "remote_path_geotiffs": {
+          "properties": {
+            "color": "#783a6f"
+          },
+          "id": "remote_path_geotiffs_5dbc87a",
+          "type": "right",
+          "position": {
+            "x": 197.5,
+            "y": 74.5
+          }
+        }
+      },
+      "properties": {
+        "title": "GeoTIFF Export 01-06-22",
+        "vars": [
+          {
+            "name": "features",
+            "direction": "input",
+            "type": "datatype",
+            "color": "#1f7a93"
+          },
+          {
+            "name": "remote_path_geotiffs",
+            "direction": "output",
+            "type": "datatype",
+            "color": "#783a6f"
+          }
+        ],
+        "params": [
+          "param_password",
+          "param_login",
+          "param_feature_name",
+          "param_hostname"
+        ],
+        "inputs": [
+          "features"
+        ],
+        "outputs": [
+          "remote_path_geotiffs"
+        ],
+        "og_node_id": "5dbc87a",
+        "deps": [
+          "",
+          "laserfarm"
+        ]
+      },
+      "size": {
+        "width": 250,
+        "height": 150
+      }
+    }
+  },
+  "links": {
+    "cdeaa74e-99b5-4dc3-8320-8de75fc42f37": {
+      "id": "cdeaa74e-99b5-4dc3-8320-8de75fc42f37",
+      "from": {
+        "nodeId": "1350255b-e160-493b-b4a0-e021c6c422d1",
+        "portId": "laz_files_e7a6e76"
+      },
+      "to": {
+        "nodeId": "5e37d254-b7b8-4054-a73d-054076aede21",
+        "portId": "splitter_source_5e37d25"
+      }
+    },
+    "5bf47c62-6ceb-4354-9fb8-9e9d236a1e2e": {
+      "id": "5bf47c62-6ceb-4354-9fb8-9e9d236a1e2e",
+      "from": {
+        "nodeId": "5e37d254-b7b8-4054-a73d-054076aede21",
+        "portId": "splitter_target_5e37d25"
+      },
+      "to": {
+        "nodeId": "207ba6c7-da25-455f-8f3d-de1cf6e38b50",
+        "portId": "laz_files_82d0855"
+      }
+    },
+    "7fd9bd2e-e7b0-4314-8ae6-c15aa57e2749": {
+      "id": "7fd9bd2e-e7b0-4314-8ae6-c15aa57e2749",
+      "from": {
+        "nodeId": "207ba6c7-da25-455f-8f3d-de1cf6e38b50",
+        "portId": "split_laz_files_82d0855"
+      },
+      "to": {
+        "nodeId": "1b160b82-3eb5-4b57-981b-aae71ba8c437",
+        "portId": "splitter_source_1b160b8"
+      }
+    },
+    "c17a5442-f805-44b2-bd93-9fa62c4963a2": {
+      "id": "c17a5442-f805-44b2-bd93-9fa62c4963a2",
+      "from": {
+        "nodeId": "1b160b82-3eb5-4b57-981b-aae71ba8c437",
+        "portId": "splitter_target_1b160b8"
+      },
+      "to": {
+        "nodeId": "cdbb0c0d-9aa1-4678-bc48-d664218bbb8c",
+        "portId": "split_laz_files_7c1e363"
+      }
+    },
+    "45148207-8b27-492a-bbbe-de82655725ad": {
+      "id": "45148207-8b27-492a-bbbe-de82655725ad",
+      "from": {
+        "nodeId": "cdbb0c0d-9aa1-4678-bc48-d664218bbb8c",
+        "portId": "remote_path_retiled_7c1e363"
+      },
+      "to": {
+        "nodeId": "2ee55146-15c9-4e0d-bc83-0bc78a62616b",
+        "portId": "remote_path_retiled_09a2123"
+      }
+    },
+    "ffa28108-9519-4903-b763-523b448fdbca": {
+      "id": "ffa28108-9519-4903-b763-523b448fdbca",
+      "from": {
+        "nodeId": "2ee55146-15c9-4e0d-bc83-0bc78a62616b",
+        "portId": "tiles_09a2123"
+      },
+      "to": {
+        "nodeId": "9bb65470-7b39-49e2-a260-923f79bb5340",
+        "portId": "splitter_source_9bb6547"
+      }
+    },
+    "45dd09ba-f386-4920-afd6-fd19d36885b2": {
+      "id": "45dd09ba-f386-4920-afd6-fd19d36885b2",
+      "from": {
+        "nodeId": "9bb65470-7b39-49e2-a260-923f79bb5340",
+        "portId": "splitter_target_9bb6547"
+      },
+      "to": {
+        "nodeId": "b2db8050-5822-4ed5-8dd1-b535768c6c66",
+        "portId": "tiles_cd06205"
+      }
+    },
+    "eadc160e-3927-4e49-a8ca-62be8888de6a": {
+      "id": "eadc160e-3927-4e49-a8ca-62be8888de6a",
+      "from": {
+        "nodeId": "b2db8050-5822-4ed5-8dd1-b535768c6c66",
+        "portId": "remote_path_norm_cd06205"
+      },
+      "to": {
+        "nodeId": "7cf85ac4-93f5-4a03-8631-6b7bf59ccd9d",
+        "portId": "remote_path_norm_c2c5465"
+      }
+    },
+    "4edff800-b8cc-46c2-9742-aba62fe6b3bb": {
+      "id": "4edff800-b8cc-46c2-9742-aba62fe6b3bb",
+      "from": {
+        "nodeId": "7cf85ac4-93f5-4a03-8631-6b7bf59ccd9d",
+        "portId": "norm_tiles_c2c5465"
+      },
+      "to": {
+        "nodeId": "071deaa2-52ed-4aae-9f58-b9abf49073a4",
+        "portId": "splitter_source_071deaa"
+      }
+    },
+    "b07d64be-f7d5-4a98-81a0-5b309a20f372": {
+      "id": "b07d64be-f7d5-4a98-81a0-5b309a20f372",
+      "from": {
+        "nodeId": "071deaa2-52ed-4aae-9f58-b9abf49073a4",
+        "portId": "splitter_target_071deaa"
+      },
+      "to": {
+        "nodeId": "d364ef06-40e4-41bb-82ba-2aa1a41f4d9e",
+        "portId": "norm_tiles_03911e1"
+      }
+    },
+    "437e42cf-f605-4459-b925-4296308ad87a": {
+      "id": "437e42cf-f605-4459-b925-4296308ad87a",
+      "from": {
+        "nodeId": "d364ef06-40e4-41bb-82ba-2aa1a41f4d9e",
+        "portId": "features_03911e1"
+      },
+      "to": {
+        "nodeId": "8672fc95-f2e1-4474-8a6f-898491b812c2",
+        "portId": "features_5dbc87a"
+      }
+    }
+  },
+  "selected": {},
+  "hovered": {}
+}

@@ -2,7 +2,10 @@ name: Build wheel
 
 on:
   workflow_call:
-
+    inputs:
+      upload:
+        required: true
+        type: boolean
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,20 +29,18 @@ jobs:
         $CONDA/bin/conda install -c conda-forge typescript
     - name: Install nodejs dependencies
       run: |
-        npm install @mrblenny/react-flow-chart@"^0.0.14" --force
-        npm install @types/node --save-dev
-        npm install lerna
-        npm install
+        npm install lerna --force
+        npm install --force
     - name: make
       run: |
         npx lerna run build --scope @jupyter_vre/chart-customs
-        npx lerna run build --scope @jupyter_vre/components
         npx lerna run build --scope @jupyter_vre/core
+        npx lerna run build --scope @jupyter_vre/components
         make install-backend && make build-frontend && make install-ui && make link-ui
         make release
-
     - name: 'Upload wheel artifact'
       uses: actions/upload-artifact@v3
       with:
         name: jupyterlab_vre
         path: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
+      if: ${{ inputs.upload }}

@@ -1,43 +1,49 @@
+[![make](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml)
+[![make release](https://github.com/QCDIS/NaaVRE/actions/workflows/make-relese.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/make-relese.yml)
+[![registry push](https://github.com/QCDIS/NaaVRE/actions/workflows/registry-push.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/registry-push.yml)
 # Getting started with NaaVRE
 
-## Re-Configure Git and Registry credentials
+This is a quick start guide to use the NaaVRE.
 
-Start a new launcher open a new terminal, and add the following command: 
-```python
-python conf_vl_repos.py --force=True --github_url=https://github.com/QCDIS/NaaVRE-container-prestage --github_token=SECRET_TOKEN --registry_url=https://hub.docker.com/u/qcdis
-```
 
-Note that you need to replace the SECRET_TOKEN with the git token provided to you
+https://user-images.githubusercontent.com/9680609/175039462-4a9db9a5-2b5e-4c13-be5e-7b5ee6283f89.mp4
+
+
+
+## Log in to NaaVRE
+
+Go to one of the deployed NaaVREs
+Click on 'Sign in'
+
+<img src="https://user-images.githubusercontent.com/9680609/162737176-40a0f99c-914a-430e-9722-d09b9e564fb5.png" width="50%" height="50%">
 
 ## Containerize notebook cells 
 
-Go to '/examples/notebooks/eEcolidar/'. 
+
 Open the notebook. Next on the left click on the LifeWatch panel.
 
 <img src="https://user-images.githubusercontent.com/9680609/162744335-eea6a0bd-14d5-4ed4-b678-c01e3b71188e.png" width="50%" height="50%">
 
-Select the 'Fetch Laz File' cell.
+Select a cell.
 
 <img src="https://user-images.githubusercontent.com/9680609/162744821-fffaa346-2aa9-4e8f-9894-d54bc1928096.png" width="50%" height="50%">
 
-On the 'Inputs and Outputs' of the Component containerizer select the types as shown below. When all the types are added Click 'ADD TO CATALOG'
+On the 'Inputs and Outputs' of the Component containerizer select the types and base image as shown below. When all the types are added 
+click 'CREATE'
 
-<img src="https://user-images.githubusercontent.com/9680609/162745361-6d09440f-9ae9-434d-8ed8-a81f28865b1a.png" width="50%" height="50%">
+<img src="https://user-images.githubusercontent.com/9680609/175019281-9f5ac9c7-15fb-49ac-a62c-ef121d2b4949.png" width="50%" height="50%">
 
-Select the 'Retiling' cell. On the 'Inputs and Outputs' of the Component containerizer select the types as shown below. When all the types are added Click 'ADD TO CATALOG'
-
-<img src="https://user-images.githubusercontent.com/9680609/162830069-1f0ba0a9-f068-4940-a448-100cd278c74e.png" width="50%" height="50%">
-
+You can repeat the same for all the notebook's cell.
 
 ----
 
 ## NOTE 
 
-When you click 'ADD TO CATALOG' you may get the following warning:
+When you click 'CREATE' you may get the following warning:
 
-<img src="https://user-images.githubusercontent.com/9680609/162751191-c0000e65-9132-44c5-9967-d0a6b65c7743.png" width="50%" height="50%">
+<img src="https://user-images.githubusercontent.com/9680609/175019467-2ea32a3c-b8b3-4db8-9533-15a1146d264c.png" width="50%" height="50%">
 
- To solve this go through all the inputs and outputs, select a different type and then back the type shown in the image above. 
+ To solve this go delete the base image and selected it again. 
 
 ----
 
@@ -46,16 +52,24 @@ When you click 'ADD TO CATALOG' you may get the following warning:
 
 Go to 'File->New Launcher'. On the bottom section 'LifeWatch VRE' click on the 'Experiment Manager'.
 
-<img src="https://user-images.githubusercontent.com/9680609/162753068-8704c396-5391-45c5-853c-48d607df3472.png" width="50%" height="50%">
+<img src="https://user-images.githubusercontent.com/9680609/175019723-84b7abd6-b23d-4b4e-acd5-b2f085ad01ce.png" width="50%" height="50%">
+
+Open the catalog with the exported cells.
+
+<img src="https://user-images.githubusercontent.com/9680609/175020246-25367cb6-90ae-44b1-9b73-1c863f6001bf.png" width="50%" height="50%">
+
+Select the cell you want to add in your workpiece and clik 'ADD TO WORKSPACE'
+
+<img src="https://user-images.githubusercontent.com/9680609/175020686-1b25f571-62f9-46c8-88b5-a74697286af5.png" width="50%" height="50%">
 
 By dragging and dropping the cells on the left, construct the workflow shown bellow. 
 
-<img src="https://user-images.githubusercontent.com/9680609/162758227-2eebddd7-3e84-490b-8df4-1c7a80c55d71.png" width="50%" height="50%">
+<img src="https://user-images.githubusercontent.com/9680609/175020879-2ee6a0d6-21f6-497d-9b5d-616e58de7730.png" width="50%" height="50%">
 
 
 Click on 'EXPORT WORKFLOW' and go to the File Browser by selecting the icon on the top left. 
 
-<img src="https://user-images.githubusercontent.com/9680609/162760145-9dfcfe6a-b105-4474-badb-057d5225b6de.png" width="50%" height="50%">
+<img src="https://user-images.githubusercontent.com/9680609/175021742-93c6a411-d5f2-4646-a097-474ffae2edb5.png" width="50%" height="50%">
 
 There you should see a file named 'workflow.yaml'. If you open it, it should look like this:
 
@@ -68,71 +82,117 @@ spec:
     entrypoint: workflow-test
     arguments:
       parameters:
-      - name: param_login
+      - name: param_max_filesize
+        value: ''
+      - name: param_laz_compression_factor
+        value: ''
+      - name: param_remote_path_ahn
+        value: ''
+      - name: param_password
         value: ''
       - name: param_hostname
         value: ''
-      - name: param_password
+      - name: param_login
+        value: ''
+      - name: param_remote_path_root
         value: ''
     templates:
     - name: workflow-test
       dag:
         tasks:
-        - name: fetch-laz-files-demo
-          template: fetch-laz-files-demo-tmp
+        - name: fetch-laz-files-6c966b7
+          template: fetch-laz-files-6c966b7-tmp
           arguments:
             parameters:
             - {name: param_login, value: "{{workflow.parameters.param_login}}"}
-            - {name: param_hostname, value: "{{workflow.parameters.param_hostname}}"}
             - {name: param_password, value: "{{workflow.parameters.param_password}}"}
-        - name: retiling-demo
-          dependencies: [ fetch-laz-files-demo ]
-          template: retiling-demo-tmp
+            - {name: param_hostname, value: "{{workflow.parameters.param_hostname}}"}
+            - {name: param_remote_path_ahn, value: "{{workflow.parameters.param_remote_path_ahn}}"}
+        - name: splitter-4c8b03b
+          dependencies: [ fetch-laz-files-6c966b7 ]
+          template: splitter-4c8b03b-tmp
           arguments:
             parameters:
-            - {name: laz_files, value: "{{item}}"}
-            - {name: param_login, value: "{{workflow.parameters.param_login}}"}
-            - {name: param_hostname, value: "{{workflow.parameters.param_hostname}}"}
+            - {name: laz_files_c8e452d, value: "{{tasks.fetch-laz-files-6c966b7.outputs.parameters.laz_files_c8e452d}}"}
+        - name: split-big-files-482e36f
+          dependencies: [ splitter-4c8b03b ]
+          template: split-big-files-482e36f-tmp
+          arguments:
+            parameters:
+            - {name: splitter_target_4c8b03b, value: "{{item}}"}
+            - {name: param_max_filesize, value: "{{workflow.parameters.param_max_filesize}}"}
+            - {name: param_laz_compression_factor, value: "{{workflow.parameters.param_laz_compression_factor}}"}
+            - {name: param_remote_path_ahn, value: "{{workflow.parameters.param_remote_path_ahn}}"}
             - {name: param_password, value: "{{workflow.parameters.param_password}}"}
-          withParam: "{{tasks.fetch-laz-files-demo.outputs.parameters.outs}}"
+            - {name: param_hostname, value: "{{workflow.parameters.param_hostname}}"}
+            - {name: param_login, value: "{{workflow.parameters.param_login}}"}
+            - {name: param_remote_path_root, value: "{{workflow.parameters.param_remote_path_root}}"}
+          withParam: "{{tasks.splitter-4c8b03b.outputs.parameters.splitter_target_4c8b03b}}"
 
-    - name: fetch-laz-files-demo-tmp
+    - name: fetch-laz-files-6c966b7-tmp
       outputs:
         parameters:
-          - name: outs
+          - name: laz_files_c8e452d
             valueFrom:
-              path: /tmp/outputs.json
+              path: /tmp/laz_files_c8e452d.json
       container:
-        image: "qcdis/fetch-laz-files-demo"
+        image: "qcdis/fetch-laz-files"
         command: ["/bin/bash", "-c"]
         args:
-          - source /venv/bin/activate;
-            python fetch-laz-files-demo.py
-            --param_login {{workflow.parameters.param_login}}
-            --param_hostname {{workflow.parameters.param_hostname}}
-            --param_password {{workflow.parameters.param_password}};
-    - name: retiling-demo-tmp
+          - source /venv/bin/activate; python fetch-laz-files.py
+            --param_login "{{workflow.parameters.param_login}}"
+            --param_password "{{workflow.parameters.param_password}}"
+            --param_hostname "{{workflow.parameters.param_hostname}}"
+            --param_remote_path_ahn "{{workflow.parameters.param_remote_path_ahn}}"
+            --id "c8e452d";
+    - name: splitter-4c8b03b-tmp
       inputs:
         parameters:
-        - name: laz_files
-        - name: param_login
-        - name: param_hostname
-        - name: param_password
+        - name: laz_files_c8e452d
       outputs:
         parameters:
-          - name: outs
+          - name: splitter_target_4c8b03b
             valueFrom:
-              path: /tmp/outputs.json
+              path: /tmp/splitter_target_4c8b03b.json
+      script:
+        image: python:alpine3.9
+        command: [python]
+        source: |
+          import json
+          laz_files_c8e452d = {{inputs.parameters.laz_files_c8e452d}}
+          f_out = open("/tmp/splitter_target_4c8b03b.json", "w")
+          f_out.write(json.dumps(laz_files_c8e452d))
+          f_out.close()
+    - name: split-big-files-482e36f-tmp
+      inputs:
+        parameters:
+        - name: splitter_target_4c8b03b
+        - name: param_max_filesize
+        - name: param_laz_compression_factor
+        - name: param_remote_path_ahn
+        - name: param_password
+        - name: param_hostname
+        - name: param_login
+        - name: param_remote_path_root
+      outputs:
+        parameters:
+          - name: split_laz_files_947f5fa
+            valueFrom:
+              path: /tmp/split_laz_files_947f5fa.json
       container:
-        image: "qcdis/retiling-demo"
+        image: "qcdis/split-big-files"
         command: ["/bin/bash", "-c"]
         args:
-          - source /venv/bin/activate;
-            echo  {{inputs.parameters.laz_files}} > /tmp/inputs.json;
-            python retiling-demo.py
-            --param_login {{workflow.parameters.param_login}}
-            --param_hostname {{workflow.parameters.param_hostname}}
-            --param_password {{workflow.parameters.param_password}};
+          - source /venv/bin/activate; python split-big-files.py
+            --laz "{{inputs.parameters.splitter_target_4c8b03b}}"
+            --param_max_filesize "{{workflow.parameters.param_max_filesize}}"
+            --param_laz_compression_factor "{{workflow.parameters.param_laz_compression_factor}}"
+            --param_remote_path_ahn "{{workflow.parameters.param_remote_path_ahn}}"
+            --param_password "{{workflow.parameters.param_password}}"
+            --param_hostname "{{workflow.parameters.param_hostname}}"
+            --param_login "{{workflow.parameters.param_login}}"
+            --param_remote_path_root "{{workflow.parameters.param_remote_path_root}}"
+            --id "947f5fa";
 ```
 
 Download that file on your own machine. 
@@ -153,11 +213,10 @@ Now click on '+ SUBMIT'
 <img src="https://user-images.githubusercontent.com/9680609/162762394-e6839f7f-8e95-4775-9425-cdbbeaa28b3b.png" width="50%" height="50%">
 
 
-Fill in the perimeters as shown below and click '+ SUBMIT'
+Fill in the perimeters as shown below and the necessary webdav credentials and click '+ SUBMIT'
 
-<img src="https://user-images.githubusercontent.com/9680609/162762707-1eba8e59-6d7b-4cc2-8bde-391863e63e5d.png" width="50%" height="50%">
+<img src="https://user-images.githubusercontent.com/9680609/175022341-793c574e-0841-421e-835f-c27216b3b8b9.png" width="50%" height="50%">
 
 When the workflow completes its execution  it should look like this:
 
-<img src="https://user-images.githubusercontent.com/9680609/162831481-23c8a69c-1bf4-4b96-ab9d-01da6b618c72.png" width="50%" height="50%">
-
+<img src="https://user-images.githubusercontent.com/9680609/175033417-44e16626-5a73-449a-88af-2cf21f0599e5.png" width="50%" height="50%">

@@ -2,6 +2,8 @@ FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e
 
 USER root
 
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install s3fs
+
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 COPY ./notebooks/ /tmp/notebooks
@@ -14,9 +16,12 @@ RUN conda remove --force -y terminado && \
     python -m pip install --upgrade pip
 
 RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl && \
-    jupyter serverextension enable --py jupyterlab_vre --user && \
-    jupyter lab build --debug;
+    jupyter serverextension enable --py jupyterlab_vre --user
 
+RUN pip install jupyterlab-github jupyter-videochat && \
+    jupyter serverextension enable --py jupyter_videochat --user && \
+    jupyter serverextension enable --py jupyterlab_github --user
 
+RUN jupyter lab build --debug;
 
 CMD ["/usr/local/bin/start-jupyter.sh"]

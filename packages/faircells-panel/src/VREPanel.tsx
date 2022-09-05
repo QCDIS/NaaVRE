@@ -5,8 +5,9 @@ import { JupyterFrontEnd } from '@jupyterlab/application';
 import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
 import { CellTracker } from './CellTracker'
 import { Dialog, showDialog } from '@jupyterlab/apputils';
-import { Button, CircularProgress, Divider } from '@material-ui/core';
+import { Divider } from '@material-ui/core';
 import { requestAPI } from '@jupyter_vre/core';
+
 
 interface IProps {
     lab: JupyterFrontEnd;
@@ -58,7 +59,7 @@ export class VREPanel extends React.Component<IProps> {
 
             try {
 
-                await requestAPI<any>('catalog/cells', {
+                await requestAPI<any>('containerizer/addcell', {
                     body: JSON.stringify({}),
                     method: 'POST'
                 });
@@ -105,19 +106,6 @@ export class VREPanel extends React.Component<IProps> {
                             <CellTracker
                                 notebook={this.getActiveNotebook()}
                             />
-                            <div>
-                                <Button variant="contained" 
-                                    className={'lw-panel-button'}
-                                    onClick={this.addToCatalog}
-                                    color="primary">
-                                Add to catalog
-                                </Button>
-                                {this.state.loading ? (
-                                    <span>
-                                        <CircularProgress className={'add-catalog-progress'} size={30}/>
-                                    </span>
-                                ) :(<span></span>)}
-                            </div>
                         </div>
                     </div>
                 </div>

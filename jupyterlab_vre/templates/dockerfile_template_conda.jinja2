@@ -13,6 +13,7 @@ RUN apt update -y && apt upgrade -y && apt install jq -y
 COPY --from=build /venv /venv
 COPY {{ task_name }}.py .
 {% else %}
+
 FROM {{ base_image }} AS build
 COPY {{ task_name }}-environment.yaml .
 RUN conda env update -f {{ task_name }}-environment.yaml
