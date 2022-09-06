@@ -47,6 +47,9 @@ RUN python setup.py develop
 WORKDIR $HOME
 RUN rm -rf data-access
 
+
+RUN mkdir AAAAAAAAAAAAAAa
+
 RUN pip install jupyterlab-github jupyter-videochat matplotlib folium cartopy icoscp pangaeapy && \
     jupyter serverextension enable --py jupyter_videochat --user && \
     jupyter serverextension enable --py jupyterlab_github --user
