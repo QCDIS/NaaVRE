@@ -62,5 +62,5 @@ WORKDIR multiply-core
 RUN python setup.py develop
 
 
-
+WORKDIR $HOME
 CMD ["/usr/local/bin/start-jupyter.sh"]
