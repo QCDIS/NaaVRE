@@ -38,6 +38,7 @@ WORKDIR multiply-core
 RUN python setup.py develop
 
 WORKDIR $HOME
+RUN rm -rf multiply-core
 
 RUN pip install jupyterlab-github jupyter-videochat matplotlib folium cartopy icoscp pangaeapy && \
     jupyter serverextension enable --py jupyter_videochat --user && \
