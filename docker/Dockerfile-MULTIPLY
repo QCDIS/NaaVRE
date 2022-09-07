@@ -32,11 +32,20 @@ RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
 COPY MULTIPLY_pip_requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
-WORKDIR $HOME
+WORKDIR /tmp
+
+RUN git clone https://github.com/JorisTimmermans/data-access.git
+WORKDIR data-access
+RUN python setup.py develop
+
+WORKDIR /tmp
 RUN git clone https://github.com/JorisTimmermans/multiply-core.git
 WORKDIR multiply-core
 RUN python setup.py develop
-WORKDIR $HOME
+
+WORKDIR /tmp
+
+
 
 RUN pip install jupyterlab-github jupyter-videochat matplotlib folium cartopy icoscp pangaeapy && \
     jupyter serverextension enable --py jupyter_videochat --user && \
