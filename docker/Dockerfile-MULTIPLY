@@ -12,20 +12,6 @@ COPY ./notebooks/ /tmp/notebooks
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 
-COPY MULTIPLY_pip_requirements.txt requirements.txt
-RUN pip install -r requirements.txt
-
-WORKDIR $HOME
-RUN git clone https://github.com/JorisTimmermans/multiply-core.git
-WORKDIR multiply-core
-RUN python setup.py develop
-
-WORKDIR $HOME
-
-RUN git clone https://github.com/JorisTimmermans/data-access.git
-WORKDIR data-access
-RUN python setup.py develop
-
 USER $NB_USER
 
 RUN conda remove --force -y terminado && \
@@ -43,7 +29,8 @@ RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
     pip install laserfarm laspy
 #====================================
 
-
+COPY MULTIPLY_pip_requirements.txt requirements.txt
+RUN pip install -r requirements.txt
 
 
 RUN pip install jupyterlab-github jupyter-videochat matplotlib folium cartopy icoscp pangaeapy && \
