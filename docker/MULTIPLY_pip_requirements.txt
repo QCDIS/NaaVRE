@@ -69,7 +69,7 @@ oset==0.1.3 #==py_1
 pandas==1.4.2 #==py39h1832856_2
 pbr==5.9.0 #==pyhd8ed1ab_0
 pexpect==4.8.0 #==pyh9f0ad1d_2
-pillow==9.1.1 #==py39hae2aec6_1
+pillow==9.2.0 #==py39hae2aec6_1
 pip==22.1.2 #==pyhd8ed1ab_0
 pluggy==1.0.0 #==py39hf3d152e_3
 protobuf>=3.14.0 #==3.20.1 #==py39h5a03fae_0
