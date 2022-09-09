@@ -111,7 +111,7 @@ xarray==2022.3.0 #==pyhd8ed1ab_0
 zipp==3.8.0 #==pyhd8ed1ab_0
 zstd==1.5.2 #==h8a70e8d_1
 typing==3.7.4.3 #==pyhd8ed1ab_0
-sentinelhub
+sentinelhub==3.7.0
 simplejson==3.17.6
 #
 # json-c==0.16
