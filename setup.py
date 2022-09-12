@@ -40,7 +40,7 @@ setup_args = dict(
         "wheel==0.37.0",
         "setuptools_rust==1.1.2",
         "colorhash==1.0.4",
-        "requests==2.28.1",
+        "requests>=2.27.0",
         "tornado~=6.1",
         "notebook~=6.4.8",
         "PyYAML~=6.0",
