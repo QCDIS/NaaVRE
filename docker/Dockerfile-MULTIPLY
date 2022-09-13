@@ -30,7 +30,7 @@ RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
 #====================================
 
 COPY MULTIPLY_pip_requirements.txt requirements.txt
-RUN pip uninstall pangaeapy
+RUN pip uninstall pangaeapy -y
 RUN pip install -r requirements.txt
 
 WORKDIR /tmp
