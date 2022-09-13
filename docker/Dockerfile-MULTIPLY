@@ -88,7 +88,7 @@ RUN pip install jupyterlab-github jupyter-videochat matplotlib folium cartopy ic
 
 
 RUN pip uninstall pangaeapy -y
-RUN pip uninstall requests -y
+RUN pip install requests>=2.27.0
 
 RUN jupyter lab build --debug;
 
