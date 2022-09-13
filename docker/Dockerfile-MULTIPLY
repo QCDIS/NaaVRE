@@ -87,7 +87,7 @@ RUN pip install jupyterlab-github jupyter-videochat matplotlib folium cartopy ic
     jupyter serverextension enable --py jupyterlab_github --user
 
 
-RUN pip uninstall requests pangaeapy -y
+RUN pip uninstall pangaeapy -y
 
 RUN jupyter lab build --debug;
 
