@@ -44,7 +44,7 @@ setup_args = dict(
         "tornado~=6.1",
         "notebook~=6.4.8",
         "PyYAML~=6.0",
-        "setuptools~=57.0.0",
+        "setuptools>=65.3.0",
         "distro~=1.7.0"
     ],
     zip_safe=False,
