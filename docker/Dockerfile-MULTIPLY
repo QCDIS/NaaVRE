@@ -87,6 +87,8 @@ RUN pip install jupyterlab-github jupyter-videochat matplotlib folium cartopy ic
     jupyter serverextension enable --py jupyterlab_github --user
 
 
+RUN pip uninstall requests pangaeapy
+
 RUN jupyter lab build --debug;
 
 CMD ["/usr/local/bin/start-jupyter.sh"]
