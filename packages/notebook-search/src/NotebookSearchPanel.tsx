@@ -50,7 +50,7 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
         });
 
         this.setState({
-            items: resp.hits
+            items: resp
         });
     };
 

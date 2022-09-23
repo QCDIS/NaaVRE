@@ -15,7 +15,7 @@ function renderRow(props: ListChildComponentProps, clickAction: (cell_index: num
         <ListItemButton onClick={() => { clickAction(index) }}>
           <div>
             <ListItemText
-              primary={data[index]['_source']['name']}
+              primary={data[index]['name']}
               style={{
                 display: 'inline-block',
                 maxWidth: '300px',
@@ -33,7 +33,7 @@ function renderRow(props: ListChildComponentProps, clickAction: (cell_index: num
                 overflow: 'hidden !important',
                 textOverflow: 'ellipsis'
               }}>
-              {data[index]['_id']}
+              {data[index]['html_url']}
             </Link>
           </div>
         </ListItemButton>

@@ -1,3 +1,4 @@
+import json
 import logging
 
 import requests
@@ -19,23 +20,24 @@ class NotebookSearchHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        keyword = payload['keyword']
-        response = requests.post(
-            'https://search.envri.eu/KB_notebookSearch/searchNotebooks',
-            json={
+        term = payload['keyword']
+        response = requests.get(
+            'http://145.100.135.119/api/notebook_search/',
+            params={
                 "page": "1",
-                "keywords": keyword,
+                "term": term,
                 "filter": "",
                 "facet": ""
             },
             verify=False,
             headers={
                 "Accept": "*/*",
-                "Content-Type": "text/plain",
-                "Authorization": "Token 34d13602ed292f48b1465d38b35d9b9baddd41e1"
+                "Content-Type": "text/json",
+                "Authorization": "Token b30bd18ea01f5a45e217b03682f70ce6ae14c293"
             }
         )
-
-        hits = response.json()['hits']
+        hits = response.text
+        json_object = json.loads(hits)
+        print(hits)
         self.write(hits)
         self.flush()
