@@ -24,6 +24,7 @@ install-backend: build-backend
 build-frontend: jlpm-install
 	npx lerna run build --scope @jupyter_vre/chart-customs
 	npx lerna run build --scope @jupyter_vre/core
+	npx lerna run build --scope @jupyter_vre/notebook-containerizer
 	npx lerna run build --scope @jupyter_vre/notebook-search
 	npx lerna run build --scope @jupyter_vre/notebook-search-toolbar
 	npx lerna run build --scope @jupyter_vre/components
