@@ -65,6 +65,8 @@ dist-ui: build-frontend
 	$(call PACKAGE_LAB_EXTENSION,faircells-composer)
 	$(call PACKAGE_LAB_EXTENSION,faircells-panel)
 	$(call PACKAGE_LAB_EXTENSION,vre-menu)
+	$(call PACKAGE_LAB_EXTENSION,notebook-search)
+
 
 release: dist-ui build-backend
 	
