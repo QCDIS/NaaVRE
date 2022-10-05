@@ -43,6 +43,7 @@ const baseImages = [
     { label: "miniconda3", id: "qcdis/miniconda3" },
     { label: "Laserfarm", id: "qcdis/miniconda3-pdal" },
     { label: "vol2bird", id: "qcdis/python-vol2bird" },
+    { label: "distributed-learning", id: "qcdis/miniconda3-distributed-learning" },
     { label: "MULTIPLY", id: "qcdis/miniconda3-multiply" }
 ]
 
