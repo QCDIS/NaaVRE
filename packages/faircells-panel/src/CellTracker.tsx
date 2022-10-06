@@ -116,34 +116,38 @@ export class CellTracker extends React.Component<IProps, IState> {
     };
 
     exctractor = async (notebookModel: INotebookModel, save = false) => {
-
-        const extractedCell = await requestAPI<any>('containerizer/extract', {
-            body: JSON.stringify({
-                save: save,
-                cell_index: this.state.currentCellIndex,
-                notebook: notebookModel.toJSON()
-            }),
-            method: 'POST'
-        });
-
-        this.setState({ currentCell: extractedCell });
-        let typeSelections: { [type: string]: boolean } = {}
-
-        this.state.currentCell.inputs.forEach((el: string) => {
-            typeSelections[el] = false
-        })
-
-        this.state.currentCell.outputs.forEach((el: string) => {
-            typeSelections[el] = false
-        })
-
-        this.state.currentCell.params.forEach((el: string) => {
-            typeSelections[el] = false
-        })
-
-        this.setState({ typeSelections: typeSelections })
-
-        this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
+        try {
+            const extractedCell = await requestAPI<any>('containerizer/extract', {
+                body: JSON.stringify({
+                    save: save,
+                    cell_index: this.state.currentCellIndex,
+                    notebook: notebookModel.toJSON()
+                }),
+                method: 'POST'
+            });
+            console.log(extractedCell);
+            this.setState({ currentCell: extractedCell });
+            let typeSelections: { [type: string]: boolean } = {}
+    
+            this.state.currentCell.inputs.forEach((el: string) => {
+                typeSelections[el] = false
+            })
+    
+            this.state.currentCell.outputs.forEach((el: string) => {
+                typeSelections[el] = false
+            })
+    
+            this.state.currentCell.params.forEach((el: string) => {
+                typeSelections[el] = false
+            })
+    
+            this.setState({ typeSelections: typeSelections })
+    
+            this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
+        } catch (error) {
+            console.log(error);
+            alert('Error exporting cell code: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+        }
     }
 
     onActiveCellChanged = (notebook: Notebook, _activeCell: Cell) => {
