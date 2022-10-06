@@ -51,12 +51,11 @@ class ExtractorHandler(APIHandler, Catalog):
         try:
             extractor = Extractor(notebook)
         except SyntaxError as e:
-            logger.error('Syntax Error: '+str(e))
+            logger.error('Syntax Error: ' + str(e))
             self.set_status(400)
-            self.write('Syntax Error: '+str(e))
-            self.write_error('Syntax Error: '+str(e))
+            self.write('Syntax Error: ' + str(e))
+            self.write_error('Syntax Error: ' + str(e))
             self.flush()
-
 
 
         source = notebook.cells[cell_index].source
@@ -68,11 +67,18 @@ class ExtractorHandler(APIHandler, Catalog):
             title += '-' + os.environ['JUPYTERHUB_USER']
             title.replace('_', '-').replace('(', '-').replace(')', '-').strip()
 
-        ins = set(extractor.infere_cell_inputs(source))
-        outs = set(extractor.infere_cell_outputs(source))
+        ins = []
+        outs = []
         params = []
-        confs = extractor.extract_cell_conf_ref(source)
-        dependencies = extractor.infere_cell_dependencies(source, confs)
+        confs = []
+        dependencies = []
+        # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(source)'
+        if notebook.cells[cell_index].cell_type == 'code':
+            ins = set(extractor.infere_cell_inputs(source))
+            outs = set(extractor.infere_cell_outputs(source))
+
+            confs = extractor.extract_cell_conf_ref(source)
+            dependencies = extractor.infere_cell_dependencies(source, confs)
 
         node_id = str(uuid.uuid4())[:7]
         cell = Cell(
@@ -87,10 +93,10 @@ class ExtractorHandler(APIHandler, Catalog):
             dependencies=dependencies,
             container_source=""
         )
-
-        cell.integrate_configuration()
-        params = list(extractor.extract_cell_params(cell.original_source))
-        cell.params = params
+        if notebook.cells[cell_index].cell_type == 'code':
+            cell.integrate_configuration()
+            params = list(extractor.extract_cell_params(cell.original_source))
+            cell.params = params
 
         node = ConverterReactFlowChart.get_node(
             node_id,
