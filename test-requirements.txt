@@ -16,3 +16,4 @@ autopep8~=1.6.0
 Jinja2~=3.0.3
 setuptools~=57.0.0
 distro~=1.7.0
+pytest==7.1.3
