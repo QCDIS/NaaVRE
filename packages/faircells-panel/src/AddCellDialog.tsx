@@ -1,24 +1,26 @@
 
-import { styled, TextField, ThemeProvider } from '@material-ui/core';
-import { Repository, requestAPI } from '@jupyter_vre/core';
-import { Autocomplete } from '@mui/material';
+import { requestAPI } from '@jupyter_vre/core';
+import { CircularProgress, styled, ThemeProvider } from '@material-ui/core';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { green } from '@mui/material/colors';
 import * as React from 'react';
 import { theme } from './Theme';
 
 const CatalogBody = styled('div')({
+    padding: '20px',
     display: 'flex',
     overflow: 'hidden',
-    flexDirection: 'row',
+    flexDirection: 'column',
 })
 
 interface AddCellDialogProps { }
 
 interface IState {
-    repositories    : Repository[]
+    loading: boolean
 }
 
 const DefaultState: IState = {
-    repositories    : []
+    loading: true
 }
 
 export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
@@ -26,36 +28,50 @@ export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
     state = DefaultState;
 
     componentDidMount(): void {
-        this.getRepositories();
+        this.createCell()
     }
 
-    getRepositories = async () => {
+    createCell = async () => {
+        try {
 
-        const repositories = await requestAPI<any>('repositories', {
-            method: 'GET'
-        });
+            await requestAPI<any>('containerizer/addcell', {
+                body: JSON.stringify({}),
+                method: 'POST'
+            });
 
-        const items = repositories.map((repo: Repository) => (
-            { "label": repo.name, "item": repo }
-        ));
+            this.setState({ loading: false });
 
-        this.setState({ repositories: items });
+        } catch (error) {
+            console.log(error);
+            alert('Error creating  cell : ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+        }
     }
 
     render(): React.ReactElement {
 
         return (
             <ThemeProvider theme={theme}>
+                
                 <p className='section-header'>Create Cell</p>
                 <CatalogBody>
-                <p className={'lw-panel-preview'}>Repository</p>
-                <Autocomplete
-                            disablePortal
-                            id="combo-box-demo"
-                            options={this.state.repositories}
-                            sx={{ width: 300, margin: '10px' }}
-                            renderInput={(params) => <TextField {...params} label="" />}
-                        />
+                {!this.state.loading ? (
+                    <div style={{display: "flex", flexDirection: "row", alignItems: "center"}}>
+                        <div className='cell-submit-box'>
+                            <CheckCircleOutlineIcon
+                                fontSize='large'
+                                sx={{ color: green[500] }}
+                            />
+                            <p className='cell-submit-text'>
+                                The cell has been successfully created!
+                            </p>
+                        </div>
+                    </div>
+                    ) :
+                    (<div>
+                        <CircularProgress />
+                        <p>Creating or updating cell ..</p>
+                    </div>)
+                }
                 </CatalogBody>
             </ThemeProvider>
         )

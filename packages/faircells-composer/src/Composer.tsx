@@ -14,6 +14,7 @@ import { CellEditor, Page } from '@jupyter_vre/components';
 import { Workspace } from './Workspace';
 import { Parallelization } from './Parallelization';
 import BasicSpeedDial from './SpeedDial';
+import { ExecuteWorkflowDialog } from './ExecuteWorkflowDialog';
 
 const CenterContent = styled.div`
   display: flex;
@@ -69,6 +70,16 @@ class Composer extends React.Component<IProps, IState> {
 		buttons: []
 	};
 
+	ExecuteWorkflowDialogOptions: Partial<Dialog.IOptions<any>> = {
+		title: '',
+		body: ReactWidget.create(
+			<ExecuteWorkflowDialog
+				chart={this.state.chart}
+			/>
+		) as Dialog.IBodyWidget<any>,
+		buttons: []
+	};
+
 	chartStateActions = mapValues(actions, (func: any) =>
 		(...args: any) => {
 			let newChartTransformer = func(...args);
@@ -89,17 +100,24 @@ class Composer extends React.Component<IProps, IState> {
 			case "export-workflow":
 				this.exportWorkflow();
 				break;
+
+			case "execute-workflow":
+				showDialog(this.ExecuteWorkflowDialogOptions);
+				break;
 		}
 	}
 
 	exportWorkflow = async () => {
-
-		let resp = await requestAPI<any>('expmanager/export', {
-			body: JSON.stringify(this.state.chart),
-			method: 'POST'
-		});
-
-		console.log(resp);
+		try {
+			let resp = await requestAPI<any>('expmanager/export', {
+				body: JSON.stringify(this.state.chart),
+				method: 'POST'
+			});
+			console.log(resp);
+		} catch (error) {
+			console.log(error);
+			alert('Error exporting the workflow: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+		}
 	}
 
 	getNodeEditor = () => {

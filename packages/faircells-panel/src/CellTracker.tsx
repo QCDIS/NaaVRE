@@ -20,14 +20,20 @@ interface IProps {
 
 interface IState {
 
+    loading: boolean
+    baseImageSelected: boolean
     currentCellIndex: number
     currentCell: FairCell
+    typeSelections: { [type: string]: boolean }
 }
 
 const DefaultState: IState = {
 
+    loading: false,
+    baseImageSelected: false,
     currentCellIndex: -1,
-    currentCell: null
+    currentCell: null,
+    typeSelections: {}
 }
 
 type SaveState = 'started' | 'completed' | 'failed';
@@ -37,8 +43,17 @@ const baseImages = [
     { label: "miniconda3", id: "qcdis/miniconda3" },
     { label: "Laserfarm", id: "qcdis/miniconda3-pdal" },
     { label: "vol2bird", id: "qcdis/python-vol2bird" },
+    { label: "distributed-learning", id: "qcdis/miniconda3-distributed-learning" },
     { label: "MULTIPLY", id: "qcdis/miniconda3-multiply" }
 ]
+
+const AddCellDialogOptions: Partial<Dialog.IOptions<any>> = {
+    title: '',
+    body: ReactWidget.create(
+        <AddCellDialog />
+    ) as Dialog.IBodyWidget<any>,
+    buttons: []
+};
 
 export class CellTracker extends React.Component<IProps, IState> {
 
@@ -50,17 +65,24 @@ export class CellTracker extends React.Component<IProps, IState> {
         this.cellPreviewRef = React.createRef();
     }
 
-    AddCellDialogOptions: Partial<Dialog.IOptions<any>> = {
-        title: '',
-        body: ReactWidget.create(
-            <AddCellDialog />
-        ) as Dialog.IBodyWidget<any>,
-        buttons: []
-    };
+    handleCreateCell = async () => {
+        showDialog(AddCellDialogOptions)
+    }
 
-    handleCreateCell = () => {
+    allTypesSelected = () => {
 
-        showDialog(this.AddCellDialogOptions);
+        if (Object.values(this.state.typeSelections).length > 0) {
+
+            return (
+                Object.values(this.state.typeSelections).reduce(
+                    (prev, curr) => {
+                        return prev && curr
+                    }
+                )
+            )
+        }
+
+        return false;
     };
 
     typesUpdate = async (event: React.ChangeEvent<{ name?: string; value: unknown; }>, port: string) => {
@@ -72,6 +94,13 @@ export class CellTracker extends React.Component<IProps, IState> {
             }),
             method: 'POST'
         });
+
+        let currTypeSelections = this.state.typeSelections
+        currTypeSelections[port] = true
+
+        this.setState({
+            typeSelections: currTypeSelections
+        })
     };
 
     baseImageUpdate = async (value: any) => {
@@ -82,21 +111,43 @@ export class CellTracker extends React.Component<IProps, IState> {
             }),
             method: 'POST'
         });
+        
+        this.setState({ baseImageSelected: true });
     };
 
     exctractor = async (notebookModel: INotebookModel, save = false) => {
-
-        const extractedCell = await requestAPI<any>('containerizer/extract', {
-            body: JSON.stringify({
-                save: save,
-                cell_index: this.state.currentCellIndex,
-                notebook: notebookModel.toJSON()
-            }),
-            method: 'POST'
-        });
-
-        this.setState({ currentCell: extractedCell });
-        this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
+        try {
+            const extractedCell = await requestAPI<any>('containerizer/extract', {
+                body: JSON.stringify({
+                    save: save,
+                    cell_index: this.state.currentCellIndex,
+                    notebook: notebookModel.toJSON()
+                }),
+                method: 'POST'
+            });
+            console.log(extractedCell);
+            this.setState({ currentCell: extractedCell });
+            let typeSelections: { [type: string]: boolean } = {}
+    
+            this.state.currentCell.inputs.forEach((el: string) => {
+                typeSelections[el] = false
+            })
+    
+            this.state.currentCell.outputs.forEach((el: string) => {
+                typeSelections[el] = false
+            })
+    
+            this.state.currentCell.params.forEach((el: string) => {
+                typeSelections[el] = false
+            })
+    
+            this.setState({ typeSelections: typeSelections })
+    
+            this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
+        } catch (error) {
+            console.log(error);
+            alert('Error exporting cell code: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+        }
     }
 
     onActiveCellChanged = (notebook: Notebook, _activeCell: Cell) => {
@@ -286,7 +337,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                 <p className={'lw-panel-preview'}>Base Image</p>
                                 <Autocomplete
                                     disablePortal
-                                    onChange={(event: any, newValue: any | null) => {
+                                    onChange={(_event: any, newValue: any | null) => {
                                         this.baseImageUpdate(newValue);
                                     }}
                                     id="combo-box-demo"
@@ -303,7 +354,8 @@ export class CellTracker extends React.Component<IProps, IState> {
                         <Button variant="contained"
                             className={'lw-panel-button'}
                             onClick={this.handleCreateCell}
-                            color="primary">
+                            color="primary"
+                            disabled={!this.allTypesSelected() || !this.state.baseImageSelected || this.state.loading}>
                             Create
                         </Button>
                     </div>

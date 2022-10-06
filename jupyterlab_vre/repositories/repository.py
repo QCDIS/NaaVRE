@@ -1,10 +1,3 @@
-
-
-from lib2to3.pgen2 import token
-from unicodedata import name
-from urllib.request import urlopen
-
-
 class Repository:
 
     name    : str

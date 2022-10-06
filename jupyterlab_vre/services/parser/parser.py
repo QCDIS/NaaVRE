@@ -26,11 +26,21 @@ class WorkflowParser:
         self.dependencies = {
             nodes[node]['id']: [] for node in nodes
         }
-
-        self.cells_in_use = {
-            nodes[node]['id']: Catalog.get_cell_from_og_node_id(nodes[node]['properties']['og_node_id'])
-            for node in nodes if nodes[node]['type'] != 'splitter' and nodes[node]['type'] != 'merger'
-        }
+        self.cells_in_use = {}
+        for node in nodes:
+            if nodes[node]['type'] != 'splitter' and nodes[node]['type'] != 'merger':
+                try:
+                    self.cells_in_use[nodes[node]['id']] = Catalog.get_cell_from_og_node_id(
+                        nodes[node]['properties']['og_node_id'])
+                except Exception:
+                    if 'properties' in nodes[node]:
+                        raise Exception('Error while parsing ' + nodes[node]['properties']['title'])
+                    elif 'properties' not in nodes[node]:
+                        raise Exception('Error while parsing ' + nodes[node] + ' has no properties')
+                    elif 'og_node_id' not in nodes[node]['properties']:
+                        raise Exception('Error while parsing node id: ' + node + ' has no og_node_id')
+                    else:
+                        raise Exception('Error while parsing node id: ' + node)
 
         for nid, node in self.nodes.items():
             for pid, port in node['ports'].items():
@@ -62,9 +72,10 @@ class WorkflowParser:
             from_node = self.nodes[link['from']['nodeId']]
 
             from_special_node = (from_node['type'] == 'merger' or from_node['type'] == 'splitter')
+
             task_name = f'{from_node["type"]}-{from_node["id"][:7]}' if from_special_node else \
-            Catalog.get_cell_from_og_node_id(
-                self.__get_og_node_id(from_node['id']))['task_name'] + "-" + from_node['id'][:7]
+                Catalog.get_cell_from_og_node_id(
+                    self.__get_og_node_id(from_node['id']))['task_name'] + "-" + from_node['id'][:7]
 
             self.dependencies[to_node['id']].append({
                 'task_name': task_name,

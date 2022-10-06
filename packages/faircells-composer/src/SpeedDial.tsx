@@ -13,6 +13,7 @@ interface BasicSpeedDialProps {
 
 const actions = [
     { icon: <FileUploadIcon />, name: 'Export Workflow', operation: 'export-workflow' },
+    { icon: <AutoStoriesIcon />, name: 'Execute Workflow', operation: 'execute-workflow' },
     { icon: <AutoStoriesIcon />, name: 'Cells Catalogs', operation: 'cells-catalogs' }
 ];
 

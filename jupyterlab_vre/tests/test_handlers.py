@@ -6,8 +6,7 @@ from tornado.escape import to_unicode
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 
-from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, GithubAuthHandler, ExportWorkflowHandler, \
-    NotebookExtractorHandler
+from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.database import Catalog
 
@@ -25,26 +24,16 @@ class HandlersAPITest(AsyncHTTPTestCase):
         with open(notebook_path, mode='r', encoding='utf-8') as f:
             self.notebook_dict = json.load(f)
         self.app = Application([('/extractorhandler', ExtractorHandler),
-                                ('/notebookextractorhandler', NotebookExtractorHandler),
                                 ('/typeshandler', TypesHandler),
                                 ('/cellshandler', CellsHandler),
-                                ('/githubauthhandler', GithubAuthHandler),
                                 ('/exportworkflowhandler', ExportWorkflowHandler),
                                 ],
                                cookie_secret='asdfasdf')
         return self.app
 
-    def test_extractorhandler_get(self):
+    def test_export_workflow_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
-            response = self.fetch('/extractorhandler', method='GET')
-        response_body = json.loads(to_unicode(response.body))
-        self.assertEqual('Operation not supported.', response_body['title'])
-
-
-    def test_notebookextractorhandler_post(self):
-        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
-            m.return_value = 'cookie'
-            with open('resources/laserfarm_cells.json', 'r') as read_file:
+            with open('resources/workflows/get_files.json', 'r') as read_file:
                 payload = json.load(read_file)
-            response = self.fetch('/notebookextractorhandler', method='POST', body=json.dumps(payload))
+            response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))

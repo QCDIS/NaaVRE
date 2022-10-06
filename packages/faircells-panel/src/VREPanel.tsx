@@ -28,8 +28,6 @@ export class VREPanel extends React.Component<IProps> {
 
     state = DefaultState
 
-    
-
     getActiveNotebook = () => {
         return this.props.tracker.currentWidget;
     };
