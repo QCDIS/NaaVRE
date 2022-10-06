@@ -35,20 +35,20 @@ class TestExtractor(TestCase):
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
         extractor = Extractor(notebook)
+        if notebook.cells[cell_index].cell_type == 'code':
+            source = notebook.cells[cell_index].source
+            title = source.partition('\n')[0]
+            title = title.replace('#', '').replace(
+                '_', '-').replace('(', '-').replace(')', '-').strip() if title[0] == "#" else "Untitled"
 
-        source = notebook.cells[cell_index].source
-        title = source.partition('\n')[0]
-        title = title.replace('#', '').replace(
-            '_', '-').replace('(', '-').replace(')', '-').strip() if title[0] == "#" else "Untitled"
-
-        if 'JUPYTERHUB_USER' in os.environ:
-            title += '-' + os.environ['JUPYTERHUB_USER']
-            title.replace('_', '-').replace('(', '-').replace(')', '-').strip()
-        try:
-            ins = set(extractor.infere_cell_inputs(source))
-            outs = set(extractor.infere_cell_outputs(source))
-        except Exception as e:
-            print(e)
-        params = []
-        confs = extractor.extract_cell_conf_ref(source)
-        dependencies = extractor.infere_cell_dependencies(source, confs)
+            if 'JUPYTERHUB_USER' in os.environ:
+                title += '-' + os.environ['JUPYTERHUB_USER']
+                title.replace('_', '-').replace('(', '-').replace(')', '-').strip()
+            try:
+                ins = set(extractor.infere_cell_inputs(source))
+                outs = set(extractor.infere_cell_outputs(source))
+            except Exception as e:
+                print(e)
+            params = []
+            confs = extractor.extract_cell_conf_ref(source)
+            dependencies = extractor.infere_cell_dependencies(source, confs)
