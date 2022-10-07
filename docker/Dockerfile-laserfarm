@@ -37,4 +37,5 @@ RUN pip install matplotlib folium cartopy icoscp pangaeapy
 
 RUN jupyter lab build --debug;
 
+RUN  conda clean -a -y
 CMD ["/usr/local/bin/start-jupyter.sh"]
