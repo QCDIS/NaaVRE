@@ -3,7 +3,7 @@ FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e
 USER root
 
 #===== Add pdalpy dependencies ======
-RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++ s3fs
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++
 #====================================
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
@@ -32,6 +32,9 @@ RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
 RUN pip install jupyterlab-github jupyter-videochat && \
     jupyter serverextension enable --py jupyter_videochat --user && \
     jupyter serverextension enable --py jupyterlab_github --user
+
+
+RUN
 
 RUN pip install matplotlib folium cartopy icoscp pangaeapy
 

@@ -1,8 +1,17 @@
-FROM  jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e
+FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e
 
 USER root
 
-RUN apt-get update --allow-releaseinfo-change && apt-get upgrade -y && apt-get -y install gcc g++ s3fs
+#===== Add pdalpy dependencies ======
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++ s3fs curl
+#====================================
+
+#RUN apt-get -y install libblas3 libblas-dev libboost-all-dev bzip2 ca-certificates libcairo2-dev libcfitsio-dev \
+#    libc-ares-dev expat fontconfig libfreetype6-dev gettext giflib-tools glib-networking glib-networking-common \
+#    gir1.2-gst-plugins-base-1.0 libhdf4-0-alt libhdf5-dev libicu-dev libpixman-1-0 pcre2-utils nodejs lz4 \
+#    libopenblas-dev openssl poppler-utils poppler-data postgresql postgresql-contrib \
+#    libpthread-stubs0-dev sqlite3 python-tk zlib1g-dev libblas-dev libcurl4 libffi-dev \
+#    php-iconv libkmldom1 liblapacke llvm libnetcdf-dev krb5-user
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
@@ -10,25 +19,79 @@ COPY ./notebooks/ /tmp/notebooks
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 
-
 USER $NB_USER
 
-COPY MULTIPLY_conda_requirements.txt .
-COPY MULTIPLY_pip_requirements.txt .
-RUN conda install --yes -c conda-forge pdal python-pdal gdal
-RUN pip install -r MULTIPLY_pip_requirements.txt
-
 RUN conda remove --force -y terminado && \
-    python -m pip install --upgrade pip \
+    python -m pip install --upgrade pip
 
 RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl && \
     jupyter serverextension enable --py jupyterlab_vre --user
+
+
+#===== Add pdalpy dependencies ======
+RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
+    conda upgrade --yes numpy && \
+    conda update --yes -n base conda && \
+    pip install dask distributed lazperf==1.4.4 && \
+    pip install laserfarm laspy
+#====================================
 
 RUN pip install jupyterlab-github jupyter-videochat && \
     jupyter serverextension enable --py jupyter_videochat --user && \
     jupyter serverextension enable --py jupyterlab_github --user
 
+COPY MULTIPLY_pip_requirements.txt requirements.txt
+RUN pip install -r requirements.txt
 
+RUN git clone https://github.com/JorisTimmermans/atmospheric_correction.git
+WORKDIR atmospheric_correction
+RUN python setup.py develop
+
+
+WORKDIR $HOME
+RUN git clone https://github.com/JorisTimmermans/data-access.git
+WORKDIR data-access
+RUN python setup.py develop
+
+
+WORKDIR $HOME
+RUN git clone https://github.com/JorisTimmermans/multiply-core.git
+WORKDIR multiply-core
+RUN python setup.py develop
+
+RUN ls
+WORKDIR $HOME
+RUN git clone https://github.com/QCDIS/inference-engine.git
+WORKDIR inference-engine
+RUN python setup.py develop
+
+WORKDIR $HOME
+RUN git clone https://github.com/QCDIS/prior-engine.git
+WORKDIR prior-engine
+RUN python setup.py develop
+
+WORKDIR $HOME
+RUN git clone https://github.com/JorisTimmermans/vm-support.git
+WORKDIR vm-support
+RUN python setup.py develop
+
+WORKDIR $HOME
+RUN git clone https://github.com/multiply-org/multiply-orchestration.git
+WORKDIR multiply-orchestration
+RUN python setup.py develop
+
+WORKDIR $HOME
+RUN git clone https://github.com/QCDIS/KaFKA-InferenceEngine.git
+WORKDIR KaFKA-InferenceEngine
+RUN python setup.py develop
+
+WORKDIR $HOME
+RUN git clone https://github.com/QCDIS/BRDF_descriptors.git
+WORKDIR BRDF_descriptors
+RUN python setup.py develop
+
+
+WORKDIR $HOME
 RUN jupyter lab build --debug;
 
 CMD ["/usr/local/bin/start-jupyter.sh"]

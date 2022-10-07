@@ -1,14 +1,9 @@
-import logging
 import re
 from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
 import ast
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 class Extractor:
-    logger = logging.getLogger(__name__)
-
     sources: list
     imports: list
     configurations: dict
@@ -49,11 +44,10 @@ class Extractor:
             tree = ast.parse(s)
             for node in ast.walk(tree):
                 if isinstance(node, ast.Assign):
-                    if hasattr(node.targets[0],'id'):
-                        name = node.targets[0].id
-                        prefix = name.split('_')[0]
-                        if prefix == 'conf' and name not in configurations:
-                            configurations[name] = lines[node.lineno - 1]
+                    name = node.targets[0].id
+                    prefix = name.split('_')[0]
+                    if prefix == 'conf' and name not in configurations:
+                        configurations[name] = lines[node.lineno - 1]
         return configurations
 
     def __extract_params(self, sources):
@@ -62,11 +56,10 @@ class Extractor:
             tree = ast.parse(s)
             for node in ast.walk(tree):
                 if isinstance(node, ast.Assign):
-                    if hasattr(node.targets[0], 'id'):
-                        name = node.targets[0].id
-                        prefix = name.split('_')[0]
-                        if prefix == 'param':
-                            params.add(name)
+                    name = node.targets[0].id
+                    prefix = name.split('_')[0]
+                    if prefix == 'param':
+                        params.add(name)
         return params
 
     def infere_cell_outputs(self, cell_source):
