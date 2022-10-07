@@ -5,6 +5,7 @@ USER root
 #===== Add pdalpy dependencies ======
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++
 #====================================
+RUN apt autoclean -y && apt autoremove -y
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
@@ -33,12 +34,9 @@ RUN pip install jupyterlab-github jupyter-videochat && \
     jupyter serverextension enable --py jupyter_videochat --user && \
     jupyter serverextension enable --py jupyterlab_github --user
 
-
-RUN
-
 RUN pip install matplotlib folium cartopy icoscp pangaeapy
 
 RUN jupyter lab build --debug;
 
-RUN  conda clean -a -y
+RUN conda clean -a -y
 CMD ["/usr/local/bin/start-jupyter.sh"]
