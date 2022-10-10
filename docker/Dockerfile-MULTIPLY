@@ -94,7 +94,7 @@ RUN python setup.py develop
 
 
 WORKDIR $HOME
-RUN rm -rf MULTIPLY
+RUN rm -rf /tmp/MULTIPLY
 
 RUN jupyter lab build --debug;
 
