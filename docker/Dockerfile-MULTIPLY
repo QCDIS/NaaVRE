@@ -45,49 +45,49 @@ RUN pip install jupyterlab-github jupyter-videochat && \
 COPY MULTIPLY_pip_requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
-RUN mkdir MULTIPLY
-WORKDIR MULTIPLY
+RUN mkdir /tmp/MULTIPLY
+WORKDIR /tmp/MULTIPLY
 RUN git clone https://github.com/JorisTimmermans/atmospheric_correction.git
 WORKDIR atmospheric_correction
 RUN python setup.py develop
 
-WORKDIR MULTIPLY
+WORKDIR /tmp/MULTIPLY
 RUN git clone https://github.com/JorisTimmermans/data-access.git
 WORKDIR data-access
 RUN python setup.py develop
 
 
-WORKDIR MULTIPLY
+WORKDIR /tmp/MULTIPLY
 RUN git clone https://github.com/JorisTimmermans/multiply-core.git
-WORKDIR multiply-core
+WORKDIR /tmp/MULTIPLY-core
 RUN python setup.py develop
 
-WORKDIR MULTIPLY
+WORKDIR /tmp/MULTIPLY
 RUN git clone https://github.com/QCDIS/inference-engine.git
 WORKDIR inference-engine
 RUN python setup.py develop
 
-WORKDIR MULTIPLY
+WORKDIR /tmp/MULTIPLY
 RUN git clone https://github.com/QCDIS/prior-engine.git
 WORKDIR prior-engine
 RUN python setup.py develop
 
-WORKDIR MULTIPLY
+WORKDIR /tmp/MULTIPLY
 RUN git clone https://github.com/JorisTimmermans/vm-support.git
 WORKDIR vm-support
 RUN python setup.py develop
 
-WORKDIR MULTIPLY
+WORKDIR /tmp/MULTIPLY
 RUN git clone https://github.com/multiply-org/multiply-orchestration.git
-WORKDIR multiply-orchestration
+WORKDIR /tmp/MULTIPLY-orchestration
 RUN python setup.py develop
 
-WORKDIR MULTIPLY
+WORKDIR /tmp/MULTIPLY
 RUN git clone https://github.com/QCDIS/KaFKA-InferenceEngine.git
 WORKDIR KaFKA-InferenceEngine
 RUN python setup.py develop
 
-WORKDIR MULTIPLY
+WORKDIR /tmp/MULTIPLY
 RUN git clone https://github.com/QCDIS/BRDF_descriptors.git
 WORKDIR BRDF_descriptors
 RUN python setup.py develop
