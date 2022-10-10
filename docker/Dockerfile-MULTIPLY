@@ -59,7 +59,7 @@ RUN python setup.py develop
 
 WORKDIR /tmp/MULTIPLY
 RUN git clone https://github.com/JorisTimmermans/multiply-core.git
-WORKDIR /tmp/multiply-core
+WORKDIR multiply-core
 RUN python setup.py develop
 
 WORKDIR /tmp/MULTIPLY
@@ -79,7 +79,7 @@ RUN python setup.py develop
 
 WORKDIR /tmp/MULTIPLY
 RUN git clone https://github.com/multiply-org/multiply-orchestration.git
-WORKDIR /tmp/MULTIPLY-orchestration
+WORKDIR multiply-orchestration
 RUN python setup.py develop
 
 WORKDIR /tmp/MULTIPLY
