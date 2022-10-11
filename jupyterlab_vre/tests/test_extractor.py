@@ -1,54 +1,91 @@
 import json
 import os
+import uuid
 from unittest import TestCase
 import nbformat as nb
+import logging
 
+from jupyterlab_vre.database.cell import Cell
+from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.extractor import Extractor
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class TestExtractor(TestCase):
 
+    def test_all_infer_cell_inputs(self):
+        self.infer_cell_inputs('resources/MULTIPLY_framework_cells.json')
+        self.infer_cell_inputs('resources/laserfarm_cells.json')
 
-    def test_vol2bird(self):
-        with open('resources/vol2bird_cells.json', 'r') as file:
+    def infer_cell_inputs(self, payload_path):
+        with open(payload_path, 'r') as file:
             payload = json.load(file)
 
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-        extractor = Extractor(notebook)
+        try:
+            extractor = Extractor(notebook)
+        except SyntaxError as e:
+            logger.error('Syntax Error: ' + str(e))
 
+        source = notebook.cells[cell_index].source
+        title = source.partition('\n')[0]
+        title = title.replace('#', '').replace(
+            '_', '-').replace('(', '-').replace(')', '-').strip() if title[0] == "#" else "Untitled"
 
-    def test_MULTIPLY(self):
-        with open('resources/MULTIPLY_framework_cells.json', 'r') as file:
-            payload = json.load(file)
+        if 'JUPYTERHUB_USER' in os.environ:
+            title += '-' + os.environ['JUPYTERHUB_USER']
+            title.replace('_', '-').replace('(', '-').replace(')', '-').strip()
 
-        cell_index = payload['cell_index']
-        notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-        extractor = Extractor(notebook)
-
-
-
-    def test_infere_cell_inputs(self):
-        with open('resources/MULTIPLY_framework_cells.json', 'r') as file:
-            payload = json.load(file)
-
-        cell_index = payload['cell_index']
-        notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-        extractor = Extractor(notebook)
+        ins = []
+        outs = []
+        params = []
+        confs = []
+        dependencies = []
+        # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(source)'
         if notebook.cells[cell_index].cell_type == 'code':
-            source = notebook.cells[cell_index].source
-            title = source.partition('\n')[0]
-            title = title.replace('#', '').replace(
-                '_', '-').replace('(', '-').replace(')', '-').strip() if title[0] == "#" else "Untitled"
+            ins = set(extractor.infere_cell_inputs(source))
+            outs = set(extractor.infere_cell_outputs(source))
 
-            if 'JUPYTERHUB_USER' in os.environ:
-                title += '-' + os.environ['JUPYTERHUB_USER']
-                title.replace('_', '-').replace('(', '-').replace(')', '-').strip()
-            try:
-                ins = set(extractor.infere_cell_inputs(source))
-                outs = set(extractor.infere_cell_outputs(source))
-            except Exception as e:
-                print(e)
-            params = []
             confs = extractor.extract_cell_conf_ref(source)
-            dependencies = extractor.infere_cell_dependencies(source, confs)
+            dependencies = extractor.infer_cell_dependencies(source, confs)
+
+        node_id = str(uuid.uuid4())[:7]
+        cell = Cell(
+            node_id=node_id,
+            title=title,
+            task_name=title.lower().replace(' ', '-'),
+            original_source=source,
+            inputs=ins,
+            outputs=outs,
+            params=params,
+            confs=confs,
+            dependencies=dependencies,
+            container_source=""
+        )
+        if notebook.cells[cell_index].cell_type == 'code':
+            cell.integrate_configuration()
+            params = list(extractor.extract_cell_params(cell.original_source))
+            cell.params = params
+
+        node = ConverterReactFlowChart.get_node(
+            node_id,
+            title,
+            ins,
+            outs,
+            params,
+            dependencies
+        )
+
+        chart = {
+            'offset': {
+                'x': 0,
+                'y': 0,
+            },
+            'scale': 1,
+            'nodes': {node_id: node},
+            'links': {},
+            'selected': {},
+            'hovered': {},
+        }

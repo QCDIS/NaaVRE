@@ -44,10 +44,12 @@ class Extractor:
             tree = ast.parse(s)
             for node in ast.walk(tree):
                 if isinstance(node, ast.Assign):
-                    name = node.targets[0].id
-                    prefix = name.split('_')[0]
-                    if prefix == 'conf' and name not in configurations:
-                        configurations[name] = lines[node.lineno - 1]
+                    target = node.targets[0]
+                    if hasattr(target, 'id'):
+                        name = node.targets[0].id
+                        prefix = name.split('_')[0]
+                        if prefix == 'conf' and name not in configurations:
+                            configurations[name] = lines[node.lineno - 1]
         return configurations
 
     def __extract_params(self, sources):
@@ -55,7 +57,7 @@ class Extractor:
         for s in sources:
             tree = ast.parse(s)
             for node in ast.walk(tree):
-                if isinstance(node, ast.Assign):
+                if isinstance(node, ast.Assign) and hasattr(node.targets[0], 'id'):
                     name = node.targets[0].id
                     prefix = name.split('_')[0]
                     if prefix == 'param':
@@ -72,7 +74,7 @@ class Extractor:
         return [und for und in cell_undefined if
                 und not in self.imports and und not in self.configurations and und not in self.global_params]
 
-    def infere_cell_dependencies(self, cell_source, confs):
+    def infer_cell_dependencies(self, cell_source, confs):
         dependencies = []
         names = self.__extract_cell_names(cell_source)
 
@@ -85,7 +87,7 @@ class Extractor:
 
         return dependencies
 
-    def infere_cell_conf_dependencies(self, confs):
+    def infer_cell_conf_dependencies(self, confs):
         dependencies = []
         for ck in confs:
             for name in self.__extract_cell_names(confs[ck]):
