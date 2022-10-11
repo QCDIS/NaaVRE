@@ -160,7 +160,6 @@ class CellsHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-
         current_cell = Catalog.editor_buffer
         current_cell.clean_code()
 
@@ -326,6 +325,7 @@ def is_standard_module(module_name):
 
 def load_module_names_mapping():
     module_mapping_url = os.getenv('MODULE_MAPPING_URL')
+    module_mapping = {}
     if module_mapping_url:
         resp = requests.get(module_mapping_url)
         module_mapping = json.loads(resp.text)

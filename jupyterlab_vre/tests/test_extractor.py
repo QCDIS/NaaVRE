@@ -17,6 +17,7 @@ class TestExtractor(TestCase):
     def test_all_infer_cell_inputs(self):
         self.infer_cell_inputs('resources/MULTIPLY_framework_cells.json')
         self.infer_cell_inputs('resources/laserfarm_cells.json')
+        self.infer_cell_inputs('resources/vol2bird_cells.json')
 
     def infer_cell_inputs(self, payload_path):
         with open(payload_path, 'r') as file:
