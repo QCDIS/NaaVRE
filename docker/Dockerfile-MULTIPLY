@@ -13,8 +13,6 @@ RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++ s3fs
 #    libpthread-stubs0-dev sqlite3 python-tk zlib1g-dev libblas-dev libcurl4 libffi-dev \
 #    php-iconv libkmldom1 liblapacke llvm libnetcdf-dev krb5-user
 
-RUN apt autoclean -y && apt autoremove -y
-
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 COPY ./notebooks/ /tmp/notebooks
@@ -45,58 +43,55 @@ RUN pip install jupyterlab-github jupyter-videochat && \
 COPY MULTIPLY_pip_requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
-RUN mkdir $HOME/MULTIPLY
-WORKDIR $HOME/MULTIPLY
 RUN git clone https://github.com/JorisTimmermans/atmospheric_correction.git
 WORKDIR atmospheric_correction
 RUN python setup.py develop
 
-WORKDIR $HOME/MULTIPLY
+
+WORKDIR $HOME
 RUN git clone https://github.com/JorisTimmermans/data-access.git
 WORKDIR data-access
 RUN python setup.py develop
 
 
-WORKDIR $HOME/MULTIPLY
+WORKDIR $HOME
 RUN git clone https://github.com/JorisTimmermans/multiply-core.git
 WORKDIR multiply-core
 RUN python setup.py develop
 
-WORKDIR $HOME/MULTIPLY
+RUN ls
+WORKDIR $HOME
 RUN git clone https://github.com/QCDIS/inference-engine.git
 WORKDIR inference-engine
 RUN python setup.py develop
 
-WORKDIR $HOME/MULTIPLY
+WORKDIR $HOME
 RUN git clone https://github.com/QCDIS/prior-engine.git
 WORKDIR prior-engine
 RUN python setup.py develop
 
-WORKDIR $HOME/MULTIPLY
+WORKDIR $HOME
 RUN git clone https://github.com/JorisTimmermans/vm-support.git
 WORKDIR vm-support
 RUN python setup.py develop
 
-WORKDIR $HOME/MULTIPLY
+WORKDIR $HOME
 RUN git clone https://github.com/multiply-org/multiply-orchestration.git
 WORKDIR multiply-orchestration
 RUN python setup.py develop
 
-WORKDIR $HOME/MULTIPLY
+WORKDIR $HOME
 RUN git clone https://github.com/QCDIS/KaFKA-InferenceEngine.git
 WORKDIR KaFKA-InferenceEngine
 RUN python setup.py develop
 
-WORKDIR $HOME/MULTIPLY
+WORKDIR $HOME
 RUN git clone https://github.com/QCDIS/BRDF_descriptors.git
 WORKDIR BRDF_descriptors
 RUN python setup.py develop
 
 
 WORKDIR $HOME
-#RUN rm -rf $HOME/MULTIPLY
-
 RUN jupyter lab build --debug;
 
-RUN conda clean -a -y
 CMD ["/usr/local/bin/start-jupyter.sh"]
