@@ -25,6 +25,11 @@ jobs:
       dockerfile: Dockerfile-laserfarm-pytorch
       tag: n-a-a-vre-laserfarm
       push: true
+    secrets:
+      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-multiply:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
@@ -33,6 +38,11 @@ jobs:
       dockerfile: Dockerfile-MULTIPLY
       tag: n-a-a-vre-multiply
       push: true
+    secrets:
+      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vol2bird:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
@@ -41,6 +51,11 @@ jobs:
       dockerfile: Dockerfile-vol2bird
       tag: n-a-a-vre-vol2bird
       push: true
+    secrets:
+      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-pytorch:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
@@ -49,3 +64,8 @@ jobs:
       dockerfile: Dockerfile-laserfarm-pytorch
       tag: n-a-a-vre-pytorch
       push: true
+    secrets:
+      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}

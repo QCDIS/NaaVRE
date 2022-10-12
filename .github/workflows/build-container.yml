@@ -15,6 +15,15 @@ on:
       push:
         required: true
         type: boolean
+    secrets:
+      gitlab_username:
+        required: true
+      gitlab_password:
+        required: true
+      docker_username:
+        required: true
+      docker_password:
+        required: true
 env:
   DOCKERFILE:  ${{ inputs.dockerfile }}
   TAG:  ${{ inputs.tag }}
@@ -45,8 +54,8 @@ jobs:
       uses: docker/login-action@v1
       with:
         registry: "registry.gitlab.com/qcd1/registry"
-        username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
-        password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+        username: ${{ secrets.gitlab_username }}
+        password: ${{ secrets.gitlab_password }}
     - name: Push image to container Registry
       run: |
         # Change all uppercase to lowercase
@@ -66,9 +75,10 @@ jobs:
       uses: docker/login-action@v1
       with:
         registry: "https://index.docker.io/v1/"
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        username: ${{ secrets.docker_username }}
+        password: ${{ secrets.docker_password }}
     - name: Push image to container Registry
+      if: ${{ inputs.push }}
       run: |
         # Change all uppercase to lowercase
         IMAGE_ID=$DOCKERHUB_IMAGE_ID$TAG
@@ -81,4 +91,3 @@ jobs:
         docker push $IMAGE_ID:$VERSION
         docker tag $TAG $IMAGE_ID:latest
         docker push $IMAGE_ID:latest
-      if: ${{ inputs.push }}
