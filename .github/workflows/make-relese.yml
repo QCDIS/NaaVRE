@@ -30,7 +30,7 @@ jobs:
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
     with:
       wheel_artifact_name: jupyterlab_vre
-      dockerfile: Dockerfile-laserfarm
+      dockerfile: Dockerfile-laserfarm-pytorch
       tag: n-a-a-vre-laserfarm
       upload: true
   call-build-container-multiply:

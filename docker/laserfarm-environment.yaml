@@ -10,3 +10,22 @@ dependencies:
   - pip
   - pip:
     - laserfarm
+    - numpy
+    - dask
+    - distributed
+    - lazperf==1.4.4
+    - laserfarm
+    - laspy
+    - opencv-python-headless
+    - torch
+    - torchvision
+    - flwr
+    - sklearn
+    - tensorflow
+    - matplotlib
+    - folium
+    - cartopy
+    - icoscp
+    - pangaeapy
+    - jupyterlab-github
+    - jupyter-videochat

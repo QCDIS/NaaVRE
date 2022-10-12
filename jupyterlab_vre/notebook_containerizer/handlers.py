@@ -49,7 +49,7 @@ class NotebookExtractorHandler(APIHandler, Catalog):
                 if 'JUPYTERHUB_USER' in os.environ:
                     title += '-' + os.environ['JUPYTERHUB_USER']
 
-        dependencies = extractor.infere_cell_dependencies(source, confs)
+        dependencies = extractor.infer_cell_dependencies(source, confs)
 
         node_id = str(uuid.uuid4())[:7]
         cell = Cell(

@@ -9,6 +9,7 @@ from tornado.web import Application
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.database import Catalog
+from jupyterlab_vre.handlers import load_module_names_mapping
 
 
 def delete_all_cells():
@@ -37,3 +38,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             with open('resources/workflows/get_files.json', 'r') as read_file:
                 payload = json.load(read_file)
             response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
+
+
+    def test_load_module_names_mapping(self):
+        load_module_names_mapping()

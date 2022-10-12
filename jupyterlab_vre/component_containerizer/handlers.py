@@ -46,6 +46,7 @@ class ExtractorHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
+        print(json.dumps(payload))
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
         try:
@@ -56,7 +57,6 @@ class ExtractorHandler(APIHandler, Catalog):
             self.write('Syntax Error: ' + str(e))
             self.write_error('Syntax Error: ' + str(e))
             self.flush()
-
 
         source = notebook.cells[cell_index].source
         title = source.partition('\n')[0]
@@ -78,7 +78,7 @@ class ExtractorHandler(APIHandler, Catalog):
             outs = set(extractor.infere_cell_outputs(source))
 
             confs = extractor.extract_cell_conf_ref(source)
-            dependencies = extractor.infere_cell_dependencies(source, confs)
+            dependencies = extractor.infer_cell_dependencies(source, confs)
 
         node_id = str(uuid.uuid4())[:7]
         cell = Cell(
@@ -160,7 +160,6 @@ class CellsHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-
         current_cell = Catalog.editor_buffer
         current_cell.clean_code()
 
@@ -325,8 +324,8 @@ def is_standard_module(module_name):
 
 
 def load_module_names_mapping():
-    module_mapping = {}
     module_mapping_url = os.getenv('MODULE_MAPPING_URL')
+    module_mapping = {}
     if module_mapping_url:
         resp = requests.get(module_mapping_url)
         module_mapping = json.loads(resp.text)
