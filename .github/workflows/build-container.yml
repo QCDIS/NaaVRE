@@ -15,9 +15,6 @@ on:
       push:
         required: true
         type: boolean
-
-image_id: "registry.gitlab.com/qcd1/registry/n-a-a-vre"
-
 env:
   DOCKERFILE:  ${{ inputs.dockerfile }}
   TAG:  ${{ inputs.tag }}
