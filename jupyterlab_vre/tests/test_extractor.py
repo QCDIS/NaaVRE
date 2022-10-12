@@ -11,13 +11,18 @@ from jupyterlab_vre.services.extractor.extractor import Extractor
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+if os.path.exists('resources'):
+    base_path = 'resources'
+elif os.path.exists('jupyterlab_vre/tests/resources/'):
+    base_path = 'jupyterlab_vre/tests/resources/'
 
+print(base_path)
 class TestExtractor(TestCase):
 
     def test_all_infer_cell_inputs(self):
-        self.infer_cell_inputs('resources/MULTIPLY_framework_cells.json')
-        self.infer_cell_inputs('resources/laserfarm_cells.json')
-        self.infer_cell_inputs('resources/vol2bird_cells.json')
+        self.infer_cell_inputs(os.path.join(base_path, 'notebooks/MULTIPLY_framework_cells.json'))
+        self.infer_cell_inputs(os.path.join(base_path, 'notebooks/laserfarm_cells.json'))
+        self.infer_cell_inputs(os.path.join(base_path, 'notebooks/vol2bird_cells.json'))
 
     def infer_cell_inputs(self, payload_path):
         with open(payload_path, 'r') as file:
