@@ -40,10 +40,10 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: ${{ inputs.wheel_artifact_name }}
+        path: docker
 
     - name: Build docker
       run: |
-          mv jupyterlab_vre-0.1.0-py3-none-any.whl docker/
           cd docker && docker build . --file $DOCKERFILE -t $TAG
 
     - name: Start docker
