@@ -11,7 +11,7 @@ jobs:
     needs: cleanup-artifacts
     uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@main
     with:
-      push: true
+      upload: true
   call-save-in-relese:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/save-wheel-in-release.yml@main
