@@ -94,5 +94,5 @@ RUN pip install jupyterlab-github jupyter-videochat && \
 
 WORKDIR $HOME
 RUN jupyter lab build --debug;
-
+RUN conda clean -a -y
 CMD ["/usr/local/bin/start-jupyter.sh"]
