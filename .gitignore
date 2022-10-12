@@ -7,6 +7,7 @@ node_modules/
 jupyterlab_vre/labextension
 yarn.lock
 .idea
+
 # Created by https://www.gitignore.io/api/python
 # Edit at https://www.gitignore.io/?templates=python
 
