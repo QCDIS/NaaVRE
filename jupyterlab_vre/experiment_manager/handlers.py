@@ -31,8 +31,9 @@ class ExportWorkflowHandler(APIHandler):
 
         global_params = {}
         for _nid, cell in cells.items():
-            for param_name in cell['params']:
-                global_params[param_name] = ''
+            if cell:
+                for param_name in cell['params']:
+                    global_params[param_name] = ''
 
         registry_credentials = Catalog.get_registry_credentials()
         if not registry_credentials:
@@ -50,15 +51,15 @@ class ExportWorkflowHandler(APIHandler):
         template_env = Environment(
             loader=loader, trim_blocks=True, lstrip_blocks=True)
         template = template_env.get_template('workflow_template_v2.jinja2')
-
-        template.stream(
-            vlab_slug=vlab_slug,
-            deps_dag=deps_dag,
-            cells=cells,
-            nodes=nodes,
-            global_params=global_params,
-            image_repo=image_repo
-        ).dump('workflow.yaml')
+        if cell:
+            template.stream(
+                vlab_slug=vlab_slug,
+                deps_dag=deps_dag,
+                cells=cells,
+                nodes=nodes,
+                global_params=global_params,
+                image_repo=image_repo
+            ).dump('workflow.yaml')
 
         self.flush()
 

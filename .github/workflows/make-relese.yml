@@ -17,22 +17,19 @@ jobs:
     uses: QCDIS/NaaVRE/.github/workflows/save-wheel-in-release.yml@main
     with:
       wheel_artifact_name: jupyterlab_vre
-  call-build-container:
-    needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
-    with:
-      wheel_artifact_name: jupyterlab_vre
-      dockerfile: Dockerfile
-      tag: n-a-a-vre
-      upload: true
   call-build-container-laserfarm:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
     with:
       wheel_artifact_name: jupyterlab_vre
-      dockerfile: Dockerfile-laserfarm
+      dockerfile: Dockerfile-laserfarm-pytorch
       tag: n-a-a-vre-laserfarm
-      upload: true
+      push: true
+    secrets:
+      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-multiply:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
@@ -40,7 +37,12 @@ jobs:
       wheel_artifact_name: jupyterlab_vre
       dockerfile: Dockerfile-MULTIPLY
       tag: n-a-a-vre-multiply
-      upload: true
+      push: true
+    secrets:
+      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vol2bird:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
@@ -48,112 +50,22 @@ jobs:
       wheel_artifact_name: jupyterlab_vre
       dockerfile: Dockerfile-vol2bird
       tag: n-a-a-vre-vol2bird
-      upload: true
+      push: true
+    secrets:
+      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-pytorch:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
     with:
       wheel_artifact_name: jupyterlab_vre
-      dockerfile: Dockerfile-pytorch
+      dockerfile: Dockerfile-laserfarm-pytorch
       tag: n-a-a-vre-pytorch
-      upload: true
-  call-registry-push-gitlab:
-    needs: call-build-container
-    uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
-    with:
-      registry: "registry.gitlab.com/qcd1/registry"
-      image_id: "registry.gitlab.com/qcd1/registry/n-a-a-vre"
-      tag: n-a-a-vre
+      push: true
     secrets:
-      registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
-      registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
-  call-registry-push-gitlab-laserfarm:
-    needs: call-build-container-laserfarm
-    uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
-    with:
-      registry: "registry.gitlab.com/qcd1/registry"
-      image_id: "registry.gitlab.com/qcd1/registry/n-a-a-vre-laserfarm"
-      tag: n-a-a-vre-laserfarm
-    secrets:
-      registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
-      registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
-  call-registry-push-gitlab-vol2bird:
-    needs: call-build-container-vol2bird
-    uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
-    with:
-      registry: "registry.gitlab.com/qcd1/registry"
-      image_id: "registry.gitlab.com/qcd1/registry/n-a-a-vre-vol2bird"
-      tag: n-a-a-vre-vol2bird
-    secrets:
-      registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
-      registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
-  call-registry-push-dockerhub-laserfarm:
-    needs: call-build-container-laserfarm
-    uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
-    with:
-      registry: "https://index.docker.io/v1/"
-      image_id: "qcdis/n-a-a-vre-laserfarm"
-      tag: n-a-a-vre-laserfarm
-    secrets:
-      registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
-      registry_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-  call-registry-push-dockerhub-vol2bird:
-    needs: call-build-container-vol2bird
-    uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
-    with:
-      registry: "https://index.docker.io/v1/"
-      image_id: "qcdis/n-a-a-vre-vol2bird"
-      tag: n-a-a-vre-vol2bird
-    secrets:
-      registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
-      registry_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-  call-registry-push-dockerhub:
-    needs: call-build-container
-    uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
-    with:
-      registry: "https://index.docker.io/v1/"
-      image_id: "qcdis/n-a-a-vre"
-      tag: n-a-a-vre
-    secrets:
-      registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
-      registry_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-  call-registry-push-dockerhub-pytorch:
-    needs: call-build-container-pytorch
-    uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
-    with:
-      registry: "https://index.docker.io/v1/"
-      image_id: "qcdis/n-a-a-vre-pytorch"
-      tag: n-a-a-vre-pytorch
-    secrets:
-      registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
-      registry_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-  call-registry-push-gitlab-pytorch:
-    needs: call-build-container-pytorch
-    uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
-    with:
-      registry: "registry.gitlab.com/qcd1/registry"
-      image_id: "registry.gitlab.com/qcd1/registry/n-a-a-vre-pytorch"
-      tag: n-a-a-vre-pytorch
-    secrets:
-      registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
-      registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
-  call-registry-push-dockerhub-multiply:
-    needs: call-build-container-multiply
-    uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
-    with:
-      registry: "https://index.docker.io/v1/"
-      image_id: "qcdis/n-a-a-vre-multiply"
-      tag: n-a-a-vre-multiply
-    secrets:
-      registry_username: ${{ secrets.DOCKERHUB_USERNAME }}
-      registry_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-  call-registry-push-gitlab-multiply:
-    needs: call-build-container-multiply
-    uses: QCDIS/NaaVRE/.github/workflows/registry-push.yml@main
-    with:
-      registry: "registry.gitlab.com/qcd1/registry"
-      image_id: "registry.gitlab.com/qcd1/registry/n-a-a-vre-multiply"
-      tag: n-a-a-vre-multiply
-    secrets:
-      registry_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
-      registry_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}

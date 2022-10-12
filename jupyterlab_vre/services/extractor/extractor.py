@@ -1,14 +1,9 @@
-import logging
 import re
 from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
 import ast
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 class Extractor:
-    logger = logging.getLogger(__name__)
-
     sources: list
     imports: list
     configurations: dict
@@ -49,7 +44,8 @@ class Extractor:
             tree = ast.parse(s)
             for node in ast.walk(tree):
                 if isinstance(node, ast.Assign):
-                    if hasattr(node.targets[0],'id'):
+                    target = node.targets[0]
+                    if hasattr(target, 'id'):
                         name = node.targets[0].id
                         prefix = name.split('_')[0]
                         if prefix == 'conf' and name not in configurations:
@@ -61,12 +57,11 @@ class Extractor:
         for s in sources:
             tree = ast.parse(s)
             for node in ast.walk(tree):
-                if isinstance(node, ast.Assign):
-                    if hasattr(node.targets[0], 'id'):
-                        name = node.targets[0].id
-                        prefix = name.split('_')[0]
-                        if prefix == 'param':
-                            params.add(name)
+                if isinstance(node, ast.Assign) and hasattr(node.targets[0], 'id'):
+                    name = node.targets[0].id
+                    prefix = name.split('_')[0]
+                    if prefix == 'param':
+                        params.add(name)
         return params
 
     def infere_cell_outputs(self, cell_source):
@@ -79,7 +74,7 @@ class Extractor:
         return [und for und in cell_undefined if
                 und not in self.imports and und not in self.configurations and und not in self.global_params]
 
-    def infere_cell_dependencies(self, cell_source, confs):
+    def infer_cell_dependencies(self, cell_source, confs):
         dependencies = []
         names = self.__extract_cell_names(cell_source)
 
@@ -92,7 +87,7 @@ class Extractor:
 
         return dependencies
 
-    def infere_cell_conf_dependencies(self, confs):
+    def infer_cell_conf_dependencies(self, confs):
         dependencies = []
         for ck in confs:
             for name in self.__extract_cell_names(confs[ck]):
