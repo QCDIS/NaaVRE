@@ -15,17 +15,9 @@ on:
       push:
         required: true
         type: boolean
-      registry:
-        required: true
-        type: string
       image_id:
         required: true
         type: string
-    secrets:
-      registry_username:
-        required: true
-      registry_password:
-        required: true
 
 env:
   DOCKERFILE:  ${{ inputs.dockerfile }}
