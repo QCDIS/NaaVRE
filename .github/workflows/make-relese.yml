@@ -17,14 +17,6 @@ jobs:
     uses: QCDIS/NaaVRE/.github/workflows/save-wheel-in-release.yml@main
     with:
       wheel_artifact_name: jupyterlab_vre
-  call-build-container:
-    needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
-    with:
-      wheel_artifact_name: jupyterlab_vre
-      dockerfile: Dockerfile
-      tag: n-a-a-vre
-      push: true
   call-build-container-laserfarm:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
