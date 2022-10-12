@@ -15,14 +15,15 @@ on:
       push:
         required: true
         type: boolean
-      image_id:
-        required: true
-        type: string
+
+image_id: "registry.gitlab.com/qcd1/registry/n-a-a-vre"
 
 env:
   DOCKERFILE:  ${{ inputs.dockerfile }}
   TAG:  ${{ inputs.tag }}
-  IMAGE_ID:  ${{ inputs.image_id }}
+  GITLAB_IMAGE_ID: "registry.gitlab.com/qcd1/registry/"
+  DOCKERHUB_IMAGE_ID: "qcdis/"
+
 
 jobs:
   build:
@@ -52,6 +53,7 @@ jobs:
     - name: Push image to container Registry
       run: |
         # Change all uppercase to lowercase
+        IMAGE_ID=$GITLAB_IMAGE_ID$TAG
         IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
         # Strip git ref prefix from version
         VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
@@ -72,6 +74,7 @@ jobs:
     - name: Push image to container Registry
       run: |
         # Change all uppercase to lowercase
+        IMAGE_ID=$DOCKERHUB_IMAGE_ID$TAG
         IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
         # Strip git ref prefix from version
         VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
