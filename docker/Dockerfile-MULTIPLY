@@ -55,5 +55,5 @@ RUN pip install git+https://github.com/JorisTimmermans/data-access.git \
 
 WORKDIR $HOME
 RUN jupyter lab build --debug;
-
+RUN conda clean -a -y
 CMD ["/usr/local/bin/start-jupyter.sh"]

@@ -23,5 +23,5 @@ RUN pip install jupyterlab-github jupyter-videochat && \
     jupyter serverextension enable --py jupyterlab_github --user
 
 RUN jupyter lab build --debug;
-
+RUN conda clean -a -y
 CMD ["/usr/local/bin/start-jupyter.sh"]
