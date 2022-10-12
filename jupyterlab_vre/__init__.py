@@ -1,17 +1,14 @@
-from jupyterlab_vre.notebook_containerizer.handlers import NotebookExtractorHandler
-from jupyterlab_vre.registries.handlers import RegistriesHandler
+from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
+from ._version import __version__ 
 from notebook.utils import url_path_join
 
-from jupyterlab_vre.component_containerizer.handlers import (BaseImageHandler,
-                                                             CellsHandler,
-                                                             ExtractorHandler,
-                                                             TypesHandler)
-from jupyterlab_vre.experiment_manager.handlers import ExecuteWorkflowHandler, ExportWorkflowHandler
-from jupyterlab_vre.repositories.handlers import RepositoriesHandler
-from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
-
-from ._version import __version__
+from .component_containerizer.handlers import ExtractorHandler, TypesHandler, BaseImageHandler, CellsHandler
+from .experiment_manager.handlers import ExportWorkflowHandler, ExecuteWorkflowHandler
 from .handlers import CatalogGetAllHandler
+from .notebook_containerizer.handlers import NotebookExtractorHandler
+from .notebook_search.handlers import NotebookSearchHandler
+from .registries.handlers import RegistriesHandler
+from .repositories.handlers import RepositoriesHandler
 
 
 def _jupyter_server_extension_paths():
@@ -25,6 +22,7 @@ def load_jupyter_server_extension(lab_app):
     host_pattern = '.*$'
 
     lab_app.web_app.add_handlers(host_pattern, [
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebooksearch'), NotebookSearchHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/extract'), ExtractorHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/nbcontainerizer/extract'), NotebookExtractorHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/types'), TypesHandler),

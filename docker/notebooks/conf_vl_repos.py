@@ -1,9 +1,8 @@
-import json
+import argparse
 import logging
 
 from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.repositories.repository import Repository
-import argparse
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

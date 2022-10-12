@@ -3,6 +3,7 @@ import logging
 import os
 from pathlib import Path
 
+import requests
 from notebook.base.handlers import APIHandler
 from tornado import web
 
@@ -17,12 +18,6 @@ module_mapping = {
     'webdav3': 'webdavclient3'
 }
 
-
-################################################################################
-
-# Catalog
-
-################################################################################
 
 def load_module_names_mapping():
     module_name_mapping_path = os.path.join(str(Path.home()), 'NaaVRE', 'module_name_mapping.json')
