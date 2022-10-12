@@ -26,6 +26,7 @@ build-frontend: jlpm-install
 	npx lerna run build --scope @jupyter_vre/core
 	npx lerna run build --scope @jupyter_vre/notebook-containerizer
 	npx lerna run build --scope @jupyter_vre/notebook-search
+	npx lerna run build --scope @jupyter_vre/notebook-search-toolbar
 	npx lerna run build --scope @jupyter_vre/components
 	npx lerna run build --scope @jupyter_vre/faicells-composer
 	npx lerna run build --scope @jupyter_vre/faicells-panel
@@ -38,8 +39,7 @@ jlpm-install:
 
 install-ui:
 	$(call INSTALL_LAB_EXTENSION,notebook-search)
-	$(call INSTALL_LAB_EXTENSION,core)
-	$(call INSTALL_LAB_EXTENSION,chart-customs)
+	$(call INSTALL_LAB_EXTENSION,notebook-search-toolbar)
 	$(call INSTALL_LAB_EXTENSION,core)
 	$(call INSTALL_LAB_EXTENSION,chart-customs)
 	$(call INSTALL_LAB_EXTENSION,components)
@@ -49,6 +49,7 @@ install-ui:
 
 link-ui:
 	$(call LINK_LAB_EXTENSION,notebook-search)
+	$(call LINK_LAB_EXTENSION,notebook-search-toolbar)
 	$(call LINK_LAB_EXTENSION,core)
 	$(call LINK_LAB_EXTENSION,chart-customs)
 	$(call LINK_LAB_EXTENSION,components)
@@ -65,7 +66,6 @@ dist-ui: build-frontend
 	$(call PACKAGE_LAB_EXTENSION,faircells-panel)
 	$(call PACKAGE_LAB_EXTENSION,vre-menu)
 	$(call PACKAGE_LAB_EXTENSION,notebook-search)
-
 
 
 release: dist-ui build-backend
