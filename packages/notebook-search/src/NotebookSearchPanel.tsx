@@ -4,6 +4,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import { theme } from './Theme';
 import { Divider, TextField } from '@material-ui/core';
 import NotebookVirtualizedList from './NotebookVirtualizedList';
+import Button from '@mui/material/Button';
 
 interface NotebookSearchPanelProps {
 
@@ -32,7 +33,10 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
         this.setState({
             keyword: event.target.value
         });
+        
+    }
 
+    onSearchClick = () => {
         this.getResults();
     }
 
@@ -67,13 +71,20 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
 
                         </div>
                         <Divider />
-                        <div className={'nb-search-field'}>
+                        <div className={'nb-search-field'}>     
                             <TextField
                                 id="standard-basic"
                                 label="Keyword"
                                 variant="standard"
                                 value={this.state.keyword}
                                 onChange={this.onChangeKeyword} />
+                                <Button 
+                                    variant="contained"
+                                    onClick={
+                                        this.onSearchClick
+                                      }>
+                                    Search
+                                </Button>
                         </div>
                         <Divider />
                         <NotebookVirtualizedList
