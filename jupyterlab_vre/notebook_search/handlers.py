@@ -1,5 +1,7 @@
 import json
 import logging
+import os
+from _curses_panel import panel
 
 import requests
 from notebook.base.handlers import APIHandler
@@ -21,8 +23,10 @@ class NotebookSearchHandler(APIHandler):
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
         term = payload['keyword']
+        search_api_endpoint = os.getenv('SEARCH_API_ENDPOINT')
+        search_api_token = os.getenv('SEARCH_API_TOKEN')
         response = requests.get(
-            'http://145.100.135.119/api/notebook_search/',
+            search_api_endpoint,
             params={
                 "page": "1",
                 "term": term,
@@ -33,11 +37,9 @@ class NotebookSearchHandler(APIHandler):
             headers={
                 "Accept": "*/*",
                 "Content-Type": "text/json",
-                "Authorization": "Token b30bd18ea01f5a45e217b03682f70ce6ae14c293"
+                "Authorization": "Token "+search_api_token
             }
         )
         hits = response.text
-        json_object = json.loads(hits)
-        print(hits)
         self.write(hits)
         self.flush()

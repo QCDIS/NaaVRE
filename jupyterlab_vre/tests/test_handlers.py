@@ -7,13 +7,13 @@ from tornado.escape import to_unicode
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 
-from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler
+from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, NotebookSearchHandler
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.handlers import load_module_names_mapping
 
-if os.path.exists('resources'):
-    base_path = 'resources'
+if os.path.exists('resources/'):
+    base_path = 'resources/'
 elif os.path.exists('jupyterlab_vre/tests/resources/'):
     base_path = 'jupyterlab_vre/tests/resources/'
 
@@ -34,6 +34,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                                 ('/typeshandler', TypesHandler),
                                 ('/cellshandler', CellsHandler),
                                 ('/exportworkflowhandler', ExportWorkflowHandler),
+                                ('/notebooksearch', NotebookSearchHandler),
                                 ],
                                cookie_secret='asdfasdf')
         return self.app
@@ -48,3 +49,12 @@ class HandlersAPITest(AsyncHTTPTestCase):
 
     def test_load_module_names_mapping(self):
         load_module_names_mapping()
+
+
+    def test_notebooksearch_handler(self):
+        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+            m.return_value = 'cookie'
+            workflow_path = os.path.join(base_path, 'search/keyword.json')
+            with open(workflow_path, 'r') as read_file:
+                payload = json.load(read_file)
+            response = self.fetch('/notebooksearch', method='POST', body=json.dumps(payload))
