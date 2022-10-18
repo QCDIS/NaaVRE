@@ -24,6 +24,7 @@ class Extractor:
     def __extract_imports(self, sources):
         imports = {}
         for s in sources:
+            print(s)
             tree = ast.parse(s)
             for node in ast.walk(tree):
                 if isinstance(node, (ast.Import, ast.ImportFrom,)):

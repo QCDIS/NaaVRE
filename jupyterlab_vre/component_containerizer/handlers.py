@@ -46,16 +46,17 @@ class ExtractorHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
+        print(json.dumps(payload))
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-        try:
-            extractor = Extractor(notebook)
-        except SyntaxError as e:
-            logger.error('Syntax Error: ' + str(e))
-            self.set_status(400)
-            self.write('Syntax Error: ' + str(e))
-            self.write_error('Syntax Error: ' + str(e))
-            self.flush()
+        # try:
+        extractor = Extractor(notebook)
+        # except SyntaxError as e:
+        #     logger.error('Syntax Error: ' + str(e))
+        #     self.set_status(400)
+        #     self.write('Syntax Error: ' + str(e))
+        #     self.write_error('Syntax Error: ' + str(e))
+        #     self.flush()
 
         source = notebook.cells[cell_index].source
         title = source.partition('\n')[0]
