@@ -52,6 +52,7 @@ class ExtractorHandler(APIHandler, Catalog):
             extractor = Extractor(notebook)
         except SyntaxError as e:
             logger.error('Syntax Error: ' + str(e))
+            print(json.dumps(payload))
             self.set_status(400)
             self.write('Syntax Error: ' + str(e))
             self.write_error('Syntax Error: ' + str(e))

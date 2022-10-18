@@ -116,7 +116,7 @@ export class CellTracker extends React.Component<IProps, IState> {
     };
 
     exctractor = async (notebookModel: INotebookModel, save = false) => {
-        try {
+        // try {
             const extractedCell = await requestAPI<any>('containerizer/extract', {
                 body: JSON.stringify({
                     save: save,
@@ -144,10 +144,10 @@ export class CellTracker extends React.Component<IProps, IState> {
             this.setState({ typeSelections: typeSelections })
     
             this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
-        } catch (error) {
-            console.log(error);
-            alert('Error exporting cell code: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
-        }
+        // } catch (error) {
+        //     console.log(error);
+        //     alert('Error exporting cell code: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+        // }
     }
 
     onActiveCellChanged = (notebook: Notebook, _activeCell: Cell) => {

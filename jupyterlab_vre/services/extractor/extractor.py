@@ -114,7 +114,7 @@ class Extractor:
         pyflakes_api.check(cell_source, filename="temp", reporter=rep)
 
         if rep._stderr():
-            raise RuntimeError("Flakes reported the following error:"
+            raise SyntaxError("Flakes reported the following error:"
                                "\n{}".format('\t' + '\t'.join(rep._stderr())))
         p = r"'(.+?)'"
 

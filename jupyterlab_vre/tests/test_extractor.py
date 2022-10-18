@@ -23,6 +23,10 @@ class TestExtractor(TestCase):
         self.infer_cell_inputs(os.path.join(base_path, 'notebooks/MULTIPLY_framework_cells.json'))
         self.infer_cell_inputs(os.path.join(base_path, 'notebooks/laserfarm_cells.json'))
         self.infer_cell_inputs(os.path.join(base_path, 'notebooks/vol2bird_cells.json'))
+        try:
+            self.infer_cell_inputs(os.path.join(base_path, 'notebooks/MULTIPLY_framework_2.json'))
+        except SyntaxError as e:
+            logger.warning(str(e))
 
     def infer_cell_inputs(self, payload_path):
         with open(payload_path, 'r') as file:
@@ -30,10 +34,7 @@ class TestExtractor(TestCase):
 
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-        try:
-            extractor = Extractor(notebook)
-        except SyntaxError as e:
-            logger.error('Syntax Error: ' + str(e))
+        extractor = Extractor(notebook)
 
         source = notebook.cells[cell_index].source
         title = source.partition('\n')[0]
@@ -95,3 +96,7 @@ class TestExtractor(TestCase):
             'selected': {},
             'hovered': {},
         }
+
+        cell.chart_obj = chart
+
+        print(cell.toJSON())
