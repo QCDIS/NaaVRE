@@ -61,7 +61,7 @@ class ExtractorHandler(APIHandler, Catalog):
         source = notebook.cells[cell_index].source
         title = source.partition('\n')[0]
         title = title.replace('#', '').replace(
-            '_', '-').replace('(', '-').replace(')', '-').strip() if title[0] == "#" else "Untitled"
+            '_', '-').replace('(', '-').replace(')', '-').strip() if title and title[0] == "#" else "Untitled"
 
         if 'JUPYTERHUB_USER' in os.environ:
             title += '-' + os.environ['JUPYTERHUB_USER']
