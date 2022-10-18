@@ -24,7 +24,6 @@ class Extractor:
     def __extract_imports(self, sources):
         imports = {}
         for s in sources:
-            print(s)
             tree = ast.parse(s)
             for node in ast.walk(tree):
                 if isinstance(node, (ast.Import, ast.ImportFrom,)):
@@ -115,7 +114,7 @@ class Extractor:
         pyflakes_api.check(cell_source, filename="temp", reporter=rep)
 
         if rep._stderr():
-            raise RuntimeError("Flakes reported the following error:"
+            raise SyntaxError("Flakes reported the following error:"
                                "\n{}".format('\t' + '\t'.join(rep._stderr())))
         p = r"'(.+?)'"
 
