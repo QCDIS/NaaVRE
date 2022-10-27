@@ -30,11 +30,9 @@ RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
     pip install laserfarm laspy opencv-python-headless torch torchvision flwr sklearn tensorflow
 #====================================
 
-RUN pip install jupyterlab-github jupyter-videochat && \
+RUN pip install jupyterlab-github jupyter-videochat matplotlib folium cartopy icoscp pangaeapy nbgitpuller && \
     jupyter serverextension enable --py jupyter_videochat --user && \
     jupyter serverextension enable --py jupyterlab_github --user
-
-RUN pip install matplotlib folium cartopy icoscp pangaeapy
 
 RUN jupyter lab build --debug;
 
