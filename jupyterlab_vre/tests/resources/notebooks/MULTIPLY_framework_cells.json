@@ -153,7 +153,7 @@
       },
       {
         "cell_type": "code",
-        "source": "from vm_support import set_earth_data_authentication, set_up_data_stores\nset_up_data_stores()\nusername = 'Multiply' \npassword = 'Multiply4You!'\nset_earth_data_authentication(username, password) # to download modis data, needs only be done once",
+        "source": "from vm_support import set_earth_data_authentication, set_up_data_stores\nset_up_data_stores()\nusername = 'Multiply' \npassword = 'XXXXXXXXXXXXXX'\nset_earth_data_authentication(username, password) # to download modis data, needs only be done once",
         "metadata": {},
         "execution_count": 8,
         "outputs": []
