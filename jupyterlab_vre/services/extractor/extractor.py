@@ -50,7 +50,7 @@ class Extractor:
                         prefix = name.split('_')[0]
                         if prefix == 'conf' and name not in configurations:
                             configurations[name] = lines[node.lineno - 1]
-        return configurations
+        return self.__resolve_configurations(configurations)
 
     def __extract_params(self, sources):
         params = set()
@@ -114,7 +114,7 @@ class Extractor:
         pyflakes_api.check(cell_source, filename="temp", reporter=rep)
 
         if rep._stderr():
-            raise RuntimeError("Flakes reported the following error:"
+            raise SyntaxError("Flakes reported the following error:"
                                "\n{}".format('\t' + '\t'.join(rep._stderr())))
         p = r"'(.+?)'"
 
@@ -138,6 +138,25 @@ class Extractor:
             if u not in confs:
                 confs[u] = self.configurations[u]
         return confs
+
+    def __resolve_configurations(self, configurations):
+        confs_in_assignment = {}
+        resolved_configurations = {}
+        for conf_name in configurations:
+            conf = configurations[conf_name]
+            if 'conf_' in conf.split('=')[1]:
+                confs_in_assignment[conf_name] = conf
+        for conf_name in configurations:
+            for confs_in_assignment_name in confs_in_assignment:
+                if conf_name in confs_in_assignment[confs_in_assignment_name] and conf_name not in resolved_configurations:
+                    replace_value = configurations[conf_name].split('=')[1]
+                    if confs_in_assignment_name in resolved_configurations:
+                        new_value = resolved_configurations[confs_in_assignment_name].replace(conf_name,replace_value)
+                    else:
+                        new_value = confs_in_assignment[confs_in_assignment_name].replace(conf_name,replace_value)
+                    resolved_configurations[confs_in_assignment_name] = new_value
+        configurations.update(resolved_configurations)
+        return configurations
 
 
 class StreamList:

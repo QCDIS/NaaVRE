@@ -46,21 +46,15 @@ class ExtractorHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
+        print(json.dumps(payload))
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-        try:
-            extractor = Extractor(notebook)
-        except SyntaxError as e:
-            logger.error('Syntax Error: ' + str(e))
-            self.set_status(400)
-            self.write('Syntax Error: ' + str(e))
-            self.write_error('Syntax Error: ' + str(e))
-            self.flush()
+        extractor = Extractor(notebook)
 
         source = notebook.cells[cell_index].source
         title = source.partition('\n')[0]
         title = title.replace('#', '').replace(
-            '_', '-').replace('(', '-').replace(')', '-').strip() if title[0] == "#" else "Untitled"
+            '_', '-').replace('(', '-').replace(')', '-').strip() if title and title[0] == "#" else "Untitled"
 
         if 'JUPYTERHUB_USER' in os.environ:
             title += '-' + os.environ['JUPYTERHUB_USER']
@@ -71,6 +65,7 @@ class ExtractorHandler(APIHandler, Catalog):
         params = []
         confs = []
         dependencies = []
+
         # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(source)'
         if notebook.cells[cell_index].cell_type == 'code':
             ins = set(extractor.infere_cell_inputs(source))

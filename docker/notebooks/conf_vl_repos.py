@@ -24,7 +24,6 @@ github_token = args.github_token
 
 registry_url = args.registry_url
 
-
 # registry_token = args.registry_token
 
 

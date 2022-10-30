@@ -7,13 +7,13 @@ from tornado.escape import to_unicode
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 
-from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, NotebookSearchHandler
+from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.handlers import load_module_names_mapping
 
-if os.path.exists('resources/'):
-    base_path = 'resources/'
+if os.path.exists('resources'):
+    base_path = 'resources'
 elif os.path.exists('jupyterlab_vre/tests/resources/'):
     base_path = 'jupyterlab_vre/tests/resources/'
 
@@ -34,7 +34,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                                 ('/typeshandler', TypesHandler),
                                 ('/cellshandler', CellsHandler),
                                 ('/exportworkflowhandler', ExportWorkflowHandler),
-                                ('/notebooksearch', NotebookSearchHandler),
+                                ('/executeworkflowhandler', ExecuteWorkflowHandler),
                                 ],
                                cookie_secret='asdfasdf')
         return self.app
@@ -47,14 +47,22 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 payload = json.load(read_file)
             response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
 
+    def test_execute_workflow_handler(self):
+        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+            m.return_value = 'cookie'
+            workflow_path = os.path.join(base_path, 'workflows/laserfarm.json')
+            with open(workflow_path, 'r') as read_file:
+                payload = json.load(read_file)
+            response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
+
     def test_load_module_names_mapping(self):
         load_module_names_mapping()
 
 
-    def test_notebooksearch_handler(self):
+    def test_extractor_handler_MULTIPLY(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
-            workflow_path = os.path.join(base_path, 'search/keyword.json')
+            workflow_path = os.path.join(base_path, 'notebooks/MULTIPLY_framework_2.json')
             with open(workflow_path, 'r') as read_file:
                 payload = json.load(read_file)
-            response = self.fetch('/notebooksearch', method='POST', body=json.dumps(payload))
+            response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))

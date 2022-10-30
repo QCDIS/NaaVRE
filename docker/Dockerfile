@@ -18,7 +18,7 @@ RUN conda remove --force -y terminado && \
 RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl && \
     jupyter serverextension enable --py jupyterlab_vre --user
 
-RUN pip install jupyterlab-github jupyter-videochat && \
+RUN pip install jupyterlab-github jupyter-videochat nbgitpuller && \
     jupyter serverextension enable --py jupyter_videochat --user && \
     jupyter serverextension enable --py jupyterlab_github --user
 
