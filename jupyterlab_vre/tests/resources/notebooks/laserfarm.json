@@ -1,0 +1,159 @@
+{
+  "save": false,
+  "cell_index": 4,
+  "notebook": {
+    "metadata": {
+      "kernelspec": {
+        "display_name": "Python 3 (ipykernel)",
+        "language": "python",
+        "name": "python3"
+      },
+      "language_info": {
+        "codemirror_mode": {
+          "name": "ipython",
+          "version": 3
+        },
+        "file_extension": ".py",
+        "mimetype": "text/x-python",
+        "name": "python",
+        "nbconvert_exporter": "python",
+        "pygments_lexer": "ipython3",
+        "version": "3.9.13"
+      }
+    },
+    "nbformat_minor": 5,
+    "nbformat": 4,
+    "cells": [
+      {
+        "cell_type": "code",
+        "source": "import fnmatch\nimport json\nimport getpass\nimport os\nimport pathlib\nimport datetime\nimport laspy\n\n\nimport time\nimport requests\n                    \nfrom dask.distributed import LocalCluster, SSHCluster \nfrom laserfarm import Retiler, DataProcessing, GeotiffWriter, MacroPipeline\nfrom laserfarm.remote_utils import get_wdclient, get_info_remote, list_remote",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 29,
+        "outputs": [],
+        "id": "854c645f-a14b-49ca-a9f5-cb49de30006a"
+      },
+      {
+        "cell_type": "markdown",
+        "source": "## Global Configuration",
+        "metadata": {},
+        "id": "3b32a2c7-6bc3-4a23-a7f3-be6163358654"
+      },
+      {
+        "cell_type": "code",
+        "source": "import fnmatch\nimport json\nimport getpass\nimport os\nimport pathlib\nimport datetime\n                    \nfrom dask.distributed import LocalCluster, SSHCluster \nfrom laserfarm import Retiler, DataProcessing, GeotiffWriter, MacroPipeline\nfrom laserfarm.remote_utils import get_wdclient, get_info_remote, list_remote\n\nparam_username = ''\nif 'JUPYTERHUB_USER' in os.environ:\n    param_username = os.environ['JUPYTERHUB_USER']\n    \nconf_remote_path_root = '/webdav/LAZ'\nconf_remote_path_split = pathlib.Path(conf_remote_path_root + '/split_'+param_username)\nconf_remote_path_retiled = pathlib.Path(conf_remote_path_root + '/retiled_'+param_username)\nconf_remote_path_norm = pathlib.Path(conf_remote_path_root + '/norm_'+param_username)\nconf_remote_path_targets = pathlib.Path(conf_remote_path_root + '/targets_'+param_username)\nconf_local_tmp = pathlib.Path('/tmp')\nconf_remote_path_ahn = conf_remote_path_root\n\n\nconf_hostname = 'https://HOSTNAME/'\nconf_login = 'XXXXXXXXXXXXXX'\nconf_password = 'XXXXXXXXXXXXXX'\n\nconf_feature_name = 'perc_95_normalized_height'\nconf_validate_precision = '0.001'\nconf_tile_mesh_size = '10.'\nconf_filter_type= 'select_equal'\nconf_attribute = 'raw_classification'\nconf_min_x = '-113107.81'\nconf_max_x = '398892.19'\nconf_min_y = '214783.87'\nconf_max_y = '726783.87'\nconf_n_tiles_side = '512'\nconf_apply_filter_value = '1'\nconf_laz_compression_factor = '7'\nconf_max_filesize = '262144000'  # desired max file size (in bytes)\n\nconf_wd_opts = { 'webdav_hostname': conf_hostname, 'webdav_login': conf_login, 'webdav_password': conf_password}",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 7,
+        "outputs": [],
+        "id": "efe9bea7-2750-4882-9dc5-5e4b4adbf273"
+      },
+      {
+        "cell_type": "markdown",
+        "source": "## Fetching Laz Files from remote WebDAV",
+        "metadata": {},
+        "id": "70913967-81e0-4b22-8b4d-aa1b3f5f2707"
+      },
+      {
+        "cell_type": "code",
+        "source": "# Fetch Laz Files\nprint(conf_remote_path_ahn)\nlaz_files = [f for f in list_remote(get_wdclient(conf_wd_opts), pathlib.Path(conf_remote_path_ahn).as_posix())\n             if f.lower().endswith('.laz')]\nprint(laz_files)",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 8,
+        "outputs": [
+          {
+            "name": "stdout",
+            "output_type": "stream",
+            "text": "/webdav/pointcloud/ahn\n['C_18HZ2.LAZ', 'C_19HZ2.LAZ', 'C_01GN2.LAZ', 'C_05FN1.LAZ', 'C_50GZ2.LAZ']\n"
+          }
+        ],
+        "id": "30c8f77b-e28a-4b3b-aa29-5b18619251a5"
+      },
+      {
+        "cell_type": "markdown",
+        "source": "## Splitting big files into smaller files before retiling\nThis step can be added if the original files are too large for normal VMs to process",
+        "metadata": {},
+        "id": "bbd4844f-d9f7-4a11-bb7a-69b40d9f0a3f"
+      },
+      {
+        "cell_type": "code",
+        "source": "# split big files\n\nimport numpy as np\n\ndef save_chunk_to_laz_file(in_filename, \n                           out_filename, \n                           offset, \n                           n_points):\n    \"\"\"Read points from a LAS/LAZ file and write them to a new file.\"\"\"\n    \n    points = np.array([])\n    \n    with laspy.open(in_filename) as in_file:\n        with laspy.open(out_filename, \n                        mode=\"w\", \n                        header=in_file.header) as out_file:\n            in_file.seek(offset)\n            points = in_file.read_points(n_points)\n            out_file.write_points(points)\n    return len(points)\n\ndef split_strategy(filename, max_filesize):\n    \"\"\"Set up splitting strategy for a LAS/LAZ file.\"\"\"\n    with laspy.open(filename) as f:\n        bytes_per_point = (\n            f.header.point_format.num_standard_bytes +\n            f.header.point_format.num_extra_bytes\n        )\n        n_points = f.header.point_count\n    n_points_target = int(\n        max_filesize * int(conf_laz_compression_factor) / bytes_per_point\n    )\n    stem, ext = os.path.splitext(filename)\n    return [\n        (filename, f\"{stem}-{n}{ext}\", offset, n_points_target)\n        for n, offset in enumerate(range(0, n_points, n_points_target))\n    ]\n\nfrom webdav3.client import Client\n\nclient = Client(conf_wd_opts)\nclient.mkdir(conf_remote_path_split.as_posix())\n\n\nremote_path_split = conf_remote_path_split\n\n\nfor file in laz_files:\n    print('Splitting: '+file )\n    client.download_sync(remote_path=os.path.join(conf_remote_path_ahn,file), local_path=file)\n    inps = split_strategy(file, int(conf_max_filesize))\n    for inp in inps:\n        save_chunk_to_laz_file(*inp)\n    client.upload_sync(remote_path=os.path.join(conf_remote_path_split,file), local_path=file)\n\n    for f in os.listdir('.'):\n        if not f.endswith('.LAZ'):\n            continue\n        os.remove(os.path.join('.', f))\n    \nsplit_laz_files = laz_files",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 9,
+        "outputs": [
+          {
+            "name": "stdout",
+            "output_type": "stream",
+            "text": "Splitting: C_18HZ2.LAZ\n"
+          },
+          {
+            "ename": "NameError",
+            "evalue": "name 'laspy' is not defined",
+            "output_type": "error",
+            "traceback": [
+              "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+              "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+              "Input \u001b[0;32mIn [9]\u001b[0m, in \u001b[0;36m<cell line: 48>\u001b[0;34m()\u001b[0m\n\u001b[1;32m     49\u001b[0m \u001b[38;5;28mprint\u001b[39m(\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mSplitting: \u001b[39m\u001b[38;5;124m'\u001b[39m\u001b[38;5;241m+\u001b[39mfile )\n\u001b[1;32m     50\u001b[0m client\u001b[38;5;241m.\u001b[39mdownload_sync(remote_path\u001b[38;5;241m=\u001b[39mos\u001b[38;5;241m.\u001b[39mpath\u001b[38;5;241m.\u001b[39mjoin(conf_remote_path_ahn,file), local_path\u001b[38;5;241m=\u001b[39mfile)\n\u001b[0;32m---> 51\u001b[0m inps \u001b[38;5;241m=\u001b[39m \u001b[43msplit_strategy\u001b[49m\u001b[43m(\u001b[49m\u001b[43mfile\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[38;5;28;43mint\u001b[39;49m\u001b[43m(\u001b[49m\u001b[43mconf_max_filesize\u001b[49m\u001b[43m)\u001b[49m\u001b[43m)\u001b[49m\n\u001b[1;32m     52\u001b[0m \u001b[38;5;28;01mfor\u001b[39;00m inp \u001b[38;5;129;01min\u001b[39;00m inps:\n\u001b[1;32m     53\u001b[0m     save_chunk_to_laz_file(\u001b[38;5;241m*\u001b[39minp)\n",
+              "Input \u001b[0;32mIn [9]\u001b[0m, in \u001b[0;36msplit_strategy\u001b[0;34m(filename, max_filesize)\u001b[0m\n\u001b[1;32m     22\u001b[0m \u001b[38;5;28;01mdef\u001b[39;00m \u001b[38;5;21msplit_strategy\u001b[39m(filename, max_filesize):\n\u001b[1;32m     23\u001b[0m     \u001b[38;5;124;03m\"\"\"Set up splitting strategy for a LAS/LAZ file.\"\"\"\u001b[39;00m\n\u001b[0;32m---> 24\u001b[0m     \u001b[38;5;28;01mwith\u001b[39;00m \u001b[43mlaspy\u001b[49m\u001b[38;5;241m.\u001b[39mopen(filename) \u001b[38;5;28;01mas\u001b[39;00m f:\n\u001b[1;32m     25\u001b[0m         bytes_per_point \u001b[38;5;241m=\u001b[39m (\n\u001b[1;32m     26\u001b[0m             f\u001b[38;5;241m.\u001b[39mheader\u001b[38;5;241m.\u001b[39mpoint_format\u001b[38;5;241m.\u001b[39mnum_standard_bytes \u001b[38;5;241m+\u001b[39m\n\u001b[1;32m     27\u001b[0m             f\u001b[38;5;241m.\u001b[39mheader\u001b[38;5;241m.\u001b[39mpoint_format\u001b[38;5;241m.\u001b[39mnum_extra_bytes\n\u001b[1;32m     28\u001b[0m         )\n\u001b[1;32m     29\u001b[0m         n_points \u001b[38;5;241m=\u001b[39m f\u001b[38;5;241m.\u001b[39mheader\u001b[38;5;241m.\u001b[39mpoint_count\n",
+              "\u001b[0;31mNameError\u001b[0m: name 'laspy' is not defined"
+            ]
+          }
+        ],
+        "id": "9c935cbc-02b1-4f0a-a616-c2258a19931d"
+      },
+      {
+        "cell_type": "markdown",
+        "source": "## Retiling of big files into smaller tiles",
+        "metadata": {},
+        "id": "caad5d0f-2cbb-4889-ae63-3972626db753"
+      },
+      {
+        "cell_type": "code",
+        "source": "# Retiling\nsplit_laz_files\nremote_path_retiled = str(conf_remote_path_retiled)\n\ngrid_retile = {\n    'min_x': float(conf_min_x),\n    'max_x': float(conf_max_x),\n    'min_y': float(conf_min_y),\n    'max_y': float(conf_max_y),\n    'n_tiles_side': int(conf_n_tiles_side)\n}\n\nretiling_input = {\n    'setup_local_fs': {'tmp_folder': conf_local_tmp.as_posix()},\n    'pullremote': conf_remote_path_split.as_posix(),\n    'set_grid': grid_retile,\n    'split_and_redistribute': {},\n    'validate': {},\n    'pushremote': conf_remote_path_retiled.as_posix(),\n    'cleanlocalfs': {}\n}\n\nfor file in split_laz_files:\n    retiler = Retiler(file.replace('\"',''),label=file).config(retiling_input).setup_webdav_client(conf_wd_opts)\n    retiler_output = retiler.run()",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 26,
+        "outputs": [
+          {
+            "name": "stderr",
+            "output_type": "stream",
+            "text": "2022-07-10 21:10:04,119 -           laserfarm.pipeline_remote_data -       INFO - Input dir set to /tmp/C_18HZ2.LAZ_input\n2022-07-10 21:10:04,121 -           laserfarm.pipeline_remote_data -       INFO - Output dir set to /tmp/C_18HZ2.LAZ_output\n2022-07-10 21:10:04,125 -           laserfarm.pipeline_remote_data -       INFO - Pulling from WebDAV /webdav/pointcloud/split_skoulouzis/C_18HZ2.LAZ ...\n2022-07-10 21:10:05,596 -           laserfarm.pipeline_remote_data -       INFO - ... pulling completed.\n2022-07-10 21:10:05,597 -                        laserfarm.retiler -       INFO - Setting up the target grid\n2022-07-10 21:10:05,600 -                        laserfarm.retiler -       INFO - Splitting file /tmp/C_18HZ2.LAZ_input/C_18HZ2.LAZ with PDAL ...\n2022-07-10 21:10:06,079 -                        laserfarm.retiler -       INFO - ... splitting completed.\n2022-07-10 21:10:06,083 -                        laserfarm.retiler -       INFO - Redistributing files to tiles ...\n2022-07-10 21:10:06,084 -                        laserfarm.retiler -       INFO - ... file C_18HZ2_1.LAZ to tile_213_285\n2022-07-10 21:10:06,086 -                        laserfarm.retiler -       INFO - ... file C_18HZ2_2.LAZ to tile_212_285\n2022-07-10 21:10:06,089 -                        laserfarm.retiler -       INFO - ... redistributing completed.\n2022-07-10 21:10:06,095 -                        laserfarm.retiler -       INFO - Validating split ...\n2022-07-10 21:10:06,099 -                        laserfarm.retiler -       INFO - ... 257128 points in parent file\n2022-07-10 21:10:06,104 -                        laserfarm.retiler -       INFO - ... 25414 points in C_18HZ2_2.LAZ\n2022-07-10 21:10:06,105 -                        laserfarm.retiler -       INFO - ... 231714 points in C_18HZ2_1.LAZ\n2022-07-10 21:10:06,107 -                        laserfarm.retiler -       INFO - ... split validation completed.\n2022-07-10 21:10:06,109 -           laserfarm.pipeline_remote_data -       INFO - Pushing to WebDAV /webdav/pointcloud/retiled_skoulouzis ...\n2022-07-10 21:10:12,031 -           laserfarm.pipeline_remote_data -       INFO - ... pushing completed.\n2022-07-10 21:10:12,032 -           laserfarm.pipeline_remote_data -       INFO - Removing input and output folders\n2022-07-10 21:10:12,036 -           laserfarm.pipeline_remote_data -       INFO - Input dir set to /tmp/C_19HZ2.LAZ_input\n2022-07-10 21:10:12,037 -           laserfarm.pipeline_remote_data -       INFO - Output dir set to /tmp/C_19HZ2.LAZ_output\n2022-07-10 21:10:12,038 -           laserfarm.pipeline_remote_data -       INFO - Pulling from WebDAV /webdav/pointcloud/split_skoulouzis/C_19HZ2.LAZ ...\n2022-07-10 21:10:13,474 -           laserfarm.pipeline_remote_data -       INFO - ... pulling completed.\n2022-07-10 21:10:13,475 -                        laserfarm.retiler -       INFO - Setting up the target grid\n2022-07-10 21:10:13,476 -                        laserfarm.retiler -       INFO - Splitting file /tmp/C_19HZ2.LAZ_input/C_19HZ2.LAZ with PDAL ...\n2022-07-10 21:10:13,615 -                        laserfarm.retiler -       INFO - ... splitting completed.\n2022-07-10 21:10:13,616 -                        laserfarm.retiler -       INFO - Redistributing files to tiles ...\n2022-07-10 21:10:13,618 -                        laserfarm.retiler -       INFO - ... file C_19HZ2_1.LAZ to tile_248_285\n2022-07-10 21:10:13,618 -                        laserfarm.retiler -       INFO - ... redistributing completed.\n2022-07-10 21:10:13,619 -                        laserfarm.retiler -       INFO - Validating split ...\n2022-07-10 21:10:13,620 -                        laserfarm.retiler -       INFO - ... 66663 points in parent file\n2022-07-10 21:10:13,621 -                        laserfarm.retiler -       INFO - ... 66663 points in C_19HZ2_1.LAZ\n2022-07-10 21:10:13,622 -                        laserfarm.retiler -       INFO - ... split validation completed.\n2022-07-10 21:10:13,623 -           laserfarm.pipeline_remote_data -       INFO - Pushing to WebDAV /webdav/pointcloud/retiled_skoulouzis ...\n2022-07-10 21:10:17,817 -           laserfarm.pipeline_remote_data -       INFO - ... pushing completed.\n2022-07-10 21:10:17,818 -           laserfarm.pipeline_remote_data -       INFO - Removing input and output folders\n2022-07-10 21:10:17,821 -           laserfarm.pipeline_remote_data -       INFO - Input dir set to /tmp/C_01GN2.LAZ_input\n2022-07-10 21:10:17,822 -           laserfarm.pipeline_remote_data -       INFO - Output dir set to /tmp/C_01GN2.LAZ_output\n2022-07-10 21:10:17,824 -           laserfarm.pipeline_remote_data -       INFO - Pulling from WebDAV /webdav/pointcloud/split_skoulouzis/C_01GN2.LAZ ...\n2022-07-10 21:10:20,467 -           laserfarm.pipeline_remote_data -       INFO - ... pulling completed.\n2022-07-10 21:10:20,468 -                        laserfarm.retiler -       INFO - Setting up the target grid\n2022-07-10 21:10:20,470 -                        laserfarm.retiler -       INFO - Splitting file /tmp/C_01GN2.LAZ_input/C_01GN2.LAZ with PDAL ...\n2022-07-10 21:10:26,047 -                        laserfarm.retiler -       INFO - ... splitting completed.\n2022-07-10 21:10:26,049 -                        laserfarm.retiler -       INFO - Redistributing files to tiles ...\n2022-07-10 21:10:26,050 -                        laserfarm.retiler -       INFO - ... file C_01GN2_6.LAZ to tile_282_392\n2022-07-10 21:10:26,052 -                        laserfarm.retiler -       INFO - ... file C_01GN2_2.LAZ to tile_278_392\n2022-07-10 21:10:26,053 -                        laserfarm.retiler -       INFO - ... file C_01GN2_4.LAZ to tile_282_391\n2022-07-10 21:10:26,054 -                        laserfarm.retiler -       INFO - ... file C_01GN2_1.LAZ to tile_278_391\n2022-07-10 21:10:26,056 -                        laserfarm.retiler -       INFO - ... file C_01GN2_3.LAZ to tile_279_391\n2022-07-10 21:10:26,057 -                        laserfarm.retiler -       INFO - ... file C_01GN2_7.LAZ to tile_283_392\n2022-07-10 21:10:26,058 -                        laserfarm.retiler -       INFO - ... file C_01GN2_5.LAZ to tile_283_391\n2022-07-10 21:10:26,067 -                        laserfarm.retiler -       INFO - ... redistributing completed.\n2022-07-10 21:10:26,068 -                        laserfarm.retiler -       INFO - Validating split ...\n2022-07-10 21:10:26,069 -                        laserfarm.retiler -       INFO - ... 3516323 points in parent file\n2022-07-10 21:10:26,070 -                        laserfarm.retiler -       INFO - ... 2286839 points in C_01GN2_1.LAZ\n2022-07-10 21:10:26,071 -                        laserfarm.retiler -       INFO - ... 105908 points in C_01GN2_4.LAZ\n2022-07-10 21:10:26,072 -                        laserfarm.retiler -       INFO - ... 193772 points in C_01GN2_6.LAZ\n2022-07-10 21:10:26,073 -                        laserfarm.retiler -       INFO - ... 219926 points in C_01GN2_3.LAZ\n2022-07-10 21:10:26,074 -                        laserfarm.retiler -       INFO - ... 266823 points in C_01GN2_5.LAZ\n2022-07-10 21:10:26,079 -                        laserfarm.retiler -       INFO - ... 407361 points in C_01GN2_7.LAZ\n2022-07-10 21:10:26,080 -                        laserfarm.retiler -       INFO - ... 35694 points in C_01GN2_2.LAZ\n2022-07-10 21:10:26,080 -                        laserfarm.retiler -       INFO - ... split validation completed.\n2022-07-10 21:10:26,081 -           laserfarm.pipeline_remote_data -       INFO - Pushing to WebDAV /webdav/pointcloud/retiled_skoulouzis ...\n2022-07-10 21:10:41,777 -           laserfarm.pipeline_remote_data -       INFO - ... pushing completed.\n2022-07-10 21:10:41,778 -           laserfarm.pipeline_remote_data -       INFO - Removing input and output folders\n2022-07-10 21:10:41,792 -           laserfarm.pipeline_remote_data -       INFO - Input dir set to /tmp/C_05FN1.LAZ_input\n2022-07-10 21:10:41,793 -           laserfarm.pipeline_remote_data -       INFO - Output dir set to /tmp/C_05FN1.LAZ_output\n2022-07-10 21:10:41,795 -           laserfarm.pipeline_remote_data -       INFO - Pulling from WebDAV /webdav/pointcloud/split_skoulouzis/C_05FN1.LAZ ...\n2022-07-10 21:10:43,375 -           laserfarm.pipeline_remote_data -       INFO - ... pulling completed.\n2022-07-10 21:10:43,377 -                        laserfarm.retiler -       INFO - Setting up the target grid\n2022-07-10 21:10:43,378 -                        laserfarm.retiler -       INFO - Splitting file /tmp/C_05FN1.LAZ_input/C_05FN1.LAZ with PDAL ...\n2022-07-10 21:10:44,596 -                        laserfarm.retiler -       INFO - ... splitting completed.\n2022-07-10 21:10:44,597 -                        laserfarm.retiler -       INFO - Redistributing files to tiles ...\n2022-07-10 21:10:44,599 -                        laserfarm.retiler -       INFO - ... file C_05FN1_4.LAZ to tile_288_379\n2022-07-10 21:10:44,600 -                        laserfarm.retiler -       INFO - ... file C_05FN1_2.LAZ to tile_287_379\n2022-07-10 21:10:44,601 -                        laserfarm.retiler -       INFO - ... file C_05FN1_3.LAZ to tile_288_378\n2022-07-10 21:10:44,603 -                        laserfarm.retiler -       INFO - ... file C_05FN1_1.LAZ to tile_287_378\n2022-07-10 21:10:44,603 -                        laserfarm.retiler -       INFO - ... redistributing completed.\n2022-07-10 21:10:44,606 -                        laserfarm.retiler -       INFO - Validating split ...\n2022-07-10 21:10:44,606 -                        laserfarm.retiler -       INFO - ... 771576 points in parent file\n2022-07-10 21:10:44,607 -                        laserfarm.retiler -       INFO - ... 232882 points in C_05FN1_4.LAZ\n2022-07-10 21:10:44,609 -                        laserfarm.retiler -       INFO - ... 294136 points in C_05FN1_2.LAZ\n2022-07-10 21:10:44,610 -                        laserfarm.retiler -       INFO - ... 55494 points in C_05FN1_3.LAZ\n2022-07-10 21:10:44,614 -                        laserfarm.retiler -       INFO - ... 189064 points in C_05FN1_1.LAZ\n2022-07-10 21:10:44,615 -                        laserfarm.retiler -       INFO - ... split validation completed.\n2022-07-10 21:10:44,616 -           laserfarm.pipeline_remote_data -       INFO - Pushing to WebDAV /webdav/pointcloud/retiled_skoulouzis ...\n2022-07-10 21:10:54,348 -           laserfarm.pipeline_remote_data -       INFO - ... pushing completed.\n2022-07-10 21:10:54,350 -           laserfarm.pipeline_remote_data -       INFO - Removing input and output folders\n2022-07-10 21:10:54,354 -           laserfarm.pipeline_remote_data -       INFO - Input dir set to /tmp/C_50GZ2.LAZ_input\n2022-07-10 21:10:54,355 -           laserfarm.pipeline_remote_data -       INFO - Output dir set to /tmp/C_50GZ2.LAZ_output\n2022-07-10 21:10:54,357 -           laserfarm.pipeline_remote_data -       INFO - Pulling from WebDAV /webdav/pointcloud/split_skoulouzis/C_50GZ2.LAZ ...\n2022-07-10 21:10:55,925 -           laserfarm.pipeline_remote_data -       INFO - ... pulling completed.\n2022-07-10 21:10:55,927 -                        laserfarm.retiler -       INFO - Setting up the target grid\n2022-07-10 21:10:55,934 -                        laserfarm.retiler -       INFO - Splitting file /tmp/C_50GZ2.LAZ_input/C_50GZ2.LAZ with PDAL ...\n2022-07-10 21:10:56,748 -                        laserfarm.retiler -       INFO - ... splitting completed.\n2022-07-10 21:10:56,749 -                        laserfarm.retiler -       INFO - Redistributing files to tiles ...\n2022-07-10 21:10:56,751 -                        laserfarm.retiler -       INFO - ... file C_50GZ2_1.LAZ to tile_238_166\n2022-07-10 21:10:56,753 -                        laserfarm.retiler -       INFO - ... redistributing completed.\n2022-07-10 21:10:56,755 -                        laserfarm.retiler -       INFO - Validating split ...\n2022-07-10 21:10:56,758 -                        laserfarm.retiler -       INFO - ... 499572 points in parent file\n2022-07-10 21:10:56,760 -                        laserfarm.retiler -       INFO - ... 499572 points in C_50GZ2_1.LAZ\n2022-07-10 21:10:56,763 -                        laserfarm.retiler -       INFO - ... split validation completed.\n2022-07-10 21:10:56,766 -           laserfarm.pipeline_remote_data -       INFO - Pushing to WebDAV /webdav/pointcloud/retiled_skoulouzis ...\n2022-07-10 21:11:01,220 -           laserfarm.pipeline_remote_data -       INFO - ... pushing completed.\n2022-07-10 21:11:01,221 -           laserfarm.pipeline_remote_data -       INFO - Removing input and output folders\n"
+          }
+        ],
+        "id": "034685db-0dda-48f9-98f3-fd38ae2525ca"
+      },
+      {
+        "cell_type": "code",
+        "source": "print(retiler_output)",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 27,
+        "outputs": [
+          {
+            "name": "stdout",
+            "output_type": "stream",
+            "text": "None\n"
+          }
+        ],
+        "id": "c42e0dbb-1535-4527-8f29-4ad988848201"
+      },
+      {
+        "cell_type": "code",
+        "source": "",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": null,
+        "outputs": [],
+        "id": "f124b676-682d-4aae-a156-72e61c0ce66b"
+      }
+    ]
+  }
+}
