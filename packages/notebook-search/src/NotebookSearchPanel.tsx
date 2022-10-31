@@ -47,10 +47,25 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
         console.log(this.state.items[index]);
     }
 
-    onStarClick(nextValue: any, prevValue: any, name: any) {
+    onStarClick(nextValue: number, prevValue: number, name: string) {
         console.log(nextValue)
         this.setState({rating: nextValue});
-      }
+        this.state.rating = nextValue
+        console.log(this.state.rating)
+    }
+
+    sendRaiting = async () => {        
+    const resp = await requestAPI<any>('notebooksearch', {
+        body: JSON.stringify({
+            keyword: this.state.keyword
+        }),
+        method: 'POST'
+    });
+
+    this.setState({
+        items: resp
+    });
+    };
 
     getResults = async () => {        
         const resp = await requestAPI<any>('notebooksearch', {
