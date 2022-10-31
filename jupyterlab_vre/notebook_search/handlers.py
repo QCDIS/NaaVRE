@@ -22,31 +22,42 @@ class NotebookSearchHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        logger.info('payload: ' + str(payload))
         term = payload['keyword']
         search_api_endpoint = os.getenv('SEARCH_API_ENDPOINT')
         search_api_token = os.getenv('SEARCH_API_TOKEN')
         if not search_api_endpoint:
-            search_api_endpoint = 'http://145.100.135.119/api/notebook_search/'
+            logger.error('Environment variable: SEARCH_API_ENDPOINT not set')
+            self.set_status(500)
+            self.write('Environment variable: SEARCH_API_ENDPOINT not set')
+            self.write_error('Environment variable: SEARCH_API_ENDPOINT not set')
+            self.flush()
+            return
         if not search_api_token:
-            search_api_token = 'b30bd18ea01f5a45e217b03682f70ce6ae14c293'
-        logger.info('search_api_endpoint: ' + str(search_api_endpoint))
-        response = requests.get(
-            search_api_endpoint,
-            params={
-                "page": "1",
-                "term": term,
-                "filter": "",
-                "facet": ""
-            },
-            verify=False,
-            headers={
-                "Accept": "*/*",
-                "Content-Type": "text/json",
-                "Authorization": "Token " + str(search_api_token)
-            }
-        )
-        hits = response.text
-        logger.info('hits: ' + str(hits))
-        self.write(hits)
+            logger.error('Environment variable: SEARCH_API_TOKEN not set')
+            self.set_status(500)
+            self.write('Environment variable: SEARCH_API_TOKEN not set')
+            self.write_error('Environment variable: SEARCH_API_TOKEN not set')
+            self.flush()
+            return
+        params = {
+            "page": "1",
+            "query": term,
+            "filter": "",
+            "facet": "",
+        }
+
+        response = requests.get(search_api_endpoint+'notebook_search', params=params,
+                                verify=False,
+                                headers={
+                                    "Accept": "*/*",
+                                    # "Content-Type": "text/json",
+                                    "Authorization": "Token " + str(search_api_token)
+                                }
+                                )
+        hits = response.json()
+        results = hits['results']
+        if not results:
+            results = ['No results found']
+        logger.info('hits: ' + str(results))
+        self.write(json.dumps(results))
         self.flush()

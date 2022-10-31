@@ -45,7 +45,8 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
     }
 
     getResults = async () => {
-
+        console.log('--------------------------------------');
+        
         const resp = await requestAPI<any>('notebooksearch', {
             body: JSON.stringify({
                 keyword: this.state.keyword
