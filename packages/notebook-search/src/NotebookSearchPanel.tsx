@@ -5,6 +5,7 @@ import { theme } from './Theme';
 import { Divider, TextField } from '@material-ui/core';
 import NotebookVirtualizedList from './NotebookVirtualizedList';
 import Button from '@mui/material/Button';
+import StarRatingComponent from 'react-star-rating-component';
 
 interface NotebookSearchPanelProps {
 
@@ -13,11 +14,13 @@ interface NotebookSearchPanelProps {
 interface IState {
     keyword: string
     items: []
+    rating: number
 }
 
 const DefaultState: IState = {
     keyword: '',
-    items: []
+    items: [],
+    rating: 1
 }
 
 export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProps> {
@@ -44,9 +47,12 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
         console.log(this.state.items[index]);
     }
 
-    getResults = async () => {
-        console.log('--------------------------------------');
-        
+    onStarClick(nextValue: any, prevValue: any, name: any) {
+        console.log(nextValue)
+        this.setState({rating: nextValue});
+      }
+
+    getResults = async () => {        
         const resp = await requestAPI<any>('notebooksearch', {
             body: JSON.stringify({
                 keyword: this.state.keyword
@@ -60,7 +66,7 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
     };
 
     render(): React.ReactElement {
-
+        const { rating } = this.state;
         return (
             <ThemeProvider theme={theme}>
                 <div className={'lifewatch-widget'}>
@@ -91,6 +97,16 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                         <NotebookVirtualizedList
                             items={this.state.items}
                             clickAction={this.onItemClick}
+                        />
+                    </div>
+                    <div>
+                        <h2>Rating from state: {rating}</h2>
+                        <StarRatingComponent 
+                        name="rate1" 
+                        starCount={5}
+                        value={rating}
+                        onStarClick={this.onStarClick.bind(this)}
+
                         />
                     </div>
                 </div>

@@ -55,9 +55,10 @@ class NotebookSearchHandler(APIHandler):
                                 }
                                 )
         hits = response.json()
-        results = hits['results']
-        if not results:
+        if 'results' not in hits:
             results = ['No results found']
+        else:
+            results = hits['results']
         logger.info('hits: ' + str(results))
         self.write(json.dumps(results))
         self.flush()
