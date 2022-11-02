@@ -54,17 +54,22 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
         console.log(this.state.rating)
     }
 
-    sendRaiting = async () => {        
-    // const resp = await requestAPI<any>('notebooksearchraiting', {
-    //     body: JSON.stringify({
-    //         keyword: this.state.keyword,
-    //         rating: this.state.rating
-    //     }),
-    //     method: 'POST'
-    // });
-        // console.log('resp: ',resp)
+    sendrating = async () => {
         console.log('Query: ',this.state.keyword)
-        console.log('Rating: ',this.state.rating)
+        console.log('Rating: ',this.state.rating)     
+        try{
+            const resp = await requestAPI<any>('notebooksearchrating', {
+                body: JSON.stringify({
+                    keyword: this.state.keyword,
+                    rating: this.state.rating
+                }),
+                method: 'POST'
+            });
+            console.log('resp: ',resp)
+        }catch (error){
+            console.log(error);
+            alert(String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+        }
     };
 
     getResults = async () => {        
@@ -120,7 +125,7 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                         />
                     </div>
                     <div>
-                        <h2>Rating from state: {rating}</h2>
+                        <h2>Rating from query: {this.state.keyword}</h2>
                         <StarRatingComponent 
                         name="rate1" 
                         starCount={5}
@@ -129,8 +134,8 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                         />
                         <Button 
                             variant="contained"
-                            onClick={ this.sendRaiting }>
-                            Send Raiting
+                            onClick={ this.sendrating }>
+                            Send rating
                         </Button>
                     </div>
                 </div>

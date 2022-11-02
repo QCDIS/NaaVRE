@@ -56,10 +56,10 @@ class NotebookSearchHandler(APIHandler):
                                     timeout=4)
             hits = response.json()
         except Exception as ex:
-            logger.error('Failed to get results from: ' + search_api_endpoint+ ' '+str(ex))
+            logger.error('Failed to get results from: ' + search_api_endpoint + ' ' + str(ex))
             self.set_status(500)
-            self.write('Failed to get results from: ' + search_api_endpoint+ ' '+str(ex))
-            self.write_error('Failed to get results from: ' + search_api_endpoint+ ' '+str(ex))
+            self.write('Failed to get results from: ' + search_api_endpoint + ' ' + str(ex))
+            self.write_error('Failed to get results from: ' + search_api_endpoint + ' ' + str(ex))
             self.flush()
             return
         if not hits or 'results' not in hits:
@@ -71,12 +71,11 @@ class NotebookSearchHandler(APIHandler):
         self.flush()
 
 
-class NotebookSearchRaitingHandler(APIHandler):
+class NotebookSearchRatingHandler(APIHandler):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        print(json.dumps(payload))
         term = payload['keyword']
         rating = payload['rating']
         search_api_endpoint = os.getenv('SEARCH_API_ENDPOINT')
@@ -105,13 +104,22 @@ class NotebookSearchRaitingHandler(APIHandler):
             "num_stars": str(rating),
             "annotated_notebook": annotated_notebook,
         }
-        response = requests.post(search_api_endpoint, json=data,
-                                 verify=False,
-                                 headers={
-                                     "Accept": "*/*",
-                                     # "Content-Type": "text/json",
-                                     "Authorization": "Token " + str(search_api_token)
-                                 })
-        feedback = response.json()
+        try:
+            response = requests.post(search_api_endpoint, json=data,
+                                     verify=False,
+                                     headers={
+                                         "Accept": "*/*",
+                                         # "Content-Type": "text/json",
+                                         "Authorization": "Token " + str(search_api_token)
+                                     },
+                                     timeout=4)
+            feedback = response.json()
+        except Exception as ex:
+            logger.error('Failed to send rating to: ' + search_api_endpoint + ' ' + str(ex))
+            self.set_status(500)
+            self.write('Failed to send rating to: ' + search_api_endpoint + ' ' + str(ex))
+            self.write_error('Failed to send rating to: ' + search_api_endpoint + ' ' + str(ex))
+            self.flush()
+            return
 
         self.flush()

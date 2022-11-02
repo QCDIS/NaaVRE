@@ -8,7 +8,7 @@ from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
-    NotebookSearchHandler
+    NotebookSearchHandler, NotebookSearchRatingHandler
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.handlers import load_module_names_mapping
@@ -37,6 +37,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                                 ('/exportworkflowhandler', ExportWorkflowHandler),
                                 ('/executeworkflowhandler', ExecuteWorkflowHandler),
                                 ('/notebooksearchhandler', NotebookSearchHandler),
+                                ('/notebooksearchratinghandler', NotebookSearchRatingHandler),
                                 ],
                                cookie_secret='asdfasdf')
         return self.app
@@ -74,3 +75,9 @@ class HandlersAPITest(AsyncHTTPTestCase):
             m.return_value = 'cookie'
             payload = {'keyword': 'explosion'}
             response = self.fetch('/notebooksearchhandler', method='POST', body=json.dumps(payload))
+
+    def test_search_rating_handler(self):
+        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+            m.return_value = 'cookie'
+            payload = {"keyword": "explosion", "rating": 3}
+            response = self.fetch('/notebooksearchratinghandler', method='POST', body=json.dumps(payload))
