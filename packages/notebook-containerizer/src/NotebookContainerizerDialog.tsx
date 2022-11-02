@@ -43,7 +43,6 @@ export class NotebookContainerizerDialog extends React.Component<NotebookContain
         } catch (error) {
             console.log(error);
         }
-
     }
 
     componentDidMount(): void {

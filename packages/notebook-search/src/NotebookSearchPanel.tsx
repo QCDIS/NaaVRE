@@ -55,29 +55,34 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
     }
 
     sendRaiting = async () => {        
-    const resp = await requestAPI<any>('notebooksearch', {
-        body: JSON.stringify({
-            keyword: this.state.keyword
-        }),
-        method: 'POST'
-    });
-
-    this.setState({
-        items: resp
-    });
+    // const resp = await requestAPI<any>('notebooksearchraiting', {
+    //     body: JSON.stringify({
+    //         keyword: this.state.keyword,
+    //         rating: this.state.rating
+    //     }),
+    //     method: 'POST'
+    // });
+        // console.log('resp: ',resp)
+        console.log('Query: ',this.state.keyword)
+        console.log('Rating: ',this.state.rating)
     };
 
     getResults = async () => {        
-        const resp = await requestAPI<any>('notebooksearch', {
-            body: JSON.stringify({
-                keyword: this.state.keyword
-            }),
-            method: 'POST'
-        });
+        try{
+            const resp = await requestAPI<any>('notebooksearch', {
+                body: JSON.stringify({
+                    keyword: this.state.keyword
+                }),
+                method: 'POST'
+            });
 
-        this.setState({
-            items: resp
-        });
+            this.setState({
+                items: resp
+            });
+        }catch (error){
+            console.log(error);
+            alert(String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+        }
     };
 
     render(): React.ReactElement {
@@ -121,8 +126,12 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                         starCount={5}
                         value={rating}
                         onStarClick={this.onStarClick.bind(this)}
-
                         />
+                        <Button 
+                            variant="contained"
+                            onClick={ this.sendRaiting }>
+                            Send Raiting
+                        </Button>
                     </div>
                 </div>
             </ThemeProvider>
