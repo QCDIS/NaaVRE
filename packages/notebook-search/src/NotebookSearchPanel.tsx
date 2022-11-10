@@ -3,9 +3,14 @@ import { requestAPI } from '@jupyter_vre/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { theme } from './Theme';
 import { Divider, TextField } from '@material-ui/core';
-import NotebookVirtualizedList from './NotebookVirtualizedList';
 import Button from '@mui/material/Button';
-import StarRatingComponent from 'react-star-rating-component';
+// import StarRatingComponent from 'react-star-rating-component';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import Rating from '@mui/material/Rating';
+// import ReactMarkdown from 'react-markdown'
 
 interface NotebookSearchPanelProps {
 
@@ -13,31 +18,44 @@ interface NotebookSearchPanelProps {
 
 interface IState {
     keyword: string
-    items: []
-    rating: number
+    items: [any],
+    current_index: number
 }
 
 const DefaultState: IState = {
     keyword: '',
-    items: [],
-    rating: 1
+    items: [{}],
+    current_index: -1
 }
 
 export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProps> {
 
     state = DefaultState;
 
+
+
     constructor(props: NotebookSearchPanelProps) {
         super(props);
     }
 
     onChangeKeyword = (event: React.ChangeEvent<HTMLInputElement>) => {
-
         this.setState({
             keyword: event.target.value
         });
-        
     }
+
+    setElementRating = (index: number, rating: number ) => {
+        console.log('index: '+index+ ' rating: '+ rating)
+        this.state.items[index]['rating'] = rating
+
+    }
+
+    setCurrentIndex = (index: number ) => {
+        this.setState({
+            current_index: index
+        });
+    }
+
 
     onSearchClick = () => {
         this.getResults();
@@ -45,23 +63,24 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
 
     onItemClick = (index: number) => {
         console.log(this.state.items[index]);
+        console.log(this.state.items);
     }
 
     onStarClick(nextValue: number, prevValue: number, name: string) {
         console.log(nextValue)
-        this.setState({rating: nextValue});
-        this.state.rating = nextValue
-        console.log(this.state.rating)
+        console.log("name: "+name)
     }
 
-    sendrating = async () => {
-        console.log('Query: ',this.state.keyword)
-        console.log('Rating: ',this.state.rating)     
+    sendRating2(index: number) {
+        console.log("index: "+index)
+    }
+
+    sendRating = async () => {
         try{
             const resp = await requestAPI<any>('notebooksearchrating', {
                 body: JSON.stringify({
                     keyword: this.state.keyword,
-                    rating: this.state.rating
+                    notebook:this.state.items[this.state.current_index]
                 }),
                 method: 'POST'
             });
@@ -72,7 +91,7 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
         }
     };
 
-    getResults = async () => {        
+    getResults = async () => {
         try{
             const resp = await requestAPI<any>('notebooksearch', {
                 body: JSON.stringify({
@@ -91,7 +110,6 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
     };
 
     render(): React.ReactElement {
-        const { rating } = this.state;
         return (
             <ThemeProvider theme={theme}>
                 <div className={'lifewatch-widget'}>
@@ -100,17 +118,16 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                             <p className={'lw-panel-header'}>
                                 Notebook Search
                             </p>
-
                         </div>
                         <Divider />
-                        <div className={'nb-search-field'}>     
+                        <div className={'nb-search-field'}>
                             <TextField
                                 id="standard-basic"
                                 label="Keyword"
                                 variant="standard"
                                 value={this.state.keyword}
                                 onChange={this.onChangeKeyword} />
-                                <Button 
+                                <Button
                                     variant="contained"
                                     onClick={
                                         this.onSearchClick
@@ -119,28 +136,62 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                                 </Button>
                         </div>
                         <Divider />
-                        <NotebookVirtualizedList
-                            items={this.state.items}
-                            clickAction={this.onItemClick}
-                        />
                     </div>
                     <div>
-                        <h2>Rating from query: {this.state.keyword}</h2>
-                        <StarRatingComponent 
-                        name="rate1" 
-                        starCount={5}
-                        value={rating}
-                        onStarClick={this.onStarClick.bind(this)}
-                        />
-                        <Button 
-                            variant="contained"
-                            onClick={ this.sendrating }>
-                            Send rating
-                        </Button>
-                    </div>
+                        <div className="accordion">
+                            {this.state.items.map((element, index) => (
+                            <Accordion >
+                            <AccordionSummary>
+                                <Typography variant="h6">{element['name']}</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                            <Typography variant="body2" >
+                            <a href={element['html_url']} target="_blank" >{element['html_url']}</a>
+                            <div>
+                            <Typography component="legend">Rate for query: {this.state.keyword}</Typography>
+                            <Rating
+                                name={element['name']}
+                                // precision={0.5}
+                                defaultValue={1}
+                                max={5}
+                                onChange={(event, newValue) => {
+                                    console.log("Index in newValue: " + newValue);
+                                    this.setElementRating(index,newValue)
+                                    this.setCurrentIndex(index)
+                                }}
+                            />
+                            <Button
+                            onClick={() => {
+                                this.sendRating2(index)
+                                alert('clicked');
+                            }}
+                            >
+                            Click me
+                            </Button>
+
+                            <Button
+                                variant="contained"
+                                onClick={  this.sendRating }>
+                                Send rating
+                            </Button>
+                            </div>
+                            <div>
+                            </div>
+                            <div>
+                                <Button
+                                    variant="contained"
+                                    >
+                                    Download Notebook
+                                </Button>
+                            </div>
+                            </Typography>
+                            </AccordionDetails>
+                        </Accordion>
+                            ))}
+                        </div>
+                        </div>
                 </div>
             </ThemeProvider>
         )
     }
-
 }
