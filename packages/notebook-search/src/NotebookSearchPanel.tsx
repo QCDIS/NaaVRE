@@ -4,13 +4,11 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import { theme } from './Theme';
 import { Divider, TextField } from '@material-ui/core';
 import Button from '@mui/material/Button';
-// import StarRatingComponent from 'react-star-rating-component';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
-import Rating from '@mui/material/Rating';
-// import ReactMarkdown from 'react-markdown'
+import ScrollDialog from "./NotebookDialogue"
 
 interface NotebookSearchPanelProps {
 
@@ -141,52 +139,17 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                         <div className="accordion">
                             {this.state.items.map((element, index) => (
                             <Accordion >
-                            <AccordionSummary>
-                                <Typography variant="h6">{element['name']}</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                            <Typography variant="body2" >
-                            <a href={element['html_url']} target="_blank" >{element['html_url']}</a>
-                            <div>
-                            <Typography component="legend">Rate for query: {this.state.keyword}</Typography>
-                            <Rating
-                                name={element['name']}
-                                // precision={0.5}
-                                defaultValue={1}
-                                max={5}
-                                onChange={(event, newValue) => {
-                                    console.log("Index in newValue: " + newValue);
-                                    this.setElementRating(index,newValue)
-                                    this.setCurrentIndex(index)
-                                }}
-                            />
-                            <Button
-                            onClick={() => {
-                                this.sendRating2(index)
-                                alert('clicked');
-                            }}
-                            >
-                            Click me
-                            </Button>
-
-                            <Button
-                                variant="contained"
-                                onClick={  this.sendRating }>
-                                Send rating
-                            </Button>
-                            </div>
-                            <div>
-                            </div>
-                            <div>
-                                <Button
-                                    variant="contained"
-                                    >
-                                    Download Notebook
-                                </Button>
-                            </div>
-                            </Typography>
-                            </AccordionDetails>
-                        </Accordion>
+                                <AccordionSummary>
+                                    <Typography variant="h6">{element['name']}</Typography>
+                                </AccordionSummary>
+                                 <AccordionDetails>
+                                    <Typography variant="body2" >
+                                        <a href={element['html_url']} target="_blank" >{element['html_url']}</a>
+                                    </Typography>
+                                    <ScrollDialog
+                                    data = {element}/>
+                                </AccordionDetails>
+                            </Accordion>
                             ))}
                         </div>
                         </div>
