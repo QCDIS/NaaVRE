@@ -8,7 +8,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { Rating } from "@mui/material";
 import { requestAPI } from '@jupyter_vre/core';
 import ReactMarkdown from 'react-markdown'
-import Link from '@mui/material/Link';
 
 interface NotebookDialogueProps {
   data: {[key: string]: any}
@@ -75,9 +74,9 @@ export default function ScrollDialog({ data, query }: NotebookDialogueProps) {
         aria-describedby="scroll-dialog-description"
       >
         <DialogTitle id="scroll-dialog-title">
-          {data['name']}
           <div>
-            <Link href={data['html_url']}>Link</Link>
+            {/* <Link href={data['html_url']}>{data['name']}</Link> */}
+            <p><a href={data['html_url']} target="_blank">{data['name']}</a>.</p>
           </div>
         </DialogTitle>
         <DialogContent dividers={true}>
