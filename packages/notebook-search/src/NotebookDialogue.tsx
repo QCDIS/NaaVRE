@@ -47,6 +47,7 @@ export default function ScrollDialog({ data, query }: NotebookDialogueProps) {
             method: 'POST'
         });
         console.log(resp)
+        setOpen(false);
     }catch (error){
         console.log(error);
         alert(String(error).replace('{"message": "Unknown HTTP Error"}', ''));
