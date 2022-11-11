@@ -147,7 +147,8 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                                         <a href={element['html_url']} target="_blank" >{element['html_url']}</a>
                                     </Typography>
                                     <ScrollDialog
-                                    data = {element}/>
+                                        data = {element}
+                                        query= {this.state.keyword}/>
                                 </AccordionDetails>
                             </Accordion>
                             ))}

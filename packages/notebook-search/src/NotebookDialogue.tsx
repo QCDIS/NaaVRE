@@ -6,8 +6,17 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Rating } from "@mui/material";
+import { requestAPI } from '@jupyter_vre/core';
+import ReactMarkdown from 'react-markdown'
 
-export default function ScrollDialog(data: any) {
+interface NotebookDialogueProps {
+  data: {[key: string]: any}
+  query: string
+}
+
+
+export default function ScrollDialog({ data, query }: NotebookDialogueProps) {
+
   const [open, setOpen] = React.useState(false);
   const [rating, setRating] = React.useState(1);
   const [scroll] = React.useState<DialogProps["scroll"]>("paper");
@@ -25,13 +34,24 @@ export default function ScrollDialog(data: any) {
   };
 
   const sendRating = async () => {
-    try {
-      console.log("resp: ", rating);
-    } catch (error) {
-      console.log(error);
-      alert(String(error).replace('{"message": "Unknown HTTP Error"}', ""));
+    try{
+        console.log('query: ',query)
+        console.log('rating: ',rating)
+        console.log('notebook: ',data)
+        const resp = await requestAPI<any>('notebooksearchrating', {
+            body: JSON.stringify({
+                keyword: query,
+                notebook: data,
+                rating: rating
+            }),
+            method: 'POST'
+        });
+        console.log(resp)
+    }catch (error){
+        console.log(error);
+        alert(String(error).replace('{"message": "Unknown HTTP Error"}', ''));
     }
-  };
+};
 
   const descriptionElementRef = React.useRef<HTMLElement>(null);
   React.useEffect(() => {
@@ -53,14 +73,17 @@ export default function ScrollDialog(data: any) {
         aria-labelledby="scroll-dialog-title"
         aria-describedby="scroll-dialog-description"
       >
-        <DialogTitle id="scroll-dialog-title">{data['name']}</DialogTitle>
+        <DialogTitle id="scroll-dialog-title">
+          {data['name']}
+          <div><a href={data['html_url']} target="_blank" >{data['html_url']}</a></div>
+        </DialogTitle>
         <DialogContent dividers={true}>
           <DialogContentText
             id="scroll-dialog-description"
             ref={descriptionElementRef}
             tabIndex={-1}
           >
-            <MuiMarkdown>{data['description']}</MuiMarkdown>;
+            <ReactMarkdown>{data['description']}</ReactMarkdown>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -72,7 +95,7 @@ export default function ScrollDialog(data: any) {
               handleSetRating(newValue);
             }}
           />
-          <Button onClick={sendRating}>Send Rating </Button>
+          <Button onClick={sendRating}>Send Rating</Button>
           <Button>Download Notebook</Button>
           <Button onClick={handleClose}>Close</Button>
         </DialogActions>
