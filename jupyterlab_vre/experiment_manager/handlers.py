@@ -20,7 +20,6 @@ class ExportWorkflowHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        print(json.dumps(payload))
         nodes = payload['nodes']
         links = payload['links']
 
@@ -73,7 +72,6 @@ class ExecuteWorkflowHandler(APIHandler):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-
         payload = self.get_json_body()
         chart = payload['chart']
         params = payload['params']
