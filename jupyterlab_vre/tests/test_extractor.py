@@ -20,14 +20,14 @@ print(base_path)
 class TestExtractor(TestCase):
 
     def test_extract_cell(self):
-        cell = self.extratct_cell(os.path.join(base_path, 'notebooks/MULTIPLY_framework_cells.json'))
-        cell = self.extratct_cell(os.path.join(base_path, 'notebooks/laserfarm_cells.json'))
-        cell = self.extratct_cell(os.path.join(base_path, 'notebooks/vol2bird_cells.json'))
+        cell = self.extratct_cell(os.path.join(base_path, 'repo_utils/MULTIPLY_framework_cells.json'))
+        cell = self.extratct_cell(os.path.join(base_path, 'repo_utils/laserfarm_cells.json'))
+        cell = self.extratct_cell(os.path.join(base_path, 'repo_utils/vol2bird_cells.json'))
         try:
-            cell = self.extratct_cell(os.path.join(base_path, 'notebooks/MULTIPLY_framework_2.json'))
+            cell = self.extratct_cell(os.path.join(base_path, 'repo_utils/MULTIPLY_framework_2.json'))
         except SyntaxError as e:
             logger.warning(str(e))
-        cell = json.loads(self.extratct_cell(os.path.join(base_path, 'notebooks/laserfarm.json')))
+        cell = json.loads(self.extratct_cell(os.path.join(base_path, 'repo_utils/laserfarm.json')))
         for conf_name in (cell['confs']):
             self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1], 'conf_ values should not contain conf_ prefix in '
                                                                   'assignment')
