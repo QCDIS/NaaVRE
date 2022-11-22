@@ -45,6 +45,7 @@ spec:
 
     {% for nid in nodes %}
     {% set is_special_node = nodes[nid]['type'] == 'splitter' or nodes[nid]['type'] == 'merger' %}
+    {% set is_splitter = nodes[nid]['type'] == 'splitter' %}
     {% set task_name = nodes[nid]['type'] + "-" + nid[:7] if is_special_node else cells[nid]['task_name'] + "-" + nid[:7] %}
     {% set params = [] if is_special_node else cells[nid]['params'] %}
     {% set ports = nodes[nid]['ports'] %}
@@ -78,6 +79,7 @@ spec:
           {{ special_dep['port_id'] }} = {{ '{{inputs.parameters.' }}{{ special_dep['port_id'] }}{{ '}}' }}
           {% for p in ports %}
           {% if ports[p]['type'] == 'right' %}
+
           {% if is_splitter %}
           {# splitter logic #}
           list_of_lists = []
