@@ -52,13 +52,17 @@ class ExportWorkflowHandler(APIHandler):
             loader=loader, trim_blocks=True, lstrip_blocks=True)
         template = template_env.get_template('workflow_template_v2.jinja2')
         if cell:
+            if 'JUPYTERHUB_USER' in os.environ:
+                workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER']
+
             template.stream(
                 vlab_slug=vlab_slug,
                 deps_dag=deps_dag,
                 cells=cells,
                 nodes=nodes,
                 global_params=global_params,
-                image_repo=image_repo
+                image_repo=image_repo,
+                workflow_name=workflow_name
             ).dump('workflow.yaml')
 
         self.flush()
