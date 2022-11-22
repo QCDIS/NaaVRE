@@ -19,8 +19,8 @@ class ExportWorkflowHandler(APIHandler):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-
         payload = self.get_json_body()
+        print(json.dumps(payload))
         nodes = payload['nodes']
         links = payload['links']
 
@@ -52,13 +52,17 @@ class ExportWorkflowHandler(APIHandler):
             loader=loader, trim_blocks=True, lstrip_blocks=True)
         template = template_env.get_template('workflow_template_v2.jinja2')
         if cell:
+            if 'JUPYTERHUB_USER' in os.environ:
+                workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER']
+
             template.stream(
                 vlab_slug=vlab_slug,
                 deps_dag=deps_dag,
                 cells=cells,
                 nodes=nodes,
                 global_params=global_params,
-                image_repo=image_repo
+                image_repo=image_repo,
+                workflow_name=workflow_name
             ).dump('workflow.yaml')
 
         self.flush()
@@ -71,7 +75,6 @@ class ExecuteWorkflowHandler(APIHandler):
     async def post(self, *args, **kwargs):
 
         payload = self.get_json_body()
-        print(json.dumps(payload))
         chart = payload['chart']
         params = payload['params']
 
@@ -130,13 +133,16 @@ class ExecuteWorkflowHandler(APIHandler):
             loader=loader, trim_blocks=True, lstrip_blocks=True)
         template = template_env.get_template('workflow_template_v2.jinja2')
 
+        if 'JUPYTERHUB_USER' in os.environ:
+            workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER']
         template = template.render(
             vlab_slug=vlab_slug,
             deps_dag=deps_dag,
             cells=cells,
             nodes=nodes,
             global_params=params,
-            image_repo=image_repo
+            image_repo=image_repo,
+            workflow_name=workflow_name
         )
         workflow_doc = yaml.safe_load(template)
 
