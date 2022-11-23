@@ -1,5 +1,8 @@
 import argparse
+import json
 import logging
+import os
+from pathlib import Path
 
 from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.repositories.repository import Repository
@@ -24,6 +27,7 @@ github_token = args.github_token
 
 registry_url = args.registry_url
 
+
 # registry_token = args.registry_token
 
 
@@ -39,7 +43,26 @@ def add_gh_credentials(force_replace=None, repository_credentials=None):
 
 def add_registry_credentials(force_replace, registry_credentials):
     if force_replace:
-        Catalog.delete_all_registry_credentials()
+        # naa_vre_path = os.path.join(str(Path.home()), 'NaaVRE')
+        #
+        # if not os.path.exists(naa_vre_path):
+        #     os.mkdir(naa_vre_path)
+        #
+        # f = open(os.path.join(naa_vre_path, 'NaaVRE_db.json'))
+        # db = json.load(f)
+        # f.close()
+        # db['repositories'] = {}
+        # with open(os.path.join(naa_vre_path, 'NaaVRE_db.json'), 'w') as fp:
+        #     json.dump(db, fp)
+        # fp.close()
+        # Catalog.delete_all_registry_credentials()
+        # f = open(os.path.join(naa_vre_path, 'NaaVRE_db.json'))
+        # db = json.load(f)
+        # f.close()
+        # db['repositories'] = registry_credentials
+        # with open(os.path.join(naa_vre_path, 'NaaVRE_db.json'), 'w') as fp:
+        #     json.dump(db, fp)
+        # fp.close()
         Catalog.add_registry_credentials(registry_credentials)
     else:
         registry_credentials = Catalog.get_gh_credentials()
@@ -47,10 +70,20 @@ def add_registry_credentials(force_replace, registry_credentials):
             Catalog.add_registry_credentials(registry_credentials)
 
 
-if __name__ == '__main__':
+def add_repository_credentials(force_replace, repository_credentials):
+    if force_replace:
+        Catalog.delete_all_repository_credentials()
+        Catalog.add_repository_credentials(repository_credentials)
+    else:
+        gh_credentials = Catalog.get_repository_credentials()
+        if not gh_credentials:
+            Catalog.add_repository_credentials(repository_credentials)
 
+
+if __name__ == '__main__':
     input_repository_credentials = Repository(github_url.split('https://github.com/')[1], github_url, github_token)
     add_gh_credentials(force_replace=force, repository_credentials=input_repository_credentials)
+    add_repository_credentials(force_replace=force, repository_credentials=input_repository_credentials)
 
     input_registry_credentials = Repository(registry_url.split('https://hub.docker.com/')[1], registry_url, None)
     add_registry_credentials(force_replace=force, registry_credentials=input_registry_credentials)
