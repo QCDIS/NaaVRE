@@ -80,7 +80,7 @@ COPY ./notebooks/ /tmp/notebooks
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 
-RUN apt-get -y install git
+RUN apt-get update && apt-get install -y git
 
 USER $NB_USER
 
