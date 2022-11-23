@@ -79,11 +79,22 @@ spec:
           {{ special_dep['port_id'] }} = {{ '{{inputs.parameters.' }}{{ special_dep['port_id'] }}{{ '}}' }}
           {% for p in ports %}
           {% if ports[p]['type'] == 'right' %}
+          {% if is_splitter %}
+          {# splitter logic #}
+          list_of_lists = []
+          for elem in {{special_dep['port_id']}}:
+            list = [elem]
+            list_of_lists.append(list)
+          f_out = open("/tmp/{{ports[p]['id']}}.json", "w")
+          f_out.write(json.dumps(list_of_lists))
+          f_out.close()
+          {% else %}
           {# Merger logic #}
           f_out = open("/tmp/{{ports[p]['id']}}.json", "w")
           f_out.write(json.dumps({{special_dep['port_id']}}))
           f_out.close()
           {% endif %}
+           {% endif %}
           {% endfor %}
       {% else %}
       container:
