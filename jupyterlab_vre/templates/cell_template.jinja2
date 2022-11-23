@@ -10,7 +10,9 @@ arg_parser = argparse.ArgumentParser()
 arg_parser.add_argument('--id', action='store', type=str, required=True, dest='id')
 
 {% for in_var in cell.inputs|sort %}
-{% if types[in_var] == 'list' %}
+
+{% if types[in_var] == list %}
+# types[in_var] is a list
 arg_parser.add_argument('--{{ in_var }}', nargs='*')
 {% else %}
 arg_parser.add_argument('--{{ in_var }}', action='store', type={{ types[in_var] }}, required='True', dest='{{ in_var }}')
@@ -27,12 +29,7 @@ print(args)
 id = args.id
 
 {% for in_var in cell.inputs|sort %}
-{% if types[in_var] == 'list' %}
-import json
-{{ in_var }} = json.loads(args.{{ in_var }})
-{% else %}
 {{ in_var }} = args.{{ in_var }}
-{% endif %}
 {% endfor %}
 
 {% for param in cell.params|sort %}

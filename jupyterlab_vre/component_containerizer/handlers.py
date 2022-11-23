@@ -205,6 +205,7 @@ class CellsHandler(APIHandler, Catalog):
 
         files_info = get_files_info(cell=current_cell, image_repo=image_repo)
 
+        print(current_cell)
         build_templates(cell=current_cell, files_info=files_info)
 
         repository = Catalog.get_repositories()
