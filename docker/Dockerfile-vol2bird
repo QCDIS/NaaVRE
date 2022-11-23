@@ -80,6 +80,8 @@ COPY ./notebooks/ /tmp/notebooks
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 
+RUN apt-get -y install git
+
 USER $NB_USER
 
 RUN conda remove --force -y terminado && \
