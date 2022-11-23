@@ -43,26 +43,7 @@ def add_gh_credentials(force_replace=None, repository_credentials=None):
 
 def add_registry_credentials(force_replace, registry_credentials):
     if force_replace:
-        # naa_vre_path = os.path.join(str(Path.home()), 'NaaVRE')
-        #
-        # if not os.path.exists(naa_vre_path):
-        #     os.mkdir(naa_vre_path)
-        #
-        # f = open(os.path.join(naa_vre_path, 'NaaVRE_db.json'))
-        # db = json.load(f)
-        # f.close()
-        # db['repositories'] = {}
-        # with open(os.path.join(naa_vre_path, 'NaaVRE_db.json'), 'w') as fp:
-        #     json.dump(db, fp)
-        # fp.close()
-        # Catalog.delete_all_registry_credentials()
-        # f = open(os.path.join(naa_vre_path, 'NaaVRE_db.json'))
-        # db = json.load(f)
-        # f.close()
-        # db['repositories'] = registry_credentials
-        # with open(os.path.join(naa_vre_path, 'NaaVRE_db.json'), 'w') as fp:
-        #     json.dump(db, fp)
-        # fp.close()
+        Catalog.delete_all_registry_credentials()
         Catalog.add_registry_credentials(registry_credentials)
     else:
         registry_credentials = Catalog.get_gh_credentials()
