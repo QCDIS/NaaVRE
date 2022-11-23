@@ -39,7 +39,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                                cookie_secret='asdfasdf')
         return self.app
 
-    def test_execute_workflow_handler(self):
+    def test_export_workflow_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
             workflow_path = os.path.join(base_path, 'workflows/splitter.json')

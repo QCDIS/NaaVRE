@@ -79,7 +79,6 @@ spec:
           {{ special_dep['port_id'] }} = {{ '{{inputs.parameters.' }}{{ special_dep['port_id'] }}{{ '}}' }}
           {% for p in ports %}
           {% if ports[p]['type'] == 'right' %}
-
           {% if is_splitter %}
           {# splitter logic #}
           list_of_lists = []
@@ -95,7 +94,7 @@ spec:
           f_out.write(json.dumps({{special_dep['port_id']}}))
           f_out.close()
           {% endif %}
-          {% endif %}
+           {% endif %}
           {% endfor %}
       {% else %}
       container:
