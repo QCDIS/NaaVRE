@@ -37,3 +37,14 @@
 .nb-search-field {
     margin: 20px;
 }
+
+
+.nb-download-text {
+    font-size: medium;
+    margin: 10px;
+}
+
+.nb-download-link {
+    color: #106ba3;
+    text-decoration: underline;
+}

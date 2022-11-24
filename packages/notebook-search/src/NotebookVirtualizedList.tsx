@@ -28,7 +28,6 @@ function renderRow(props: ListChildComponentProps, clickAction: (cell_index: num
               }}>
               {data[index]['html_url']}
             </Link>
-            
           </div>
         </ListItemButton>
       </ListItem>

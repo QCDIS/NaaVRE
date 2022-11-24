@@ -8,7 +8,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
-import ScrollDialog from "./NotebookDialogue"
+import NotebookScrollDialog from "./NotebookScrollDialog"
 
 interface NotebookSearchPanelProps {
 
@@ -140,13 +140,16 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                             {this.state.items.map((element, index) => (
                             <Accordion >
                                 <AccordionSummary>
-                                    <Typography variant="h6">{element['name']}</Typography>
+                                    <Typography variant="subtitle1">{element['name']}</Typography>
                                 </AccordionSummary>
                                  <AccordionDetails>
                                     <Typography variant="body2" >
-                                        <a href={element['html_url']} target="_blank" >{element['html_url']}</a>
+                                        <b>Author:</b> someone 
+                                        <b>Number of cells:</b> 15
+                                        <b>Langunage:</b> Python
+                                        {/* <a href={element['html_url']} target="_blank" >{element['html_url']}</a> */}
                                     </Typography>
-                                    <ScrollDialog
+                                    <NotebookScrollDialog
                                         data = {element}
                                         query= {this.state.keyword}/>
                                 </AccordionDetails>
