@@ -145,13 +145,13 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                                  <AccordionDetails>
                                     <Typography variant="body1" >
                                         <p>
-                                        <b>Author:</b> - 
+                                        <b>Notebook source:</b>  {element['source']}
                                         </p>
                                         <p>
-                                        <b>Number of cells:</b> -
+                                        <b>Number of cells:</b> {element['num_cells']}
                                         </p>
                                         <p>
-                                        <b>Langunage:</b> Python
+                                        <b>Langunage:</b>  {element['language']}
                                         </p>
                                     </Typography>
                                     <NotebookScrollDialog
