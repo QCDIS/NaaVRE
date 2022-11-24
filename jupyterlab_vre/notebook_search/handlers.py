@@ -72,7 +72,8 @@ class NotebookSearchHandler(APIHandler):
             results = hits['results']
         for res in results:
             res['rating'] = 1
-        logger.info('hits: ' + str(results))
+
+        search_entry = {}
         self.write(json.dumps(results))
         self.flush()
 

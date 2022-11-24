@@ -23,12 +23,25 @@ class Catalog:
     sdia_credentials = db.table('sdia_credentials')
     gh_credentials = db.table('gh_credentials')
     registry_credentials = db.table('registry_credentials')
+    search_entry = db.table('search_entries')
 
     editor_buffer: Cell
 
     @classmethod
     def add_cell(cls, cell: Cell):
         cls.cells.insert(cell.__dict__)
+
+    @classmethod
+    def add_search_query(cls, query: dict):
+        cls.search_entry.insert(query)
+
+    @classmethod
+    def get_search_entries(cls):
+        return cls.search_entry.all()
+
+    @classmethod
+    def delete_all_search_entries(cls):
+        return cls.search_entry.truncate()
 
     @classmethod
     def delete_cell_from_task_name(cls, task_name: str):
@@ -89,7 +102,6 @@ class Catalog:
     @classmethod
     def delete_gh_credentials(cls, url: str):
         cls.gh_credentials.remove(where('url') == url)
-
 
     @classmethod
     def get_sdia_credentials(cls):
