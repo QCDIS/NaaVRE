@@ -6,8 +6,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import ReactMarkdown from 'react-markdown'
-import NotebookDownloadAlert from "./NotebookDownloadAlert"
-import NotebookSendRatingAlert from "./NotebookSendRatingAlert"
+import NotebookDownload from "./NotebookDownload"
+import NotebookSendRating from "./NotebookSendRating"
 
 
 
@@ -66,14 +66,15 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <NotebookSendRatingAlert
+          <NotebookSendRating
                                         data = {data}
                                         query= {query}/>
 
-          <NotebookDownloadAlert
+          <NotebookDownload
                                         data = {data}
                                         query= {query}/>
-          <Button onClick={handleClose}>Close</Button>
+          <p> </p>
+          <Button variant="contained" onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
     </div>
