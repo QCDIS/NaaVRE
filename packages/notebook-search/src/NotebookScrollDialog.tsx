@@ -53,7 +53,7 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
         <DialogTitle id="scroll-dialog-title">
           <div>
             <p>{data['name']}.</p>
-            <p><a href={data['html_url']} target="_blank">{data['name']}</a>.</p>
+            <p><a href={data['html_url']} target="_blank">{data['html_url']}</a>.</p>
           </div>
         </DialogTitle>
         <DialogContent dividers={true}>
@@ -73,6 +73,7 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
           <NotebookDownload
                                         data = {data}
                                         query= {query}/>
+          <p> </p>
           <p> </p>
           <Button variant="contained" onClick={handleClose}>Close</Button>
         </DialogActions>
