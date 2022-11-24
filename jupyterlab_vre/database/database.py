@@ -23,8 +23,21 @@ class Catalog:
     repositories = db.table('repositories')
     gh_credentials = db.table('gh_credentials')
     registry_credentials = db.table('registry_credentials')
+    search_entry = db.table('search_entries')
 
     editor_buffer: Cell
+
+    @classmethod
+    def add_search_query(cls, query: dict):
+        cls.search_entry.insert(query)
+
+    @classmethod
+    def get_search_entries(cls):
+        return cls.search_entry.all()
+
+    @classmethod
+    def delete_all_search_entries(cls):
+        return cls.search_entry.truncate()
 
     @classmethod
     def add_cell(cls, cell: Cell):

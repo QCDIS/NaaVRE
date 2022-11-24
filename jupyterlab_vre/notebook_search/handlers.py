@@ -7,7 +7,7 @@ from builtins import print
 import requests
 from notebook.base.handlers import APIHandler
 from tornado import web
-
+from jupyterlab_vre.database.database import Catalog
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -73,7 +73,8 @@ class NotebookSearchHandler(APIHandler):
         for res in results:
             res['rating'] = 1
 
-        search_entry = {}
+        search_entry = {'query': term, 'results': results, 'timestamp': time.time()}
+        Catalog.add_
         self.write(json.dumps(results))
         self.flush()
 
@@ -137,7 +138,7 @@ class NotebookDownloadHandler(APIHandler):
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
         docid = payload['docid']
-        notebook_name = payload['notebook_name']+'.ipynb'
+        notebook_name = payload['notebook_name'] + '.ipynb'
         search_api_endpoint = os.getenv('SEARCH_API_ENDPOINT')
         search_api_token = os.getenv('SEARCH_API_TOKEN')
         if not search_api_endpoint:
