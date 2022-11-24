@@ -140,13 +140,19 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                             {this.state.items.map((element, index) => (
                             <Accordion >
                                 <AccordionSummary>
-                                    <Typography variant="subtitle1">{element['name']}</Typography>
+                                    <Typography variant="h6">{element['name']}</Typography>
                                 </AccordionSummary>
                                  <AccordionDetails>
-                                    <Typography variant="body2" >
-                                        <b>Author:</b> someone 
-                                        <b>Number of cells:</b> 15
+                                    <Typography variant="body1" >
+                                        <p>
+                                        <b>Author:</b> - 
+                                        </p>
+                                        <p>
+                                        <b>Number of cells:</b> -
+                                        </p>
+                                        <p>
                                         <b>Langunage:</b> Python
+                                        </p>
                                         {/* <a href={element['html_url']} target="_blank" >{element['html_url']}</a> */}
                                     </Typography>
                                     <NotebookScrollDialog
