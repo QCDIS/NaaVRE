@@ -52,6 +52,7 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
       >
         <DialogTitle id="scroll-dialog-title">
           <div>
+            <p>{data['name']}.</p>
             <p><a href={data['html_url']} target="_blank">{data['name']}</a>.</p>
           </div>
         </DialogTitle>

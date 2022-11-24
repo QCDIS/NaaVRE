@@ -153,7 +153,6 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                                         <p>
                                         <b>Langunage:</b> Python
                                         </p>
-                                        {/* <a href={element['html_url']} target="_blank" >{element['html_url']}</a> */}
                                     </Typography>
                                     <NotebookScrollDialog
                                         data = {element}
