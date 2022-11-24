@@ -42,7 +42,7 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
 
   return (
     <div>
-      <Button onClick={handleClickOpen("paper")}>More</Button>
+      <Button variant="contained" onClick={handleClickOpen("paper")}>More</Button>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -73,6 +73,7 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
           <NotebookDownload
                                         data = {data}
                                         query= {query}/>
+          <p> </p>
           <p> </p>
           <p> </p>
           <Button variant="contained" onClick={handleClose}>Close</Button>
