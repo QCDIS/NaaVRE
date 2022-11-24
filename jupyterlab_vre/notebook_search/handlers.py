@@ -186,3 +186,13 @@ class NotebookDownloadHandler(APIHandler):
         download_response = {'notebook_path': str(Path(download_path, notebook_name))}
         self.write(json.dumps(download_response))
         self.flush()
+
+
+class NotebookSeachHistoryHandler(APIHandler):
+    @web.authenticated
+    async def get(self, *args, **kwargs):
+        payload = self.get_json_body()
+        print(json.dumps(payload))
+        msg_json = dict(title="Operation not supported.")
+        self.write(msg_json)
+        await self.flush()
