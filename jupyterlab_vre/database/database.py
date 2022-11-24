@@ -50,6 +50,11 @@ class Catalog:
         return credentials
 
     @classmethod
+    def get_repository_credentials(cls):
+        credentials = cls.repository.all()
+        return credentials
+
+    @classmethod
     def get_registry_credentials_from_name(cls, name: str):
         res = cls.registry_credentials.search(where('name') == name)
         if res:
@@ -59,6 +64,11 @@ class Catalog:
     def add_registry_credentials(cls, cred: Repository):
         cls.registry_credentials.insert(cred.__dict__)
 
+
+    @classmethod
+    def add_repository_credentials(cls, cred: Repository):
+        cls.repositories.insert(cred.__dict__)
+
     @classmethod
     def get_gh_credentials(cls):
         credentials = cls.gh_credentials.all()
@@ -67,12 +77,17 @@ class Catalog:
 
     @classmethod
     def delete_all_gh_credentials(cls):
-        # Looks bad but for now I could not find a way to remove all
-        credentials = cls.gh_credentials.all()
+        cls.gh_credentials.truncate()
+
+    @classmethod
+    def delete_all_repository_credentials(cls):
+        cls.repositories.truncate()
+        credentials = cls.repositories.all()
         ids = []
         for credential in credentials:
             ids.append(credential.doc_id)
-        cls.gh_credentials.remove(doc_ids=ids)
+        cls.repositories.remove(doc_ids=ids)
+        cls.repositories.truncate()
 
     @classmethod
     def delete_all_registry_credentials(cls):
@@ -82,6 +97,7 @@ class Catalog:
         for credential in credentials:
             ids.append(credential.doc_id)
         cls.registry_credentials.remove(doc_ids=ids)
+        cls.registry_credentials.truncate()
 
     @classmethod
     def add_gh_credentials(cls, cred: Repository):
