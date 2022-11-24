@@ -72,9 +72,8 @@ class NotebookSearchHandler(APIHandler):
             results = hits['results']
         for res in results:
             res['rating'] = 1
-
         search_entry = {'query': term, 'results': results, 'timestamp': time.time()}
-        Catalog.add_
+        Catalog.add_search_enty(search_entry)
         self.write(json.dumps(results))
         self.flush()
 

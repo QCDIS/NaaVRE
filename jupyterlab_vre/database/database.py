@@ -28,7 +28,7 @@ class Catalog:
     editor_buffer: Cell
 
     @classmethod
-    def add_search_query(cls, query: dict):
+    def add_search_enty(cls, query: dict):
         cls.search_entry.insert(query)
 
     @classmethod
