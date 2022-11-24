@@ -3,7 +3,7 @@ FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e
 USER root
 
 #===== Add pdalpy dependencies ======
-RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++ s3fs curl
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++ s3fs curl git
 #====================================
 
 #============== install vol2bird==============
@@ -76,7 +76,7 @@ ENV PATH=${PATH}:/opt/radar/vol2bird/bin:/opt/radar/rsl/bin
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
-COPY ./notebooks/ /tmp/notebooks
+COPY ./repo_utils/ /tmp/repo_utils
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 
