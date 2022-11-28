@@ -144,8 +144,11 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                                 </AccordionSummary>
                                  <AccordionDetails>
                                     <Typography variant="body1" >
-                                        <p><a href={element['html_url']} target="_blank">{element['html_url']}</a>.</p>
-                                        <p>
+                                    <div className={'nb-download-link'}>
+                                        <a href={element['html_url']} target="_blank">{element['html_url']}</a>
+                                    </div>
+                                    <div className={'nb-download-text'}>
+                                    <p>
                                         <b>Notebook source:</b>  {element['source']}
                                         </p>
                                         <p>
@@ -154,6 +157,7 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                                         <p>
                                         <b>Langunage:</b>  {element['language']}
                                         </p>
+                                    </div>
                                     </Typography>
                                     <NotebookScrollDialog
                                         data = {element}

@@ -51,8 +51,8 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
         aria-describedby="scroll-dialog-description"
       >
         <DialogTitle id="scroll-dialog-title">
-          <div>
-            <p>{data['name']}.</p>
+          <p>{data['name']}.</p>
+          <div className={'nb-download-link'}>
             <p><a href={data['html_url']} target="_blank">{data['html_url']}</a>.</p>
           </div>
         </DialogTitle>
