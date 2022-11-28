@@ -1,11 +1,17 @@
-import { Button, Paper, styled, Table, TableBody, TableCell, TableContainer, TableRow, TextField, ThemeProvider } from '@material-ui/core';
+import { Button, styled,  ThemeProvider } from '@material-ui/core';
 import * as React from 'react';
 import { theme } from './Theme';
 import { IChart } from '@mrblenny/react-flow-chart';
 import { requestAPI } from '@jupyter_vre/core';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { green } from '@mui/material/colors';
-
+import Paper from "@mui/material/Paper";
+import TableContainer from "@mui/material/TableContainer";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
+import TextField from '@mui/material/TextField';
 
 interface IState {
     params: []
@@ -128,39 +134,40 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
                         </div>
                     ) :
                         (
+                        <div>
+                            <Paper sx={{ width: "100%", overflow: "hidden" }}>
+                            <TableContainer sx={{ maxHeight: 225 }}>
+                            <Table stickyHeader aria-label="sticky table">
+                            <TableBody>
+                                {this.state.params.map((param: string) => (
+                                    <TableRow hover role="checkbox" tabIndex={-1} key={param}>
+                                        <TableCell key={param} align={"right"}>
+                                            {param}
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            <TextField
+                                                id="standard-basic"
+                                                label="Standard"
+                                                variant="standard"
+                                                onChange={(event) => { this.handleParamValueUpdate(event, param) }}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                            </Table>
+                            </TableContainer>
+                            </Paper>
                             <div>
-                                <p className={'lw-panel-preview'}>Parameters</p>
-                                <TableContainer component={Paper} className={'lw-panel-table'}>
-                                    <Table aria-label="simple table">
-                                        <TableBody>
-                                            {this.state.params.map((param: string) => (
-                                                <TableRow key={param}>
-                                                    <TableCell component="th" scope="row">
-                                                        {param}
-                                                    </TableCell>
-                                                    <TableCell component="th" scope="row">
-                                                        <TextField
-                                                            id="standard-basic"
-                                                            label="Standard"
-                                                            variant="standard"
-                                                            onChange={(event) => { this.handleParamValueUpdate(event, param) }}
-                                                        />
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                                <div>
-                                    <Button variant="contained"
+                                <Button variant="contained"
                                         className={'lw-panel-button'}
                                         onClick={this.handleSubmit}
                                         color="primary"
                                         disabled={!this.allParamsFilled()}>
                                         Execute
-                                    </Button>
-                                </div>
+                                </Button>
                             </div>
+                        </div>
                         )
                     }
                 </CatalogBody>
