@@ -44,11 +44,11 @@ COPY MULTIPLY_pip_requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 RUN pip install git+https://github.com/JorisTimmermans/data-access.git \
                 git+https://github.com/JorisTimmermans/atmospheric_correction.git \
-                git+https://github.com/JorisTimmermans/multiply-core.git \
+                git+https://github.com/QCDIS/multiply-core.git \
                 git+https://github.com/QCDIS/inference-engine.git \
                 git+https://github.com/QCDIS/prior-engine.git \
                 git+https://github.com/JorisTimmermans/atmospheric_correction.git \
-                git+https://github.com/JorisTimmermans/vm-support.git \
+                git+https://github.com/QCDIS/vm-support.git \
                 git+https://github.com/multiply-org/multiply-orchestration.git \
                 git+https://github.com/QCDIS/KaFKA-InferenceEngine.git \
                 git+https://github.com/QCDIS/BRDF_descriptors.git
