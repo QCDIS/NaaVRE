@@ -1,0 +1,67 @@
+.vre-composer {
+    display: flex;
+}
+
+.workspace-items-container {
+    overflow-y: scroll;
+    max-height: 460px;
+}
+
+.btn-export-workflow {
+    margin: 20px !important;
+}
+
+.lw-panel-editor {
+    margin: 15px;
+    width: 350px;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 5px;
+}
+
+.section-header {
+    padding: 10px;
+    text-align: center;
+    background: lightseagreen;
+    color: white;
+    font-size: medium;
+}
+
+.section-header.cell-editor {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.add-cell-to-ws {
+    width: 190px;
+    margin: 15px;
+}
+
+.jp-Dialog-content, .jp-Dialog-header {
+    padding: 0 !important;
+}
+
+.empty-workspace {
+    padding: 15px;
+    text-align: center;
+    color: darkgray;
+    margin-top: 150px;
+    line-height: 23px;
+}
+
+.wf-submit-link {
+    color: #106ba3;
+    text-decoration: underline;
+}
+
+.wf-submit-text {
+    font-size: medium;
+    margin: 10px;
+}
+
+.wf-submit-box {
+    padding: 10px;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
