@@ -1,5 +1,5 @@
 {
-    "name": "@jupyter_vre/faicells-composer",
+    "name": "@jupyter_vre/experiment-manager",
     "version": "1.0.0",
     "description": "FAIRCells VRE composer",
     "keywords": [

@@ -28,7 +28,7 @@ build-frontend: jlpm-install
 	npx lerna run build --scope @jupyter_vre/notebook-search
 	npx lerna run build --scope @jupyter_vre/notebook-search-toolbar
 	npx lerna run build --scope @jupyter_vre/components
-	npx lerna run build --scope @jupyter_vre/faicells-composer
+	npx lerna run build --scope @jupyter_vre/experiment-manager
 	npx lerna run build --scope @jupyter_vre/faicells-panel
 	npx lerna run build --scope @jupyter_vre/vre-menu
 
