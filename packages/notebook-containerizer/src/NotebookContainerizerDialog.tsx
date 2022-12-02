@@ -56,7 +56,6 @@ export class NotebookContainerizerDialog extends React.Component<NotebookContain
             <ThemeProvider theme={theme}>
                 <p className='section-header'>Containerize Notebook</p>
                 <CatalogBody>
-
                 </CatalogBody>
             </ThemeProvider>
         )

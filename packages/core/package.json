@@ -32,11 +32,6 @@
         "watch": "tsc -w"
     },
     "dependencies": {
-        "@jupyterlab/application": "^3.0.3",
-        "@jupyterlab/coreutils": "^5.0.1",
-        "@jupyterlab/launcher": "^3.0.2",
-        "@jupyterlab/mainmenu": "^3.0.9",
-        "@jupyterlab/notebook": "^3.0.3",
         "@material-ui/core": "^4.11.2",
         "@material-ui/icons": "^4.11.2",
         "@mrblenny/react-flow-chart": "^0.0.14",
