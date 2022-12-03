@@ -16,7 +16,7 @@ jupyter_config_path = './jupyter-config/*.json'
 setup_args = dict(
     name=name,
     version="0.1.0",
-    url="https://github.com/r-whites/jupyterlab_vre",
+    url="https://github.com/QCDIS/NaaVRE",
     author="Riccardo Bianchi",
     author_email="riccardo.bianchi@lifewatch.eu",
     description="Jupyter Lab extension for virtual research environments",
@@ -27,7 +27,7 @@ setup_args = dict(
     data_files=[('etc/jupyter/jupyter_server_config.d', glob(jupyter_config_path)),
                 ('share/jupyter/lab/extensions', glob(frontend_packages_path))],
     install_requires=[
-        "jupyterlab~=3.0",
+        "jupyterlab~=3.5.0",
         "autopep8",
         "pyflakes",
         "nbformat",
@@ -49,7 +49,7 @@ setup_args = dict(
     ],
     zip_safe=False,
     include_package_data=True,
-    python_requires=">=3.6",
+    python_requires=">=3.8",
     platforms="Linux, Mac OS X, Windows",
     keywords=["Jupyter", "JupyterLab", "JupyterLab3"],
     classifiers=[
