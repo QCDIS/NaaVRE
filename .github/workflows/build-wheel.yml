@@ -18,10 +18,13 @@ jobs:
           environment-file: environment.yml
       - name: Conda info
         shell: bash -el {0}
-        run: ls -lah
-      - name: Conda list
-        shell: pwsh
-        run: conda list
+        run: make release
+      - name: 'Upload wheel artifact'
+        uses: actions/upload-artifact@v3
+        with:
+          name: jupyterlab_vre
+          path: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
+        if: ${{ inputs.upload }}
 
 #jobs:
 #  build:
@@ -42,9 +45,4 @@ jobs:
 #    - name: make
 #      run: |
 #        make release
-#    - name: 'Upload wheel artifact'
-#      uses: actions/upload-artifact@v3
-#      with:
-#        name: jupyterlab_vre
-#        path: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
-#      if: ${{ inputs.upload }}
+
