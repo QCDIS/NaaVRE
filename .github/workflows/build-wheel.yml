@@ -16,7 +16,7 @@ jobs:
         with:
           auto-update-conda: true
           environment-file: environment.yml
-      - name: Conda info
+      - name: make release
         shell: bash -el {0}
         run: make release
       - name: 'Upload wheel artifact'
@@ -25,24 +25,3 @@ jobs:
           name: jupyterlab_vre
           path: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
         if: ${{ inputs.upload }}
-
-#jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#    steps:
-#    - uses: actions/checkout@v3
-#    - name: Set up Python 3.9
-#      uses: actions/setup-python@v4
-#      with:
-#        python-version: 3.9
-#    - name: Setup npm
-#      uses: actions/setup-node@v3
-#      with:
-#          node-version: 16
-#    - name: Install conda env
-#      run: |
-#        $CONDA/bin/conda env update --file environment.yml --name base
-#    - name: make
-#      run: |
-#        make release
-
