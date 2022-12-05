@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box';
 import * as React from 'react';
-import { FairCell } from '@jupyter_vre/core';
+import { VRECell } from '@jupyter_vre/core';
 
 interface CellEditorProps {
-    cell: FairCell
+    cell: VRECell
 }
 
 export class CellEditor extends React.Component<CellEditorProps> {

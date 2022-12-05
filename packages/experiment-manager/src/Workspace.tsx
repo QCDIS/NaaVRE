@@ -1,21 +1,21 @@
 import Box from '@mui/material/Box';
 import * as React from 'react';
-import { FairCell } from '@jupyter_vre/core';
+import { VRECell } from '@jupyter_vre/core';
 import { WorkspaceItem } from './WorkspaceItem';
 
 interface IState {
-    workspace_elements: Map<string, FairCell>
+    workspace_elements: Map<string, VRECell>
 }
 
 export const DefaultState: IState = {
-    workspace_elements: new Map<string, FairCell>()
+    workspace_elements: new Map<string, VRECell>()
 }
 
 export class Workspace extends React.Component {
 
     state = DefaultState;
 
-    addElement = (element: FairCell) => {
+    addElement = (element: VRECell) => {
 
         let currElements = this.state.workspace_elements;
         currElements.set(element.node_id, element);
@@ -29,7 +29,7 @@ export class Workspace extends React.Component {
         this.setState({ workspace_elements: currElements })
     }
 
-    hasElement = (element: FairCell) => {
+    hasElement = (element: VRECell) => {
         return this.state.workspace_elements.has(element.node_id);
     }
 
@@ -37,7 +37,7 @@ export class Workspace extends React.Component {
         return this.state.workspace_elements.get(nodeId); 
     }
 
-    renderItems(map: Map<string, FairCell>): JSX.Element[] {
+    renderItems(map: Map<string, VRECell>): JSX.Element[] {
 
         const items: JSX.Element[] = [];
 
