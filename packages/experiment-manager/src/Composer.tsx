@@ -9,7 +9,7 @@ import { FlowChart, IChart } from '@mrblenny/react-flow-chart';
 import { ThemeProvider } from '@material-ui/core';
 import { NodeCustom, NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
 import { CatalogDialog } from './CatalogDialog';
-import { FairCell, requestAPI } from '@jupyter_vre/core';
+import { VRECell, requestAPI } from '@jupyter_vre/core';
 import { CellEditor, Page } from '@jupyter_vre/components';
 import { Workspace } from './Workspace';
 import { Parallelization } from './Parallelization';
@@ -45,15 +45,15 @@ class Composer extends React.Component<IProps, IState> {
 		this.workspaceRef = React.createRef();
 	}
 
-	handleAddCellToWorkspace = (cell: FairCell) => {
+	handleAddCellToWorkspace = (cell: VRECell) => {
 		this.workspaceRef.current.addElement(cell);
 	}
 
-	handleIsCellInWorkspace = (cell: FairCell) => {
+	handleIsCellInWorkspace = (cell: VRECell) => {
 		return this.workspaceRef.current.hasElement(cell);
 	}
 
-	getWorkspaceElementFromChartId = (chartId: string): FairCell => {
+	getWorkspaceElementFromChartId = (chartId: string): VRECell => {
 
 		let nodeId = this.state.chart.nodes[chartId].properties['og_node_id'];
 		return this.workspaceRef.current.getElement(nodeId);
