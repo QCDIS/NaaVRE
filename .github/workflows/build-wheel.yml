@@ -7,7 +7,6 @@ on:
         required: true
         type: boolean
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
