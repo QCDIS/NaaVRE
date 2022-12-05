@@ -15,7 +15,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
-          environment-file: etc/example-environment.yml
+          environment-file: environment.yml
       - name: Conda info
         shell: bash -el {0}
         run: conda info
