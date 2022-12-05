@@ -67,7 +67,6 @@ dist-ui: build-frontend
 	$(call PACKAGE_LAB_EXTENSION,vre-menu)
 	$(call PACKAGE_LAB_EXTENSION,notebook-search)
 
-
 release: dist-ui build-backend
 	
 
