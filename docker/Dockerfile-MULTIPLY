@@ -36,7 +36,7 @@ RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
     pip install laserfarm laspy
 #====================================
 
-RUN pip install jupyterlab-github jupyter-videochat nbgitpuller jupyterlab-lsp python-lsp-server[all] && \
+RUN pip install jupyterlab-github jupyter-videochat nbgitpuller jupyterlab-lsp python-lsp-server[all] pre-commit && \
     jupyter serverextension enable --py jupyter_videochat --user && \
     jupyter serverextension enable --py jupyterlab_github --user
 
