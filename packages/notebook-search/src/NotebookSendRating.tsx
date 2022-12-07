@@ -64,7 +64,7 @@ export default function NotebookSendRating({ data, query }: NotebookSendRatingPr
     <Stack spacing={2} sx={{ width: "100%" }}>
       <Rating
       name={"name"}
-      defaultValue={1}
+      defaultValue={0}
       max={5}
       onChange={(event, newValue) => {
         handleSetRating(newValue);
