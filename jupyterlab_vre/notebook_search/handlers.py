@@ -183,7 +183,7 @@ class NotebookDownloadHandler(APIHandler):
         with open(Path(download_path, notebook_name), 'w') as outfile:
             json.dump(notebook, outfile)
 
-        download_response = {'notebook_path': str(Path(download_path, notebook_name))}
+        download_response = {'notebook_source_file': results['notebook_source_file'], 'notebook_path': str(Path(download_path, notebook_name))}
         self.write(json.dumps(download_response))
         self.flush()
 

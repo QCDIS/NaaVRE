@@ -9,6 +9,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import NotebookScrollDialog from "./NotebookScrollDialog"
+import NotebookSendRating from "./NotebookSendRating"
 
 interface NotebookSearchPanelProps {
 
@@ -162,6 +163,13 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                                     <NotebookScrollDialog
                                         data = {element}
                                         query= {this.state.keyword}/>
+                                    <div className={'nb-download-text'}>
+                                    <p>
+                                    <NotebookSendRating
+                                        data = {element}
+                                        query= {this.state.keyword}/>
+                                    </p>
+                                    </div>
                                 </AccordionDetails>
                             </Accordion>
                             ))}
