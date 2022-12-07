@@ -39,4 +39,4 @@ def load_jupyter_server_extension(lab_app):
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/registries/?'), RegistriesHandler)
     ])
     
-    lab_app.log.info("Registered FAIR-Cells extension at URL path /vre")
+    lab_app.log.info("Registered NaaVRRE extension at URL path /vre")

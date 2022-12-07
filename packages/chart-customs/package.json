@@ -1,7 +1,7 @@
 {
     "name": "@jupyter_vre/chart-customs",
     "version": "1.0.0",
-    "description": "FAIRCells VRE chart custom elements",
+    "description": "NaaVRE chart custom elements",
     "keywords": [
         "jupyter",
         "jupyterlab",
@@ -9,7 +9,7 @@
     ],
     "homepage": "https://github.com/QCDIS/NaaVRE",
     "bugs": {
-        "url": "https://github.com/r-whites/FAIRCells-VRE/issues"
+        "url": "https://github.com/QCDIS/NaaVRE/issues"
     },
     "license": "BSD-3-Clause",
     "author": "Riccardo Bianchi",
@@ -23,7 +23,7 @@
     "style": "style/index.css",
     "repository": {
         "type": "git",
-        "url": "https://github.com/r-whites/jupyter_vre.git"
+        "url": "https://github.com/QCDIS/NaaVRE.git"
     },
     "scripts": {
         "build": "tsc",
