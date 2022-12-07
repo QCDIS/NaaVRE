@@ -238,8 +238,6 @@ class CellsHandler(APIHandler, Catalog):
                 update_cell_in_repository(current_cell, repository, files_info)
             except UnknownObjectException as ex:
                 create_cell_in_repository(current_cell, repository, files_info)
-
-
         elif commit.totalCount <= 0:
             create_cell_in_repository(current_cell, repository, files_info)
 
