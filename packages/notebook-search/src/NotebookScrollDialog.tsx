@@ -67,12 +67,13 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
         </DialogContent>
         <DialogActions>
           <NotebookSendRating
-                                        data = {data}
-                                        query= {query}/>
+              data = {data}
+              query= {query}/>
 
           <NotebookDownload
-                                        data = {data}
-                                        query= {query}/>
+              data = {data}
+              query= {query}/>
+          <p> </p>
           <p> </p>
           <p> </p>
           <p> </p>

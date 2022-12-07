@@ -70,7 +70,9 @@ export default function NotebookSendRating({ data, query }: NotebookSendRatingPr
         handleSetRating(newValue);
       }}
     />
-      <Button variant="contained" onClick={sendRating}>
+      <Button variant="contained" 
+        sx={{ width: 150, padding: 1, margin: 2 }}
+        onClick={sendRating}>
         Send Rating
       </Button>
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
