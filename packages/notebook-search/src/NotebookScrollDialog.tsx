@@ -137,16 +137,16 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
             <Box sx={{ width: '100%' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                <Tab label="Description" {...a11yProps(0)} />
-                <Tab label="Notebook" {...a11yProps(1)} />
+                <Tab label="Notebook" {...a11yProps(0)} />
+                <Tab label="Description" {...a11yProps(1)} />
               </Tabs>
             </Box>
             <TabPanel value={value} index={0}>
-              <ReactMarkdown>{data['description']}</ReactMarkdown>
+              <IpynbRenderer 
+                  ipynb={notebook_source_file}/>
             </TabPanel>
             <TabPanel value={value} index={1}>
-              <IpynbRenderer 
-                ipynb={notebook_source_file}/>
+              <ReactMarkdown>{data['description']}</ReactMarkdown>
             </TabPanel>
           </Box>
 
@@ -164,7 +164,11 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
           <p> </p>
           <p> </p>
           <p> </p>
-          <Button variant="contained" onClick={handleClose}>Close</Button>
+          <Button 
+            sx={{ width: 150, padding: 1, margin: 2 }} 
+            variant="contained" onClick={handleClose}>
+              Close
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

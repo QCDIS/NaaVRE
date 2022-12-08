@@ -57,7 +57,9 @@ export default function NotebookDownloadAlert({ data, query }: NotebookDownloadP
     <Stack spacing={2} sx={{ width: "100%" }}>
       <p> </p>
       <p> </p>
-      <Button variant="contained" 
+      <Button 
+        sx={{ width: 150, padding: 1, margin: 2 }} 
+        variant="contained" 
         onClick={downloadNotebook}
         >
         Download Notebook
