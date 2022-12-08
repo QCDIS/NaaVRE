@@ -23,7 +23,6 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 export default function NotebookDownloadAlert({ data, query }: NotebookDownloadProps) {
   const [open, setOpen] = React.useState(false);
   const [downloaded_notebook_path, setDownloadedNotebookPath] = React.useState('');
-  const [notebook_source_file, setNotebookSourceFile] = React.useState('');
 
   const downloadNotebook = async () => {
     try{
@@ -35,8 +34,6 @@ export default function NotebookDownloadAlert({ data, query }: NotebookDownloadP
             method: 'POST'
         });
         setDownloadedNotebookPath(resp['notebook_path']);
-        setNotebookSourceFile(resp['notebook_source_file']);
-        console.log(notebook_source_file)
         console.log(downloaded_notebook_path)
         setOpen(true);
     }catch (error){

@@ -167,9 +167,18 @@ class NotebookDownloadHandler(APIHandler):
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
         docid = payload['docid']
+        notebook_name = payload['notebook_name'] + '.ipynb'
         try:
             notebook_source_file = get_notebook_source_content(doc_id=docid)
-            download_response = {'notebook_source_file': json.loads(notebook_source_file)}
+            notebook = json.loads(notebook_source_file)
+            download_path = Path(Path.home(), 'Downloads', 'Notebooks')
+            if not os.path.exists(download_path):
+                os.makedirs(download_path)
+
+            with open(Path(download_path, notebook_name), 'w') as outfile:
+                json.dump(notebook, outfile)
+
+            download_response = {'notebook_path': str(Path(download_path, notebook_name))}
             self.write(json.dumps(download_response))
             self.flush()
         except Exception as ex:
@@ -185,18 +194,9 @@ class NotebookSourceHandler(APIHandler):
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
         docid = payload['docid']
-        notebook_name = payload['notebook_name'] + '.ipynb'
         try:
             notebook_source_file = get_notebook_source_content(doc_id=docid)
-            notebook = json.loads(notebook_source_file)
-            download_path = Path(Path.home(), 'Downloads', 'Notebooks')
-            if not os.path.exists(download_path):
-                os.makedirs(download_path)
-
-            with open(Path(download_path, notebook_name), 'w') as outfile:
-                json.dump(notebook, outfile)
-
-            download_response = {'notebook_path': str(Path(download_path, notebook_name))}
+            download_response = {'notebook_source_file': json.loads(notebook_source_file)}
             self.write(json.dumps(download_response))
             self.flush()
         except Exception as ex:

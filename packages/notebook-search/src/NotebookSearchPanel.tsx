@@ -9,6 +9,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import NotebookScrollDialog from "./NotebookScrollDialog"
+// import SeachTabs from "./SeachTab"
 import NotebookSendRating from "./NotebookSendRating"
 
 interface NotebookSearchPanelProps {

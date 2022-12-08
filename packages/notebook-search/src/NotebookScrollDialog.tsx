@@ -8,8 +8,18 @@ import DialogTitle from "@mui/material/DialogTitle";
 import ReactMarkdown from 'react-markdown'
 import NotebookDownload from "./NotebookDownload"
 import NotebookSendRating from "./NotebookSendRating"
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import { requestAPI } from '@jupyter_vre/core';
 
 
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
 
 interface NotebookDialogueProps {
   data: {[key: string]: any}
@@ -17,14 +27,71 @@ interface NotebookDialogueProps {
 }
 
 
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
 export default function NotebookScrollDialog({ data, query }: NotebookDialogueProps) {
+  const [value, setValue] = React.useState(0);
+  const [notebook_source_file, setNotebookSourceFile] = React.useState('');
+
+
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
+
+  
+
 
   const [open, setOpen] = React.useState(false);
   const [scroll] = React.useState<DialogProps["scroll"]>("paper");
 
+
+  const getNotebookSource = async () => {
+    try{
+        const resp = await requestAPI<any>('notebooksourcehandler', {
+            body: JSON.stringify({
+                docid: data['docid'],
+                notebook_name: data['name']
+            }),
+            method: 'POST'
+        });
+        setNotebookSourceFile(resp['notebook_source_file']);
+        console.log(notebook_source_file)
+        setOpen(true);
+    }catch (error){
+        console.log(error);
+        alert(String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+    }
+};
+
+
   const handleClickOpen = (scrollType: DialogProps["scroll"]) => () => {
+
     setOpen(true);
-    
   };
 
   const handleClose = () => {
@@ -45,6 +112,7 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
     <div>
       <Button variant="contained" onClick={handleClickOpen("paper")}>More</Button>
       <Dialog
+        fullScreen
         open={open}
         onClose={handleClose}
         scroll={scroll}
@@ -63,7 +131,21 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
             ref={descriptionElementRef}
             tabIndex={-1}
           >
-            <ReactMarkdown>{data['description']}</ReactMarkdown>
+            <Box sx={{ width: '100%' }}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+                <Tab label="Description" {...a11yProps(0)} />
+                <Tab label="Notebook" {...a11yProps(1)} />
+              </Tabs>
+            </Box>
+            <TabPanel value={value} index={0}>
+              <ReactMarkdown>{data['description']}</ReactMarkdown>
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+              Item Two
+            </TabPanel>
+          </Box>
+
           </DialogContentText>
         </DialogContent>
         <DialogActions>
