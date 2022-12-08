@@ -194,10 +194,12 @@ class NotebookSourceHandler(APIHandler):
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
         docid = payload['docid']
+        print('Get source for: '+docid)
         try:
             notebook_source_file = get_notebook_source_content(doc_id=docid)
-            download_response = {'notebook_source_file': json.loads(notebook_source_file)}
-            self.write(json.dumps(download_response))
+            response = {'notebook_source': json.loads(notebook_source_file)}
+            print(response)
+            self.write(response)
             self.flush()
         except Exception as ex:
             self.set_status(500)

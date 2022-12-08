@@ -13,7 +13,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { requestAPI } from '@jupyter_vre/core';
-
+import { IpynbRenderer } from "react-ipynb-renderer";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -56,7 +56,7 @@ function a11yProps(index: number) {
 
 export default function NotebookScrollDialog({ data, query }: NotebookDialogueProps) {
   const [value, setValue] = React.useState(0);
-  const [notebook_source_file, setNotebookSourceFile] = React.useState('');
+  const [notebook_source_file, setNotebookSourceFile] = React.useState( { cells: [] } );
 
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -79,20 +79,18 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
             }),
             method: 'POST'
         });
-        setNotebookSourceFile(resp['notebook_source_file']);
-        console.log(notebook_source_file)
+        setNotebookSourceFile(resp['notebook_source']);
         setOpen(true);
     }catch (error){
         console.log(error);
         alert(String(error).replace('{"message": "Unknown HTTP Error"}', ''));
     }
-};
-
-
-  const handleClickOpen = (scrollType: DialogProps["scroll"]) => () => {
-
-    setOpen(true);
   };
+
+
+  // const handleClickOpen = (scrollType: DialogProps["scroll"]) => () => {
+  //   setOpen(true);
+  // };
 
   const handleClose = () => {
     setOpen(false);
@@ -110,7 +108,12 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
 
   return (
     <div>
-      <Button variant="contained" onClick={handleClickOpen("paper")}>More</Button>
+      <Button 
+      variant="contained" 
+      onClick={ getNotebookSource }
+      >
+        More
+      </Button>
       <Dialog
         fullScreen
         open={open}
@@ -142,7 +145,8 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
               <ReactMarkdown>{data['description']}</ReactMarkdown>
             </TabPanel>
             <TabPanel value={value} index={1}>
-              Item Two
+              <IpynbRenderer 
+                ipynb={notebook_source_file}/>
             </TabPanel>
           </Box>
 

@@ -57,7 +57,9 @@ export default function NotebookDownloadAlert({ data, query }: NotebookDownloadP
     <Stack spacing={2} sx={{ width: "100%" }}>
       <p> </p>
       <p> </p>
-      <Button variant="contained" onClick={downloadNotebook}>
+      <Button variant="contained" 
+        onClick={downloadNotebook}
+        >
         Download Notebook
       </Button>
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
