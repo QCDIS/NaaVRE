@@ -5,7 +5,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import ReactMarkdown from 'react-markdown'
+// import ReactMarkdown from 'react-markdown'
 import NotebookDownload from "./NotebookDownload"
 import NotebookSendRating from "./NotebookSendRating"
 import Tabs from '@mui/material/Tabs';
@@ -14,6 +14,8 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { requestAPI } from '@jupyter_vre/core';
 import { IpynbRenderer } from "react-ipynb-renderer";
+import { ThemeProvider } from '@material-ui/core';
+import { theme } from './Theme';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -107,6 +109,7 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
   }, [open]);
 
   return (
+    <ThemeProvider theme={theme}>
     <div>
       <Button 
       variant="contained" 
@@ -138,16 +141,16 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                 <Tab label="Notebook" {...a11yProps(0)} />
-                <Tab label="Description" {...a11yProps(1)} />
+                {/* <Tab label="Description" {...a11yProps(1)} /> */}
               </Tabs>
             </Box>
             <TabPanel value={value} index={0}>
               <IpynbRenderer 
                   ipynb={notebook_source_file}/>
             </TabPanel>
-            <TabPanel value={value} index={1}>
+            {/* <TabPanel value={value} index={1}>
               <ReactMarkdown>{data['description']}</ReactMarkdown>
-            </TabPanel>
+            </TabPanel> */}
           </Box>
 
           </DialogContentText>
@@ -172,5 +175,6 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
         </DialogActions>
       </Dialog>
     </div>
+    </ThemeProvider>
   );
 }
