@@ -24,6 +24,7 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
 
   const handleClickOpen = (scrollType: DialogProps["scroll"]) => () => {
     setOpen(true);
+    
   };
 
   const handleClose = () => {
