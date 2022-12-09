@@ -13,6 +13,7 @@ purge:
 	rm -rf $$(find . -name package-lock.json)
 	rm -rf $$(find . -name .pytest_cache)
 	jlpm cache clean
+	rm
 
 build-backend: 
 	python setup.py bdist_wheel sdist

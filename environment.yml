@@ -11,3 +11,4 @@ dependencies:
   - pip:
       - pre-commit
       - ggshield
+      - colorhash==1.2.1

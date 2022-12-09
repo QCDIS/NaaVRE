@@ -3,7 +3,7 @@ jupyterlab==3.5.0
 wheel==0.37.0
 setuptools_rust==1.1.2
 pyflakes==2.4.0
-colorhash==1.0.4
+colorhash==1.2.1
 requests==2.27.1
 azure-storage-blob==12.9.0
 tinydb~=4.6.1
