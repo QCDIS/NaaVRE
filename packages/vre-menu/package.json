@@ -7,9 +7,9 @@
         "jupyterlab",
         "jupyterlab-extension"
     ],
-    "homepage": "https://github.com/r-whites/jupyterlab_vre",
+    "homepage": "https://github.com/QCDIS/NaaVRE",
     "bugs": {
-        "url": "https://github.com/r-whites/FAIRCells-VRE/issues"
+        "url": "https://github.com/QCDIS/NaaVRE/issues"
     },
     "license": "BSD-3-Clause",
     "author": "Riccardo Bianchi",

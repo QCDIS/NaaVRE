@@ -1,4 +1,4 @@
-import { requestAPI, FairCell, CellPreview  } from '@jupyter_vre/core';
+import { requestAPI, VRECell, CellPreview  } from '@jupyter_vre/core';
 import { Button, styled, TextField, ThemeProvider } from '@material-ui/core';
 import { Autocomplete } from '@mui/material';
 import * as React from 'react';
@@ -12,7 +12,7 @@ const catalogs = [
 
 interface IState {
     catalog_elements: []
-    current_cell: FairCell
+    current_cell: VRECell
     current_cell_in_workspace: boolean
 }
 
@@ -36,8 +36,8 @@ const PreviewWindow = styled('div')({
 })
 
 interface CatalogDialogProps {
-    addCellAction: (cell: FairCell) => void
-    isCellInWorkspace: (cell: FairCell) => boolean
+    addCellAction: (cell: VRECell) => void
+    isCellInWorkspace: (cell: VRECell) => boolean
 }
 
 export class CatalogDialog extends React.Component<CatalogDialogProps> {

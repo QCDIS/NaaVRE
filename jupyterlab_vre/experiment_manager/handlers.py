@@ -19,7 +19,6 @@ class ExportWorkflowHandler(APIHandler):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-
         payload = self.get_json_body()
         nodes = payload['nodes']
         links = payload['links']
@@ -52,13 +51,17 @@ class ExportWorkflowHandler(APIHandler):
             loader=loader, trim_blocks=True, lstrip_blocks=True)
         template = template_env.get_template('workflow_template_v2.jinja2')
         if cell:
+            if 'JUPYTERHUB_USER' in os.environ:
+                workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER']
+
             template.stream(
                 vlab_slug=vlab_slug,
                 deps_dag=deps_dag,
                 cells=cells,
                 nodes=nodes,
                 global_params=global_params,
-                image_repo=image_repo
+                image_repo=image_repo,
+                workflow_name=workflow_name
             ).dump('workflow.yaml')
 
         self.flush()
@@ -69,14 +72,12 @@ class ExecuteWorkflowHandler(APIHandler):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-
         payload = self.get_json_body()
         chart = payload['chart']
         params = payload['params']
 
         api_endpoint = os.getenv('API_ENDPOINT')
         logger.debug('API_ENDPOINT: ' + api_endpoint)
-        print('API_ENDPOINT: '+str(api_endpoint))
         if not api_endpoint:
             logger.error('NaaVRE API endpoint environment variable "API_ENDPOINT" is not set!')
             self.set_status(400)
@@ -86,7 +87,6 @@ class ExecuteWorkflowHandler(APIHandler):
             return
 
         naavre_api_token = os.getenv('NAAVRE_API_TOKEN')
-        print('NAAVRE_API_TOKEN: ' + str(naavre_api_token))
         if not naavre_api_token:
             logger.error('NaaVRE API token environment variable "NAAVRE_API_TOKEN" is not set!')
             self.set_status(400)
@@ -96,7 +96,6 @@ class ExecuteWorkflowHandler(APIHandler):
             return
 
         vlab_slug = os.getenv('VLAB_SLUG')
-        print('vlab_slug: ' + vlab_slug)
         if not vlab_slug:
             logger.error('VL name is not set!')
             self.set_status(400)
@@ -118,7 +117,6 @@ class ExecuteWorkflowHandler(APIHandler):
             global_params.extend(cell['params'])
 
         registry_credentials = Catalog.get_registry_credentials()
-        print('l22')
         if not registry_credentials:
             self.set_status(400)
             self.write('Registry credentials are not set!')
@@ -133,15 +131,16 @@ class ExecuteWorkflowHandler(APIHandler):
             loader=loader, trim_blocks=True, lstrip_blocks=True)
         template = template_env.get_template('workflow_template_v2.jinja2')
 
-        print('l137')
-
+        if 'JUPYTERHUB_USER' in os.environ:
+            workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER']
         template = template.render(
             vlab_slug=vlab_slug,
             deps_dag=deps_dag,
             cells=cells,
             nodes=nodes,
             global_params=params,
-            image_repo=image_repo
+            image_repo=image_repo,
+            workflow_name=workflow_name
         )
         workflow_doc = yaml.safe_load(template)
 
@@ -151,7 +150,6 @@ class ExecuteWorkflowHandler(APIHandler):
                 "workflow": workflow_doc
             }
         }
-        print(json.dumps(req_body))
         resp = requests.post(
             f"{api_endpoint}/api/workflows/submit/",
             data=json.dumps(req_body),
@@ -161,5 +159,12 @@ class ExecuteWorkflowHandler(APIHandler):
             }
         )
 
+        if resp.status_code != 200:
+            logger.error('Workflow submission failed: '+str(resp.content))
+            self.set_status(resp.status_code)
+            self.write('Workflow submission failed: '+str(resp.content))
+            self.write_error('Workflow submission failed: '+str(resp.content))
+            self.flush()
+            return
         self.write(resp.json())
         self.flush()

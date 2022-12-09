@@ -5,6 +5,7 @@ from unittest import TestCase
 import nbformat as nb
 import logging
 
+from jupyterlab_vre.component_containerizer.handlers import build_templates
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.extractor import Extractor
@@ -19,26 +20,31 @@ elif os.path.exists('jupyterlab_vre/tests/resources/'):
 print(base_path)
 class TestExtractor(TestCase):
 
-    def test_all_infer_cell_inputs(self):
-        self.infer_cell_inputs(os.path.join(base_path, 'notebooks/MULTIPLY_framework_cells.json'))
-        self.infer_cell_inputs(os.path.join(base_path, 'notebooks/laserfarm_cells.json'))
-        self.infer_cell_inputs(os.path.join(base_path, 'notebooks/vol2bird_cells.json'))
+    def test_extract_cell(self):
+        cell = self.extratct_cell(os.path.join(base_path, 'notebooks/MULTIPLY_framework_cells.json'))
+        cell = self.extratct_cell(os.path.join(base_path, 'notebooks/laserfarm_cells.json'))
+        cell = self.extratct_cell(os.path.join(base_path, 'notebooks/vol2bird_cells.json'))
+        try:
+            cell = self.extratct_cell(os.path.join(base_path, 'notebooks/MULTIPLY_framework_2.json'))
+        except SyntaxError as e:
+            logger.warning(str(e))
+        cell = json.loads(self.extratct_cell(os.path.join(base_path, 'notebooks/laserfarm.json')))
+        for conf_name in (cell['confs']):
+            self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1], 'conf_ values should not contain conf_ prefix in '
+                                                                  'assignment')
 
-    def infer_cell_inputs(self, payload_path):
+    def extratct_cell(self, payload_path):
         with open(payload_path, 'r') as file:
             payload = json.load(file)
 
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-        try:
-            extractor = Extractor(notebook)
-        except SyntaxError as e:
-            logger.error('Syntax Error: ' + str(e))
+        extractor = Extractor(notebook)
 
         source = notebook.cells[cell_index].source
         title = source.partition('\n')[0]
         title = title.replace('#', '').replace(
-            '_', '-').replace('(', '-').replace(')', '-').strip() if title[0] == "#" else "Untitled"
+            '_', '-').replace('(', '-').replace(')', '-').strip() if title and title[0] == "#" else "Untitled"
 
         if 'JUPYTERHUB_USER' in os.environ:
             title += '-' + os.environ['JUPYTERHUB_USER']
@@ -49,6 +55,7 @@ class TestExtractor(TestCase):
         params = []
         confs = []
         dependencies = []
+
         # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(source)'
         if notebook.cells[cell_index].cell_type == 'code':
             ins = set(extractor.infere_cell_inputs(source))
@@ -95,3 +102,6 @@ class TestExtractor(TestCase):
             'selected': {},
             'hovered': {},
         }
+
+        cell.chart_obj = chart
+        return cell.toJSON()

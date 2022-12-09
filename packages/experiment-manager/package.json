@@ -1,15 +1,15 @@
 {
-    "name": "@jupyter_vre/faicells-composer",
+    "name": "@jupyter_vre/experiment-manager",
     "version": "1.0.0",
-    "description": "FAIRCells VRE composer",
+    "description": "NaaVRE Experiment Manager",
     "keywords": [
         "jupyter",
         "jupyterlab",
         "jupyterlab-extension"
     ],
-    "homepage": "https://github.com/r-whites/jupyterlab_vre",
+    "homepage": "https://github.com/QCDIS/NaaVRE",
     "bugs": {
-        "url": "https://github.com/r-whites/FAIRCells-VRE/issues"
+        "url": "https://github.com/QCDIS/NaaVRE/issues"
     },
     "license": "BSD-3-Clause",
     "author": "Riccardo Bianchi",
