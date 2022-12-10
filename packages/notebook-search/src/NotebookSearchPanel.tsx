@@ -2,14 +2,13 @@ import * as React from 'react';
 import { requestAPI } from '@jupyter_vre/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { theme } from './Theme';
-import { Divider, TextField } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import Button from '@mui/material/Button';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import NotebookScrollDialog from "./NotebookScrollDialog"
-// import SeachTabs from "./SeachTab"
 import NotebookSendRating from "./NotebookSendRating"
 
 interface NotebookSearchPanelProps {
@@ -111,73 +110,66 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
 
     render(): React.ReactElement {
         return (
-            <ThemeProvider theme={theme}>
-                <div className={'lifewatch-widget'}>
-                    <div className={'lifewatch-widget-content'}>
-                        <div>
-                            <p className={'lw-panel-header'}>
-                                Notebook Search
+        <ThemeProvider theme={theme}>
+          <div className={'lifewatch-widget'}>
+            <div className={'lifewatch-widget-content'}>
+              <p className={'lw-panel-header'}>
+                Notebook Search
+              </p>
+              <div className={'nb-search-field'}>
+                <TextField
+                  id="standard-basic"
+                  label="Keyword"
+                  variant="standard"
+                  value={this.state.keyword}
+                  onChange={this.onChangeKeyword} />
+                <p>
+                  <Button
+                    variant="contained"
+                    onClick={
+                        this.onSearchClick
+                      }>
+                    Search
+                  </Button>
+                </p>
+                {this.state.items.map((element, index) => (
+                    <Accordion >
+                        <AccordionSummary>
+                            <Typography variant="subtitle1">{element['name']}</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Typography variant="body1" >
+                            <p className={'nb-download-link'}>
+                                <a href={element['html_url']} target="_blank">{element['html_url']}</a>
                             </p>
-                        </div>
-                        <Divider />
-                        <div className={'nb-search-field'}>
-                            <TextField
-                                id="standard-basic"
-                                label="Keyword"
-                                variant="standard"
-                                value={this.state.keyword}
-                                onChange={this.onChangeKeyword} />
-                                <Button
-                                    variant="contained"
-                                    onClick={
-                                        this.onSearchClick
-                                      }>
-                                    Search
-                                </Button>
-                        </div>
-                        <Divider />
-                    </div>
-                    <div>
-                        <div className="accordion">
-                            {this.state.items.map((element, index) => (
-                            <Accordion >
-                                <AccordionSummary>
-                                    <Typography variant="subtitle1">{element['name']}</Typography>
-                                </AccordionSummary>
-                                 <AccordionDetails>
-                                    <Typography variant="body1" >
-                                    <div className={'nb-download-link'}>
-                                        <a href={element['html_url']} target="_blank">{element['html_url']}</a>
-                                    </div>
-                                    <div className={'nb-download-text'}>
-                                    <p>
-                                        <b>Notebook source:</b>  {element['source']}
-                                        </p>
-                                        <p>
-                                        <b>Number of cells:</b> {element['num_cells']}
-                                        </p>
-                                        <p>
-                                        <b>Langunage:</b>  {element['language']}
-                                        </p>
-                                    </div>
-                                    </Typography>
-                                    <NotebookScrollDialog
-                                        data = {element}
-                                        query= {this.state.keyword}/>
-                                    <div className={'nb-download-text'}>
-                                    <p>
-                                    <NotebookSendRating
-                                        data = {element}
-                                        query= {this.state.keyword}/>
-                                    </p>
-                                    </div>
-                                </AccordionDetails>
-                            </Accordion>
-                            ))}
-                        </div>
-                        </div>
-                </div>
-            </ThemeProvider>
-        )
+                            
+                            <p>
+                                <b>Notebook source:</b>  {element['source']}
+                            </p>
+                            <p>
+                                <b>Number of cells:</b> {element['num_cells']}
+                            </p>
+                            <p>
+                                <b>Langunage:</b>  {element['language']}
+                            </p>
+                            </Typography>
+                            <p>
+                            <NotebookScrollDialog
+                                data = {element}
+                                query= {this.state.keyword}/>
+                            </p>                                  
+                            <p>
+                            <NotebookSendRating
+                                data = {element}
+                                query= {this.state.keyword}/>
+                            </p>                                          
+                        </AccordionDetails>
+                    </Accordion>
+                ))}
+              </div>
+            </div>
+          </div>
+        </ThemeProvider>
+    )
     }
 }
