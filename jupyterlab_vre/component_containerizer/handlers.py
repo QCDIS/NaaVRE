@@ -205,6 +205,7 @@ class CellsHandler(APIHandler, Catalog):
 
         files_info = get_files_info(cell=current_cell, image_repo=image_repo)
 
+        print(current_cell)
         build_templates(cell=current_cell, files_info=files_info)
 
         repository = Catalog.get_repositories()
@@ -237,8 +238,6 @@ class CellsHandler(APIHandler, Catalog):
                 update_cell_in_repository(current_cell, repository, files_info)
             except UnknownObjectException as ex:
                 create_cell_in_repository(current_cell, repository, files_info)
-
-
         elif commit.totalCount <= 0:
             create_cell_in_repository(current_cell, repository, files_info)
 

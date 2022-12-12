@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { requestAPI, FairCell, CellPreview } from '@jupyter_vre/core';
+import { requestAPI, VRECell, CellPreview } from '@jupyter_vre/core';
 import { INotebookModel, Notebook, NotebookPanel } from '@jupyterlab/notebook';
 import { ReactWidget, Dialog, showDialog } from '@jupyterlab/apputils';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
@@ -23,7 +23,7 @@ interface IState {
     loading: boolean
     baseImageSelected: boolean
     currentCellIndex: number
-    currentCell: FairCell
+    currentCell: VRECell
     typeSelections: { [type: string]: boolean }
 }
 

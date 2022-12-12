@@ -1,15 +1,15 @@
 {
     "name": "@jupyter_vre/notebook-search-toolbar",
     "version": "1.0.0",
-    "description": "FAIRCells VRE Notebook Search",
+    "description": "NaaVRE VRE Notebook Search",
     "keywords": [
         "jupyter",
         "jupyterlab",
         "jupyterlab-extension"
     ],
-    "homepage": "https://github.com/r-whites/jupyterlab_vre",
+    "homepage": "https://github.com/QCDIS/NaaVRE",
     "bugs": {
-        "url": "https://github.com/r-whites/FAIRCells-VRE/issues"
+        "url": "https://github.com/QCDIS/NaaVRE/issues"
     },
     "license": "BSD-3-Clause",
     "author": "Riccardo Bianchi",
@@ -32,11 +32,6 @@
         "watch": "tsc -w"
     },
     "dependencies": {
-        "@jupyterlab/application": "^3.0.3",
-        "@jupyterlab/coreutils": "^5.0.1",
-        "@jupyterlab/launcher": "^3.0.2",
-        "@jupyterlab/mainmenu": "^3.0.9",
-        "@jupyterlab/notebook": "^3.0.3",
         "@material-ui/core": "^4.11.2",
         "@material-ui/icons": "^4.11.2",
         "@mrblenny/react-flow-chart": "^0.0.14",

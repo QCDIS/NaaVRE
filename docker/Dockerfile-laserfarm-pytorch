@@ -8,7 +8,7 @@ USER root
 COPY --from=builder /usr/local/bin/rclone /usr/local/bin/
 
 #===== Add pdalpy dependencies ======
-RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++ git
 #====================================
 RUN apt autoclean -y && apt autoremove -y
 
@@ -25,7 +25,7 @@ RUN wget https://downloads.rclone.org/rclone-current-linux-amd64.deb && \
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
-COPY ./notebooks/ /tmp/notebooks
+COPY ./repo_utils/ /tmp/repo_utils
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 
@@ -43,10 +43,10 @@ RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
     conda upgrade --yes numpy && \
     conda update --yes -n base conda && \
     pip install dask distributed lazperf==1.4.4 && \
-    pip install laserfarm laspy opencv-python-headless torch torchvision flwr sklearn tensorflow
+    pip install laserfarm laspy opencv-python-headless torch torchvision flwr scikit-learn tensorflow
 #====================================
 
-RUN pip install jupyterlab-github jupyter-videochat matplotlib folium cartopy icoscp pangaeapy nbgitpuller && \
+RUN pip install jupyterlab-github jupyter-videochat matplotlib folium cartopy icoscp pangaeapy nbgitpuller jupyterlab-lsp python-lsp-server[all] pre-commit ggshield && \
     jupyter serverextension enable --py jupyter_videochat --user && \
     jupyter serverextension enable --py jupyterlab_github --user
 

@@ -20,7 +20,7 @@ dependencies:
     - torch
     - torchvision
     - flwr
-    - sklearn
+    - scikit-learn
     - tensorflow
     - matplotlib
     - folium
