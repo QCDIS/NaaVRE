@@ -1,5 +1,5 @@
 
-
+source /venv/bin/activate
 
 export NB_IP=${NB_IP:-0.0.0.0}
 export NB_PORT=${NB_PORT:-8888}
