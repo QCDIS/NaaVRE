@@ -116,10 +116,12 @@ class NotebookSearchRatingHandler(APIHandler):
         }
         try:
             api_config = {'verify': False, 'headers': {'Authorization': 'Token ' + str(search_api_token)}}
-            response = requests.post(search_api_endpoint, json=data,
-                                     **api_config,
-                                     timeout=4)
+            response = requests.post(search_api_endpoint+'relevancy_feedback/', json=data, **api_config)
+            if response.status_code != 201:
+                raise Exception('Failed code: ' + str(response.status_code))
             feedback = response.json()
+            print(f"Client: {feedback['client_id']}")
+            print(f"Stars: {feedback['num_stars']}")
         except Exception as ex:
             logger.error('Failed to send rating to: ' + search_api_endpoint + ' ' + str(ex))
             self.set_status(500)
