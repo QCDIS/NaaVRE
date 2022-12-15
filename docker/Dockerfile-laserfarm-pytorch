@@ -1,7 +1,10 @@
-FROM qcdis/miniconda3-pdal AS build
+FROM continuumio/miniconda3 AS build
+RUN conda install -c conda-forge conda-pack
 COPY laserfarm-environment.yaml .
+RUN conda update -n base -c conda-forge conda
 ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 RUN conda env update -f laserfarm-environment.yaml
+RUN conda clean -a -y
 
 RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
@@ -28,6 +31,8 @@ RUN chown $NB_USER -R /venv/
 
 USER $NB_USER
 RUN jupyter serverextension enable --py jupyterlab_vre --user
+RUN jupyter serverextension enable --py jupyter_videochat --user
+RUN jupyter serverextension enable --py jupyterlab_github --user
 
 RUN jupyter lab build --debug;
 RUN conda clean -a -y

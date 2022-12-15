@@ -1,0 +1,31 @@
+name: venv
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pip
+  - pip:
+    - pyflakes>=2.4.0
+    - colorhash>=1.0.4
+    - requests>=2.26.0
+    - tinydb>=4.6.1
+    - PyGithub>=1.55
+    - tornado>=6.1
+    - notebook>=6.4.8
+    - PyYAML>=6.0
+    - nbformat>=5.7.0
+    - autopep8>=1.6.0
+    - Jinja2>=3.0.3
+    - distro>=1.7.0
+    - jupyterlab-github>=3.0.1
+    - jupyter-videochat>=0.6.0
+    - ggshield>=1.14.1
+    - matplotlib>=3.6.2
+    - folium>=0.14.0
+    - cartopy>=0.21.1
+    - icoscp>=0.1.17
+    - nbgitpuller>=1.1.1
+    - jupyterlab-lsp>=3.10.2
+    - python-lsp-server[all]>=1.6.0
+    - pre-commit>=2.20.0
+    - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
