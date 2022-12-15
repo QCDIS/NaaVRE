@@ -4,40 +4,14 @@ channels:
   - defaults
   - mathieu
 dependencies:
-  - jupyterlab>=3.5.0
-  - nodejs>=15.14.0
-  - yarn>=1.22.19
-  - python>=3.8
-  - tinydb
-  - pygithub
-  - tornado
-  - notebook
-  - pyyaml
-  - nbformat
-  - autopep8
-  - Jinja2
-  - distro
-  - requests
-  - colorhash
-  - pyflakes
-  - jupyter-videochat
-  - jupyterlab-github
-  - nbgitpuller
-  - jupyterlab-lsp
-  - pre-commit
-  - python-lsp-server[all]
-
 #  - pdal
 #  - python-pdal
 #  - gdal
-#  - pip
 #  - lazperf
 #  - laspy
 #  - laszip
 #  - lazrs-python
 
-
   - pip
   - pip:
-    - ggshield
     - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl

@@ -1,4 +1,5 @@
-FROM continuumio/miniconda3 AS build
+FROM qcdis/miniconda3-naavre AS naavre-build
+
 RUN conda install -c conda-forge conda-pack
 COPY laserfarm-environment.yaml .
 RUN conda update -n base -c conda-forge conda
@@ -16,7 +17,7 @@ RUN /venv/bin/conda-unpack
 FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e AS runtime
 USER root
 
-COPY --from=build /venv /venv
+COPY --from=naavre-build /venv /venv
 ENV PATH=/venv/bin:$PATH
 ENV PATH=/home/jovyan/.local/bin:$PATH
 RUN source /venv/bin/activate
