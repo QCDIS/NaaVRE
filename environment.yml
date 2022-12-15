@@ -1,4 +1,4 @@
-name: jupyterlab
+name: rclone-data-mounter
 channels:
   - conda-forge
   - defaults
