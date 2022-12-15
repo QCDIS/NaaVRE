@@ -23,6 +23,9 @@ dependencies:
   - jupyter-videochat
   - jupyterlab-github
   - nbgitpuller
+  - jupyterlab-lsp
+  - pre-commit
+  - python-lsp-server[all]
 
 #  - pdal
 #  - python-pdal
@@ -34,12 +37,7 @@ dependencies:
 #  - lazrs-python
 
 
-
-#  - jupyterlab-lsp
-#  - python-lsp-server[all]
-#  - pre-commit
-#  - ggshield
-
   - pip
   - pip:
+    - ggshield
     - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
