@@ -53,7 +53,7 @@ class NotebookSearchHandler(APIHandler):
         }
         try:
             results = []
-            for i in range(1,10):
+            for i in range(1,4):
                 params = {
                     'page': str(i),
                     'query': term,
@@ -66,7 +66,6 @@ class NotebookSearchHandler(APIHandler):
                                          timeout=10)
                 if 'results' in response.json():
                     results += response.json()['results']
-                    time.sleep(0.01)
                 else:
                     break
         except Exception as ex:
