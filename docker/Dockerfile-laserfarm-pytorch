@@ -8,7 +8,7 @@ RUN conda-pack -n venv -o /tmp/env.tar && \
 RUN /venv/bin/conda-unpack
 
 
-FROM qcdis/miniconda3-pdal AS naavre-build-pdal
+FROM qcdis/miniconda3-pdal:v0.3 AS naavre-build-pdal
 
 RUN conda install -c conda-forge conda-pack
 
@@ -24,6 +24,7 @@ ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-
 RUN conda env update -f laserfarm-environment.yaml
 
 RUN conda install -c conda-forge conda-pack
+RUN conda list
 RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv-naavre-pdal && cd /venv-naavre-pdal && tar xf /tmp/env.tar && \
     rm /tmp/env.tar

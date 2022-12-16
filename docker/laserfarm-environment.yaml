@@ -4,14 +4,6 @@ channels:
   - defaults
   - mathieu
 dependencies:
-#  - pdal
-#  - python-pdal
-#  - gdal
-#  - lazperf
-#  - laspy
-#  - laszip
-#  - lazrs-python
-
   - pip
   - pip:
     - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
