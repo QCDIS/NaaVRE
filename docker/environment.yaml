@@ -1,0 +1,8 @@
+name: venv
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pip
+  - pip:
+    - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl

@@ -1,6 +1,7 @@
-FROM qcdis/miniconda3-naavre AS naavre-build
+FROM qcdis/miniconda3-naavre:v0.4 AS naavre-build
 
 RUN conda install -c conda-forge conda-pack
+
 RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
     rm /tmp/env.tar
@@ -8,15 +9,14 @@ RUN conda-pack -n venv -o /tmp/env.tar && \
 RUN /venv/bin/conda-unpack
 
 
-FROM qcdis/miniconda3-pdal:v0.3 AS naavre-pdal-build
+FROM 5b68c9da4189 AS naavre-pdal-build
 
 RUN conda install -c conda-forge conda-pack
 
-COPY --from=naavre-build /venv /venv-naavre
-ENV PATH=/venv-naavre/bin:$PATH
-ENV PATH=/home/jovyan/.local/bin:$PATH
-RUN ["/bin/bash", "-c", "source /venv-naavre/bin/activate"]
-RUN echo "source /venv-naavre/bin/activate" >> ~/.bashrc
+COPY --from=naavre-build /venv /venv
+ENV PATH=/venv/bin:$PATH
+RUN ["/bin/bash", "-c", "source /venv/bin/activate"]
+RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
 COPY laserfarm-environment.yaml .
@@ -26,16 +26,18 @@ RUN conda env update -f laserfarm-environment.yaml
 RUN conda install -c conda-forge conda-pack
 RUN conda list
 RUN conda-pack -n venv -o /tmp/env.tar && \
-    mkdir /venv-naavre-pdal && cd /venv-naavre-pdal && tar xf /tmp/env.tar && \
+    cd /venv && tar xf /tmp/env.tar && \
     rm /tmp/env.tar
 
-RUN /venv-naavre-pdal/bin/conda-unpack
+RUN /venv/bin/conda-unpack
 
 
 FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e AS runtime
 USER root
 
-COPY --from=naavre-pdal-build /venv-naavre-pdal /venv
+COPY --from=naavre-pdal-build /venv /venv
+RUN ls -lah /venv
+
 ENV PATH=/venv/bin:$PATH
 ENV PATH=/home/jovyan/.local/bin:$PATH
 RUN source /venv/bin/activate
@@ -45,14 +47,17 @@ SHELL ["/bin/bash", "--login", "-c"]
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 COPY ./repo_utils/ /tmp/repo_utils
 
+COPY .condarc /tmp/.condarc
+
+
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 RUN chown $NB_USER -R /venv/
 
 USER $NB_USER
 RUN jupyter serverextension enable --py jupyterlab_vre --user
-RUN jupyter serverextension enable --py jupyter_videochat --user
+#RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
 
 RUN jupyter lab build --debug;
-RUN conda clean -a -y
+
 CMD ["/usr/local/bin/start-jupyter.sh"]
