@@ -49,15 +49,17 @@ class NotebookSearchHandler(APIHandler):
             "filter": "",
             "facet": "",
         }
+        event = "notebook_search"
+        data = {
+            "client_id": 'NaaVRE',
+            "timestamp": str(time.time()),
+            "event": event,
+            "query": term,
+        }
         try:
-            response = requests.get(search_api_endpoint + 'notebook_search', params=params,
-                                    verify=False,
-                                    headers={
-                                        "Accept": "*/*",
-                                        # "Content-Type": "text/json",
-                                        "Authorization": "Token " + str(search_api_token)
-                                    },
-                                    timeout=4)
+            api_config = {'verify': False, 'headers': {'Authorization': 'Token ' + str(search_api_token)}}
+            response = requests.post(search_api_endpoint + 'notebook_search', params=params, json=data, **api_config,
+                                     timeout=5)
             hits = response.json()
         except Exception as ex:
             logger.error('Failed to get results from: ' + search_api_endpoint + ' ' + str(ex))
