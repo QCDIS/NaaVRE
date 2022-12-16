@@ -43,24 +43,32 @@ class NotebookSearchHandler(APIHandler):
             self.write_error('Environment variable: SEARCH_API_TOKEN not set')
             self.flush()
             return
-        params = {
-            "page": "1",
-            "query": term,
-            "filter": "",
-            "facet": "",
-        }
-        event = "notebook_search"
+
+        event = 'notebook_search'
         data = {
-            "client_id": 'NaaVRE',
-            "timestamp": str(time.time()),
-            "event": event,
-            "query": term,
+            'client_id': 'NaaVRE',
+            'timestamp': str(time.time()),
+            'event': event,
+            'query': term,
         }
         try:
-            api_config = {'verify': False, 'headers': {'Authorization': 'Token ' + str(search_api_token)}}
-            response = requests.post(search_api_endpoint + 'notebook_search', params=params, json=data, **api_config,
-                                     timeout=5)
-            hits = response.json()
+            results = []
+            for i in range(1,10):
+                params = {
+                    'page': str(i),
+                    'query': term,
+                    'filter': '',
+                    'facet': '',
+                }
+
+                api_config = {'verify': False, 'headers': {'Authorization': 'Token ' + str(search_api_token)}}
+                response = requests.post(search_api_endpoint + 'notebook_search', params=params, json=data, **api_config,
+                                         timeout=10)
+                if 'results' in response.json():
+                    results += response.json()['results']
+                    time.sleep(0.01)
+                else:
+                    break
         except Exception as ex:
             logger.error('Failed to get results from: ' + search_api_endpoint + ' ' + str(ex))
             self.set_status(500)
@@ -68,10 +76,6 @@ class NotebookSearchHandler(APIHandler):
             self.write_error('Failed to get results from: ' + search_api_endpoint + ' ' + str(ex))
             self.flush()
             return
-        if not hits or 'results' not in hits:
-            results = ['No results found']
-        else:
-            results = hits['results']
         for res in results:
             res['rating'] = 1
         search_entry = {'query': term, 'results': results, 'timestamp': time.time()}
@@ -104,17 +108,17 @@ class NotebookSearchRatingHandler(APIHandler):
             self.write_error('Environment variable: SEARCH_API_TOKEN not set')
             self.flush()
             return
-        event = "relevancy_feedback"
+        event = 'relevancy_feedback'
         annotated_notebook = {}
         for attr in ['docid', 'name', 'source', 'html_url', 'description']:
             annotated_notebook[attr] = notebook[attr]
         data = {
-            "client_id": 'NaaVRE',
-            "timestamp": str(time.time()),
-            "event": event,
-            "query": term,
-            "num_stars": str(notebook['rating']),
-            "annotated_notebook": annotated_notebook,
+            'client_id': 'NaaVRE',
+            'timestamp': str(time.time()),
+            'event': event,
+            'query': term,
+            'num_stars': str(notebook['rating']),
+            'annotated_notebook': annotated_notebook,
         }
         try:
             api_config = {'verify': False, 'headers': {'Authorization': 'Token ' + str(search_api_token)}}
@@ -122,8 +126,7 @@ class NotebookSearchRatingHandler(APIHandler):
             if response.status_code != 201:
                 raise Exception('Failed code: ' + str(response.status_code))
             feedback = response.json()
-            print(f"Client: {feedback['client_id']}")
-            print(f"Stars: {feedback['num_stars']}")
+            logger.debug('feedback: '+str(feedback))
         except Exception as ex:
             logger.error('Failed to send rating to: ' + search_api_endpoint + ' ' + str(ex))
             self.set_status(500)
@@ -145,15 +148,15 @@ def get_notebook_source_content(doc_id=None):
         logger.error('Environment variable: SEARCH_API_TOKEN not set')
         raise Exception('Environment variable: SEARCH_API_TOKEN not set')
     params = {
-        "docid": doc_id,
+        'docid': doc_id,
     }
     try:
         response = requests.get(search_api_endpoint + 'notebook_download', params=params,
                                 verify=False,
                                 headers={
-                                    "Accept": "*/*",
-                                    # "Content-Type": "text/json",
-                                    "Authorization": "Token " + str(search_api_token)
+                                    'Accept': '*/*',
+                                    # 'Content-Type': 'text/json',
+                                    'Authorization': 'Token ' + str(search_api_token)
                                 },
                                 timeout=4)
         results = response.json()
@@ -218,6 +221,6 @@ class NotebookSeachHistoryHandler(APIHandler):
     async def get(self, *args, **kwargs):
         payload = self.get_json_body()
         print(json.dumps(payload))
-        msg_json = dict(title="Operation not supported.")
+        msg_json = dict(title='Operation not supported.')
         self.write(msg_json)
         await self.flush()
