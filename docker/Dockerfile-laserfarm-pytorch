@@ -5,7 +5,7 @@ RUN cat environment.yml
 
 
 
-FROM qcdis/miniconda3-naavre:v0.4 AS naavre-pdal-build
+FROM qcdis/miniconda3-pdal:v0.4 AS naavre-pdal-build
 
 RUN conda install -c conda-forge conda-pack
 COPY --from=naavre-build environment.yml environment.yml
@@ -33,6 +33,9 @@ ENV PATH=/home/jovyan/.local/bin:$PATH
 RUN source /venv/bin/activate
 RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
+
+RUN python -c "from laserfarm import Retiler, DataProcessing, GeotiffWriter, MacroPipeline"
+
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 COPY ./repo_utils/ /tmp/repo_utils
