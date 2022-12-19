@@ -1,22 +1,31 @@
 FROM qcdis/miniconda3-naavre:v0.4 AS naavre-build
 
-RUN conda install -c conda-forge conda-pack
-COPY ./environment.yaml environment.yaml
-ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
-RUN conda env update -f environment.yaml
-RUN conda install -c conda-forge conda-pack
+RUN conda env export --name venv > naavre-build-environment.yml
+RUN cat naavre-build-environment.yml
 
+
+
+FROM qcdis/miniconda3-pdal:v0.4 AS naavre-pdal-build
+
+RUN conda install -c conda-forge conda-pack
+COPY --from=naavre-build naavre-build-environment.yml naavre-build-environment.yml
+COPY laserfarm-environment.yaml .
+ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
+RUN conda install -c conda-forge conda-merge conda-pack
+RUN conda-merge naavre-build-environment.yml laserfarm-environment.yaml > merged-environment.yaml
+RUN cat merged-environment.yaml
+
+RUN conda env update -f merged-environment.yaml
+RUN conda list
 RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
     rm /tmp/env.tar
-
 RUN /venv/bin/conda-unpack
-
 
 FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e AS runtime
 USER root
 
-COPY --from=naavre-build /venv /venv
+COPY --from=naavre-pdal-build /venv /venv
 RUN ls -lah /venv
 
 ENV PATH=/venv/bin:$PATH
@@ -27,6 +36,7 @@ SHELL ["/bin/bash", "--login", "-c"]
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 COPY ./repo_utils/ /tmp/repo_utils
+
 COPY .condarc /tmp/.condarc
 
 
