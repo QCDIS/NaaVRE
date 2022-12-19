@@ -5,7 +5,7 @@ RUN cat naavre-build-environment.yml
 
 
 
-FROM 672bb46e7e84 AS naavre-multiply-build
+FROM miniconda3-multiply AS naavre-multiply-build
 
 RUN conda install -c conda-forge conda-pack
 COPY --from=naavre-build naavre-build-environment.yml naavre-build-environment.yml
