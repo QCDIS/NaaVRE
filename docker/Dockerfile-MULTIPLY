@@ -1,4 +1,4 @@
-FROM qcdis/miniconda3-naavre:v0.4 AS naavre-build
+FROM qcdis/miniconda3-naavre:v0.6 AS naavre-build
 
 RUN conda env export --name venv > naavre-build-environment.yml
 RUN cat naavre-build-environment.yml
