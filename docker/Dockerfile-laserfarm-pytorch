@@ -26,8 +26,8 @@ RUN python -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.1
 RUN conda install --yes -c conda-forge pdal python-pdal gdal rclone && \
     conda upgrade --yes numpy && \
     conda update --yes -n base conda && \
-    pip install dask distributed lazperf==1.4.4 && \
-    pip install laserfarm laspy opencv-python-headless torch torchvision flwr scikit-learn tensorflow
+    pip install dask distributed lazperf==1.4.4
+#    pip install laserfarm laspy opencv-python-headless torch torchvision flwr scikit-learn tensorflow
 #====================================
 
 RUN pip install jupyterlab-github jupyter-videochat matplotlib folium cartopy icoscp pangaeapy nbgitpuller jupyterlab-lsp python-lsp-server[all] pre-commit ggshield && \
