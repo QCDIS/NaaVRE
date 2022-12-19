@@ -23,7 +23,7 @@ RUN python -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.1
 
 
 #===== Add pdalpy dependencies ======
-RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
+RUN conda install --yes -c conda-forge pdal python-pdal gdal rclone && \
     conda upgrade --yes numpy && \
     conda update --yes -n base conda && \
     pip install dask distributed lazperf==1.4.4 && \
