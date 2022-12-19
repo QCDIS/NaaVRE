@@ -5,6 +5,8 @@ channels:
   - mathieu
 dependencies:
   - pip
+  - ipywidgets
+  - widgetsnbextension
   - pip:
     - laserfarm # TODO enable https://z2jh.jupyter.org/en/stable/jupyterhub/customizing/user-environment.html?highlight=conda#allow-users-to-create-their-own-conda-environments-for-notebooks
     - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
