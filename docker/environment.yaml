@@ -4,5 +4,6 @@ channels:
   - defaults
 dependencies:
   - pip
+  - rclone
   - pip:
     - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
