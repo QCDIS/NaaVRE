@@ -22,13 +22,8 @@ install-backend: build-backend
 	jupyter serverextension enable --py jupyterlab_vre --user
 
 build-frontend: jlpm-install
-	npx lerna run build --scope @jupyter_vre/chart-customs
 	npx lerna run build --scope @jupyter_vre/core
-	npx lerna run build --scope @jupyter_vre/notebook-containerizer
 	npx lerna run build --scope @jupyter_vre/data-mounter
-	npx lerna run build --scope @jupyter_vre/components
-	npx lerna run build --scope @jupyter_vre/vre-panel
-	npx lerna run build --scope @jupyter_vre/vre-menu
 
 
 jlpm-install:
@@ -38,42 +33,22 @@ jlpm-install:
 install-ui:
 	$(call INSTALL_LAB_EXTENSION,data-mounter)
 	$(call INSTALL_LAB_EXTENSION,core)
-	$(call INSTALL_LAB_EXTENSION,chart-customs)
-	$(call INSTALL_LAB_EXTENSION,components)
-	$(call INSTALL_LAB_EXTENSION,vre-panel)
-	$(call INSTALL_LAB_EXTENSION,vre-menu)
 
 uninstall-ui:
 	$(call UNINSTALL_LAB_EXTENSION,data-mounter)
 	$(call UNINSTALL_LAB_EXTENSION,core)
-	$(call UNINSTALL_LAB_EXTENSION,chart-customs)
-	$(call UNINSTALL_LAB_EXTENSION,components)
-	$(call UNINSTALL_LAB_EXTENSION,vre-panel)
-	$(call UNINSTALL_LAB_EXTENSION,vre-menu)
 
 link-ui:
 	$(call LINK_LAB_EXTENSION,data-mounter)
 	$(call LINK_LAB_EXTENSION,core)
-	$(call LINK_LAB_EXTENSION,chart-customs)
-	$(call LINK_LAB_EXTENSION,components)
-	$(call LINK_LAB_EXTENSION,vre-panel)
-	$(call LINK_LAB_EXTENSION,vre-menu)
 
 unlink-ui:
 	$(call UNLINK_LAB_EXTENSION,data-mounter)
 	$(call UNLINK_LAB_EXTENSION,core)
-	$(call UNLINK_LAB_EXTENSION,chart-customs)
-	$(call UNLINK_LAB_EXTENSION,components)
-	$(call UNLINK_LAB_EXTENSION,vre-panel)
-	$(call UNLINK_LAB_EXTENSION,vre-menu)
 
 dist-ui: build-frontend
 	mkdir -p dist
-	$(call PACKAGE_LAB_EXTENSION,core)
-	$(call PACKAGE_LAB_EXTENSION,chart-customs)
-	$(call PACKAGE_LAB_EXTENSION,components)
-	$(call PACKAGE_LAB_EXTENSION,vre-panel)
-	$(call PACKAGE_LAB_EXTENSION,vre-menu)
+	$(call PACKAGE_LAB_EXTENSION,core)re
 	$(call PACKAGE_LAB_EXTENSION,data-mounter)
 
 release: dist-ui build-backend
