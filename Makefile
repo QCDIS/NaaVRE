@@ -48,7 +48,7 @@ unlink-ui:
 
 dist-ui: build-frontend
 	mkdir -p dist
-	$(call PACKAGE_LAB_EXTENSION,core)re
+	$(call PACKAGE_LAB_EXTENSION,core)
 	$(call PACKAGE_LAB_EXTENSION,data-mounter)
 
 release: dist-ui build-backend
