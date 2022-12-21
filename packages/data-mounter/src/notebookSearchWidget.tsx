@@ -8,7 +8,7 @@ export interface ILifeWatchVRE {
     widget: Widget;
 }
 
-const id = "lifewatch:notebook-search";
+const id = "lifewatch:data-mounter";
 
 export default {
     activate,
@@ -33,7 +33,7 @@ async function activate (
 
         widget.id = "lifewatch/notebook-search"
         widget.title.iconClass = "notebook-search-icon"
-        widget.title.caption = 'Notebook Search';
+        widget.title.caption = 'Data Mounter';
         restorer.add(widget, widget.id);
     });
 
