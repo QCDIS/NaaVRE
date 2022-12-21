@@ -27,7 +27,6 @@ build-frontend: jlpm-install
 	npx lerna run build --scope @jupyter_vre/notebook-containerizer
 	npx lerna run build --scope @jupyter_vre/data-mounter
 	npx lerna run build --scope @jupyter_vre/components
-	npx lerna run build --scope @jupyter_vre/experiment-manager
 	npx lerna run build --scope @jupyter_vre/vre-panel
 	npx lerna run build --scope @jupyter_vre/vre-menu
 
@@ -41,7 +40,6 @@ install-ui:
 	$(call INSTALL_LAB_EXTENSION,core)
 	$(call INSTALL_LAB_EXTENSION,chart-customs)
 	$(call INSTALL_LAB_EXTENSION,components)
-	$(call INSTALL_LAB_EXTENSION,experiment-manager)
 	$(call INSTALL_LAB_EXTENSION,vre-panel)
 	$(call INSTALL_LAB_EXTENSION,vre-menu)
 
@@ -50,7 +48,6 @@ uninstall-ui:
 	$(call UNINSTALL_LAB_EXTENSION,core)
 	$(call UNINSTALL_LAB_EXTENSION,chart-customs)
 	$(call UNINSTALL_LAB_EXTENSION,components)
-	$(call UNINSTALL_LAB_EXTENSION,experiment-manager)
 	$(call UNINSTALL_LAB_EXTENSION,vre-panel)
 	$(call UNINSTALL_LAB_EXTENSION,vre-menu)
 
@@ -59,7 +56,6 @@ link-ui:
 	$(call LINK_LAB_EXTENSION,core)
 	$(call LINK_LAB_EXTENSION,chart-customs)
 	$(call LINK_LAB_EXTENSION,components)
-	$(call LINK_LAB_EXTENSION,experiment-manager)
 	$(call LINK_LAB_EXTENSION,vre-panel)
 	$(call LINK_LAB_EXTENSION,vre-menu)
 
@@ -68,7 +64,6 @@ unlink-ui:
 	$(call UNLINK_LAB_EXTENSION,core)
 	$(call UNLINK_LAB_EXTENSION,chart-customs)
 	$(call UNLINK_LAB_EXTENSION,components)
-	$(call UNLINK_LAB_EXTENSION,experiment-manager)
 	$(call UNLINK_LAB_EXTENSION,vre-panel)
 	$(call UNLINK_LAB_EXTENSION,vre-menu)
 
@@ -77,7 +72,6 @@ dist-ui: build-frontend
 	$(call PACKAGE_LAB_EXTENSION,core)
 	$(call PACKAGE_LAB_EXTENSION,chart-customs)
 	$(call PACKAGE_LAB_EXTENSION,components)
-	$(call PACKAGE_LAB_EXTENSION,experiment-manager)
 	$(call PACKAGE_LAB_EXTENSION,vre-panel)
 	$(call PACKAGE_LAB_EXTENSION,vre-menu)
 	$(call PACKAGE_LAB_EXTENSION,data-mounter)

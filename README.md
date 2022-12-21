@@ -67,3 +67,17 @@ Build wheel file for release:
 make release
 ```
 
+## Remove componetnts
+
+First uninstall all the components:
+```
+make uninstall-ui && make unlink-ui
+```
+
+Then delete the relevatnt folders i.e. vre-menu
+
+Next make install the UI compontents 
+
+```
+make build-frontend && make install-ui
+```
