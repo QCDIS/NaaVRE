@@ -53,4 +53,4 @@ RUN jupyter nbextension enable --py widgetsnbextension
 
 RUN jupyter lab build --debug;
 
-CMD ["/usr/local/bin/start-jupyter.sh"]
+ENTRYPOINT ["/usr/local/bin/start-jupyter.sh"]
