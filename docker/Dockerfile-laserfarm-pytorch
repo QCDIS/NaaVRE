@@ -10,6 +10,7 @@ RUN apt autoclean -y && apt autoremove -y
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 COPY ./repo_utils/ /tmp/repo_utils
+COPY ..condarc /tmp/.condarc
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 
@@ -23,9 +24,11 @@ RUN python -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.1
 
 
 #===== Add pdalpy dependencies ======
-RUN conda install --yes -c conda-forge pdal python-pdal gdal rclone && \
+RUN conda install -n notebook_env nb_conda_kernels && \
+    conda install -n python_env ipykernel && \
     conda upgrade --yes numpy && \
     conda update --yes -n base conda && \
+    conda install --yes -c conda-forge pdal python-pdal gdal rclone && \
     pip install dask distributed lazperf==1.4.4 && \
     pip install laserfarm laspy opencv-python-headless torch torchvision flwr scikit-learn tensorflow
 #====================================
