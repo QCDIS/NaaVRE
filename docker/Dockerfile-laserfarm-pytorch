@@ -1,11 +1,11 @@
-FROM qcdis/miniconda3-naavre:v0.6 AS naavre-build
+FROM qcdis/miniconda3-naavre AS naavre-build
 
 RUN conda env export --name venv > naavre-build-environment.yml
 RUN cat naavre-build-environment.yml
 
 
 
-FROM qcdis/miniconda3-pdal:v0.4 AS naavre-pdal-build
+FROM qcdis/miniconda3-pdal AS naavre-pdal-build
 
 RUN conda install -c conda-forge conda-pack
 COPY --from=naavre-build naavre-build-environment.yml naavre-build-environment.yml
@@ -47,7 +47,7 @@ RUN chown $NB_USER -R /venv/
 
 USER $NB_USER
 RUN jupyter serverextension enable --py jupyterlab_vre --user
-#RUN jupyter serverextension enable --py jupyter_videochat --user
+RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
 RUN jupyter nbextension enable --py widgetsnbextension
 
