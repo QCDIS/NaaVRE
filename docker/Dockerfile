@@ -1,20 +1,10 @@
-FROM qcdis/miniconda3-naavre:v0.6 AS naavre-build
-
-RUN conda env export --name venv > naavre-build-environment.yml
-RUN cat naavre-build-environment.yml
-
-
-
-FROM qcdis/miniconda3-pdal:v0.4 AS naavre-pdal-build
+FROM qcdis/miniconda3-naavre AS naavre-build
 
 RUN conda install -c conda-forge conda-pack
-COPY --from=naavre-build naavre-build-environment.yml naavre-build-environment.yml
+COPY environment.yaml .
 ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
-RUN conda install -c conda-forge conda-merge conda-pack
-RUN conda-merge naavre-build-environment.yml laserfarm-environment.yaml > merged-environment.yaml
-RUN cat merged-environment.yaml
 
-RUN conda env update -f merged-environment.yaml
+RUN conda env update -f environment.yaml
 RUN conda list
 RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
@@ -26,8 +16,7 @@ USER root
 
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install fuse
 
-COPY --from=naavre-pdal-build /venv /venv
-RUN ls -lah /venv
+COPY --from=naavre-build /venv/ /venv/
 
 ENV PATH=/venv/bin:$PATH
 ENV PATH=/home/jovyan/.local/bin:$PATH
@@ -36,19 +25,20 @@ RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
+ADD start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
 COPY ./repo_utils/ /tmp/repo_utils
 
 COPY .condarc /tmp/.condarc
 
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
+RUN chmod ugo+x /usr/local/bin/start-jupyter-venv.sh
 RUN chown $NB_USER -R /venv/
 
 USER $NB_USER
 RUN jupyter serverextension enable --py jupyterlab_vre --user
-#RUN jupyter serverextension enable --py jupyter_videochat --user
+RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
 
 RUN jupyter lab build --debug;
-
-CMD ["/usr/local/bin/start-jupyter.sh"]
+cmd ["/usr/local/bin/start-jupyter-venv.sh"]
