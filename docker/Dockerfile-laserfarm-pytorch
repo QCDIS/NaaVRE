@@ -37,6 +37,7 @@ COPY --from=naavre-pdal-build merged-environment.yaml merged-environment.yaml
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
+ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 COPY ./repo_utils/ /tmp/repo_utils
 
 COPY .condarc /tmp/.condarc
