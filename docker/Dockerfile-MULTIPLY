@@ -16,7 +16,7 @@ USER root
 
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install fuse
 
-COPY --from=naavre-pdal-build /venv/ /venv/
+COPY --from=naavre-multiply-build /venv/ /venv/
 
 ENV PATH=/venv/bin:$PATH
 ENV PATH=/home/jovyan/.local/bin:$PATH
