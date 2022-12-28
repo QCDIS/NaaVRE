@@ -339,7 +339,7 @@ def build_templates(cell=None, files_info=None):
     module_name_mapping = load_module_names_mapping()
     set_conda_deps = set([])
     set_pip_deps = set([])
-    print('cell.dependencies: '+str(cell.dependencies))
+    logger.debug('cell.dependencies: '+str(cell.dependencies))
     for dep in cell.dependencies:
         if 'module' in dep and dep['module']:
             if '.' in dep['module']:
@@ -362,8 +362,6 @@ def build_templates(cell=None, files_info=None):
                     set_conda_deps.add(module_name)
                 if pip_package:
                     set_pip_deps.add(module_name)
-    print('set_conda_deps: ' + str(set_conda_deps))
-    print('set_pip_deps: ' + str(set_pip_deps))
     loader = PackageLoader('jupyterlab_vre', 'templates')
     template_env = Environment(
         loader=loader, trim_blocks=True, lstrip_blocks=True)
