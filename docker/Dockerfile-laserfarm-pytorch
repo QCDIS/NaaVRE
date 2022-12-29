@@ -3,9 +3,7 @@ FROM qcdis/miniconda3-naavre AS naavre-build
 RUN conda env export --name venv > naavre-build-environment.yml
 RUN cat naavre-build-environment.yml
 
-
-
-FROM qcdis/miniconda3-pdal AS naavre-pdal-build
+FROM qcdis/miniconda3-pdal:v0.5 AS naavre-pdal-build
 
 RUN conda install -c conda-forge conda-pack
 COPY --from=naavre-build naavre-build-environment.yml naavre-build-environment.yml
@@ -14,9 +12,10 @@ ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-
 RUN conda install -c conda-forge conda-merge conda-pack
 RUN conda-merge naavre-build-environment.yml laserfarm-environment.yaml > merged-environment.yaml
 RUN cat merged-environment.yaml
-
 RUN conda env update -f merged-environment.yaml
 RUN conda list
+RUN conda remove -n venv lazrs-python
+RUN conda install -c conda-forge -n venv lazrs-python=0.4.5
 RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
     rm /tmp/env.tar
@@ -41,7 +40,6 @@ COPY ./repo_utils/ /tmp/repo_utils
 
 COPY .condarc /tmp/.condarc
 
-
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 RUN chmod ugo+x /usr/local/bin/start-jupyter-venv.sh
 RUN chown $NB_USER -R /venv/
@@ -52,4 +50,5 @@ RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
 
 RUN jupyter lab build --debug;
+
 cmd ["/usr/local/bin/start-jupyter-venv.sh"]
