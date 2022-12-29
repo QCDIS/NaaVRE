@@ -351,10 +351,12 @@ def map_dependencies(dependencies=None):
             pip_package = False
             if module_name in module_name_mapping['conda'].keys():
                 module_name = module_name_mapping['conda'][module_name]
+                pip_package = False
                 conda_package = True
             if module_name in module_name_mapping['pip'].keys():
                 module_name = module_name_mapping['pip'][module_name]
                 pip_package = True
+                conda_package = False
             if not is_standard_module(module_name):
                 if conda_package:
                     set_conda_deps.add(module_name)
