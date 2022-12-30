@@ -13,7 +13,6 @@ ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-
 RUN conda install -c conda-forge conda-merge conda-pack
 RUN conda-merge naavre-build-environment.yml laserfarm-environment.yaml > merged-environment.yaml
 RUN cat merged-environment.yaml
-
 RUN conda env update -f merged-environment.yaml
 RUN conda list
 RUN conda-pack -n venv -o /tmp/env.tar && \
