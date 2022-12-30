@@ -1,0 +1,98 @@
+.notebook-containerizer2-icon {
+    background: url('icons/container-svgrepo-com.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+}
+  
+.lifewatch-widget {
+    flex-direction: column;
+    min-width: var(--jp-sidebar-min-width);
+    color: var(--jp-ui-font-color1);
+    background: var(--jp-layout-color1);
+    font-size: var(--jp-ui-font-size1);
+    overflow: auto;
+    height: 100%;
+    display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+    display: -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+    display: -ms-flexbox; /* TWEENER - IE 10 */
+    display: -webkit-flex; /* NEW - Chrome */
+    display: flex;
+}
+
+.lifewatch-widget-content {
+    min-width: var(--jp-sidebar-min-width);
+    /* height: calc(100% - 42px); */
+    overflow: auto;
+    /* border-bottom: 1px solid var(--jp-border-color2); */
+}
+
+.lw-panel-header {
+    font-size: var(--jp-ui-font-size3);
+    padding: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.lw-panel-curr-nb {
+    font-size: var(--jp-ui-font-size2);
+    padding: 10px;
+    color: cornflowerblue;
+    font-weight: 700;
+}
+
+.lw-panel-editor {
+    margin: 10px;
+    width: 350px;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 5px;
+}
+
+.lw-panel-editor-container {
+    width: 240px;
+    height: 200px;
+    margin: 10px;
+}
+
+.lw-panel-table {
+    width: 350px !important;
+    margin: 15px !important;
+}
+
+.lw-panel-preview {
+    font-size: var(--jp-ui-font-size1);
+    margin: 20px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.lw-notebook-field {
+    display: block;
+    margin: 20px;
+}
+
+.lw-panel-button {
+    margin: 10px !important;
+}
+
+.add-catalog-progress {
+    margin-bottom: -10px;
+    margin-left: 10px;
+}
+
+.notebook-submit-link {
+    color: #106ba3;
+    text-decoration: underline;
+}
+
+.notebook-submit-text {
+    font-size: medium;
+    margin: 10px;
+}
+
+.notebook-submit-box {
+    padding: 10px;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
