@@ -3,11 +3,13 @@ import json
 import os
 from unittest import mock
 
+from jinja2 import PackageLoader, Environment
 from tornado.escape import to_unicode
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler
+from jupyterlab_vre.component_containerizer.handlers import map_dependencies
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.handlers import load_module_names_mapping
@@ -45,7 +47,24 @@ class HandlersAPITest(AsyncHTTPTestCase):
             workflow_path = os.path.join(base_path, 'workflows/splitter.json')
             with open(workflow_path, 'r') as read_file:
                 payload = json.load(read_file)
-            response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
+            # response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
 
     def test_load_module_names_mapping(self):
         load_module_names_mapping()
+
+    def test_map_dependencies(self):
+        dependencies = [{'name': 'pathlib', 'asname': None, 'module': ''},
+                        {'name': 'numpy', 'asname': 'np', 'module': ''},
+                        {'name': 'laspy', 'asname': None, 'module': ''},
+                        {'name': 'Client', 'asname': None, 'module': 'webdav3.client'},
+                        {'name': 'os', 'asname': None, 'module': ''},
+                        {'name': 'get_wdclient', 'asname': None, 'module': 'laserfarm.remote_utils'},
+                        {'name': 'pathlib', 'asname': None, 'module': ''},
+                        {'name': 'list_remote', 'asname': None, 'module': 'laserfarm.remote_utils'}]
+        set_conda_deps, set_pip_deps = map_dependencies(dependencies=dependencies)
+        loader = PackageLoader('jupyterlab_vre', 'templates')
+        template_env = Environment(
+            loader=loader, trim_blocks=True, lstrip_blocks=True)
+        template_conda = template_env.get_template('conda_env_template.jinja2')
+        template_conda.stream(base_image='cell.base_image', conda_deps=list(set_conda_deps),
+                              pip_deps=list(set_pip_deps)).dump('test_env.yaml')

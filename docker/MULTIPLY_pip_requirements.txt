@@ -106,7 +106,7 @@ toolz==0.11.2 #==pyhd8ed1ab_0
 traittypes==0.2.1 #==pyh9f0ad1d_2
 urllib3==1.26.9 #==pyhd8ed1ab_0
 werkzeug==2.1.2 #==pyhd8ed1ab_1
-wheel>=0.35.1 #==0.37.1 #==pyhd8ed1ab_0
+wheel>=0.37.1 #==0.37.0 #==pyhd8ed1ab_0
 xarray==2022.3.0 #==pyhd8ed1ab_0
 zipp==3.8.0 #==pyhd8ed1ab_0
 zstd==1.5.2 #==h8a70e8d_1
