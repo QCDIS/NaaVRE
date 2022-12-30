@@ -2,24 +2,13 @@ name: jupyterlab
 channels:
   - conda-forge
   - defaults
-  - mathieu
 dependencies:
-  - jupyterlab>=3.5.0
-  - nodejs>=15.14.0
-  - python>=3.8
+  - jupyterlab==3.5.0
+  - nodejs==15.14.0
+  - python==3.9.2
   - yarn
-  - tinydb>=4.6.1
-  - pygithub>=1.55
-  - tornado>=6.1
-  - notebook
-  - pyyaml>=6.0
-  - nbformat
-  - autopep8
-  - Jinja2
-  - distro
-  - requests
-  - colorhash
   - pip
   - pip:
       - pre-commit
       - ggshield
+      - colorhash==1.2.1
