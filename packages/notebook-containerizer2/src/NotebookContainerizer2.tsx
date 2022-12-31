@@ -92,7 +92,7 @@ export class NotebookContainerizer2 extends React.Component<IProps> {
                     <div className={'lifewatch-widget-content'}>
                         <div>
                             <p className={'lw-panel-header'}>
-                                Component containerizer
+                                Notebook containerizer
                             </p>
                             <Divider />
                             <div>
