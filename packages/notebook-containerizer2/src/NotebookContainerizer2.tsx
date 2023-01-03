@@ -3,7 +3,7 @@ import { theme } from './Theme';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { JupyterFrontEnd } from '@jupyterlab/application';
 import { INotebookTracker, NotebookPanel } from '@jupyterlab/notebook';
-import { NotebookTracker } from './CellTracker'
+import { NotebookTracker } from './NotebookTracker'
 import { Dialog, showDialog } from '@jupyterlab/apputils';
 import { Divider } from '@material-ui/core';
 import { requestAPI } from '@jupyter_vre/core';
