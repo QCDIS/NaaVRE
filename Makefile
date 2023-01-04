@@ -25,6 +25,7 @@ build-frontend: jlpm-install
 	npx lerna run build --scope @jupyter_vre/chart-customs
 	npx lerna run build --scope @jupyter_vre/core
 	npx lerna run build --scope @jupyter_vre/notebook-containerizer
+	npx lerna run build --scope @jupyter_vre/notebook-containerizer2
 	npx lerna run build --scope @jupyter_vre/notebook-search
 # 	npx lerna run build --scope @jupyter_vre/notebook-search-toolbar
 	npx lerna run build --scope @jupyter_vre/components
@@ -42,6 +43,7 @@ install-ui:
 # 	$(call INSTALL_LAB_EXTENSION,notebook-search-toolbar)
 	$(call INSTALL_LAB_EXTENSION,core)
 	$(call INSTALL_LAB_EXTENSION,notebook-containerizer)
+	$(call INSTALL_LAB_EXTENSION,notebook-containerizer2)
 	$(call INSTALL_LAB_EXTENSION,chart-customs)
 	$(call INSTALL_LAB_EXTENSION,components)
 	$(call INSTALL_LAB_EXTENSION,experiment-manager)
@@ -53,6 +55,7 @@ link-ui:
 # 	$(call LINK_LAB_EXTENSION,notebook-search-toolbar)
 	$(call LINK_LAB_EXTENSION,core)
 	$(call LINK_LAB_EXTENSION,notebook-containerizer)
+	$(call LINK_LAB_EXTENSION,notebook-containerizer2)
 	$(call LINK_LAB_EXTENSION,chart-customs)
 	$(call LINK_LAB_EXTENSION,components)
 	$(call LINK_LAB_EXTENSION,experiment-manager)
@@ -63,6 +66,7 @@ dist-ui: build-frontend
 	mkdir -p dist
 	$(call PACKAGE_LAB_EXTENSION,core)
 	$(call PACKAGE_LAB_EXTENSION,notebook-containerizer)
+	$(call PACKAGE_LAB_EXTENSION,notebook-containerizer2)
 	$(call PACKAGE_LAB_EXTENSION,chart-customs)
 	$(call PACKAGE_LAB_EXTENSION,components)
 	$(call PACKAGE_LAB_EXTENSION,experiment-manager)
