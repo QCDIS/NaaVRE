@@ -1,59 +1,53 @@
-FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e
+FROM qcdis/miniconda3-naavre AS naavre-build
 
+RUN conda env export --name venv > naavre-build-environment.yml
+RUN cat naavre-build-environment.yml
+
+
+FROM qcdis/miniconda3-multiply AS naavre-pdal-build
+
+RUN conda install -c conda-forge conda-pack
+COPY --from=naavre-build naavre-build-environment.yml naavre-build-environment.yml
+COPY laserfarm-environment.yaml .
+ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
+RUN conda install -c conda-forge conda-merge conda-pack
+RUN conda-merge naavre-build-environment.yml laserfarm-environment.yaml > merged-environment.yaml
+RUN cat merged-environment.yaml
+RUN conda env update -f merged-environment.yaml
+RUN conda list
+RUN conda-pack -n venv -o /tmp/env.tar && \
+    mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
+    rm /tmp/env.tar
+RUN /venv/bin/conda-unpack
+
+FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e AS runtime
 USER root
 
-#===== Add pdalpy dependencies ======
-RUN apt-get update --allow-releaseinfo-change && apt-get -y install gcc g++ s3fs curl git
-#====================================
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install fuse
 
-#RUN apt-get -y install libblas3 libblas-dev libboost-all-dev bzip2 ca-certificates libcairo2-dev libcfitsio-dev \
-#    libc-ares-dev expat fontconfig libfreetype6-dev gettext giflib-tools glib-networking glib-networking-common \
-#    gir1.2-gst-plugins-base-1.0 libhdf4-0-alt libhdf5-dev libicu-dev libpixman-1-0 pcre2-utils nodejs lz4 \
-#    libopenblas-dev openssl poppler-utils poppler-data postgresql postgresql-contrib \
-#    libpthread-stubs0-dev sqlite3 python-tk zlib1g-dev libblas-dev libcurl4 libffi-dev \
-#    php-iconv libkmldom1 liblapacke llvm libnetcdf-dev krb5-user
+COPY --from=naavre-pdal-build /venv/ /venv/
+
+ENV PATH=/venv/bin:$PATH
+ENV PATH=/home/jovyan/.local/bin:$PATH
+RUN source /venv/bin/activate
+RUN echo "source /venv/bin/activate" >> ~/.bashrc
+SHELL ["/bin/bash", "--login", "-c"]
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
-ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
+ADD start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
 COPY ./repo_utils/ /tmp/repo_utils
 
+COPY .condarc /tmp/.condarc
+
+
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
+RUN chmod ugo+x /usr/local/bin/start-jupyter-venv.sh
+RUN chown $NB_USER -R /venv/
 
 USER $NB_USER
+RUN jupyter serverextension enable --py jupyterlab_vre --user
+RUN jupyter serverextension enable --py jupyter_videochat --user
+RUN jupyter serverextension enable --py jupyterlab_github --user
 
-RUN conda remove --force -y terminado && \
-    python -m pip install --upgrade pip
-
-RUN python3 -m pip install --quiet --no-cache-dir /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl && \
-    jupyter serverextension enable --py jupyterlab_vre --user
-
-
-#===== Add pdalpy dependencies ======
-RUN conda install --yes -c conda-forge pdal python-pdal gdal && \
-    conda upgrade --yes numpy && \
-    conda update --yes -n base conda && \
-    pip install dask distributed lazperf==1.4.4 && \
-    pip install laserfarm laspy
-#====================================
-
-RUN pip install jupyterlab-github jupyter-videochat nbgitpuller jupyterlab-lsp python-lsp-server[all] pre-commit ggshield && \
-    jupyter serverextension enable --py jupyter_videochat --user && \
-    jupyter serverextension enable --py jupyterlab_github --user
-
-COPY MULTIPLY_pip_requirements.txt requirements.txt
-RUN pip install -r requirements.txt
-RUN pip install git+https://github.com/JorisTimmermans/data-access.git \
-                git+https://github.com/JorisTimmermans/atmospheric_correction.git \
-                git+https://github.com/QCDIS/multiply-core.git \
-                git+https://github.com/QCDIS/inference-engine.git \
-                git+https://github.com/QCDIS/prior-engine.git \
-                git+https://github.com/JorisTimmermans/atmospheric_correction.git \
-                git+https://github.com/QCDIS/vm-support.git \
-                git+https://github.com/multiply-org/multiply-orchestration.git \
-                git+https://github.com/QCDIS/KaFKA-InferenceEngine.git \
-                git+https://github.com/QCDIS/BRDF_descriptors.git
-
-WORKDIR $HOME
 RUN jupyter lab build --debug;
-RUN conda clean -a -y
-CMD ["/usr/local/bin/start-jupyter.sh"]
+cmd ["/usr/local/bin/start-jupyter-venv.sh"]
