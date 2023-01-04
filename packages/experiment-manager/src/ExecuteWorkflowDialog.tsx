@@ -128,7 +128,8 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
                                 sx={{ color: green[500] }}
                             />
                             <p className='wf-submit-text'>
-                                Workflow submitted! You can track it <a className='wf-submit-link' target={"_blank"} href={this.state.submitted_workflow['argo_url']}>here</a>
+                                Workflow submitted! You can track it <a className='wf-submit-link' target={"_blank"} 
+                                href={this.state.submitted_workflow['argo_url']}>here</a>
                             </p>
                         </div>
                     ) :
