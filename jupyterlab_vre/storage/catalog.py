@@ -29,7 +29,6 @@ class Catalog:
     @classmethod
     def add_cell(cls, cell: Cell):
         cls.cells.insert(cell.__dict__)
-
     @classmethod
     def delete_cell_from_task_name(cls, task_name: str):
         cell = cls.cells.search(where('task_name') == task_name)
@@ -89,7 +88,6 @@ class Catalog:
     @classmethod
     def delete_gh_credentials(cls, url: str):
         cls.gh_credentials.remove(where('url') == url)
-
 
     @classmethod
     def get_sdia_credentials(cls):
