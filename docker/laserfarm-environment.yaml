@@ -12,5 +12,5 @@ dependencies:
   - jupyterhub
   - lazrs-python = 0.4.5 #laserfarm has lazrs 0.4.5
   - pip:
-    - laserfarm # TODO enable https://z2jh.jupyter.org/en/stable/jupyterhub/customizing/user-environment.html?highlight=conda#allow-users-to-create-their-own-conda-environments-for-notebooks
+    - git+https://github.com/QCDIS/Laserfarm.git
     - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
