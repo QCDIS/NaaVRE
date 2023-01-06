@@ -26,7 +26,7 @@ build-frontend: jlpm-install
 	npx lerna run build --scope @jupyter_vre/core
 	npx lerna run build --scope @jupyter_vre/notebook-containerizer
 	npx lerna run build --scope @jupyter_vre/notebook-search
-	npx lerna run build --scope @jupyter_vre/notebook-search-toolbar
+# 	npx lerna run build --scope @jupyter_vre/notebook-search-toolbar
 	npx lerna run build --scope @jupyter_vre/components
 	npx lerna run build --scope @jupyter_vre/experiment-manager
 	npx lerna run build --scope @jupyter_vre/vre-panel
@@ -39,8 +39,9 @@ jlpm-install:
 
 install-ui:
 	$(call INSTALL_LAB_EXTENSION,notebook-search)
-	$(call INSTALL_LAB_EXTENSION,notebook-search-toolbar)
+# 	$(call INSTALL_LAB_EXTENSION,notebook-search-toolbar)
 	$(call INSTALL_LAB_EXTENSION,core)
+	$(call INSTALL_LAB_EXTENSION,notebook-containerizer)
 	$(call INSTALL_LAB_EXTENSION,chart-customs)
 	$(call INSTALL_LAB_EXTENSION,components)
 	$(call INSTALL_LAB_EXTENSION,experiment-manager)
@@ -49,8 +50,9 @@ install-ui:
 
 link-ui:
 	$(call LINK_LAB_EXTENSION,notebook-search)
-	$(call LINK_LAB_EXTENSION,notebook-search-toolbar)
+# 	$(call LINK_LAB_EXTENSION,notebook-search-toolbar)
 	$(call LINK_LAB_EXTENSION,core)
+	$(call LINK_LAB_EXTENSION,notebook-containerizer)
 	$(call LINK_LAB_EXTENSION,chart-customs)
 	$(call LINK_LAB_EXTENSION,components)
 	$(call LINK_LAB_EXTENSION,experiment-manager)
@@ -60,12 +62,14 @@ link-ui:
 dist-ui: build-frontend
 	mkdir -p dist
 	$(call PACKAGE_LAB_EXTENSION,core)
+	$(call PACKAGE_LAB_EXTENSION,notebook-containerizer)
 	$(call PACKAGE_LAB_EXTENSION,chart-customs)
 	$(call PACKAGE_LAB_EXTENSION,components)
 	$(call PACKAGE_LAB_EXTENSION,experiment-manager)
 	$(call PACKAGE_LAB_EXTENSION,vre-panel)
 	$(call PACKAGE_LAB_EXTENSION,vre-menu)
 	$(call PACKAGE_LAB_EXTENSION,notebook-search)
+# 	$(call LINK_LAB_EXTENSION,notebook-search-toolbar)
 
 release: dist-ui build-backend
 	

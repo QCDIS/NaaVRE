@@ -334,11 +334,11 @@ def load_module_names_mapping():
     return loaded_module_name_mapping
 
 
-def build_templates(cell=None, files_info=None):
-    logger.debug('files_info: ' + str(files_info))
+def map_dependencies(dependencies=None):
     module_name_mapping = load_module_names_mapping()
-    set_deps = set([])
-    for dep in cell.dependencies:
+    set_conda_deps = set([])
+    set_pip_deps = set([])
+    for dep in dependencies:
         if 'module' in dep and dep['module']:
             if '.' in dep['module']:
                 module_name = dep['module'].split('.')[0]
@@ -347,11 +347,30 @@ def build_templates(cell=None, files_info=None):
         elif 'name' in dep and dep['name']:
             module_name = dep['name']
         if module_name:
-            if module_name in module_name_mapping.keys():
-                module_name = module_name_mapping[module_name]
+            conda_package = True
+            pip_package = False
+            if module_name in module_name_mapping['conda'].keys():
+                module_name = module_name_mapping['conda'][module_name]
+                pip_package = False
+                conda_package = True
+            if module_name in module_name_mapping['pip'].keys():
+                module_name = module_name_mapping['pip'][module_name]
+                pip_package = True
+                conda_package = False
             if not is_standard_module(module_name):
-                set_deps.add(module_name)
+                if conda_package:
+                    set_conda_deps.add(module_name)
+                if pip_package:
+                    set_pip_deps.add(module_name)
+    return set_conda_deps, set_pip_deps
 
+
+def build_templates(cell=None, files_info=None):
+    logger.debug('files_info: ' + str(files_info))
+
+    logger.debug('cell.dependencies: '+str(cell.dependencies))
+    print('cell.dependencies: ' + str(cell.dependencies))
+    set_conda_deps, set_pip_deps = map_dependencies(dependencies=cell.dependencies)
     loader = PackageLoader('jupyterlab_vre', 'templates')
     template_env = Environment(
         loader=loader, trim_blocks=True, lstrip_blocks=True)
@@ -370,8 +389,8 @@ def build_templates(cell=None, files_info=None):
                          confs=cell.generate_configuration()).dump(files_info['cell']['path'])
     template_dockerfile.stream(task_name=cell.task_name, base_image=cell.base_image).dump(
         files_info['dockerfile']['path'])
-    template_conda.stream(base_image=cell.base_image, deps=list(
-        set_deps)).dump(files_info['environment']['path'])
+    template_conda.stream(base_image=cell.base_image, conda_deps=list(set_conda_deps),
+                          pip_deps=list(set_pip_deps)).dump(files_info['environment']['path'])
 
 
 def get_files_info(cell=None, image_repo=None):

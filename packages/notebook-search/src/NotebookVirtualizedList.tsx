@@ -7,6 +7,7 @@ import * as React from 'react';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 
 function renderRow(props: ListChildComponentProps, clickAction: (cell_index: number) => void) {
+  
   const { data, index, style } = props;
 
   return (
@@ -16,19 +17,11 @@ function renderRow(props: ListChildComponentProps, clickAction: (cell_index: num
           <div>
             <ListItemText
               primary={data[index]['name']}
-              style={{
-                display: 'inline-block',
-                maxWidth: '300px',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden !important',
-                textOverflow: 'ellipsis'
-              }}
             />
             <Link
               component="div"
               style={{
                 display: 'inline-block',
-                maxWidth: '300px',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden !important',
                 textOverflow: 'ellipsis'
