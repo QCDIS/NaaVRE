@@ -1,4 +1,4 @@
-import { VREPanel } from "./VREPanel";
+import { NotebookContainerizerPanel } from "./NotebookContainerizerPanel";
 import { ILabShell, ILayoutRestorer, JupyterFrontEnd, JupyterFrontEndPlugin, LabShell } from "@jupyterlab/application";
 import { ReactWidget } from '@jupyterlab/apputils';
 import { Widget } from "@lumino/widgets";
@@ -9,7 +9,7 @@ export interface ILifeWatchVRE {
     widget: Widget;
 }
 
-const id = "lifewatch:vre-plugin";
+const id = "lifewatch:notebook-containerizer2";
 
 export default {
     activate,
@@ -28,14 +28,12 @@ async function activate (
     let widget: ReactWidget;
 
     lab.started.then(() => {
-
         widget = ReactWidget.create(
-            <VREPanel
+            <NotebookContainerizerPanel
                 lab={lab}
                 tracker={tracker}
             />
         );
-
         widget.id = "lifewatch/notebook-containerizer2"
         widget.title.iconClass = "left-notebook-containerizer2-icon"
         widget.title.caption = 'LifeWatch notebook-containerizer2';
@@ -43,7 +41,6 @@ async function activate (
     });
 
     lab.restored.then(() => {
-
         if (!widget.isAttached) {
             labShell.add(widget, 'left');
         }
