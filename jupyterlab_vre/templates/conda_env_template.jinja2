@@ -1,29 +1,18 @@
-{% if base_image == 'qcdis/python-vol2bird' %}
 name: venv
 channels:
   - conda-forge
   - defaults
-  {% if deps|length > 0 %}
+  - pytorch
+  - fastai
 dependencies:
   - pip
-  - python=3.9
+  - python>=3.8
+{% for d in conda_deps %}
+  - {{ d }}
+{% endfor %}
+{% if pip_deps|length > 0 %}
   - pip:
-  {% for d in deps %}
+  {% for d in pip_deps %}
     - {{ d }}
   {% endfor %}
-{% endif %}
-
-{% else %}
-name: venv
-channels:
-  - conda-forge
-  - defaults
-  {% if deps|length > 0 %}
-dependencies:
-  - pip
-  - pip:
-  {% for d in deps %}
-    - {{ d }}
-  {% endfor %}
-{% endif %}
 {% endif %}

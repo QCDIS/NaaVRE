@@ -27,7 +27,7 @@ export class NotebookSearchExtension
     ): IDisposable {
 
         const searchNotebook = () => {
-
+            console.log('searchNotebook')
         };
 
         const button = new ToolbarButton({
