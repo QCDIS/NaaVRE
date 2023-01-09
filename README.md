@@ -23,7 +23,9 @@ Close the terminal and start a new one to activate conda.
 Create and activate conda environment:
 ```shell
 conda create -n jupyterlab  python=3.9 
+```
 Or
+```shell
 conda env create --name envname --file=environments.yml
 conda activate jupyterlab
 ```
