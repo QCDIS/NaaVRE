@@ -1,9 +1,9 @@
-FROM qcdis/miniconda3-naavre AS naavre-build
+FROM qcdis/miniconda3-naavre  AS naavre-build
 
 RUN conda env export --name venv > naavre-build-environment.yml
 RUN cat naavre-build-environment.yml
 
-FROM qcdis/miniconda3-pdal:v0.5 AS naavre-pdal-build
+FROM qcdis/miniconda3-pdal AS naavre-pdal-build
 
 RUN conda install -c conda-forge conda-pack
 COPY --from=naavre-build naavre-build-environment.yml naavre-build-environment.yml
@@ -12,8 +12,7 @@ ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-
 RUN conda install -c conda-forge conda-merge conda-pack
 RUN conda-merge naavre-build-environment.yml laserfarm-environment.yaml > merged-environment.yaml
 RUN cat merged-environment.yaml
-RUN conda env update -f merged-environment.yaml
-RUN conda list
+RUN mamba env update -f merged-environment.yaml
 RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
     rm /tmp/env.tar
