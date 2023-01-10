@@ -5,7 +5,7 @@ RUN cat naavre-build-environment.yml
 
 
 
-FROM d31ae35521a4 AS vol2bird
+FROM qcdis/python-vol2birds AS vol2bird
 
 RUN conda install -c conda-forge conda-pack
 COPY --from=naavre-build naavre-build-environment.yml naavre-build-environment.yml
