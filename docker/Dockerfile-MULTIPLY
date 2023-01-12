@@ -4,7 +4,7 @@ RUN conda env export --name venv > naavre-build-environment.yml
 RUN cat naavre-build-environment.yml
 
 
-FROM qcdis/miniconda3-multiply AS naavre-pdal-build
+FROM qcdis/miniconda3-multiply AS naavre-multiply-build
 
 RUN conda install -c conda-forge conda-pack
 COPY --from=naavre-build naavre-build-environment.yml naavre-build-environment.yml
@@ -25,7 +25,7 @@ USER root
 
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install fuse
 
-COPY --from=naavre-pdal-build /venv/ /venv/
+COPY --from=naavre-multiply-build /venv/ /venv/
 
 ENV PATH=/venv/bin:$PATH
 ENV PATH=/home/jovyan/.local/bin:$PATH

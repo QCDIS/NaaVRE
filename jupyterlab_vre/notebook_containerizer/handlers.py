@@ -44,7 +44,7 @@ class NotebookExtractorHandler(APIHandler, Catalog):
 
             if not title:
                 title = cell_source.partition('\n')[0]
-                title = 'notebook-'+title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').strip() if title[0] == '#' \
+                title = 'notebook-'+title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').strip() if title[0] == '#' \
                     else 'Untitled'
                 if 'JUPYTERHUB_USER' in os.environ:
                     title += '-' + os.environ['JUPYTERHUB_USER']
@@ -55,7 +55,7 @@ class NotebookExtractorHandler(APIHandler, Catalog):
         cell = Cell(
             node_id=node_id,
             title=title,
-            task_name=title.lower().replace(' ', '-'),
+            task_name=title.lower().replace(' ', '-').replace('.','-'),
             original_source=source,
             inputs=list(ins),
             outputs=list(outs),

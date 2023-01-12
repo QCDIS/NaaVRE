@@ -9,6 +9,7 @@ from jupyterlab_vre.component_containerizer.handlers import build_templates
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.extractor import Extractor
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -18,6 +19,8 @@ elif os.path.exists('jupyterlab_vre/tests/resources/'):
     base_path = 'jupyterlab_vre/tests/resources/'
 
 print(base_path)
+
+
 class TestExtractor(TestCase):
 
     def test_extract_cell(self):
@@ -30,8 +33,9 @@ class TestExtractor(TestCase):
             logger.warning(str(e))
         cell = json.loads(self.extratct_cell(os.path.join(base_path, 'notebooks/laserfarm.json')))
         for conf_name in (cell['confs']):
-            self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1], 'conf_ values should not contain conf_ prefix in '
-                                                                  'assignment')
+            self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
+                             'conf_ values should not contain conf_ prefix in '
+                             'assignment')
 
     def extratct_cell(self, payload_path):
         with open(payload_path, 'r') as file:
@@ -44,11 +48,12 @@ class TestExtractor(TestCase):
         source = notebook.cells[cell_index].source
         title = source.partition('\n')[0]
         title = title.replace('#', '').replace(
-            '_', '-').replace('(', '-').replace(')', '-').strip() if title and title[0] == "#" else "Untitled"
+            '_', '-').replace('(', '-').replace(')', '-').replace('.', '-').strip() if title and title[
+            0] == "#" else "Untitled"
 
         if 'JUPYTERHUB_USER' in os.environ:
             title += '-' + os.environ['JUPYTERHUB_USER']
-            title.replace('_', '-').replace('(', '-').replace(')', '-').strip()
+            title.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').strip()
 
         ins = []
         outs = []
@@ -56,7 +61,8 @@ class TestExtractor(TestCase):
         confs = []
         dependencies = []
 
-        # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(source)'
+        # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(
+        # source)'
         if notebook.cells[cell_index].cell_type == 'code':
             ins = set(extractor.infere_cell_inputs(source))
             outs = set(extractor.infere_cell_outputs(source))
