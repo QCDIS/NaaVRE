@@ -1,4 +1,4 @@
-FROM 7289daae16bf AS naavre-build
+FROM qcdis/miniconda3-naavre AS naavre-build
 
 RUN conda install -c conda-forge conda-pack
 COPY environment.yaml .
