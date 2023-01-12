@@ -39,7 +39,6 @@ COPY ./repo_utils/ /tmp/repo_utils
 
 COPY .condarc /tmp/.condarc
 
-
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 RUN chmod ugo+x /usr/local/bin/start-jupyter-venv.sh
 RUN chown $NB_USER -R /venv/
@@ -51,6 +50,6 @@ RUN jupyter serverextension enable --py jupyterlab_github --user
 
 RUN jupyter lab build --debug;
 
-RUN python -c "from multiply_data_access import DataAccessComponent"
+#RUN python -c "from multiply_data_access import DataAccessComponent"
 
 cmd ["/usr/local/bin/start-jupyter-venv.sh"]
