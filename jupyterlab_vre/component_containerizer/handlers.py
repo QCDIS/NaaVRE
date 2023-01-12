@@ -53,12 +53,12 @@ class ExtractorHandler(APIHandler, Catalog):
 
         source = notebook.cells[cell_index].source
         title = source.partition('\n')[0]
-        title = title.replace('#', '').replace(
+        title = title.replace('#', '').replace('.', '-').replace(
             '_', '-').replace('(', '-').replace(')', '-').strip() if title and title[0] == "#" else "Untitled"
 
         if 'JUPYTERHUB_USER' in os.environ:
             title += '-' + os.environ['JUPYTERHUB_USER']
-            title.replace('_', '-').replace('(', '-').replace(')', '-').strip()
+            title.replace('_', '-').replace('(', '-').replace(')', '-').replace('.','-').strip()
 
         ins = []
         outs = []
@@ -78,7 +78,7 @@ class ExtractorHandler(APIHandler, Catalog):
         cell = Cell(
             node_id=node_id,
             title=title,
-            task_name=title.lower().replace(' ', '-'),
+            task_name=title.lower().replace(' ', '-').replace('.','-'),
             original_source=source,
             inputs=ins,
             outputs=outs,
@@ -368,7 +368,7 @@ def map_dependencies(dependencies=None):
 def build_templates(cell=None, files_info=None):
     logger.debug('files_info: ' + str(files_info))
 
-    logger.debug('cell.dependencies: '+str(cell.dependencies))
+    logger.debug('cell.dependencies: ' + str(cell.dependencies))
     print('cell.dependencies: ' + str(cell.dependencies))
     set_conda_deps, set_pip_deps = map_dependencies(dependencies=cell.dependencies)
     loader = PackageLoader('jupyterlab_vre', 'templates')
