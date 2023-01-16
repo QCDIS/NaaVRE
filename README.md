@@ -26,7 +26,7 @@ conda create -n jupyterlab  python=3.9
 ```
 Or
 ```shell
-conda env create --name envname --file=environments.yml
+conda env create -f environment.yml
 conda activate rclone-data-mounter
 ```
 
