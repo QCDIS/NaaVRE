@@ -62,7 +62,7 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                     <div className={'lifewatch-widget-content'}>
                         <div>
                             <p className={'lw-panel-header'}>
-                                Notebook Search
+                                Rclone configuration
                             </p>
 
                         </div>
