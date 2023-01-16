@@ -97,9 +97,9 @@ class HandlersAPITest(AsyncHTTPTestCase):
     def test_cells_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
-            title = 'Retiling - dev - dev - skoulouzis'
-            task_name = 'retiling - dev - skoulouzis'
-            original_source = '# Retiling\nsplit_laz_files\nremote_path_retiled = str(conf_remote_path_retiled)\n\nfor file in split_laz_files:\n    print(file)'
+            title = 'Test-Retiling-dev-dev-skoulouzis'
+            task_name = 'test-retiling-dev-skoulouzis'
+            original_source = '# Retiling\nsplit_laz_files\n\nfor file in split_laz_files:\n    print(file)\n    retiler_output = file'
             inputs = {'split_laz_files'}
             outputs = {'retiler_output'}
             params = []
@@ -129,8 +129,9 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 '--id',
                 '0',
                 '--split_laz_files',
-                '"[]"'
+                '[file]'
             ]
+
             output = subprocess.run(arg)
             print(output.returncode)
-            self.assertEqual(output.returncode, 0, 'Failed')
+            self.assertEqual(0, output.returncode, 'Failed')
