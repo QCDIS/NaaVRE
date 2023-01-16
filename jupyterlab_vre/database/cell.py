@@ -10,19 +10,19 @@ class Cell:
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
 
-    title               : str
-    task_name           : str
-    original_source     : str
-    base_image          : str
-    inputs              : list
-    outputs             : list
-    params              : list
-    confs               : dict
-    dependencies        : list
-    chart_obj           : dict
-    node_id             : str
-    container_source    : str
-    global_conf         : dict
+    title: str
+    task_name: str
+    original_source: str
+    base_image: str
+    inputs: list
+    outputs: list
+    params: list
+    confs: dict
+    dependencies: list
+    chart_obj: dict
+    node_id: str
+    container_source: str
+    global_conf: dict
 
     def __init__(
             self,
@@ -39,21 +39,20 @@ class Cell:
             node_id='',
     ) -> None:
 
-        self.title              = title
-        self.task_name          = task_name
-        self.original_source    = original_source
-        self.inputs             = list(inputs)
-        self.outputs            = list(outputs)
-        self.params             = list(params)
-        self.confs              = confs
-        self.types              = dict()
-        self.dependencies       = dependencies
-        self.chart_obj          = chart_obj
-        self.node_id            = node_id
-        self.container_source   = container_source
+        self.title = title
+        self.task_name = task_name
+        self.original_source = original_source
+        self.inputs = list(inputs)
+        self.outputs = list(outputs)
+        self.params = list(params)
+        self.confs = confs
+        self.types = dict()
+        self.dependencies = dependencies
+        self.chart_obj = chart_obj
+        self.node_id = node_id
+        self.container_source = container_source
 
     def clean_code(self):
-
         indices_to_remove = []
         lines = self.original_source.splitlines()
         self.original_source = ""
@@ -73,13 +72,10 @@ class Cell:
         self.original_source = "\n".join(lines)
 
     def integrate_configuration(self):
-
         lines = self.original_source.splitlines()
         self.original_source = ""
-
         for idx, conf in enumerate(self.generate_configuration()):
             lines.insert(idx, conf)
-
         self.original_source = "\n".join(lines)
 
     def generate_dependencies(self):

@@ -158,7 +158,6 @@ class CellsHandler(APIHandler, Catalog):
         current_cell.clean_code()
 
         all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
-
         for parm_name in all_vars:
             if parm_name not in current_cell.types:
                 logger.error(parm_name + ' has not type')
@@ -204,8 +203,6 @@ class CellsHandler(APIHandler, Catalog):
             'https://hub.docker.com/u/')[1]
 
         files_info = get_files_info(cell=current_cell, image_repo=image_repo)
-
-        print(current_cell)
         build_templates(cell=current_cell, files_info=files_info)
 
         repository = Catalog.get_repositories()

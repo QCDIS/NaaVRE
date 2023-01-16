@@ -1,11 +1,11 @@
-import copy
 import json
 import os
+import subprocess
 from unittest import mock
 
-from tornado.escape import to_unicode
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
+from pathlib import Path
 
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
     NotebookSearchHandler, NotebookSearchRatingHandler
@@ -91,5 +91,46 @@ class HandlersAPITest(AsyncHTTPTestCase):
     def test_notebook_download_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
-            payload = {'docid': 'Kaggle219','notebook_name':'Laserfarm.ipynb'}
+            payload = {'docid': 'Kaggle219', 'notebook_name': 'Laserfarm.ipynb'}
             response = self.fetch('/notebookdownloadhandler', method='POST', body=json.dumps(payload))
+
+    def test_cells_handler(self):
+        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+            m.return_value = 'cookie'
+            title = 'Retiling - dev - dev - skoulouzis'
+            task_name = 'retiling - dev - skoulouzis'
+            original_source = '# Retiling\nsplit_laz_files\nremote_path_retiled = str(conf_remote_path_retiled)\n\nfor file in split_laz_files:\n    print(file)'
+            inputs = {'split_laz_files'}
+            outputs = {'retiler_output'}
+            params = []
+            confs = {'conf_min_x': "conf_min_x = '-113107.81'",
+                     'conf_min_y': "conf_min_y = '214783.87'", 'conf_max_y': "conf_max_y = '726783.87'",
+                     'conf_max_x': "conf_max_x = '398892.19'",
+                     'conf_n_tiles_side': "conf_n_tiles_side = '512'",
+                     'conf_local_tmp': "conf_local_tmp = pathlib.Path('/tmp')"}
+            dependencies = [{'name': 'pathlib', 'asname': None, 'module': ''}]
+            container_source = ''
+            chart_obj = None
+            node_id = 'fe8b944'
+            types = {'split_laz_files': 'list', 'retiler_output': 'str'}
+
+            test_cell = Cell(title, task_name, original_source, inputs, outputs, params, confs,
+                             dependencies,
+                             container_source, chart_obj, node_id)
+            test_cell.types = types
+            test_cell.base_image = 'Laserfarm'
+            Catalog.editor_buffer = test_cell
+            response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
+            cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
+            cell_path = os.path.join(cells_path, test_cell.task_name)
+            arg = [
+                'python',
+                cell_path,
+                '--id',
+                '0',
+                '--split_laz_files',
+                '"[]"'
+            ]
+            output = subprocess.run(arg)
+            print(output.returncode)
+            self.assertEqual(output.returncode, 0, 'Failed')
