@@ -13,7 +13,7 @@ ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-
 RUN conda install -c conda-forge conda-merge conda-pack
 RUN conda-merge naavre-build-environment.yml laserfarm-environment.yaml > merged-environment.yaml
 RUN cat merged-environment.yaml
-RUN mamba env update -f merged-environment.yaml
+RUN conda env update -f merged-environment.yaml
 RUN conda list
 RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
@@ -50,6 +50,10 @@ RUN jupyter serverextension enable --py jupyterlab_github --user
 
 RUN jupyter lab build --debug;
 
-#RUN python -c "from multiply_data_access import DataAccessComponent"
+RUN python -c "from multiply_data_access import DataAccessComponent"
+RUN python -c "from vm_support.utils import create_config_file, set_permissions"
+RUN python -c "from vm_support.sym_linker import create_sym_links"
+RUN python -c "import glob"
+RUN python -c "import pyproj"
 
 cmd ["/usr/local/bin/start-jupyter-venv.sh"]
