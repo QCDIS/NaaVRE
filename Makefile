@@ -24,7 +24,6 @@ install-backend: build-backend
 build-frontend: jlpm-install
 	npx lerna run build --scope @jupyter_vre/core
 	npx lerna run build --scope @jupyter_vre/data-mounter
-	npx lerna run build --scope @jupyter_vre/components
 
 
 jlpm-install:
@@ -34,17 +33,22 @@ jlpm-install:
 install-ui:
 	$(call INSTALL_LAB_EXTENSION,data-mounter)
 	$(call INSTALL_LAB_EXTENSION,core)
-	$(call INSTALL_LAB_EXTENSION,components)
+
+uninstall-ui:
+	$(call UNINSTALL_LAB_EXTENSION,data-mounter)
+	$(call UNINSTALL_LAB_EXTENSION,core)
 
 link-ui:
 	$(call LINK_LAB_EXTENSION,data-mounter)
 	$(call LINK_LAB_EXTENSION,core)
-	$(call LINK_LAB_EXTENSION,components)
+
+unlink-ui:
+	$(call UNLINK_LAB_EXTENSION,data-mounter)
+	$(call UNLINK_LAB_EXTENSION,core)
 
 dist-ui: build-frontend
 	mkdir -p dist
 	$(call PACKAGE_LAB_EXTENSION,core)
-	$(call PACKAGE_LAB_EXTENSION,components)
 	$(call PACKAGE_LAB_EXTENSION,data-mounter)
 
 release: dist-ui build-backend
