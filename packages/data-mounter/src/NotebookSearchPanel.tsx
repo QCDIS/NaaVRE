@@ -3,9 +3,8 @@ import { requestAPI } from '@jupyter_vre/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { theme } from './Theme';
 import { Divider, TextField } from '@material-ui/core';
-import NotebookVirtualizedList from './NotebookVirtualizedList';
 
-interface NotebookSearchPanelProps {
+interface DataMounterPanelProps {
 
 }
 
@@ -19,11 +18,11 @@ const DefaultState: IState = {
     items: []
 }
 
-export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProps> {
+export class DataMounterPanel extends React.Component<DataMounterPanelProps> {
 
     state = DefaultState;
 
-    constructor(props: NotebookSearchPanelProps) {
+    constructor(props: DataMounterPanelProps) {
         super(props);
     }
 
@@ -76,10 +75,6 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                                 onChange={this.onChangeKeyword} />
                         </div>
                         <Divider />
-                        <NotebookVirtualizedList
-                            items={this.state.items}
-                            clickAction={this.onItemClick}
-                        />
                     </div>
                 </div>
             </ThemeProvider>

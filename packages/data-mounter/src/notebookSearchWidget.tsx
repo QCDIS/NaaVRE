@@ -2,7 +2,7 @@ import { ILabShell, ILayoutRestorer, JupyterFrontEnd, JupyterFrontEndPlugin, Lab
 import { ReactWidget } from '@jupyterlab/apputils';
 import { Widget } from "@lumino/widgets";
 import * as React from 'react';
-import { NotebookSearchPanel } from "./NotebookSearchPanel";
+import { DataMounterPanel } from "./NotebookSearchPanel";
 
 export interface ILifeWatchVRE {
     widget: Widget;
@@ -28,7 +28,7 @@ async function activate (
     lab.started.then(() => {
 
         widget = ReactWidget.create(
-            <NotebookSearchPanel />
+            <DataMounterPanel />
         );
 
         widget.id = "lifewatch/notebook-search"
