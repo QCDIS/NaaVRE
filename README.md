@@ -72,6 +72,10 @@ make release
 
 ## Remove componetnts
 
+```
+make purge
+```
+
 First uninstall all the components:
 ```
 make uninstall-ui && make unlink-ui
