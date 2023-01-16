@@ -272,7 +272,6 @@ npm install --force
 ```
 Build the backend and frontend:
 ```shell
-npx lerna run build --scope @jupyter_vre/chart-customs
 npx lerna run build --scope @jupyter_vre/core
 npx lerna run build --scope @jupyter_vre/components
 make install-backend && make build-frontend && make install-ui && make link-ui
