@@ -10,7 +10,6 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import NotebookScrollDialog from "./NotebookScrollDialog"
 import NotebookSendRating from "./NotebookSendRating"
-import { Divider } from '@mui/material';
 
 interface NotebookSearchPanelProps {
 
