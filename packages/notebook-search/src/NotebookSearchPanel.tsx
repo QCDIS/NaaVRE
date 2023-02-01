@@ -10,6 +10,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import NotebookScrollDialog from "./NotebookScrollDialog"
 import NotebookSendRating from "./NotebookSendRating"
+import { Divider } from '@mui/material';
 
 interface NotebookSearchPanelProps {
 
@@ -138,11 +139,24 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                             <Typography variant="subtitle1">{element['name']}</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Typography variant="body1" >
+                        <Typography variant="body2" >  
                             <p className={'nb-download-link'}>
                                 <a href={element['html_url']} target="_blank">{element['html_url']}</a>
+                            </p>      
+                        </Typography>
+                        <Typography variant="body1" >                        
+                            <p>
+                                <b>Notebook Sumury:</b>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur
                             </p>
-                            
+                            </Typography>
+                            <p></p>
+                            <Typography variant="body2" >
+                            <p>
+                                <b>Relevance:</b>  53.6 %
+                            </p>
+                            <p>
+                                <b>Confidence:</b>  33.1 %
+                            </p>                     
                             <p>
                                 <b>Notebook source:</b>  {element['source']}
                             </p>
@@ -153,6 +167,7 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                                 <b>Langunage:</b>  {element['language']}
                             </p>
                             </Typography>
+                            <p></p>
                             <p>
                             <NotebookScrollDialog
                                 data = {element}
