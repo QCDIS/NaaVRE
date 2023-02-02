@@ -152,14 +152,14 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                             <Typography variant="body2" >
                             <p className={'lw-big-spacing'}>
                                 <b>Relevance:</b>  53.6 %
-                                <p><b>Confidence:</b>  33.1 %</p>                     
+                            </p>
+                            <p><b>Confidence:</b>  33.1 %</p>                     
                                 <p><b>Notebook source:</b>  {element['source']}</p>
                                 <p><b>Number of cells:</b> {element['num_cells']}</p>
                                 <p><b>Langunage:</b>  {element['language']}</p>
-                            </p>
                             </Typography>
-                            <p></p>
-                            <p>
+                            
+                            <p className={'lw-big-spacing'}>
                             <NotebookScrollDialog
                                 data = {element}
                                 query= {this.state.keyword}/>
