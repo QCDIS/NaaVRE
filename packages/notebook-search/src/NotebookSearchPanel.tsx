@@ -150,20 +150,12 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                             </Typography>
                             <p></p>
                             <Typography variant="body2" >
-                            <p>
+                            <p className={'lw-big-spacing'}>
                                 <b>Relevance:</b>  53.6 %
-                            </p>
-                            <p>
-                                <b>Confidence:</b>  33.1 %
-                            </p>                     
-                            <p>
-                                <b>Notebook source:</b>  {element['source']}
-                            </p>
-                            <p>
-                                <b>Number of cells:</b> {element['num_cells']}
-                            </p>
-                            <p>
-                                <b>Langunage:</b>  {element['language']}
+                                <p><b>Confidence:</b>  33.1 %</p>                     
+                                <p><b>Notebook source:</b>  {element['source']}</p>
+                                <p><b>Number of cells:</b> {element['num_cells']}</p>
+                                <p><b>Langunage:</b>  {element['language']}</p>
                             </p>
                             </Typography>
                             <p></p>

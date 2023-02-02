@@ -48,3 +48,7 @@
     color: #106ba3;
     text-decoration: underline;
 }
+
+.lw-big-spacing {
+    line-height: 2.5;
+}
