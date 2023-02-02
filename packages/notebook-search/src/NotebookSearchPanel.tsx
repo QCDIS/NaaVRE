@@ -27,11 +27,10 @@ const DefaultState: IState = {
     current_index: -1
 }
 
+
 export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProps> {
 
     state = DefaultState;
-
-
 
     constructor(props: NotebookSearchPanelProps) {
         super(props);
@@ -147,22 +146,22 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                         <br />
                         <br />
                         <Typography variant="body1">
-                            <b>Notebook Sumury:</b>{element['summarization']} Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur
+                            <b>Notebook Sumury:</b>{element['summarization']}
                         </Typography>
                         <br />
                         <br />
                         <p>
-                            <Typography variant="body2">
-                            <b>Relevance:</b> {element['summarization_scores']} %
-                            <br />
-                            <b>Confidence:</b> {element['summarization_scores']} %
-                            <br />
+                        <Typography variant="body2">
+                            {element['summarization_scores'].map((summarization_scores:{name:string,score:number}) => (
+                                <b>{summarization_scores['score']}:</b> 
+                                <br />
+                            ))}
                             <b>Notebook source:</b> {element['source']}
                             <br />
                             <b>Number of cells:</b> {element['num_cells']}
                             <br />
                             <b>Langunage:</b> {element['language']}
-                            </Typography>
+                        </Typography>
                         </p>
                         <br />
                         <br />
