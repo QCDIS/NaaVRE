@@ -143,32 +143,38 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                                 <a href={element['html_url']} target="_blank">{element['html_url']}</a>
                             </p>      
                         </Typography>
-                        <Typography variant="body1" >                        
-                            <p className={'lw-big-spacing'}>
-                                <b>Notebook Sumury:</b>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur
-                            </p>
+                        <p></p>
+                        <br />
+                        <br />
+                        <Typography variant="body1">
+                            <b>Notebook Sumury:</b>{element['summarization']} Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur
+                        </Typography>
+                        <br />
+                        <br />
+                        <p>
+                            <Typography variant="body2">
+                            <b>Relevance:</b> {element['summarization_scores']} %
+                            <br />
+                            <b>Confidence:</b> {element['summarization_scores']} %
+                            <br />
+                            <b>Notebook source:</b> {element['source']}
+                            <br />
+                            <b>Number of cells:</b> {element['num_cells']}
+                            <br />
+                            <b>Langunage:</b> {element['language']}
                             </Typography>
-                            <p></p>
-                            <Typography variant="body2" >
-                            <p className={'lw-big-spacing'}>
-                                <b>Relevance:</b>  53.6 %
-                            </p>
-                            <p><b>Confidence:</b>  33.1 %</p>                     
-                                <p><b>Notebook source:</b>  {element['source']}</p>
-                                <p><b>Number of cells:</b> {element['num_cells']}</p>
-                                <p><b>Langunage:</b>  {element['language']}</p>
-                            </Typography>
-                            
-                            <p className={'lw-big-spacing'}>
-                            <NotebookScrollDialog
-                                data = {element}
-                                query= {this.state.keyword}/>
-                            </p>                                  
-                            <p>
-                            <NotebookSendRating
-                                data = {element}
-                                query= {this.state.keyword}/>
-                            </p>                                          
+                        </p>
+                        <br />
+                        <br />
+                        <br />
+                        <NotebookScrollDialog
+                            data = {element}
+                            query= {this.state.keyword}/>               
+                        <p>
+                        <NotebookSendRating
+                            data = {element}
+                            query= {this.state.keyword}/>
+                        </p>                                          
                         </AccordionDetails>
                     </Accordion>
                 ))}
