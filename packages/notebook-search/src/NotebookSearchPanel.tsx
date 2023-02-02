@@ -144,7 +144,7 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                             </p>      
                         </Typography>
                         <Typography variant="body1" >                        
-                            <p>
+                            <p className={'lw-big-spacing'}>
                                 <b>Notebook Sumury:</b>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur
                             </p>
                             </Typography>
