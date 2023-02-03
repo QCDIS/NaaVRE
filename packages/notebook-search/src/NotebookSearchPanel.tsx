@@ -145,9 +145,11 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                         <p></p>
                         <br />
                         <br />
-                        <Typography variant="body1">
-                            <b>Summarization:</b>
-                            <br />
+                        <Typography variant="subtitle2">
+                            <b>Summarization</b>
+                        </Typography>
+                        <br />
+                        <Typography variant="body1">                            
                             {element['summarization']}
                         </Typography>
                         <br />
