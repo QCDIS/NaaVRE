@@ -77,12 +77,6 @@ class NotebookSearchHandler(APIHandler):
             self.write_error('Failed to get results from: ' + search_api_endpoint + ' ' + str(ex))
             self.flush()
             return
-        for res in results:
-            res['rating'] = 1
-            res[
-                'summarization'] = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ' \
-                                   'ex, sit amet blandit leo lobortis eget.'
-            res['summarization_scores'] = [{'name': 'Relevance', 'score': 54.2}, {'name': 'Confidence', 'score': 93.2}]
         search_entry = {'query': term, 'results': results, 'timestamp': time.time()}
         Catalog.add_search_enty(search_entry)
         self.write(json.dumps(results))

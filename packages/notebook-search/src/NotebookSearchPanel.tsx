@@ -152,9 +152,9 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                         <br />
                         <p>
                         <Typography variant="body2">
-                            <b>{element['summarization_scores'][0]['name']}:</b> {element['summarization_scores'][0]['score']}
+                            <b>Summarization Relevance:</b> {element['summarization_relevance']}
                             <br />
-                            <b>{element['summarization_scores'][1]['name']}:</b> {element['summarization_scores'][1]['score']}
+                            <b>Summarization Confidence:</b> {element['summarization_confidence']}
                             <br />
                             <b>Notebook source:</b> {element['source']}
                             <br />
