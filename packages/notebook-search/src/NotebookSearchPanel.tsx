@@ -146,16 +146,16 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                         <br />
                         <br />
                         <Typography variant="body1">
-                            <b>Notebook Sumury:</b>{element['summarization']}
+                            {element['summarization']}
                         </Typography>
                         <br />
                         <br />
                         <p>
                         <Typography variant="body2">
-                            {element['summarization_scores'].map((summarization_scores:{name:string,score:number}) => (
-                                <b>{summarization_scores['score']}:</b> 
-                                <br />
-                            ))}
+                            <b>{element['summarization_scores'][0]['name']}:</b> {element['summarization_scores'][0]['score']}
+                            <br />
+                            <b>{element['summarization_scores'][1]['name']}:</b> {element['summarization_scores'][1]['score']}
+                            <br />
                             <b>Notebook source:</b> {element['source']}
                             <br />
                             <b>Number of cells:</b> {element['num_cells']}
