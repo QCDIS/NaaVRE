@@ -12,7 +12,7 @@ from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportW
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.handlers import load_module_names_mapping
-from jupyterlab_vre.notebook_search.handlers import NotebookDownloadHandler
+from jupyterlab_vre.notebook_search.handlers import NotebookDownloadHandler, NotebookSearchQueryReformulationHandler
 
 if os.path.exists('resources'):
     base_path = 'resources'
@@ -32,14 +32,15 @@ class HandlersAPITest(AsyncHTTPTestCase):
         notebook_path = os.path.join(base_path, 'notebooks/test_notebook.ipynb')
         with open(notebook_path, mode='r', encoding='utf-8') as f:
             self.notebook_dict = json.load(f)
-        self.app = Application([('/extractorhandler', ExtractorHandler),
-                                ('/typeshandler', TypesHandler),
-                                ('/cellshandler', CellsHandler),
-                                ('/exportworkflowhandler', ExportWorkflowHandler),
+        self.app = Application([('/extractor_handler', ExtractorHandler),
+                                ('/types_handler', TypesHandler),
+                                ('/cells_handler', CellsHandler),
+                                ('/export_workflow_handler', ExportWorkflowHandler),
                                 ('/executeworkflowhandler', ExecuteWorkflowHandler),
                                 ('/notebooksearch', NotebookSearchHandler),
                                 ('/notebook_search_ratinghandler', NotebookSearchRatingHandler),
                                 ('/notebook_download', NotebookDownloadHandler),
+                                ('/notebook_search_query_reformulation', NotebookSearchQueryReformulationHandler),
                                 ],
                                cookie_secret='asdfasdf')
         return self.app
@@ -50,7 +51,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             workflow_path = os.path.join(base_path, 'workflows/get_files.json')
             # with open(workflow_path, 'r') as read_file:
             #     payload = json.load(read_file)
-            # response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
+            # response = self.fetch('/export_workflow_handler', method='POST', body=json.dumps(payload))
 
     def test_execute_workflow_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
@@ -69,7 +70,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             workflow_path = os.path.join(base_path, 'notebooks/MULTIPLY_framework_2.json')
             # with open(workflow_path, 'r') as read_file:
             #     payload = json.load(read_file)
-            # response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
+            # response = self.fetch('/export_workflow_handler', method='POST', body=json.dumps(payload))
 
     def test_search_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
@@ -89,12 +90,23 @@ class HandlersAPITest(AsyncHTTPTestCase):
                                     "kaggle_id": "spscientist/student-performance-in-exams",
                                     "file_name": "student-performance-in-exams.ipynb", "rating": 4}}
             response = self.fetch('/notebook_search_ratinghandler', method='POST', body=json.dumps(payload))
+            self.assertIsNotNone(response)
 
     def test_notebook_download_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
             payload = {'docid': 'Kaggle219', 'notebook_name': 'Laserfarm.ipynb'}
             response = self.fetch('/notebook_download', method='POST', body=json.dumps(payload))
+            json_response = json.loads(response.body.decode('utf-8'))
+            self.assertIsNotNone(json_response)
+
+    def test_notebook_search_query_reformulation_handler(self):
+        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+            m.return_value = 'cookie'
+            payload = {'keyword': 'explosion'}
+            response = self.fetch('/notebook_search_query_reformulation', method='POST', body=json.dumps(payload))
+            json_response = json.loads(response.body.decode('utf-8'))
+            self.assertIsNotNone(json_response)
 
     def test_cells_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
@@ -122,7 +134,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             test_cell.types = types
             test_cell.base_image = 'Laserfarm'
             Catalog.editor_buffer = test_cell
-            response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
+            response = self.fetch('/cells_handler', method='POST', body=json.dumps(''))
             cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
             cell_path = os.path.join(cells_path, test_cell.task_name)
             arg = [

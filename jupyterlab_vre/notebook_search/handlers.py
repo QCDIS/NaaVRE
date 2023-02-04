@@ -141,7 +141,6 @@ class NotebookSearchQueryReformulationHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        print(json.dumps(payload))
         term = payload['keyword']
 
         search_api_endpoint = os.getenv('SEARCH_API_ENDPOINT')
@@ -176,10 +175,8 @@ class NotebookSearchQueryReformulationHandler(APIHandler):
         try:
             api_config = {'verify': False, 'headers': {'Authorization': 'Token ' + str(search_api_token)}}
             response = requests.post(search_api_endpoint + 'query_generation/', json=data, **api_config)
-            if response.status_code != 201:
+            if response.status_code != 200:
                 raise Exception('Failed code: ' + str(response.status_code))
-            feedback = response.json()
-            logger.debug('feedback: ' + str(feedback))
         except Exception as ex:
             logger.error('Failed to send rating to: ' + search_api_endpoint + ' ' + str(ex))
             self.set_status(500)

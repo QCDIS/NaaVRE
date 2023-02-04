@@ -16,18 +16,47 @@ interface NotebookSearchPanelProps {
 
 }
 
+
 interface IState {
     keyword: string
     items: [any],
     current_index: number,
-    suggestions: [any]
+    suggestions: {
+                id:number,
+                generated_queries:[{
+                    method: string,
+                    queries: [any]
+                }]
+                cell_contents:[{}],
+                client_id: string,
+                timestamp: string,
+                event: string}
 }
 
 const DefaultState: IState = {
     keyword: '',
     items: [{}],
     current_index: -1,
-    suggestions: [{}]
+    suggestions: { 
+        "id": 347, 
+        "cell_contents": 
+        [{
+            "cell_type": "user query",
+            "cell_content": "Great"
+          }
+        ],
+        "generated_queries": [
+          {
+            "method": "LSA",
+            "queries": [
+              "Great"
+            ]
+          }
+        ],
+        "client_id": "kitten",
+        "timestamp": "1666802511.515757",
+        "event": "query_reformulation"
+      }
 }
 
 export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProps> {
@@ -109,15 +138,15 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
 
     getSuggestions = async () => {
         try{
-            const resp = await requestAPI<any>('notebooksearch', {
+            const resp = await requestAPI<any>('notebook_search_query_reformulation', {
                 body: JSON.stringify({
                     keyword: this.state.keyword
                 }),
                 method: 'POST'
             });
-
+            console.log(resp)
             this.setState({
-                items: resp
+                suggestions: resp
             });
         }catch (error){
             console.log(error);
@@ -137,7 +166,7 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                 <Autocomplete
                     id="search"
                     freeSolo
-                    options={this.state.suggestions.map((option) => option.title)}
+                    options={this.state.suggestions['generated_queries'].map((option) => option['queries'])}
                     renderInput={(params) => 
                     <TextField {...params}
                     id="standard-basic"
