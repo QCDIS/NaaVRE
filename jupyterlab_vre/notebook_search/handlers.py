@@ -53,7 +53,7 @@ class NotebookSearchHandler(APIHandler):
         }
         try:
             results = []
-            for i in range(1,4):
+            for i in range(1, 10):
                 params = {
                     'page': str(i),
                     'query': term,
@@ -62,8 +62,10 @@ class NotebookSearchHandler(APIHandler):
                 }
 
                 api_config = {'verify': False, 'headers': {'Authorization': 'Token ' + str(search_api_token)}}
-                response = requests.post(search_api_endpoint + 'notebook_search', params=params, json=data, **api_config,
+                response = requests.post(search_api_endpoint + 'notebook_search', params=params, json=data,
+                                         **api_config,
                                          timeout=10)
+
                 if 'results' in response.json():
                     results += response.json()['results']
                 else:
@@ -75,8 +77,6 @@ class NotebookSearchHandler(APIHandler):
             self.write_error('Failed to get results from: ' + search_api_endpoint + ' ' + str(ex))
             self.flush()
             return
-        for res in results:
-            res['rating'] = 1
         search_entry = {'query': term, 'results': results, 'timestamp': time.time()}
         Catalog.add_search_enty(search_entry)
         self.write(json.dumps(results))
@@ -121,11 +121,11 @@ class NotebookSearchRatingHandler(APIHandler):
         }
         try:
             api_config = {'verify': False, 'headers': {'Authorization': 'Token ' + str(search_api_token)}}
-            response = requests.post(search_api_endpoint+'relevancy_feedback/', json=data, **api_config)
+            response = requests.post(search_api_endpoint + 'relevancy_feedback/', json=data, **api_config)
             if response.status_code != 201:
                 raise Exception('Failed code: ' + str(response.status_code))
             feedback = response.json()
-            logger.debug('feedback: '+str(feedback))
+            logger.debug('feedback: ' + str(feedback))
         except Exception as ex:
             logger.error('Failed to send rating to: ' + search_api_endpoint + ' ' + str(ex))
             self.set_status(500)
@@ -194,13 +194,14 @@ class NotebookDownloadHandler(APIHandler):
             self.flush()
             return
 
+
 class NotebookSourceHandler(APIHandler):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
         docid = payload['docid']
-        print('Get source for: '+docid)
+        print('Get source for: ' + docid)
         try:
             notebook_source_file = get_notebook_source_content(doc_id=docid)
             response = {'notebook_source': json.loads(notebook_source_file)}

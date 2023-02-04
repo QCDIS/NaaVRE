@@ -27,11 +27,10 @@ const DefaultState: IState = {
     current_index: -1
 }
 
+
 export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProps> {
 
     state = DefaultState;
-
-
 
     constructor(props: NotebookSearchPanelProps) {
         super(props);
@@ -138,31 +137,47 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                             <Typography variant="subtitle1">{element['name']}</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Typography variant="body1" >
+                        <Typography variant="body2" >  
                             <p className={'nb-download-link'}>
                                 <a href={element['html_url']} target="_blank">{element['html_url']}</a>
-                            </p>
-                            
-                            <p>
-                                <b>Notebook source:</b>  {element['source']}
-                            </p>
-                            <p>
-                                <b>Number of cells:</b> {element['num_cells']}
-                            </p>
-                            <p>
-                                <b>Langunage:</b>  {element['language']}
-                            </p>
-                            </Typography>
-                            <p>
-                            <NotebookScrollDialog
-                                data = {element}
-                                query= {this.state.keyword}/>
-                            </p>                                  
-                            <p>
-                            <NotebookSendRating
-                                data = {element}
-                                query= {this.state.keyword}/>
-                            </p>                                          
+                            </p>      
+                        </Typography>
+                        <p></p>
+                        <br />
+                        <br />
+                        <Typography variant="subtitle2">
+                            <b>Summarization</b>
+                        </Typography>
+                        <br />
+                        <Typography variant="body1">                            
+                            {element['summarization']}
+                        </Typography>
+                        <br />
+                        <br />
+                        <p>
+                        <Typography variant="body2">
+                            <b>Summarization Relevance:</b> {element['summarization_relevance']}
+                            <br />
+                            <b>Summarization Confidence:</b> {element['summarization_confidence']}
+                            <br />
+                            <b>Notebook source:</b> {element['source']}
+                            <br />
+                            <b>Number of cells:</b> {element['num_cells']}
+                            <br />
+                            <b>Langunage:</b> {element['language']}
+                        </Typography>
+                        </p>
+                        <br />
+                        <br />
+                        <br />
+                        <NotebookScrollDialog
+                            data = {element}
+                            query= {this.state.keyword}/>               
+                        <p>
+                        <NotebookSendRating
+                            data = {element}
+                            query= {this.state.keyword}/>
+                        </p>                                          
                         </AccordionDetails>
                     </Accordion>
                 ))}
