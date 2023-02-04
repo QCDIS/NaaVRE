@@ -75,7 +75,7 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
 
     sendRating = async () => {
         try{
-            const resp = await requestAPI<any>('notebooksearchrating', {
+            const resp = await requestAPI<any>('notebook_search_rating', {
                 body: JSON.stringify({
                     keyword: this.state.keyword,
                     notebook:this.state.items[this.state.current_index]

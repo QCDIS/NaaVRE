@@ -7,7 +7,7 @@ from .experiment_manager.handlers import ExportWorkflowHandler, ExecuteWorkflowH
 from .handlers import CatalogGetAllHandler
 from .notebook_containerizer.handlers import NotebookExtractorHandler
 from .notebook_search.handlers import NotebookSearchHandler, NotebookSearchRatingHandler, NotebookDownloadHandler, \
-    NotebookSeachHistoryHandler, NotebookSourceHandler
+    NotebookSeachHistoryHandler, NotebookSourceHandler, NotebookSearchQueryReformulationHandler
 from .registries.handlers import RegistriesHandler
 from .repositories.handlers import RepositoriesHandler
 
@@ -24,12 +24,15 @@ def load_jupyter_server_extension(lab_app):
 
     lab_app.web_app.add_handlers(host_pattern, [
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebooksearch'), NotebookSearchHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebookdownloadhandler'), NotebookDownloadHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebooksourcehandler'), NotebookSourceHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebookseachhistoryhandler'), NotebookSeachHistoryHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebooksearchrating'), NotebookSearchRatingHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebook_download'), NotebookDownloadHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebook_source'), NotebookSourceHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebook_search_history'),
+                                                                                            NotebookSeachHistoryHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebook_search_query_reformulation'),
+                                                                            NotebookSearchQueryReformulationHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebook_search_rating'), NotebookSearchRatingHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/extract'), ExtractorHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/nbcontainerizer/extract'), NotebookExtractorHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/nb_containerizer/extract'), NotebookExtractorHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/types'), TypesHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/baseimage'), BaseImageHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/addcell'), CellsHandler),

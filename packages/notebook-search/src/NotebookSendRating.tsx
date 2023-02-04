@@ -34,7 +34,7 @@ export default function NotebookSendRating({ data, query }: NotebookSendRatingPr
   const sendRating = async () => {
     try{
         console.log('rating: ',rating)
-        const resp = await requestAPI<any>('notebooksearchrating', {
+        const resp = await requestAPI<any>('notebook_search_rating', {
           body: JSON.stringify({
               keyword: query,
               notebook: data,

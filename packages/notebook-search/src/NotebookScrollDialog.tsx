@@ -74,7 +74,7 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
 
   const getNotebookSource = async () => {
     try{
-        const resp = await requestAPI<any>('notebooksourcehandler', {
+        const resp = await requestAPI<any>('notebook_source', {
             body: JSON.stringify({
                 docid: data['docid'],
                 notebook_name: data['name']

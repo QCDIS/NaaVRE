@@ -39,7 +39,7 @@ export default function NotebookDownloadDialogue({ data, query }: NotebookDownlo
 
   const downloadNotebook = async () => {
     try{
-        const resp = await requestAPI<any>('notebookdownloadhandler', {
+        const resp = await requestAPI<any>('notebook_download', {
             body: JSON.stringify({
                 docid: data['docid'],
                 notebook_name: data['name']
