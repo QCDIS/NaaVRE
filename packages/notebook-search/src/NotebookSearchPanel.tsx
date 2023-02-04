@@ -10,6 +10,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import NotebookScrollDialog from "./NotebookScrollDialog"
 import NotebookSendRating from "./NotebookSendRating"
+import Autocomplete from "@mui/material/Autocomplete";
 
 interface NotebookSearchPanelProps {
 
@@ -18,17 +19,19 @@ interface NotebookSearchPanelProps {
 interface IState {
     keyword: string
     items: [any],
-    current_index: number
+    current_index: number,
+    suggestions: [any]
 }
 
 const DefaultState: IState = {
     keyword: '',
     items: [{}],
-    current_index: -1
+    current_index: -1,
+    suggestions: [{}]
 }
 
-
 export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProps> {
+
 
     state = DefaultState;
 
@@ -37,6 +40,7 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
     }
 
     onChangeKeyword = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.getSuggestions();
         this.setState({
             keyword: event.target.value
         });
@@ -67,10 +71,6 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
     onStarClick(nextValue: number, prevValue: number, name: string) {
         console.log(nextValue)
         console.log("name: "+name)
-    }
-
-    sendRating2(index: number) {
-        console.log("index: "+index)
     }
 
     sendRating = async () => {
@@ -107,29 +107,53 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
         }
     };
 
+    getSuggestions = async () => {
+        try{
+            const resp = await requestAPI<any>('notebooksearch', {
+                body: JSON.stringify({
+                    keyword: this.state.keyword
+                }),
+                method: 'POST'
+            });
+
+            this.setState({
+                items: resp
+            });
+        }catch (error){
+            console.log(error);
+            alert(String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+        }
+    };
+
     render(): React.ReactElement {
         return (
         <ThemeProvider theme={theme}>
-          <div className={'lifewatch-widget'}>
+            <div className={'lifewatch-widget'}>
             <div className={'lifewatch-widget-content'}>
-              <p className={'lw-panel-header'}>
+                <p className={'lw-panel-header'}>
                 Notebook Search
-              </p>
-              <div className={'nb-search-field'}>
-                <TextField
-                  id="standard-basic"
-                  label="Keyword"
-                  variant="standard"
-                  value={this.state.keyword}
-                  onChange={this.onChangeKeyword} />
+                </p>
+                <div className={'nb-search-field'}>
+                <Autocomplete
+                    id="search"
+                    freeSolo
+                    options={this.state.suggestions.map((option) => option.title)}
+                    renderInput={(params) => 
+                    <TextField {...params}
+                    id="standard-basic"
+                    label="Keyword"
+                    variant="standard"
+                    value={this.state.keyword}
+                    onChange={this.onChangeKeyword} />}
+                />
                 <p>
-                  <Button
+                    <Button
                     variant="contained"
                     onClick={
                         this.onSearchClick
-                      }>
+                        }>
                     Search
-                  </Button>
+                    </Button>
                 </p>
                 {this.state.items.map((element, index) => (
                     <Accordion >
@@ -181,9 +205,9 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                         </AccordionDetails>
                     </Accordion>
                 ))}
-              </div>
+                </div>
             </div>
-          </div>
+            </div>
         </ThemeProvider>
     )
     }

@@ -89,11 +89,6 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
     }
   };
 
-
-  // const handleClickOpen = (scrollType: DialogProps["scroll"]) => () => {
-  //   setOpen(true);
-  // };
-
   const handleClose = () => {
     setOpen(false);
   };
@@ -148,9 +143,6 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
               <IpynbRenderer 
                   ipynb={notebook_source_file}/>
             </TabPanel>
-            {/* <TabPanel value={value} index={1}>
-              <ReactMarkdown>{data['description']}</ReactMarkdown>
-            </TabPanel> */}
           </Box>
 
           </DialogContentText>
