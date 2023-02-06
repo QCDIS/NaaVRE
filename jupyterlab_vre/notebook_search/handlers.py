@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 if 'JUPYTERHUB_USER' in os.environ:
-    client_id = 'NaaVRE' + os.environ['JUPYTERHUB_USER']
+    client_id = 'NaaVRE_' + os.environ['JUPYTERHUB_USER']
 
 
 ################################################################################
