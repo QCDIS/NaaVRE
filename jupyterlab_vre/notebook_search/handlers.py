@@ -13,6 +13,9 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+if 'JUPYTERHUB_USER' in os.environ:
+    client_id = 'NaaVRE' + os.environ['JUPYTERHUB_USER']
+
 
 ################################################################################
 
@@ -46,7 +49,7 @@ class NotebookSearchHandler(APIHandler):
 
         event = 'notebook_search'
         data = {
-            'client_id': 'NaaVRE',
+            'client_id': client_id,
             'timestamp': str(time.time()),
             'event': event,
             'query': term,
@@ -112,7 +115,7 @@ class NotebookSearchRatingHandler(APIHandler):
         for attr in ['docid', 'name', 'source', 'html_url', 'description']:
             annotated_notebook[attr] = notebook[attr]
         data = {
-            'client_id': 'NaaVRE',
+            'client_id': client_id,
             'timestamp': str(time.time()),
             'event': event,
             'query': term,
