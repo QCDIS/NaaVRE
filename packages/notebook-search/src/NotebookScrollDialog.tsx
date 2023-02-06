@@ -74,7 +74,7 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
 
   const getNotebookSource = async () => {
     try{
-        const resp = await requestAPI<any>('notebooksourcehandler', {
+        const resp = await requestAPI<any>('notebook_source', {
             body: JSON.stringify({
                 docid: data['docid'],
                 notebook_name: data['name']
@@ -88,11 +88,6 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
         alert(String(error).replace('{"message": "Unknown HTTP Error"}', ''));
     }
   };
-
-
-  // const handleClickOpen = (scrollType: DialogProps["scroll"]) => () => {
-  //   setOpen(true);
-  // };
 
   const handleClose = () => {
     setOpen(false);
@@ -148,9 +143,6 @@ export default function NotebookScrollDialog({ data, query }: NotebookDialoguePr
               <IpynbRenderer 
                   ipynb={notebook_source_file}/>
             </TabPanel>
-            {/* <TabPanel value={value} index={1}>
-              <ReactMarkdown>{data['description']}</ReactMarkdown>
-            </TabPanel> */}
           </Box>
 
           </DialogContentText>

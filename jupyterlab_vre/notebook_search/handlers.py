@@ -136,6 +136,57 @@ class NotebookSearchRatingHandler(APIHandler):
 
         self.flush()
 
+class NotebookSearchQueryReformulationHandler(APIHandler):
+
+    @web.authenticated
+    async def post(self, *args, **kwargs):
+        payload = self.get_json_body()
+        term = payload['keyword']
+
+        search_api_endpoint = os.getenv('SEARCH_API_ENDPOINT')
+        search_api_token = os.getenv('SEARCH_API_TOKEN')
+        if not search_api_endpoint:
+            logger.error('Environment variable: SEARCH_API_ENDPOINT not set')
+            self.set_status(500)
+            self.write('Environment variable: SEARCH_API_ENDPOINT not set')
+            self.write_error('Environment variable: SEARCH_API_ENDPOINT not set')
+            self.flush()
+            return
+        if not search_api_token:
+            logger.error('Environment variable: SEARCH_API_TOKEN not set')
+            self.set_status(500)
+            self.write('Environment variable: SEARCH_API_TOKEN not set')
+            self.write_error('Environment variable: SEARCH_API_TOKEN not set')
+            self.flush()
+            return
+        event = 'query_reformulation'
+        cell_contents = [
+            {
+                'cell_type': 'user query',
+                'cell_content': term,
+            },
+        ]
+        data = {
+            'client_id': 'NaaVRE',
+            'timestamp': str(time.time()),
+            'event': event,
+            'cell_contents': cell_contents,
+        }
+        try:
+            api_config = {'verify': False, 'headers': {'Authorization': 'Token ' + str(search_api_token)}}
+            response = requests.post(search_api_endpoint + 'query_generation/', json=data, **api_config)
+            if response.status_code != 200:
+                raise Exception('Failed code: ' + str(response.status_code))
+        except Exception as ex:
+            logger.error('Failed to send rating to: ' + search_api_endpoint + ' ' + str(ex))
+            self.set_status(500)
+            self.write('Failed to send rating to: ' + search_api_endpoint + ' ' + str(ex))
+            self.write_error('Failed to send rating to: ' + search_api_endpoint + ' ' + str(ex))
+            self.flush()
+            return
+
+        self.write(response.json())
+        self.flush()
 
 def get_notebook_source_content(doc_id=None):
     search_api_endpoint = os.getenv('SEARCH_API_ENDPOINT')
@@ -172,10 +223,10 @@ class NotebookDownloadHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        docid = payload['docid']
+        doc_id = payload['docid']
         notebook_name = payload['notebook_name'] + '.ipynb'
         try:
-            notebook_source_file = get_notebook_source_content(doc_id=docid)
+            notebook_source_file = get_notebook_source_content(doc_id=doc_id)
             notebook = json.loads(notebook_source_file)
             download_path = Path(Path.home(), 'Downloads', 'Notebooks')
             if not os.path.exists(download_path):
@@ -200,10 +251,9 @@ class NotebookSourceHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        docid = payload['docid']
-        print('Get source for: ' + docid)
+        doc_id = payload['docid']
         try:
-            notebook_source_file = get_notebook_source_content(doc_id=docid)
+            notebook_source_file = get_notebook_source_content(doc_id=doc_id)
             response = {'notebook_source': json.loads(notebook_source_file)}
             print(response)
             self.write(response)
@@ -220,7 +270,6 @@ class NotebookSeachHistoryHandler(APIHandler):
     @web.authenticated
     async def get(self, *args, **kwargs):
         payload = self.get_json_body()
-        print(json.dumps(payload))
         msg_json = dict(title='Operation not supported.')
         self.write(msg_json)
         await self.flush()

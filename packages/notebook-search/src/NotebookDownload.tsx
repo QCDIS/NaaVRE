@@ -26,7 +26,7 @@ export default function NotebookDownloadAlert({ data, query }: NotebookDownloadP
 
   const downloadNotebook = async () => {
     try{
-        const resp = await requestAPI<any>('notebookdownloadhandler', {
+        const resp = await requestAPI<any>('notebook_download', {
             body: JSON.stringify({
                 docid: data['docid'],
                 notebook_name: data['name']
