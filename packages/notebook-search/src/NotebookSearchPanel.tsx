@@ -10,6 +10,8 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import NotebookScrollDialog from "./NotebookScrollDialog"
 import NotebookSendRating from "./NotebookSendRating"
+import Autocomplete from '@mui/material/Autocomplete';
+import { string } from 'prop-types';
 
 interface NotebookSearchPanelProps {
 
@@ -19,12 +21,59 @@ interface IState {
     keyword: string
     items: [any],
     current_index: number
+    suggestions: {
+                id:number,
+                cell_contents: [
+                    {
+                        cell_type: string,
+                        cell_content: string
+                    }
+                ],
+                generated_queries:[
+                    {
+                        method: string,
+                        queries: [string,string,string,string,string,string,string,string,string,string]
+                    }
+                ],
+                client_id: string,
+                timestamp: string,
+                event: string
+    }
 }
 
 const DefaultState: IState = {
     keyword: '',
     items: [{}],
-    current_index: -1
+    current_index: -1,
+    suggestions: {
+        "id": 347,
+        "cell_contents": [
+          {
+            "cell_type": "user query",
+            "cell_content": "Great"
+          }
+        ],
+        "generated_queries": [
+          {
+            "method": "LSA",
+            "queries": [
+              "Great",
+              "Great",
+              "Great",
+              "Great",
+              "Great",
+              "Great",
+              "Great",
+              "Great",
+              "Great",
+              "Great"
+            ]
+          }
+        ],
+        "client_id": "kitten",
+        "timestamp": "1666802511.515757",
+        "event": "query_reformulation"
+      }      
 }
 
 
@@ -122,6 +171,16 @@ export class NotebookSearchPanel extends React.Component<NotebookSearchPanelProp
                   variant="standard"
                   value={this.state.keyword}
                   onChange={this.onChangeKeyword} />
+                <Autocomplete
+                    id="standard-basic"
+                    freeSolo
+                    options={top100Films.map((option) => option.title)}
+                    renderInput={(params) => 
+                        <TextField {...params} 
+                        label="Keyword" 
+                        value={this.state.keyword}
+                        onChange={this.onChangeKeyword} />}
+                />
                 <p>
                   <Button
                     variant="contained"
