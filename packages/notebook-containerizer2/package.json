@@ -1,7 +1,7 @@
 {
-    "name": "@jupyter_vre/components",
+    "name": "@jupyter_vre/notebook-containerizer2",
     "version": "1.0.0",
-    "description": "NaaVRE VRE UI Components",
+    "description": "VRE notebook-containerizer2",
     "keywords": [
         "jupyter",
         "jupyterlab",
@@ -23,7 +23,7 @@
     "style": "style/index.css",
     "repository": {
         "type": "git",
-        "url": "https://github.com/r-whites/jupyter_vre.git"
+        "url": ""
     },
     "scripts": {
         "build": "tsc",
@@ -32,7 +32,7 @@
         "watch": "tsc -w"
     },
     "dependencies": {
-
+        "@jupyterlab/notebook":"^3.6.1"
     },
     "devDependencies": {
         "@types/node": "^14.14.37",

@@ -27,7 +27,7 @@
     },
     "scripts": {
         "build": "tsc",
-        "dist": "yarn pack .",
+        "dist": "yarn pack",
         "clean": "rimraf lib",
         "watch": "tsc -w"
     },
