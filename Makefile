@@ -61,7 +61,7 @@ link-ui:
 
 dist-ui: build-frontend
 	mkdir -p dist
-	#$(call PACKAGE_LAB_EXTENSION,core)
+	$(call PACKAGE_LAB_EXTENSION,core)
 	$(call PACKAGE_LAB_EXTENSION,notebook-containerizer)
 	#$(call PACKAGE_LAB_EXTENSION,notebook-containerizer2)
 	$(call PACKAGE_LAB_EXTENSION,chart-customs)
