@@ -91,5 +91,5 @@ define INSTALL_LAB_EXTENSION
 endef
 
 define PACKAGE_LAB_EXTENSION
-	export PATH=$$(pwd)/node_modules/.bin:$$PATH && cd packages/$1 && npm run dist && mv *.tgz ../../dist
+	export PATH=$$(pwd)/node_modules/.bin:$$PATH && cd packages/$1 && npm run install && npm run dist && mv *.tgz ../../dist
 endef

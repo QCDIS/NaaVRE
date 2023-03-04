@@ -27,15 +27,16 @@
     },
     "scripts": {
         "build": "tsc",
+        "install": "yarn install",
         "dist": "yarn pack",
         "clean": "rimraf lib",
         "watch": "tsc -w"
     },
     "dependencies": {
-        "react-window":"^1.8.8",
-        "@material-ui/core":"^4.12.4",
-        "@emotion/styled":"^11.10.6",
-        "@emotion/react":"^11.10.6"
+        "@emotion/react": "^11.10.6",
+        "@emotion/styled": "^11.10.6",
+        "@material-ui/core": "^4.12.4",
+        "react-window": "^1.8.8"
     },
     "devDependencies": {
         "@types/node": "^14.14.37",
