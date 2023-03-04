@@ -1,9 +1,11 @@
 name: make
+
 on:
-  - schedule:
-      - cron: '0 0 4 * *'
-  - pull_request
-  - push
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 0 4 * *'
+
 
 jobs:
   call-build-wheel:
