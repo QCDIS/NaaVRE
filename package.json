@@ -16,6 +16,9 @@
     "@jupyterlab/application":"^3.6.1",
     "@mui/material":"5.0.0",
     "@mrblenny/react-flow-chart":"^0.0.14",
-    "styled-components": "^5.3.6"
+    "styled-components": "^5.3.6",
+    "react-window": "^1.8.8",
+    "@emotion/styled":"^11.10.6",
+    "@emotion/react":"^11.10.6"
     }
 }
