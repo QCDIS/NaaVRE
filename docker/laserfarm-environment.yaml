@@ -1,17 +1,10 @@
 name: venv
 channels:
   - conda-forge
-#  - defaults
-#  - mathieu
+  - defaults
+  - enable_revoked
 dependencies:
-  - pip=22.3.1=pyhd8ed1ab_0
-  - ipywidgets
-  - widgetsnbextension
-  - dask
-  - laspy
-  - jupyterhub
-  - rclone
-  - lazrs-python = 0.4.5 #laserfarm has lazrs 0.4.5
+  - pip
   - pip:
     - git+https://github.com/QCDIS/Laserfarm.git
     - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl

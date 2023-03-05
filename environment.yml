@@ -20,6 +20,7 @@ dependencies:
   - colorhash
   - pyflakes
   - jupyter-videochat
+  - jupyterlab-github
   - nbgitpuller
   - jupyterlab-lsp
   - python-lsp-server[all]
