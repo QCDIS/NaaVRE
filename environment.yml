@@ -22,7 +22,6 @@ dependencies:
   - jupyter-videochat
   - nbgitpuller
   - jupyterlab-lsp
-  - jupyterlab-lsp
   - python-lsp-server[all]
   - nb_conda_kernels
   - rclone
