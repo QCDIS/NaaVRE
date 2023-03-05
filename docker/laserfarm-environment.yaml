@@ -4,6 +4,7 @@ channels:
   - defaults
   - enable_revoked
 dependencies:
+  - scipy
   - pip
   - pip:
     - git+https://github.com/QCDIS/Laserfarm.git
