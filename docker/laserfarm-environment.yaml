@@ -1,17 +1,15 @@
 name: venv
 channels:
   - conda-forge
-#  - defaults
-#  - mathieu
 dependencies:
   - pip=22.3.1=pyhd8ed1ab_0
   - ipywidgets
   - widgetsnbextension
   - dask
   - laspy
+  - scipy
   - jupyterhub
   - rclone
-  - scipy
   - lazrs-python
   - pip:
     - git+https://github.com/QCDIS/Laserfarm.git
