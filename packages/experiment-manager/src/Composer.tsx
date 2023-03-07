@@ -16,16 +16,16 @@ import { Parallelization } from './Parallelization';
 import BasicSpeedDial from './SpeedDial';
 import { ExecuteWorkflowDialog } from './ExecuteWorkflowDialog';
 
-const CenterContent = styled.div`
+export const CenterContent = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
   overflow: hidden;
 `
 
-interface IProps { }
+export interface IProps { }
 
-interface IState {
+export interface IState {
 	chart: IChart
 }
 
@@ -34,7 +34,7 @@ export const DefaultState: IState = {
 }
 
 
-class Composer extends React.Component<IProps, IState> {
+export class Composer extends React.Component<IProps, IState> {
 
 	state = DefaultState
 

@@ -20,13 +20,13 @@
     "@mui/material": "5.0.0",
     "lodash": "^4.17.21",
     "react-window": "^1.8.6",
-    "@jupyterlab/apputils": "^3.5.0",
-    "@jupyterlab/builder": "^3.5.0",
-    "@jupyterlab/launcher": "^3.5.0",
-    "@jupyterlab/ui-components": "^3.5.0",
-    "@jupyterlab/application": "^3.5.0",
-    "@jupyterlab/coreutils": "^5.5.0",
-    "@jupyterlab/mainmenu": "^3.5.0",
-    "@jupyterlab/notebook": "^3.5.0"
+    "@jupyterlab/apputils": "~3.6.1",
+    "@jupyterlab/builder": "~3.6.1",
+    "@jupyterlab/launcher": "~3.6.1",
+    "@jupyterlab/ui-components": "~3.6.1",
+    "@jupyterlab/application": "~3.6.1",
+    "@jupyterlab/coreutils": "~5.6.1",
+    "@jupyterlab/mainmenu": "~3.6.1",
+    "@jupyterlab/notebook": "~3.6.1"
     }
 }
