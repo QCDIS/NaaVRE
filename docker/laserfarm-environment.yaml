@@ -7,6 +7,10 @@ dependencies:
   - scipy
   - laspy
   - pip
+  - ipywidgets
+  - widgetsnbextension
+  - rclone
+  - wradlib
   - pip:
     - git+https://github.com/QCDIS/Laserfarm.git
     - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl

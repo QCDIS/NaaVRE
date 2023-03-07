@@ -9,10 +9,10 @@ FROM qcdis/python-vol2birds AS vol2bird
 
 RUN conda install -c conda-forge conda-pack
 COPY --from=naavre-build naavre-build-environment.yml naavre-build-environment.yml
-COPY vol2bird-environment.yaml .
+COPY   laserfarm-environment.yaml .
 ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 RUN conda install -c conda-forge conda-merge conda-pack
-RUN conda-merge naavre-build-environment.yml vol2bird-environment.yaml > merged-environment.yaml
+RUN conda-merge naavre-build-environment.yml laserfarm-environment.yaml > merged-environment.yaml
 RUN cat merged-environment.yaml
 
 RUN mamba env update -f merged-environment.yaml
@@ -62,5 +62,4 @@ RUN jupyter nbextension enable --py widgetsnbextension
 
 RUN jupyter lab build --debug;
 
-cmd ["/usr/local/bin/start-jupyter-venv.sh"]
 cmd ["/usr/local/bin/start-jupyter-venv.sh"]
