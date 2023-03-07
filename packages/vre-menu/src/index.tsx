@@ -29,10 +29,28 @@ const extension: JupyterFrontEndPlugin<void> = {
             }
         });
 
+
+        const commandExperimentManager = 'naavre:experiment-manager';
+
+        commands.addCommand(commandExperimentManager, {
+            label: 'experiment-manager',
+            caption: 'experiment-manager',
+            execute: (args: any) => {
+                
+                // TODO: Open dedicated experiment-manager page
+            }
+        });
+
         const category = 'NaaVRE';
 
         palette.addItem({
             command: commandSettings,
+            category,
+            args: { origin: 'from the palette' }
+        });
+
+        palette.addItem({
+            command: commandExperimentManager,
             category,
             args: { origin: 'from the palette' }
         });
@@ -42,6 +60,7 @@ const extension: JupyterFrontEndPlugin<void> = {
         vreMenu.title.label = 'NaaVRE'
         mainMenu.addMenu(vreMenu, { rank: 80 });
         vreMenu.addItem({ command: commandSettings, args: { origin: 'from the menu' } });
+        vreMenu.addItem({ command: commandExperimentManager, args: { origin: 'from the menu' } });
 
     }
 };
