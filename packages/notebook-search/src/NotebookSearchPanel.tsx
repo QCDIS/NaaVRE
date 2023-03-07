@@ -11,7 +11,6 @@ import Typography from '@mui/material/Typography';
 import NotebookScrollDialog from "./NotebookScrollDialog"
 import NotebookSendRating from "./NotebookSendRating"
 import Autocomplete from '@mui/material/Autocomplete';
-import { string } from 'prop-types';
 
 interface NotebookSearchPanelProps {
 
