@@ -17,7 +17,7 @@
     "@material-ui/icons": "^4.11.2",
     "@mrblenny/react-flow-chart": "^0.0.14",
     "@mui/icons-material": "^5.6.1",
-    "@mui/material": "^5.6.1",
+    "@mui/material": "5.0.0",
     "lodash": "^4.17.21",
     "react-window": "^1.8.6",
     "@jupyterlab/apputils": "^3.5.0",
