@@ -6,7 +6,6 @@ import {
 import { IMainMenu } from '@jupyterlab/mainmenu';
 import { Menu } from '@lumino/widgets';
 import { ICommandPalette } from '@jupyterlab/apputils';
-import { MainAreaWidget } from '@jupyterlab/apputils';
 
 
 const extension: JupyterFrontEndPlugin<void> = {
