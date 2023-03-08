@@ -6,7 +6,6 @@ import {
 import { IMainMenu } from '@jupyterlab/mainmenu';
 import { Menu } from '@lumino/widgets';
 import { ICommandPalette } from '@jupyterlab/apputils';
-import { CounterWidget } from './widget';
 import { MainAreaWidget } from '@jupyterlab/apputils';
 
 
@@ -33,21 +32,6 @@ const extension: JupyterFrontEndPlugin<void> = {
         });
 
 
-        const commandExperimentManager = 'naavre:experiment-manager';
-
-        commands.addCommand(commandExperimentManager, {
-            label: 'CounterWidget',
-            caption: 'CounterWidget',
-            execute: (args: any) => {
-                const content = new CounterWidget();
-                const widget = new MainAreaWidget<CounterWidget>({ content });
-                widget.title.label = 'CounterWidget';
-                app.shell.add(widget, 'main');
-            }
-        });
-
-
-
 
         const category = 'NaaVRE';
 
@@ -57,19 +41,11 @@ const extension: JupyterFrontEndPlugin<void> = {
             args: { origin: 'from the palette' }
         });
 
-        palette.addItem({
-            command: commandExperimentManager,
-            category,
-            args: { origin: 'from the palette' }
-        });
-
         // Create a menu
         const vreMenu: Menu = new Menu({ commands });
         vreMenu.title.label = 'NaaVRE'
         mainMenu.addMenu(vreMenu, { rank: 80 });
         vreMenu.addItem({ command: commandSettings, args: { origin: 'from the menu' } });
-        vreMenu.addItem({ command: commandExperimentManager, args: { origin: 'from the menu' } });
-
     }
 };
 
