@@ -44,3 +44,5 @@ updates:
     directory: "/packages/vre-panel"
     schedule:
       interval: "daily"
+
+
