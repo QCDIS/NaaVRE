@@ -1,0 +1,48 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "npm"
+    directory: "/packages/chart-customs"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "npm"
+    directory: "/packages/core"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "npm"
+    directory: "/packages/experiment-manager"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "npm"
+    directory: "/packages/notebook-containerizer"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "npm"
+    directory: "/packages/notebook-search"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "npm"
+    directory: "/packages/vre-menu"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "npm"
+    directory: "/packages/vre-panel"
+    schedule:
+      interval: "daily"
+
+
