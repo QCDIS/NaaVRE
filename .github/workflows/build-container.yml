@@ -48,16 +48,17 @@ jobs:
 
     - name: Start docker
       run: |
-          docker run -d -p 8888:8888 -host=172.17.0.2 $TAG:latest jupyter lab
+          docker run -d -p 8888:8888 $TAG:latest jupyter lab
 
     - name: Login to gitlab Registry
-      if: ${{ github.actor != 'dependabot[bot]' }}
+      if: ${{ inputs.push }}
       uses: docker/login-action@v2
       with:
         registry: "registry.gitlab.com/qcd1/registry"
         username: ${{ secrets.gitlab_username }}
         password: ${{ secrets.gitlab_password }}
     - name: Push image to container Registry
+      if: ${{ inputs.push }}
       run: |
         # Change all uppercase to lowercase
         IMAGE_ID=$GITLAB_IMAGE_ID$TAG
@@ -72,10 +73,10 @@ jobs:
           docker tag $TAG $IMAGE_ID:latest
           docker push $IMAGE_ID:latest
         fi
-      if: ${{ inputs.push }}
+      
 
     - name: Login to github Registry
-      if: ${{ github.actor != 'dependabot[bot]' }}
+      if: ${{ inputs.push }}
       uses: docker/login-action@v2
       with:
         registry: "https://index.docker.io/v1/"
