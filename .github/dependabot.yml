@@ -4,6 +4,7 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    password: ${{secrets.MY_ARTIFACTORY_PASSWORD}}
 
   - package-ecosystem: "npm"
     directory: "/"
