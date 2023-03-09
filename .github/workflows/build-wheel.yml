@@ -16,12 +16,10 @@ jobs:
         with:
           auto-update-conda: true
           environment-file: environment.yml
-      - name: make release
-        shell: bash -el {0}
-        run: make release
       - name: 'Upload wheel artifact'
+        if: ${{ inputs.upload }}
         uses: actions/upload-artifact@v3
         with:
           name: jupyterlab_vre
           path: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
-        if: ${{ inputs.upload }}
+
