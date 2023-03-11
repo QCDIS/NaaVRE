@@ -34,8 +34,7 @@
     },
     "dependencies": {
         "@jupyterlab/application": "~3.6.1",
-        "@jupyterlab/apputils": "~3.6.1",
-        "@jupyter_vre/experiment-manager": "1.0.0"
+        "@jupyterlab/apputils": "~3.6.1"
     },
     "devDependencies": {
         "@jupyterlab/builder": "~3.6.1",
