@@ -16,6 +16,7 @@
     "files": [
         "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
         "src/**/*.{ts,tsx}",
+        "../../experiment-manager/src/*.{ts,tsx}",
         "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
     ],
     "main": "lib/index.js",

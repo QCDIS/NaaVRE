@@ -34,7 +34,8 @@
     },
     "dependencies": {
         "@jupyterlab/application": "~3.6.1",
-        "@jupyterlab/apputils": "~3.6.1"
+        "@jupyterlab/apputils": "~3.6.1",
+        "@jupyter_vre/experiment-manager": "1.0.0"
     },
     "devDependencies": {
         "@jupyterlab/builder": "~3.6.1",
@@ -58,7 +59,6 @@
         "access": "public"
     },
     "jupyterlab": {
-        "extension": true,
-        "schemaDir": "schema"
+        "extension": true
     }
 }
