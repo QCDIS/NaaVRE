@@ -16,7 +16,8 @@
     "files": [
         "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
         "src/**/*.{ts,tsx}",
-        "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+        "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}",
+        "schema/**/*.json"
     ],
     "main": "lib/index.js",
     "types": "lib/index.d.ts",
@@ -32,21 +33,32 @@
         "watch": "tsc -w"
     },
     "dependencies": {
-        "@jupyterlab/mainmenu":"^3.6.1",
-        "@material-ui/core": "^4.12.4",
-        "@mui/material":"5.11.12",
-        "@emotion/styled":"^11.10.6",
-        "@emotion/react":"^11.10.6"
+        "@jupyterlab/application": "~3.6.1",
+        "@jupyterlab/apputils": "~3.6.1"
     },
     "devDependencies": {
-        "@types/node": "^14.14.37",
-        "rimraf": "^2.6.1",
+        "@jupyterlab/builder": "~3.6.1",
+        "@typescript-eslint/eslint-plugin": "~5.54.1",
+        "@typescript-eslint/parser": "~5.54.1",
+        "eslint": "~8.36.0",
+        "eslint-config-prettier": "~8.7.0",
+        "eslint-plugin-jsdoc": "~40.0.1",
+        "eslint-plugin-prettier": "~4.2.1",
+        "eslint-plugin-react": "~7.32.2",
+        "npm-run-all": "~4.1.5",
+        "prettier": "~2.8.4",
+        "rimraf": "~4.4.0",
         "typescript": "~4.9.5"
     },
+    "sideEffects": [
+        "style/*.css",
+        "style/index.js"
+    ],
     "publishConfig": {
         "access": "public"
     },
     "jupyterlab": {
-        "extension": true
+        "extension": true,
+        "schemaDir": "schema"
     }
 }
