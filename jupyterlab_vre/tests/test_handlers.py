@@ -97,6 +97,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             payload = {'docid': 'Kaggle219', 'notebook_name': 'Laserfarm.ipynb'}
             response = self.fetch('/notebookdownloadhandler', method='POST', body=json.dumps(payload))
 
+
     def test_cells_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
