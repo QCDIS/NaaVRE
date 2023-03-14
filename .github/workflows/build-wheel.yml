@@ -16,11 +16,15 @@ jobs:
         with:
           auto-update-conda: true
           environment-file: environment.yml
-          
+
       - name: Install test dependencies
         run: |
           python -m pip install --upgrade pip
           if [ -f test-requirements.txt ]; then pip install -r test-requirements.txt; fi
+
+      - name: setup env
+        run: |
+           docker/repo_utils/conf_vl_repos.py --force=True --github_url=${{ secrets.CELL_GITHUB }} --github_token=${{ secrets.CELL_GITHUB_TOKEN }} --registry_url=${{ secrets.REGISTRY_URL }}
 
       - name: Lint with flake8
         run: |
@@ -31,7 +35,6 @@ jobs:
       - name: Test with pytest
         run: |
           pytest  --ignore=docker
-          
 
       - name: make release
         shell: bash -el {0}
