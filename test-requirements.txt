@@ -1,3 +1,17 @@
 notebook
 flake8
 pytest
+autopep8
+jupyterlab
+setuptools_rust
+pyflakes
+colorhash
+requests
+tinydb
+PyGithub
+tornado
+PyYAML
+nbformat
+Jinja2
+setuptools
+distro
