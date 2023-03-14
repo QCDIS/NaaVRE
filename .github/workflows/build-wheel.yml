@@ -24,7 +24,7 @@ jobs:
 
       - name: setup env
         run: |
-           docker/repo_utils/conf_vl_repos.py --force=True --github_url=${{ secrets.CELL_GITHUB }} --github_token=${{ secrets.CELL_GITHUB_TOKEN }} --registry_url=${{ secrets.REGISTRY_URL }}
+           python docker/repo_utils/conf_vl_repos.py --force=True --github_url=${{ secrets.CELL_GITHUB }} --github_token=${{ secrets.CELL_GITHUB_TOKEN }} --registry_url=${{ secrets.REGISTRY_URL }}
 
       - name: Lint with flake8
         run: |
