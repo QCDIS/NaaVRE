@@ -66,7 +66,8 @@ class ExtractorHandler(APIHandler, Catalog):
         confs = []
         dependencies = []
 
-        # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(source)'
+        # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(
+        # source)'
         if notebook.cells[cell_index].cell_type == 'code':
             ins = set(extractor.infere_cell_inputs(source))
             outs = set(extractor.infere_cell_outputs(source))
@@ -78,7 +79,7 @@ class ExtractorHandler(APIHandler, Catalog):
         cell = Cell(
             node_id=node_id,
             title=title,
-            task_name=title.lower().replace(' ', '-').replace('.','-'),
+            task_name=title.lower().replace(' ', '-').replace('.', '-'),
             original_source=source,
             inputs=ins,
             outputs=outs,

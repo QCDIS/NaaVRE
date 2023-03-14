@@ -1,12 +1,13 @@
 import json
 import os
 import subprocess
-from unittest import mock
 import sys
+from pathlib import Path
+from subprocess import PIPE
+from unittest import mock
+
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
-from pathlib import Path
-from subprocess import Popen, PIPE
 
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
     NotebookSearchHandler, NotebookSearchRatingHandler
@@ -19,7 +20,6 @@ if os.path.exists('resources'):
     base_path = 'resources'
 elif os.path.exists('jupyterlab_vre/tests/resources/'):
     base_path = 'jupyterlab_vre/tests/resources/'
-
 
 def delete_all_cells():
     for cell in Catalog.get_all_cells():
@@ -45,32 +45,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
                                cookie_secret='asdfasdf')
         return self.app
 
-    def test_export_workflow_handler(self):
-        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
-            m.return_value = 'cookie'
-            workflow_path = os.path.join(base_path, 'workflows/get_files.json')
-            # with open(workflow_path, 'r') as read_file:
-            #     payload = json.load(read_file)
-            # response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
-
-    def test_execute_workflow_handler(self):
-        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
-            m.return_value = 'cookie'
-            workflow_path = os.path.join(base_path, 'workflows/laserfarm.json')
-            # with open(workflow_path, 'r') as read_file:
-            #     payload = json.load(read_file)
-            # response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
-
     def test_load_module_names_mapping(self):
         load_module_names_mapping()
-
-    def test_extractor_handler_MULTIPLY(self):
-        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
-            m.return_value = 'cookie'
-            workflow_path = os.path.join(base_path, 'notebooks/MULTIPLY_framework_2.json')
-            # with open(workflow_path, 'r') as read_file:
-            #     payload = json.load(read_file)
-            # response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
 
     def test_search_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
@@ -96,7 +72,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
             m.return_value = 'cookie'
             payload = {'docid': 'Kaggle219', 'notebook_name': 'Laserfarm.ipynb'}
             response = self.fetch('/notebookdownloadhandler', method='POST', body=json.dumps(payload))
-
 
     def test_cells_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
@@ -125,9 +100,21 @@ class HandlersAPITest(AsyncHTTPTestCase):
             test_cell.base_image = 'qcdis/miniconda3-pdal'
             Catalog.editor_buffer = test_cell
             response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
+
             cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
+            dir_list = os.listdir(cells_path)
+            print("Files and directories in '", cells_path, "' :")
+            print(dir_list)
+            self.assertTrue(os.path.exists(cells_path))
+
             cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
-            cell_exec = subprocess.Popen([sys.executable, cell_path, '--id', '0', '--split_laz_files', '[file]'],stdout=PIPE)
+            dir_list = os.listdir(cell_path)
+            print("Files and directories in '", cell_path, "' :")
+            print(dir_list)
+            self.assertTrue(os.path.exists(cells_path))
+
+            cell_exec = subprocess.Popen([sys.executable, cell_path, '--id', '0', '--split_laz_files', '[file]'],
+                                         stdout=PIPE)
             print('---------------------------------------------------')
             text = cell_exec.communicate()[0]
             print(text)

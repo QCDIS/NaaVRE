@@ -1,11 +1,11 @@
 import json
+import logging
 import os
 import uuid
 from unittest import TestCase
-import nbformat as nb
-import logging
 
-from jupyterlab_vre.component_containerizer.handlers import build_templates
+import nbformat as nb
+
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.extractor import Extractor

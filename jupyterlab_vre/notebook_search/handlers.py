@@ -82,7 +82,7 @@ class NotebookSearchHandler(APIHandler):
             self.flush()
             return
         search_entry = {'query': term, 'results': results, 'timestamp': time.time()}
-        Catalog.add_search_enty(search_entry)
+        Catalog.add_search_entry(search_entry)
         self.write(json.dumps(results))
         self.flush()
 
