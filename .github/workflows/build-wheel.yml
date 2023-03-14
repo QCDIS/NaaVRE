@@ -22,16 +22,16 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f test-requirements.txt ]; then pip install -r test-requirements.txt; fi
           
-      - name: install-backend
-        shell: bash -el {0}
-        run: |
-            make install-backend && make build-frontend && make install-ui
-            make release
-
       - name: setup env
-        run: |
-           python docker/repo_utils/conf_vl_repos.py --force=True --github_url=${{ secrets.CELL_GITHUB }} --github_token=${{ secrets.CELL_GITHUB_TOKEN }} --registry_url=${{ secrets.REGISTRY_URL }}
-
+        uses: sergeysova/jq-action@v2
+        id: setup_env
+        with:
+          cmd: |
+            mkdir -p $HOME/NaaVRE/
+            if [ ! -e "$HOME/NaaVRE/NaaVRE_db.json" ] ; then echo "{}" > $HOME/NaaVRE/NaaVRE_db.json; fi
+            jq '. + { "gh_credentials": {  "1": { "name": "QCDIS/NaaVRE-n-a-a-vre-dev-VL", "url": "${{ secrets.CELL_GITHUB }}", "token": "${{ secrets.CELL_GITHUB_TOKEN }}"}}, "repositories": { "1": { "name": "QCDIS/NaaVRE-n-a-a-vre-dev-VL", "url": "${{ secrets.CELL_GITHUB_TOKEN }}", "token": "${{ secrets.CELL_GITHUB_TOKEN }}"}},"registry_credentials": {"1": {"name": "u/qcdis","url": "${{ secrets.REGISTRY_URL }}","token": null}} }' $HOME/NaaVRE/NaaVRE_db.json > $HOME/NaaVRE/tmp.json
+            mv $HOME/NaaVRE/tmp.json $HOME/NaaVRE/NaaVRE_db.json
+          
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
