@@ -48,6 +48,9 @@ class NotebookExtractorHandler(APIHandler, Catalog):
                     else 'Untitled'
                 if 'JUPYTERHUB_USER' in os.environ:
                     title += '-' + os.environ['JUPYTERHUB_USER']
+                    title.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
+                                                                                                     '_at_').strip()
+
 
         dependencies = extractor.infer_cell_dependencies(source, confs)
 

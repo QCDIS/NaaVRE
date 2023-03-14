@@ -53,6 +53,8 @@ class ExportWorkflowHandler(APIHandler):
         if cell:
             if 'JUPYTERHUB_USER' in os.environ:
                 workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER']
+                workflow_name.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
+                                                                                                      '_at_').strip()
 
             template.stream(
                 vlab_slug=vlab_slug,
@@ -133,6 +135,8 @@ class ExecuteWorkflowHandler(APIHandler):
 
         if 'JUPYTERHUB_USER' in os.environ:
             workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER']
+            workflow_name.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
+                                                                                            '_at_').strip()
         template = template.render(
             vlab_slug=vlab_slug,
             deps_dag=deps_dag,
