@@ -2,10 +2,11 @@ import json
 import os
 import subprocess
 from unittest import mock
-
+import sys
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 from pathlib import Path
+from subprocess import Popen, PIPE
 
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
     NotebookSearchHandler, NotebookSearchRatingHandler
@@ -120,20 +121,17 @@ class HandlersAPITest(AsyncHTTPTestCase):
                              dependencies,
                              container_source, chart_obj, node_id)
             test_cell.types = types
-            test_cell.base_image = 'Laserfarm'
+            test_cell.base_image = 'qcdis/miniconda3-pdal'
             Catalog.editor_buffer = test_cell
             response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
             cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
-            cell_path = os.path.join(cells_path, test_cell.task_name)
-            arg = [
-                'python',
-                cell_path,
-                '--id',
-                '0',
-                '--split_laz_files',
-                '[file]'
-            ]
-
-            output = subprocess.run(arg)
-            print(output.returncode)
-            # self.assertEqual(0, output.returncode, 'Failed')
+            cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
+            cell_exec = subprocess.Popen([sys.executable, cell_path, '--id', '0', '--split_laz_files', '[file]'],stdout=PIPE)
+            print('---------------------------------------------------')
+            text = cell_exec.communicate()[0]
+            print(text)
+            print("stdout:", cell_exec.stdout)
+            print("stderr:", cell_exec.stderr)
+            print("returncode:", cell_exec.returncode)
+            print('---------------------------------------------------')
+            self.assertEqual(0, cell_exec.returncode, 'Failed')
