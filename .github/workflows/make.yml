@@ -6,7 +6,10 @@ on:
     - cron: '0 0 4 * *'
 
 jobs:
+  call-pytest:
+    uses: QCDIS/NaaVRE/.github/workflows/python-package-conda.yml@main
   call-build-wheel:
+    needs: call-pytest
     uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@main
     with:
       upload: true
