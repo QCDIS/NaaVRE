@@ -1,8 +1,5 @@
 import argparse
-import json
 import logging
-import os
-from pathlib import Path
 
 from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.repositories.repository import Repository
