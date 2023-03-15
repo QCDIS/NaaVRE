@@ -26,13 +26,18 @@ jobs:
           
 
       - name: setup env
+        env:
+          CELL_GITHUB: ${{ secrets.CELL_GITHUB }}
+          CELL_GITHUB_TOKEN: ${{ secrets.CELL_GITHUB_TOKEN }}
+          REGISTRY_URL: ${{ secrets.REGISTRY_URL }}
+
         uses: sergeysova/jq-action@v2
         id: setup_env
         with:
           cmd: |
             mkdir -p $HOME/NaaVRE/
             if [ ! -e "$HOME/NaaVRE/NaaVRE_db.json" ] ; then echo "{}" > $HOME/NaaVRE/NaaVRE_db.json; fi
-            jq '. + { "gh_credentials": {  "1": { "name": "QCDIS/NaaVRE-n-a-a-vre-dev-VL", "url": "${{ secrets.CELL_GITHUB }}", "token": "${{ secrets.CELL_GITHUB_TOKEN }}"}}, "repositories": { "1": { "name": "QCDIS/NaaVRE-n-a-a-vre-dev-VL", "url": "${{ secrets.CELL_GITHUB_TOKEN }}", "token": "${{ secrets.CELL_GITHUB_TOKEN }}"}},"registry_credentials": {"1": {"name": "u/qcdis","url": "${{ secrets.REGISTRY_URL }}","token": null}} }' $HOME/NaaVRE/NaaVRE_db.json > $HOME/NaaVRE/tmp.json
+            jq '. + { "gh_credentials": {  "1": { "name": "QCDIS/NaaVRE-n-a-a-vre-dev-VL", "url": "${CELL_GITHUB}", "token": "${CELL_GITHUB_TOKEN}"}}, "repositories": { "1": { "name": "QCDIS/NaaVRE-n-a-a-vre-dev-VL", "url": "${CELL_GITHUB}", "token": "${CELL_GITHUB_TOKEN}"}},"registry_credentials": {"1": {"name": "u/qcdis","url": "${REGISTRY_URL}","token": null}} }' $HOME/NaaVRE/NaaVRE_db.json > $HOME/NaaVRE/tmp.json
             mv $HOME/NaaVRE/tmp.json $HOME/NaaVRE/NaaVRE_db.json
   
 
@@ -44,6 +49,15 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test with pytest
+        env:
+          SEARCH_API_ENDPOINT: ${{ secrets.SEARCH_API_ENDPOINT }}
+          SEARCH_API_TOKEN: ${{ secrets.SEARCH_API_TOKEN }}
+          API_ENDPOINT: ${{ secrets.API_ENDPOINT }}
+          NAAVRE_API_TOKEN: ${{ secrets.NAAVRE_API_TOKEN }}
+          REGISTRY_URL: ${{ secrets.REGISTRY_URL }}
+          VLAB_SLUG: ${{ secrets.VLAB_SLUG }}
+          JUPYTERHUB_USER: ${{ vars.JUPYTERHUB_USER }}
+          MODULE_MAPPING_URL: ${{ vars.MODULE_MAPPING_URL }}
         run: |
           conda install pytest
           pytest --ignore=docker
