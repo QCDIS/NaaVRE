@@ -7,7 +7,6 @@ on:
 jobs:
   build-linux:
     runs-on: ubuntu-latest
-    environment: test-vars
     env:
       CELL_GITHUB: ${{ secrets.CELL_GITHUB }}
       CELL_GITHUB_TOKEN: ${{ secrets.CELL_GITHUB_TOKEN }}
@@ -17,8 +16,8 @@ jobs:
       API_ENDPOINT: ${{ secrets.API_ENDPOINT }}
       NAAVRE_API_TOKEN: ${{ secrets.NAAVRE_API_TOKEN }}
       VLAB_SLUG: ${{ secrets.VLAB_SLUG }}
-      JUPYTERHUB_USER: ${{ vars.JUPYTERHUB_USER }}
-      MODULE_MAPPING_URL: ${{ vars.MODULE_MAPPING_URL }}
+      JUPYTERHUB_USER: ${{ secrets.JUPYTERHUB_USER }}
+      MODULE_MAPPING_URL: ${{ secrets.MODULE_MAPPING_URL }}
 
     strategy:
       max-parallel: 5
