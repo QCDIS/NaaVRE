@@ -8,6 +8,7 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     env:
+      ENV_FILE_CONTENTS: ${{ secrets.ENV_FILE_CONTENTS }}
       CELL_GITHUB: ${{ secrets.CELL_GITHUB }}
       CELL_GITHUB_TOKEN: ${{ secrets.CELL_GITHUB_TOKEN }}
       REGISTRY_URL: ${{ secrets.REGISTRY_URL }}
@@ -41,6 +42,8 @@ jobs:
         id: setup_env
         with:
           cmd: |
+            echo $ENV_FILE_CONTENTS | base64 -d > ENV
+            source ENV
             mkdir -p $HOME/NaaVRE/
             if [ ! -e "$HOME/NaaVRE/NaaVRE_db.json" ] ; then echo "{}" > $HOME/NaaVRE/NaaVRE_db.json; fi
             jq '. + { "gh_credentials": {  "1": { "name": "QCDIS/NaaVRE-n-a-a-vre-dev-VL", "url": "$CELL_GITHUB", "token": "$CELL_GITHUB_TOKEN"}}, "repositories": { "1": { "name": "QCDIS/NaaVRE-n-a-a-vre-dev-VL", "url": "$CELL_GITHUB", "token": "$CELL_GITHUB_TOKEN"}},"registry_credentials": {"1": {"name": "u/qcdis","url": "$REGISTRY_URL","token": null}} }' $HOME/NaaVRE/NaaVRE_db.json > $HOME/NaaVRE/tmp.json
@@ -48,8 +51,6 @@ jobs:
   
 
       - name: Lint with flake8
-        env:
-          SEARCH_API_TOKEN: ${{ secrets.SEARCH_API_TOKEN }}
         run: |
           conda install flake8
           # stop the build if there are Python syntax errors or undefined names
@@ -58,5 +59,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test with pytest
         run: |
+          echo $ENV_FILE_CONTENTS | base64 -d > ENV
+          source ENV
           conda install pytest
           pytest --ignore=docker
