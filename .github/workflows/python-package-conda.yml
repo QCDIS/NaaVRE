@@ -12,7 +12,7 @@ jobs:
       CELL_GITHUB_TOKEN: ${{ secrets.CELL_GITHUB_TOKEN }}
       REGISTRY_URL: ${{ secrets.REGISTRY_URL }}
       SEARCH_API_ENDPOINT: http://145.100.135.119/api/
-      SEARCH_API_TOKEN: "SEARCH_API_TOKEN"
+      SEARCH_API_TOKEN: ${{ secrets.SEARCH_API_TOKEN }}
       API_ENDPOINT: ${{ secrets.API_ENDPOINT }}
       NAAVRE_API_TOKEN: ${{ secrets.NAAVRE_API_TOKEN }}
       VLAB_SLUG: ${{ secrets.VLAB_SLUG }}
