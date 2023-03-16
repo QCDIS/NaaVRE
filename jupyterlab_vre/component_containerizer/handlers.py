@@ -7,6 +7,7 @@ import os
 import sys
 import uuid
 from builtins import Exception
+import datetime
 from pathlib import Path
 
 import autopep8
@@ -25,6 +26,9 @@ from tornado import web
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
+github_url_repos = 'https://api.github.com/repos/'
+github_workflow_file_name = 'build-push-docker.yml'
 
 
 # code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
@@ -239,14 +243,19 @@ class CellsHandler(APIHandler, Catalog):
         elif commit.totalCount <= 0:
             create_cell_in_repository(current_cell, repository, files_info)
 
+        wf_id = str(uuid.uuid4())
         resp = dispatch_github_workflow(
             owner,
             repository_name,
             current_cell,
             files_info,
             repo_token,
-            image_repo
+            image_repo,
+            wf_id=wf_id
         )
+        last_minutes = str(
+            (datetime.datetime.now() - datetime.timedelta(hours=0, minutes=2)).strftime("%Y-%m-%dT%H:%M:%SZ"))
+        runs = get_github_workflow_runs(last_minutes)
 
         self.flush()
 
@@ -282,24 +291,29 @@ def update_cell_in_repository(cell, repository, files_info):
                 )
 
 
-def dispatch_github_workflow(owner, repository_name, cell, files_info, repository_token, image):
+def dispatch_github_workflow(owner, repository_name, cell, files_info, repository_token, image, wf_id=None):
     return requests.post(
-        url='https://api.github.com/repos/' + owner + '/' +
-            repository_name + '/actions/workflows/build-push-docker'
-                              '.yml/dispatches',
+        url=github_url_repos + owner + '/' + repository_name + '/actions/workflows/' + github_workflow_file_name + '/dispatches',
         json={
             'ref': 'refs/heads/main',
             'inputs': {
                 'build_dir': cell.task_name,
                 'dockerfile': files_info['dockerfile']['file_name'],
                 'image_repo': image,
-                'image_tag': cell.task_name
+                'image_tag': cell.task_name,
+                "id": wf_id
             }
         },
         verify=False,
         headers={'Accept': 'application/vnd.github.v3+json',
                  'Authorization': 'token ' + repository_token}
     )
+
+
+def get_github_workflow_runs(owner, repository_name, last_minutes):
+    workflow_runs = github_url_repos + '/' + owner + '/' + repository_name + '/actions/runs?created=' + last_minutes
+    'https://api.github.com/repos/QCDIS/NaaVRE-n-a-a-vre-dev-VL/actions/runs?created=%3E2023-03-16T22:40:34Z'
+    return workflow_runs
 
 
 def is_standard_module(module_name):
@@ -325,10 +339,12 @@ def load_module_names_mapping():
     if not os.path.exists(module_name_mapping_path):
         with open(module_name_mapping_path, 'w') as module_name_mapping_file:
             json.dump(module_mapping, module_name_mapping_file, indent=4)
+        module_name_mapping_file.close()
 
     module_name_mapping_file = open(module_name_mapping_path)
     loaded_module_name_mapping = json.load(module_name_mapping_file)
     loaded_module_name_mapping.update(module_mapping)
+    module_name_mapping_file.close()
     return loaded_module_name_mapping
 
 
