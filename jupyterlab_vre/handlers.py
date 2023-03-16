@@ -21,19 +21,19 @@ module_mapping = {
 
 def load_module_names_mapping():
     module_mapping_url = os.getenv('MODULE_MAPPING_URL')
-    module_mapping = {}
+    loaded_module_mapping = {}
     if module_mapping_url:
         resp = requests.get(module_mapping_url)
-        module_mapping = json.loads(resp.text)
+        loaded_module_mapping = json.loads(resp.text)
     module_name_mapping_path = os.path.join(
         str(Path.home()), 'NaaVRE', 'module_name_mapping.json')
     if not os.path.exists(module_name_mapping_path):
         with open(module_name_mapping_path, 'w') as module_name_mapping_file:
-            json.dump(module_mapping, module_name_mapping_file, indent=4)
+            json.dump(loaded_module_mapping, module_name_mapping_file, indent=4)
 
     module_name_mapping_file = open(module_name_mapping_path)
     loaded_module_name_mapping = json.load(module_name_mapping_file)
-    loaded_module_name_mapping.update(module_mapping)
+    loaded_module_name_mapping.update(loaded_module_mapping)
     return loaded_module_name_mapping
 
 
