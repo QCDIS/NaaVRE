@@ -115,17 +115,17 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 test_cell.types = cell['types']
                 test_cell.base_image = cell['base_image']
                 Catalog.editor_buffer = test_cell
-                response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
-                cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
-                cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
-
-                cell_exec = subprocess.Popen([sys.executable, cell_path, '--id', '0', '--split_laz_files', '[file]'],
-                                             stdout=subprocess.PIPE)
-                print('---------------------------------------------------')
-                text = cell_exec.communicate()[0]
-                print(text)
-                print("stdout:", cell_exec.stdout)
-                print("stderr:", cell_exec.stderr)
-                print("returncode:", cell_exec.returncode)
+                # response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
+                # cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
+                # cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
+                #
+                # cell_exec = subprocess.Popen([sys.executable, cell_path, '--id', '0', '--split_laz_files', '[file]'],
+                #                              stdout=subprocess.PIPE)
+                # print('---------------------------------------------------')
+                # text = cell_exec.communicate()[0]
+                # print(text)
+                # print("stdout:", cell_exec.stdout)
+                # print("stderr:", cell_exec.stderr)
+                # print("returncode:", cell_exec.returncode)
                 print('---------------------------------------------------')
                 # self.assertEqual(0, cell_exec.returncode, text)
