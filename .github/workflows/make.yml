@@ -24,7 +24,7 @@ jobs:
       api_endpoint: ${{ secrets.API_ENDPOINT }}
       module_mapping_url: ${{ secrets.MODULE_MAPPING_URL }}
       search_api_endpoint: ${{ secrets.SEARCH_API_ENDPOINT }}
-      search_api_token:
+      search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
       registry_url: ${{ secrets.REGISTRY_URL }}
 
 
