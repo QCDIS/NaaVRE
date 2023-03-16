@@ -99,41 +99,45 @@ class HandlersAPITest(AsyncHTTPTestCase):
     def test_cells_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
-            title = 'Test-Retiling-dev-dev-skoulouzis'
-            task_name = 'test-retiling-dev-skoulouzis'
-            original_source = '# Retiling\nsplit_laz_files\n\nfor file in split_laz_files:\n    print(file)\n    retiler_output = file'
-            inputs = {'split_laz_files'}
-            outputs = {'retiler_output'}
-            params = []
-            confs = {'conf_min_x': "conf_min_x = '-113107.81'",
+            vars = []
+            var1 = {
+                {'title':'Test-Retiling-dev-dev-skoulouzis'},
+                {'task_name':'test-retiling-dev-skoulouzis'},
+                {'original_source':'# Retiling\nsplit_laz_files\n\nfor file in split_laz_files:\n    print(file)\n    retiler_output = file'},
+                {'inputs': {'split_laz_files'}},
+                {'outputs':{'retiler_output'}},
+                {'confs': {'conf_min_x': "conf_min_x = '-113107.81'",
                      'conf_min_y': "conf_min_y = '214783.87'", 'conf_max_y': "conf_max_y = '726783.87'",
                      'conf_max_x': "conf_max_x = '398892.19'",
                      'conf_n_tiles_side': "conf_n_tiles_side = '512'",
-                     'conf_local_tmp': "conf_local_tmp = pathlib.Path('/tmp')"}
-            dependencies = [{'name': 'pathlib', 'asname': None, 'module': ''}]
-            container_source = ''
-            chart_obj = None
-            node_id = 'fe8b944'
-            types = {'split_laz_files': 'list', 'retiler_output': 'str'}
+                     'conf_local_tmp': "conf_local_tmp = pathlib.Path('/tmp')"} },
+                {'dependencies':[{'name': 'pathlib', 'asname': None, 'module': ''}] },
+                {'container_source': ''},
+                {'chart_obj': None},
+                {'node_id': 'fe8b944'},
+                {'types': {'split_laz_files': 'list', 'retiler_output': 'str'}},
+                {'base_image': 'Laserfarm'}
+            }
+            vars.append(var1)
+            for var in vars:
+                test_cell = Cell(var['title'], var['task_name'], var['original_source'], var['inputs'], var['outputs'],
+                                 var['params'], var['confs'], var['dependencies'], var['container_source'],
+                                 var['chart_obj'], var['node_id'])
+                test_cell.types = var['types']
+                test_cell.base_image = var['base_image']
+                Catalog.editor_buffer = test_cell
+                response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
+                cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
+                cell_path = os.path.join(cells_path, test_cell.task_name)
+                arg = [
+                    'python',
+                    cell_path,
+                    '--id',
+                    '0',
+                    '--split_laz_files',
+                    '[file]'
+                ]
 
-            test_cell = Cell(title, task_name, original_source, inputs, outputs, params, confs,
-                             dependencies,
-                             container_source, chart_obj, node_id)
-            test_cell.types = types
-            test_cell.base_image = 'Laserfarm'
-            Catalog.editor_buffer = test_cell
-            response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
-            cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
-            cell_path = os.path.join(cells_path, test_cell.task_name)
-            arg = [
-                'python',
-                cell_path,
-                '--id',
-                '0',
-                '--split_laz_files',
-                '[file]'
-            ]
-
-            # output = subprocess.run(arg)
-            # print(output.returncode)
-            # self.assertEqual(0, output.returncode, 'Failed')
+                # output = subprocess.run(arg)
+                # print(output.returncode)
+                # self.assertEqual(0, output.returncode, 'Failed')
