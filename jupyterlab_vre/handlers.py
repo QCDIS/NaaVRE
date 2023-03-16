@@ -35,6 +35,7 @@ def load_module_names_mapping():
     module_name_mapping_file = open(module_name_mapping_path)
     loaded_module_name_mapping = json.load(module_name_mapping_file)
     loaded_module_name_mapping.update(loaded_module_mapping)
+    module_name_mapping_file.close()
     return loaded_module_name_mapping
 
 
