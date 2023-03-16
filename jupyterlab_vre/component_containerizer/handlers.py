@@ -201,9 +201,7 @@ class CellsHandler(APIHandler, Catalog):
         else:
             os.mkdir(cell_path)
 
-        registry_credentials = registry_credentials = Catalog.get_registry_credentials()
-        logger.debug('registry_credentials: ' + str(registry_credentials[0]))
-
+        registry_credentials = Catalog.get_registry_credentials()
         image_repo = registry_credentials[0]['url'].split(
             'https://hub.docker.com/u/')[1]
 

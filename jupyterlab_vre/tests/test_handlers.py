@@ -128,4 +128,4 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 print("stderr:", cell_exec.stderr)
                 print("returncode:", cell_exec.returncode)
                 print('---------------------------------------------------')
-                self.assertEqual(0, cell_exec.returncode, text+'\n'+cell_exec.stderr)
+                self.assertEqual(0, cell_exec.returncode, text)
