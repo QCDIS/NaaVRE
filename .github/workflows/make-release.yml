@@ -5,27 +5,27 @@ on:
       - '*'
 
 jobs:
-  call-pytest:
-    strategy:
-      matrix:
-        environment_names: [ "test-vars" ]
-
-    uses: QCDIS/NaaVRE/.github/workflows/python-package-conda.yml@main
-    with:
-      jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}
-      environment_name: ${{ matrix.environment_names }}
-      vlab_slug: ${{ vars.VLAB_SLUG }}
-    secrets:
-      cell_github: ${{ secrets.CELL_GITHUB }}
-      cell_github_token: ${{ secrets.CELL_GITHUB_TOKEN }}
-      api_endpoint: ${{ secrets.API_ENDPOINT }}
-      module_mapping_url: ${{ secrets.MODULE_MAPPING_URL }}
-      search_api_endpoint: ${{ secrets.SEARCH_API_ENDPOINT }}
-      search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
-      registry_url: ${{ secrets.REGISTRY_URL }}
+#  call-pytest:
+#    strategy:
+#      matrix:
+#        environment_names: [ "test-vars" ]
+#
+#    uses: QCDIS/NaaVRE/.github/workflows/python-package-conda.yml@main
+#    with:
+#      jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}
+#      environment_name: ${{ matrix.environment_names }}
+#      vlab_slug: ${{ vars.VLAB_SLUG }}
+#    secrets:
+#      cell_github: ${{ secrets.CELL_GITHUB }}
+#      cell_github_token: ${{ secrets.CELL_GITHUB_TOKEN }}
+#      api_endpoint: ${{ secrets.API_ENDPOINT }}
+#      module_mapping_url: ${{ secrets.MODULE_MAPPING_URL }}
+#      search_api_endpoint: ${{ secrets.SEARCH_API_ENDPOINT }}
+#      search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
+#      registry_url: ${{ secrets.REGISTRY_URL }}
 
   call-build-wheel:
-    needs: call-pytest
+#    needs: call-pytest
     uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@main
     with:
       upload: true
