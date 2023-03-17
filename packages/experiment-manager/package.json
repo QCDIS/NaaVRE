@@ -16,6 +16,7 @@
     "files": [
         "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
         "src/**/*.{ts,tsx}",
+        "../../experiment-manager/src/*.{ts,tsx}",
         "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
     ],
     "main": "lib/index.js",
@@ -23,7 +24,7 @@
     "style": "style/index.css",
     "repository": {
         "type": "git",
-        "url": "https://github.com/r-whites/jupyter_vre.git"
+        "url": "https://github.com/QCDIS/NaaVRE.git"
     },
     "scripts": {
         "build": "tsc",
@@ -34,11 +35,11 @@
     "dependencies": {
         "@emotion/react": "^11.9.0",
         "@emotion/styled": "^11.8.1",
-        "@jupyterlab/application": "^3.0.3",
-        "@jupyterlab/coreutils": "^5.0.1",
-        "@jupyterlab/launcher": "^3.0.2",
-        "@jupyterlab/mainmenu": "^3.0.9",
-        "@jupyterlab/notebook": "^3.0.3",
+        "@jupyterlab/application": "~3.6.1",
+        "@jupyterlab/coreutils": "~5.6.1",
+        "@jupyterlab/launcher": "~3.6.1",
+        "@jupyterlab/mainmenu": "~3.6.1",
+        "@jupyterlab/notebook": "~3.6.1",
         "@material-ui/core": "^4.11.2",
         "@material-ui/icons": "^4.11.2",
         "@mrblenny/react-flow-chart": "^0.0.14",

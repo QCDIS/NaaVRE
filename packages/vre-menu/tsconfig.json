@@ -1,6 +1,24 @@
 {
   "extends": "../../tsconfig-base",
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "composite": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "incremental": true,
+    "jsx": "react",
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "preserveWatchOutput": true,
+    "resolveJsonModule": true,
+    
+    
+    "strict": true,
+    "strictNullChecks": false,
+    
+    
     "module": "commonjs",
     "outDir": "lib",
     "rootDir": "src",
