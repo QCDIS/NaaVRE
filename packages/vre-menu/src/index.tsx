@@ -37,12 +37,12 @@ const extension: JupyterFrontEndPlugin<void> = {
       const commandExperimentManager = 'naavre:experiment-manager';
 
       commands.addCommand(commandExperimentManager, {
-          label: 'CounterWidget',
-          caption: 'CounterWidget',
+          label: 'Experiment Manager',
+          caption: 'Experiment Manager',
           execute: (args: any) => {
               const content = new ComposerWidget();
               const widget = new MainAreaWidget<ComposerWidget>({ content });
-              widget.title.label = 'CounterWidget';
+              widget.title.label = 'Experiment Manager';
               app.shell.add(widget, 'main');
           }
       });
