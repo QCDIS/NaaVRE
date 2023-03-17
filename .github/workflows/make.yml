@@ -12,7 +12,7 @@ jobs:
 #     strategy:
 #       matrix:
 #         environment_names: [ "test-vars" ]
-
+#
 #     uses: QCDIS/NaaVRE/.github/workflows/python-package-conda.yml@main
 #     with:
 #       jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}

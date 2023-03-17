@@ -201,9 +201,7 @@ class CellsHandler(APIHandler, Catalog):
         else:
             os.mkdir(cell_path)
 
-        registry_credentials = registry_credentials = Catalog.get_registry_credentials()
-        logger.debug('registry_credentials: ' + str(registry_credentials[0]))
-
+        registry_credentials = Catalog.get_registry_credentials()
         image_repo = registry_credentials[0]['url'].split(
             'https://hub.docker.com/u/')[1]
 
@@ -255,8 +253,7 @@ class CellsHandler(APIHandler, Catalog):
         )
         last_minutes = str(
             (datetime.datetime.now() - datetime.timedelta(hours=0, minutes=2)).strftime("%Y-%m-%dT%H:%M:%SZ"))
-        runs = get_github_workflow_runs(last_minutes)
-
+        # runs = get_github_workflow_runs(owner=owner,repository_name=repository_name last_minutes=last_minutes)
         self.flush()
 
 
@@ -310,9 +307,8 @@ def dispatch_github_workflow(owner, repository_name, cell, files_info, repositor
     )
 
 
-def get_github_workflow_runs(owner, repository_name, last_minutes):
+def get_github_workflow_runs(owner=None, repository_name=None, last_minutes=None):
     workflow_runs = github_url_repos + '/' + owner + '/' + repository_name + '/actions/runs?created=' + last_minutes
-    'https://api.github.com/repos/QCDIS/NaaVRE-n-a-a-vre-dev-VL/actions/runs?created=%3E2023-03-16T22:40:34Z'
     return workflow_runs
 
 

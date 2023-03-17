@@ -64,7 +64,6 @@ jobs:
             jq ". + { \"gh_credentials\": {  \"1\": { \"name\": \"QCDIS/NaaVRE-n-a-a-vre-dev-VL\", \"url\": \"$CELL_GITHUB\", \"token\": \"$CELL_GITHUB_TOKEN\"}}, \"repositories\": { \"1\": { \"name\": \"QCDIS/NaaVRE-n-a-a-vre-dev-VL\", \"url\": \"$CELL_GITHUB\", \"token\": \"$CELL_GITHUB_TOKEN\"}},\"registry_credentials\": {\"1\": {\"name\": \"u/qcdis\",\"url\": \"$REGISTRY_URL\",\"token\": null}} }" $HOME/NaaVRE/NaaVRE_db.json > $HOME/NaaVRE/tmp.json
             mv $HOME/NaaVRE/tmp.json $HOME/NaaVRE/NaaVRE_db.json
             
-  
 
       - name: Lint with flake8
         run: |
