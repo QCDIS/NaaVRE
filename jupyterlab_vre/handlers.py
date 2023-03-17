@@ -30,10 +30,12 @@ def load_module_names_mapping():
     if not os.path.exists(module_name_mapping_path):
         with open(module_name_mapping_path, 'w') as module_name_mapping_file:
             json.dump(loaded_module_mapping, module_name_mapping_file, indent=4)
+        module_name_mapping_file.close()
 
     module_name_mapping_file = open(module_name_mapping_path)
     loaded_module_name_mapping = json.load(module_name_mapping_file)
     loaded_module_name_mapping.update(loaded_module_mapping)
+    module_name_mapping_file.close()
     return loaded_module_name_mapping
 
 
