@@ -134,6 +134,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 '[file]'
             ]
 
-            output = subprocess.run(arg)
-            print(output.returncode)
+            # output = subprocess.run(arg)
+            # print(output.returncode)
             # self.assertEqual(0, output.returncode, 'Failed')

@@ -16,6 +16,7 @@ jobs:
         with:
           auto-update-conda: true
           environment-file: environment.yml
+          
       - name: make release
         shell: bash -el {0}
         run: make release
@@ -24,6 +25,3 @@ jobs:
         with:
           name: jupyterlab_vre
           path: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
-
-
-
