@@ -1,4 +1,4 @@
-FROM qcdis/miniconda3-naavre  AS naavre-build
+FROM qcdis/miniconda3-naavre:v0.11  AS naavre-build
 
 RUN conda env export --name venv > naavre-build-environment.yml
 RUN cat naavre-build-environment.yml
@@ -31,8 +31,8 @@ RUN source /venv/bin/activate
 RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
-ADD ../vanilla/start-jupyter.sh /usr/local/bin/start-jupyter.sh
-ADD ../vanilla/start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
+ADD ./start-jupyter.sh /usr/local/bin/start-jupyter.sh
+ADD ./start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
 COPY repo_utils /tmp/repo_utils
 
 COPY .condarc /tmp/.condarc
