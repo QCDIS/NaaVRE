@@ -44,7 +44,7 @@ jobs:
 
     - name: Build docker
       run: |
-          cd $DOCKER_FOLDER && docker build . --file Dockerfile -t $TAG
+          cd docker/$DOCKER_FOLDER && docker build . --file Dockerfile -t $TAG
 
     - name: Start docker
       run: |
