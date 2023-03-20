@@ -30,7 +30,6 @@ env:
   GITLAB_IMAGE_ID: "registry.gitlab.com/qcd1/registry/"
   DOCKERHUB_IMAGE_ID: "qcdis/"
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
