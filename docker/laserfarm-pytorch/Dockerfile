@@ -7,10 +7,10 @@ FROM qcdis/miniconda3-pdal AS naavre-pdal-build
 
 RUN conda install -c conda-forge conda-pack
 COPY --from=naavre-build naavre-build-environment.yml naavre-build-environment.yml
-COPY laserfarm-environment.yaml .
-ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
+COPY environment.yaml .
+ADD ../jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 RUN conda install -c conda-forge conda-merge conda-pack
-RUN conda-merge naavre-build-environment.yml laserfarm-environment.yaml > merged-environment.yaml
+RUN conda-merge naavre-build-environment.yml environment.yaml > merged-environment.yaml
 RUN cat merged-environment.yaml
 RUN mamba env update -f merged-environment.yaml
 RUN conda-pack -n venv -o /tmp/env.tar && \
@@ -31,11 +31,11 @@ RUN source /venv/bin/activate
 RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
-ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
-ADD start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
-COPY ./repo_utils/ /tmp/repo_utils
+ADD ../vanila/start-jupyter.sh /usr/local/bin/start-jupyter.sh
+ADD ../vanila/start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
+COPY ../repo_utils /tmp/repo_utils
 
-COPY .condarc /tmp/.condarc
+COPY ../.condarc /tmp/.condarc
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 RUN chmod ugo+x /usr/local/bin/start-jupyter-venv.sh

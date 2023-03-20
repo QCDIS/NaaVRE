@@ -38,7 +38,7 @@ jobs:
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
     with:
       wheel_artifact_name: jupyterlab_vre
-      dockerfile: Dockerfile-laserfarm-pytorch
+      docker_folder: Dockerfile
       tag: n-a-a-vre-laserfarm
       push: false
     secrets:
@@ -51,7 +51,7 @@ jobs:
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
     with:
       wheel_artifact_name: jupyterlab_vre
-      dockerfile: Dockerfile-MULTIPLY
+      docker_folder: Dockerfile
       tag: n-a-a-vre-multiply
       push: false
     secrets:
@@ -64,7 +64,7 @@ jobs:
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
     with:
       wheel_artifact_name: jupyterlab_vre
-      dockerfile: Dockerfile-vol2bird
+      docker_folder: Dockerfile
       tag: n-a-a-vre-vol2bird
       push: false
     secrets:
@@ -77,7 +77,7 @@ jobs:
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
     with:
       wheel_artifact_name: jupyterlab_vre
-      dockerfile: Dockerfile-laserfarm-pytorch
+      docker_folder: Dockerfile
       tag: n-a-a-vre-pytorch
       push: false
     secrets:

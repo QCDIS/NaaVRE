@@ -2,7 +2,7 @@ FROM qcdis/miniconda3-naavre AS naavre-build
 
 RUN conda install -c conda-forge conda-pack
 COPY environment.yaml .
-ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
+ADD ../jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 
 RUN mamba env update -f environment.yaml
 RUN conda-pack -n venv -o /tmp/env.tar && \
@@ -25,9 +25,9 @@ SHELL ["/bin/bash", "--login", "-c"]
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
-COPY ./repo_utils/ /tmp/repo_utils
+COPY ../repo_utils /tmp/repo_utils
 
-COPY .condarc /tmp/.condarc
+COPY ../.condarc /tmp/.condarc
 
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
