@@ -8,7 +8,7 @@ FROM qcdis/miniconda3-multiply AS naavre-multiply-build
 
 RUN conda install -c conda-forge conda-pack
 COPY --from=naavre-build naavre-build-environment.yml naavre-build-environment.yml
-COPY ../vanila/environment.yaml .
+COPY ../vanilla/environment.yaml .
 ADD ../jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 RUN conda install -c conda-forge conda-merge conda-pack
 RUN conda-merge naavre-build-environment.yml environment.yaml > merged-environment.yaml
@@ -33,8 +33,8 @@ RUN source /venv/bin/activate
 RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
-ADD ../vanila/start-jupyter.sh /usr/local/bin/start-jupyter.sh
-ADD ../vanila/start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
+ADD ../vanilla/start-jupyter.sh /usr/local/bin/start-jupyter.sh
+ADD ../vanilla/start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
 COPY ../repo_utils /tmp/repo_utils
 
 COPY ../.condarc /tmp/.condarc

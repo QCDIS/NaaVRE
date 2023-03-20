@@ -3,7 +3,7 @@ name: Build container
 on:
   workflow_call:
     inputs:
-      dockerfile:
+      docker_folder:
         required: true
         type: string
       tag:

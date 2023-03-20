@@ -43,8 +43,8 @@ RUN source /venv/bin/activate
 RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
-ADD ../vanila/start-jupyter.sh /usr/local/bin/start-jupyter.sh
-ADD ../vanila/start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
+ADD ../vanilla/start-jupyter.sh /usr/local/bin/start-jupyter.sh
+ADD ../vanilla/start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
 COPY ../repo_utils /tmp/repo_utils
 
 COPY ../.condarc /tmp/.condarc
