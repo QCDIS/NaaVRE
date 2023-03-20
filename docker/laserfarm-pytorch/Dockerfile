@@ -33,9 +33,9 @@ SHELL ["/bin/bash", "--login", "-c"]
 
 ADD ../vanilla/start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD ../vanilla/start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
-COPY ../repo_utils /tmp/repo_utils
+COPY repo_utils /tmp/repo_utils
 
-COPY ../.condarc /tmp/.condarc
+COPY .condarc /tmp/.condarc
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 RUN chmod ugo+x /usr/local/bin/start-jupyter-venv.sh
