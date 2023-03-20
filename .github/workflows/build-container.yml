@@ -40,7 +40,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: ${{ inputs.wheel_artifact_name }}
-        path: docker/$DOCKER_FOLDER
+        path: docker/${{ inputs.docker_folder }}
 
     - name: Build docker
       run: |
