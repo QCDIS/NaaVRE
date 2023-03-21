@@ -98,3 +98,4 @@ jobs:
           docker tag $TAG $IMAGE_ID:latest
           docker push $IMAGE_ID:latest
         fi
+
