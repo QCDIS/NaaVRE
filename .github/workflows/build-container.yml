@@ -43,6 +43,7 @@ jobs:
 
     - name: Build docker
       run: |
+          cp naa-vre-environment.yaml docker/$DOCKER_FOLDER
           cd docker/$DOCKER_FOLDER && docker build . --file Dockerfile -t $TAG
 
     - name: Start docker

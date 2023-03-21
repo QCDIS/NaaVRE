@@ -5,7 +5,7 @@ COPY   environment.yaml .
 ADD ./jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 RUN conda install -c conda-forge conda-merge conda-pack
 
-RUN mamba env update -f environment.yaml
+RUN mamba env update -f naa-vre-environment.yaml
 RUN conda list
 RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \

@@ -1,11 +1,15 @@
 FROM continuumio/miniconda3 AS naavre-pdal-build
 
-RUN conda install -c conda-forge conda-pack
+RUN conda install -c conda-forge conda-pack conda-merge
 COPY environment.yaml .
+COPY naa-vre-environment.yaml .
+
+RUN conda-merge environment.yaml naa-vre-environment.yaml > merged-environment.yaml
+
 ADD ./jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 RUN conda install -c conda-forge conda-merge conda-pack mamba
 
-RUN mamba env update -f environment.yaml
+RUN mamba env update -f merged-environment.yaml
 RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
     rm /tmp/env.tar

@@ -4,66 +4,46 @@ channels:
   - defaults
   - enable_revoked
 dependencies:
-  - autopep8
   - beautifulsoup4
-  - colorhash
   - cxx-compiler
-  - distro
   - flake8
   - gcc=12.1.0
   - gdal=2.4
-  - git
   - h5netcdf
   - Jinja2
-  - jupyterhub
-  - jupyterlab
-  - jupyterlab-github
-  - jupyterlab-lsp
-  - jupyter-videochat
   - laspy
   - lazrs-python
   - libgcc
   - libgdal
   - libstdcxx-ng
   - lxml
-  - mamba
-  - nb_conda_kernels
-  - nbformat
-  - nbgitpuller
   - netcdf4
   - notebook
   - numpy
   - package_has_been_revoked # without this we get build error:- nothing provides package_has_been_revoked needed by gxx_linux-64-7.2.0-24
   - pip
   - plyfile
-  - pyflakes
-  - pygithub
   - pyproj
   - pyshp
   - pytest
   - pytest-shutil
   - python>=3.8
-  - python-lsp-server[all]
   - pyyaml
-  - rclone
   - requests
   - scipy
   - sentinelhub
   - setuptools
   - shapely
-  - tinydb
-  - tornado
   - widgetsnbextension
   - xarray
-  - yarn
   - pip:
     - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
     - git+https://github.com/QCDIS/multiply-core.git
     - git+https://github.com/QCDIS/data-access.git
-    - git+https://github.com/QCDIS/inference-engine.git
-    - git+https://github.com/QCDIS/KaFKA-InferenceEngine.git
-    - git+https://github.com/QCDIS/multiply-orchestration
     - git+https://github.com/QCDIS/vm-support.git
-    - git+https://github.com/QCDIS/prior-engine.git
-    - git+https://github.com/QCDIS/BRDF_descriptors.git
-    - git+https://github.com/JorisTimmermans/atmospheric_correction.git
+    - git+https://github.com/QCDIS/inference-engine.git
+#    - git+https://github.com/QCDIS/KaFKA-InferenceEngine.git
+#    - git+https://github.com/QCDIS/multiply-orchestration
+#    - git+https://github.com/QCDIS/prior-engine.git
+#    - git+https://github.com/QCDIS/BRDF_descriptors.git
+#    - git+https://github.com/JorisTimmermans/atmospheric_correction.git

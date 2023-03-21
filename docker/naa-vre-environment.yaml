@@ -14,7 +14,6 @@ dependencies:
   - jupyterlab-github
   - jupyterlab-lsp
   - jupyter-videochat
-  - mamba
   - nb_conda_kernels
   - nbformat
   - nbgitpuller
@@ -29,12 +28,11 @@ dependencies:
   - pyyaml
   - rclone
   - requests
-  - tinydb>=4.6.1
+  - tinydb
   - tornado
   - widgetsnbextension
   - yarn
   - pip:
+      - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
       - pre-commit
       - ggshield
-  - pip:
-    - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
