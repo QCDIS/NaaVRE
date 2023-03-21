@@ -4,10 +4,37 @@ channels:
   - defaults
   - enable_revoked
 dependencies:
-  - pip
-  - rclone
+  - autopep8
+  - colorhash
+  - distro
+  - git
+  - Jinja2
   - jupyterhub
-  - widgetsnbextension
+  - jupyterlab
+  - jupyterlab-github
+  - jupyterlab-lsp
+  - jupyter-videochat
+  - mamba
+  - nb_conda_kernels
+  - nbformat
+  - nbgitpuller
+  - nodejs
+  - notebook
   - package_has_been_revoked # without this we get build error:- nothing provides package_has_been_revoked needed by gxx_linux-64-7.2.0-24
+  - pip
+  - pyflakes
+  - pygithub
+  - python>=3.8
+  - python-lsp-server[all]
+  - pyyaml
+  - rclone
+  - requests
+  - tinydb>=4.6.1
+  - tornado
+  - widgetsnbextension
+  - yarn
+  - pip:
+      - pre-commit
+      - ggshield
   - pip:
     - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl

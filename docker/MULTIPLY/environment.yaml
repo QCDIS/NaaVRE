@@ -4,60 +4,58 @@ channels:
   - defaults
   - enable_revoked
 dependencies:
-  - python>=3.8
-  - gdal=2.4
-  - libgdal
-  - pyproj
-  - pyyaml
-  - numpy
-  - scipy
-  - setuptools
-  - gcc=12.1.0
-  - cxx-compiler
-  - libgcc
-  - libstdcxx-ng
-  - lazrs-python
-  - laspy
-  - plyfile
+  - autopep8
   - beautifulsoup4
+  - colorhash
+  - cxx-compiler
+  - distro
+  - flake8
+  - gcc=12.1.0
+  - gdal=2.4
+  - git
+  - h5netcdf
+  - Jinja2
+  - jupyterhub
+  - jupyterlab
+  - jupyterlab-github
+  - jupyterlab-lsp
+  - jupyter-videochat
+  - laspy
+  - lazrs-python
+  - libgcc
+  - libgdal
+  - libstdcxx-ng
   - lxml
-  - shapely
+  - mamba
+  - nb_conda_kernels
+  - nbformat
+  - nbgitpuller
+  - netcdf4
+  - notebook
+  - numpy
+  - package_has_been_revoked # without this we get build error:- nothing provides package_has_been_revoked needed by gxx_linux-64-7.2.0-24
+  - pip
+  - plyfile
+  - pyflakes
+  - pygithub
+  - pyproj
   - pyshp
   - pytest
-  - xarray
-  - netcdf4
-  - h5netcdf
-  - flake8
-  - sentinelhub
   - pytest-shutil
-  - pip
-  - rclone
-  - jupyterhub
-  - widgetsnbextension
-  - package_has_been_revoked # without this we get build error:- nothing provides package_has_been_revoked needed by gxx_linux-64-7.2.0-24
-  - jupyterlab=3.6.1
-  - nodejs=18.13.0
   - python>=3.8
-  - yarn=1.22.19
-  - tinydb>=4.6.1
-  - pygithub>=1.55
-  - tornado>=6.1
-  - notebook=6.5.2
-  - nbformat
-  - autopep8
-  - Jinja2
-  - distro
-  - requests
-  - colorhash
-  - pyflakes
-  - jupyter-videochat
-  - jupyterlab-github
-  - nbgitpuller
-  - jupyterlab-lsp
   - python-lsp-server[all]
-  - nb_conda_kernels
-  - git
-  - mamba
+  - pyyaml
+  - rclone
+  - requests
+  - scipy
+  - sentinelhub
+  - setuptools
+  - shapely
+  - tinydb
+  - tornado
+  - widgetsnbextension
+  - xarray
+  - yarn
   - pip:
     - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
     - git+https://github.com/QCDIS/multiply-core.git
