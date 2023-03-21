@@ -40,11 +40,11 @@ dependencies:
   - pip:
     - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
     - git+https://github.com/QCDIS/multiply-core.git
-    - git+https://github.com/QCDIS/data-access.git
-    - git+https://github.com/QCDIS/vm-support.git
-    - git+https://github.com/QCDIS/inference-engine.git
-    - git+https://github.com/QCDIS/BRDF_descriptors.git
-    - git+https://github.com/QCDIS/atmospheric_correction.git
-    - git+https://github.com/QCDIS/KaFKA-InferenceEngine.git
-    - git+https://github.com/QCDIS/multiply-orchestration.git
-    - git+https://github.com/QCDIS/prior-engine.git
+#    - git+https://github.com/QCDIS/data-access.git
+#    - git+https://github.com/QCDIS/vm-support.git
+#    - git+https://github.com/QCDIS/inference-engine.git
+#    - git+https://github.com/QCDIS/BRDF_descriptors.git
+#    - git+https://github.com/QCDIS/atmospheric_correction.git
+#    - git+https://github.com/QCDIS/KaFKA-InferenceEngine.git
+#    - git+https://github.com/QCDIS/multiply-orchestration.git
+#    - git+https://github.com/QCDIS/prior-engine.git
