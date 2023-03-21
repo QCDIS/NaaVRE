@@ -37,7 +37,7 @@ dependencies:
   - shapely
   - widgetsnbextension
   - xarray
- - pip:
+  - pip:
    - git+https://github.com/QCDIS/multiply-core.git
    - git+https://github.com/QCDIS/data-access.git
    - git+https://github.com/QCDIS/vm-support.git
