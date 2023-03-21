@@ -2,7 +2,7 @@ FROM qcdis/miniconda3-naavre AS naavre-build
 
 RUN conda install -c conda-forge conda-merge conda-pack
 COPY environment.yaml .
-ADD ./jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
+ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 
 RUN conda env export --name venv > naavre-build-environment.yml
 RUN cat naavre-build-environment.yml
