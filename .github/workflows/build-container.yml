@@ -43,7 +43,9 @@ jobs:
 
     - name: Build docker
       run: |
-          cp docker/naa-vre-environment.yaml docker/$DOCKER_FOLDER
+          echo "" >> environment.yml
+          echo "      - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl" >> environment.yml
+          cp environment.yml docker/$DOCKER_FOLDER/naa-vre-environment.yaml
           cd docker/$DOCKER_FOLDER && docker build . --file Dockerfile -t $TAG
 
     - name: Start docker

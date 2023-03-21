@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3 AS naavre-build
+FROM continuumio/miniconda3:22.11.1 AS naavre-build
 
 RUN conda install -c conda-forge conda-pack mamba
 COPY naa-vre-environment.yaml .
