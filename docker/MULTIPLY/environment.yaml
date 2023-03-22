@@ -28,14 +28,14 @@ dependencies:
   - matplotlib
   - pytest-shutil
   - python>=3.8
-#  - pyyaml
-#  - requests
-#  - scipy
-#  - sentinelhub
-#  - setuptools
-#  - shapely
-#  - widgetsnbextension
-#  - xarray
+  - pyyaml
+  - requests
+  - scipy
+  - sentinelhub
+  - setuptools
+  - shapely
+  - widgetsnbextension
+  - xarray
 #  - pip:
 #    - git+https://github.com/QCDIS/multiply-core.git
 #    - git+https://github.com/QCDIS/data-access.git
