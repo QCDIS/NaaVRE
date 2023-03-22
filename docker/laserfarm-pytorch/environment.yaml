@@ -16,6 +16,6 @@ dependencies:
   - tornado
   - wradlib
   - pip:
-    - git+https://github.com/QCDIS/Laserfarm.git
-    - pre-commit
-    - ggshield
+      - git+https://github.com/QCDIS/Laserfarm.git
+      - pre-commit
+      - ggshield
