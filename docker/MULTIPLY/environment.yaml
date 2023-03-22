@@ -1,7 +1,6 @@
 name: venv
 channels:
   - conda-forge
-  - defaults
   - enable_revoked
 dependencies:
   - libgdal
@@ -37,12 +36,12 @@ dependencies:
   - shapely
   - xarray
   - pip:
-    - git+https://github.com/QCDIS/multiply-core.git
-    - git+https://github.com/QCDIS/data-access.git
-    - git+https://github.com/QCDIS/vm-support.git
-    - git+https://github.com/QCDIS/inference-engine.git
-    - git+https://github.com/QCDIS/BRDF_descriptors.git
-    - git+https://github.com/QCDIS/atmospheric_correction.git
-    - git+https://github.com/QCDIS/KaFKA-InferenceEngine.git
-    - git+https://github.com/QCDIS/multiply-orchestration.git
-    - git+https://github.com/QCDIS/prior-engine.git
+      - git+https://github.com/QCDIS/multiply-core.git
+      - git+https://github.com/QCDIS/data-access.git
+      - git+https://github.com/QCDIS/vm-support.git
+      - git+https://github.com/QCDIS/inference-engine.git
+      - git+https://github.com/QCDIS/BRDF_descriptors.git
+      - git+https://github.com/QCDIS/atmospheric_correction.git
+      - git+https://github.com/QCDIS/KaFKA-InferenceEngine.git
+      - git+https://github.com/QCDIS/multiply-orchestration.git
+      - git+https://github.com/QCDIS/prior-engine.git
