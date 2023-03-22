@@ -1,8 +1,6 @@
 name: venv
 channels:
   - conda-forge
-  - defaults
-  - enable_revoked
 dependencies:
   - cxx-compiler
   - distro

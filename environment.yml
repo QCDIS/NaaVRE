@@ -1,7 +1,6 @@
 name: jupyterlab
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - jupyterhub
   - nbformat
