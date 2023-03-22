@@ -3,7 +3,6 @@ FROM condaforge/mambaforge:22.11.1-4 AS naavre-multiply-build
 RUN conda install -c conda-forge conda-pack conda-merge mamba
 COPY environment.yaml .
 COPY naa-vre-environment.yaml .
-
 RUN conda-merge environment.yaml naa-vre-environment.yaml > merged-environment.yaml
 
 ADD ./jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
