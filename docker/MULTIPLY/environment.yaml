@@ -10,6 +10,7 @@ dependencies:
   - flake8
   - gcc=12.1.0
   - gdal=2.4
+  - icu>=64.2
   - h5netcdf
   - Jinja2
   - laspy
@@ -19,7 +20,7 @@ dependencies:
   - lxml
   - netcdf4
   - numpy
-#  - package_has_been_revoked # without this we get build error:- nothing provides package_has_been_revoked needed by gxx_linux-64-7.2.0-24
+  - package_has_been_revoked # without this we get build error:- nothing provides package_has_been_revoked needed by gxx_linux-64-7.2.0-24
   - pip
   - plyfile
   - pyproj
