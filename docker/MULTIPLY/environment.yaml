@@ -4,6 +4,7 @@ channels:
   - defaults
   - enable_revoked
 dependencies:
+  - libgdal=2.4
   - beautifulsoup4
   - cxx-compiler
   - flake8
@@ -14,13 +15,11 @@ dependencies:
   - laspy
   - lazrs-python
   - libgcc
-  - libgdal=2.4
   - libstdcxx-ng
   - lxml
   - netcdf4
-  - notebook
   - numpy
-  - package_has_been_revoked # without this we get build error:- nothing provides package_has_been_revoked needed by gxx_linux-64-7.2.0-24
+#  - package_has_been_revoked # without this we get build error:- nothing provides package_has_been_revoked needed by gxx_linux-64-7.2.0-24
   - pip
   - plyfile
   - pyproj
@@ -29,21 +28,21 @@ dependencies:
   - matplotlib
   - pytest-shutil
   - python>=3.8
-  - pyyaml
-  - requests
-  - scipy
-  - sentinelhub
-  - setuptools
-  - shapely
-  - widgetsnbextension
-  - xarray
-  - pip:
-    - git+https://github.com/QCDIS/multiply-core.git
-    - git+https://github.com/QCDIS/data-access.git
-    - git+https://github.com/QCDIS/vm-support.git
-    - git+https://github.com/QCDIS/inference-engine.git
-    - git+https://github.com/QCDIS/BRDF_descriptors.git
-    - git+https://github.com/QCDIS/atmospheric_correction.git
-    - git+https://github.com/QCDIS/KaFKA-InferenceEngine.git
-    - git+https://github.com/QCDIS/multiply-orchestration.git
-    - git+https://github.com/QCDIS/prior-engine.git
+#  - pyyaml
+#  - requests
+#  - scipy
+#  - sentinelhub
+#  - setuptools
+#  - shapely
+#  - widgetsnbextension
+#  - xarray
+#  - pip:
+#    - git+https://github.com/QCDIS/multiply-core.git
+#    - git+https://github.com/QCDIS/data-access.git
+#    - git+https://github.com/QCDIS/vm-support.git
+#    - git+https://github.com/QCDIS/inference-engine.git
+#    - git+https://github.com/QCDIS/BRDF_descriptors.git
+#    - git+https://github.com/QCDIS/atmospheric_correction.git
+#    - git+https://github.com/QCDIS/KaFKA-InferenceEngine.git
+#    - git+https://github.com/QCDIS/multiply-orchestration.git
+#    - git+https://github.com/QCDIS/prior-engine.git

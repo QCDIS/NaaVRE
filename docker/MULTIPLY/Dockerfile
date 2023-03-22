@@ -17,6 +17,7 @@ RUN /venv/bin/conda-unpack
 FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e AS runtime
 USER root
 
+
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install fuse
 
 COPY --from=naavre-multiply-build /venv/ /venv/
