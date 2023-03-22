@@ -4,13 +4,12 @@ channels:
   - defaults
   - enable_revoked
 dependencies:
-  - libgdal=2.4
+  - libgdal=3.0
   - beautifulsoup4
   - cxx-compiler
   - flake8
   - gcc=12.1.0
-  - gdal=2.4
-  - icu>=64.2
+  - gdal=3.0
   - h5netcdf
   - Jinja2
   - laspy
@@ -37,13 +36,13 @@ dependencies:
   - shapely
   - widgetsnbextension
   - xarray
-#  - pip:
-#    - git+https://github.com/QCDIS/multiply-core.git
-#    - git+https://github.com/QCDIS/data-access.git
-#    - git+https://github.com/QCDIS/vm-support.git
-#    - git+https://github.com/QCDIS/inference-engine.git
-#    - git+https://github.com/QCDIS/BRDF_descriptors.git
-#    - git+https://github.com/QCDIS/atmospheric_correction.git
-#    - git+https://github.com/QCDIS/KaFKA-InferenceEngine.git
-#    - git+https://github.com/QCDIS/multiply-orchestration.git
-#    - git+https://github.com/QCDIS/prior-engine.git
+  - pip:
+    - git+https://github.com/QCDIS/multiply-core.git
+    - git+https://github.com/QCDIS/data-access.git
+    - git+https://github.com/QCDIS/vm-support.git
+    - git+https://github.com/QCDIS/inference-engine.git
+    - git+https://github.com/QCDIS/BRDF_descriptors.git
+    - git+https://github.com/QCDIS/atmospheric_correction.git
+    - git+https://github.com/QCDIS/KaFKA-InferenceEngine.git
+    - git+https://github.com/QCDIS/multiply-orchestration.git
+    - git+https://github.com/QCDIS/prior-engine.git
