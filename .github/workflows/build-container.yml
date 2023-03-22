@@ -41,12 +41,14 @@ jobs:
         name: ${{ inputs.wheel_artifact_name }}
         path: docker/${{ inputs.docker_folder }}
 
-    - uses: chrisdickinson/setup-yq@latest
+    - uses: mikefarah/yq@v4.32.2
     - name: add whl
       run: |
           cp environment.yml docker/$DOCKER_FOLDER/
           mv docker/$DOCKER_FOLDER/environment.yml docker/$DOCKER_FOLDER/naa-vre-environment.yaml
-          yq e '.dependencies[-1].pip += ["/home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl"]' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i 
+          yq '.dependencies[-1].pip += ["/home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl"]' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i 
+          yq 'del(.channels[] | select(. == "defaults"))' environment.yaml -i
+          yq 'del(.channels[] | select(. == "defaults"))' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i 
 
 
     - name: Build docker
@@ -105,4 +107,3 @@ jobs:
           docker tag $TAG $IMAGE_ID:latest
           docker push $IMAGE_ID:latest
         fi
-
