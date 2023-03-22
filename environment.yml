@@ -31,5 +31,3 @@ dependencies:
   - git
   - pip
   - pip:
-      - pre-commit
-      - ggshield
