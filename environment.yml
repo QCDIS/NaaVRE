@@ -13,6 +13,7 @@ dependencies:
   - tinydb>=4.6.1
   - pygithub>=1.55
   - tornado>=6.1
+  - icu>=64.2
   - notebook=6.5.2
   - pyyaml>=6.0
   - nbformat
