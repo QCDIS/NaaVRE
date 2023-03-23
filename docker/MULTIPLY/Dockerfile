@@ -44,10 +44,11 @@ RUN jupyter serverextension enable --py jupyterlab_github --user
 
 RUN jupyter lab build --debug;
 
-RUN python -c "from multiply_data_access import DataAccessComponent"
-RUN python -c "from vm_support.utils import create_config_file, set_permissions"
-RUN python -c "from vm_support.sym_linker import create_sym_links"
-RUN python -c "import glob"
-RUN python -c "import pyproj"
+
+
+COPY test_multiply.py .
+RUN python test_multiply.py
+RUN rm test_multiply.py
+
 
 cmd ["/usr/local/bin/start-jupyter-venv.sh"]

@@ -15,6 +15,7 @@ dependencies:
   - libgcc
   - libstdcxx-ng
   - lxml
+  - html5lib
   - netcdf4
   - notebook
   - numpy
