@@ -29,7 +29,7 @@ SHELL ["/bin/bash", "--login", "-c"]
 
 ADD ./start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD ./start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
-COPY ../repo_utils /tmp/repo_utils
+COPY repo_utils /tmp/repo_utils
 
 COPY .condarc /tmp/.condarc
 
@@ -43,8 +43,6 @@ RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
 
 RUN jupyter lab build --debug;
-
-
 
 COPY test_multiply.py .
 RUN python test_multiply.py

@@ -1,7 +1,6 @@
 name: venv
 channels:
   - conda-forge
-#  - enable_revoked
 dependencies:
   - beautifulsoup4
   - cxx-compiler
@@ -19,7 +18,6 @@ dependencies:
   - netcdf4
   - notebook
   - numpy
-  #  - package_has_been_revoked # without this we get build error:- nothing provides package_has_been_revoked needed by gxx_linux-64-7.2.0-24
   - pip
   - plyfile
   - pyproj
