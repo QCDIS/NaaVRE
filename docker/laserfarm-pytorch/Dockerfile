@@ -1,41 +1,29 @@
-FROM qcdis/miniconda3-naavre AS naavre-build
+FROM qcdis/miniconda3-naavre  AS naavre-build
 
 RUN conda env export --name venv > naavre-build-environment.yml
 RUN cat naavre-build-environment.yml
 
-
-
-FROM qcdis/python-vol2birds AS vol2bird
+FROM qcdis/miniconda3-pdal AS naavre-pdal-build
 
 RUN conda install -c conda-forge conda-pack
 COPY --from=naavre-build naavre-build-environment.yml naavre-build-environment.yml
-COPY   laserfarm-environment.yaml .
-ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
+COPY environment.yaml .
+ADD ../jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 RUN conda install -c conda-forge conda-merge conda-pack
-RUN conda-merge naavre-build-environment.yml laserfarm-environment.yaml > merged-environment.yaml
+RUN conda-merge naavre-build-environment.yml environment.yaml > merged-environment.yaml
 RUN cat merged-environment.yaml
-
 RUN mamba env update -f merged-environment.yaml
-RUN conda list
 RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
     rm /tmp/env.tar
 RUN /venv/bin/conda-unpack
 
-FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e
-
+FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e AS runtime
 USER root
 
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install fuse
 
-COPY --from=vol2bird /venv /venv
-
-COPY --from=vol2bird /opt/radar/ /opt/radar/
-COPY --from=vol2bird /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
-
-# set the paths to installed libraries and executables
-ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/radar/lib:/opt/radar/rave/lib:/opt/radar/rsl/lib:/opt/radar/vol2bird/lib:/usr/lib/x86_64-linux-gnu
-ENV PATH=${PATH}:/opt/radar/vol2bird/bin:/opt/radar/rsl/bin
+COPY --from=naavre-pdal-build /venv/ /venv/
 
 ENV PATH=/venv/bin:$PATH
 ENV PATH=/home/jovyan/.local/bin:$PATH
@@ -43,12 +31,11 @@ RUN source /venv/bin/activate
 RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
-ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
-ADD start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
-COPY ./repo_utils/ /tmp/repo_utils
+ADD ../vanilla/start-jupyter.sh /usr/local/bin/start-jupyter.sh
+ADD ../vanilla/start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
+COPY ../repo_utils /tmp/repo_utils
 
-COPY .condarc /tmp/.condarc
-
+COPY ../.condarc /tmp/.condarc
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 RUN chmod ugo+x /usr/local/bin/start-jupyter-venv.sh
@@ -58,8 +45,11 @@ USER $NB_USER
 RUN jupyter serverextension enable --py jupyterlab_vre --user
 RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
-RUN jupyter nbextension enable --py widgetsnbextension
 
 RUN jupyter lab build --debug;
+
+COPY test_laserchicken.py .
+RUN python test_laserchicken.py
+RUN rm test_laserchicken.py
 
 cmd ["/usr/local/bin/start-jupyter-venv.sh"]
