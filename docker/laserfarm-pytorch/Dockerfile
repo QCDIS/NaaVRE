@@ -44,7 +44,7 @@ RUN jupyter serverextension enable --py jupyterlab_github --user
 
 RUN jupyter lab build --debug;
 
-COPY init_script.sh .
+COPY init_script.sh /tmp
 
 COPY test_laserchicken.py .
 RUN python test_laserchicken.py

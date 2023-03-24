@@ -40,7 +40,7 @@ RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
 
 
-COPY init_script.sh .
+COPY init_script.sh /tmp
 
 RUN jupyter lab build --debug;
 cmd ["/usr/local/bin/start-jupyter-venv.sh"]

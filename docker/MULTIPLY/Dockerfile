@@ -45,7 +45,7 @@ RUN jupyter serverextension enable --py jupyterlab_github --user
 
 RUN jupyter lab build --debug;
 RUN ls
-COPY init_script.sh .
+COPY init_script.sh /tmp
 COPY test_multiply.py .
 RUN python test_multiply.py
 RUN rm test_multiply.py

@@ -48,7 +48,7 @@ RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
 RUN jupyter nbextension enable --py widgetsnbextension
 
-COPY init_script.sh .
+COPY init_script.sh /tmp
 
 RUN jupyter lab build --debug;
 
