@@ -29,6 +29,7 @@ dependencies:
   - nb_conda_kernels
   - rclone
   - jupyter-archive
+  - zip
   - git
   - pip
   - pip:
