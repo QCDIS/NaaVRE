@@ -45,6 +45,7 @@ RUN jupyter serverextension enable --py jupyter_archive --user
 
 RUN jupyter lab build --debug;
 
+COPY init_script.sh .
 COPY test_multiply.py .
 RUN python test_multiply.py
 RUN rm test_multiply.py
