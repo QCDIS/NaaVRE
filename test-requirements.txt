@@ -1,3 +1,0 @@
-notebook
-flake8
-pytest
