@@ -3,7 +3,7 @@ name: Build container
 on:
   workflow_call:
     inputs:
-      dockerfile:
+      docker_folder:
         required: true
         type: string
       tag:
@@ -25,11 +25,10 @@ on:
       docker_password:
         required: true
 env:
-  DOCKERFILE:  ${{ inputs.dockerfile }}
+  DOCKER_FOLDER:  ${{ inputs.docker_folder }}
   TAG:  ${{ inputs.tag }}
   GITLAB_IMAGE_ID: "registry.gitlab.com/qcd1/registry/"
   DOCKERHUB_IMAGE_ID: "qcdis/"
-
 
 jobs:
   build:
@@ -40,11 +39,26 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: ${{ inputs.wheel_artifact_name }}
-        path: docker
+        path: docker/${{ inputs.docker_folder }}
+    - uses: mikefarah/yq@v4.32.2
+
+    - name: add whl and start files 
+      run: |
+          cp docker/init_script.sh docker/$DOCKER_FOLDER/
+          cp docker/start-jupyter.sh docker/$DOCKER_FOLDER/
+          cp docker/start-jupyter.sh docker/$DOCKER_FOLDER/
+          cp docker/start-jupyter-venv.sh docker/$DOCKER_FOLDER/
+          cp -r docker/repo_utils docker/$DOCKER_FOLDER/repo_utils
+          cp environment.yml docker/$DOCKER_FOLDER/
+          mv docker/$DOCKER_FOLDER/environment.yml docker/$DOCKER_FOLDER/naa-vre-environment.yaml
+          yq '.dependencies[-1].pip += ["/home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl"]' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i 
+          if test -f "docker/$DOCKER_FOLDER/environment.yaml"; then yq 'del(.channels[] | select(. == "defaults"))' docker/$DOCKER_FOLDER/environment.yaml -i; fi
+          yq 'del(.channels[] | select(. == "defaults"))' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i 
+
 
     - name: Build docker
       run: |
-          cd docker && docker build . --file $DOCKERFILE -t $TAG
+          cd docker/$DOCKER_FOLDER && docker build . --file Dockerfile -t $TAG
 
     - name: Start docker
       run: |
