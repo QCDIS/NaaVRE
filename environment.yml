@@ -30,6 +30,7 @@ dependencies:
   - rclone
   - jupyter-archive
   - zip
+  - unzip
   - wget
   - git
   - pip
