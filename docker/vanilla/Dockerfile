@@ -1,10 +1,10 @@
-FROM qcdis/miniconda3-naavre AS naavre-build
+FROM continuumio/miniconda3:22.11.1 AS naavre-build
 
-RUN conda install -c conda-forge conda-pack
-COPY environment.yaml .
-ADD ../jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
+RUN conda install -c conda-forge conda-pack mamba
+COPY naa-vre-environment.yaml .
+ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 
-RUN mamba env update -f environment.yaml
+RUN mamba env update --name venv -f naa-vre-environment.yaml
 RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
     rm /tmp/env.tar
@@ -25,9 +25,9 @@ SHELL ["/bin/bash", "--login", "-c"]
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
-COPY ../repo_utils /tmp/repo_utils
+COPY ./repo_utils /tmp/repo_utils
 
-COPY ../.condarc /tmp/.condarc
+COPY .condarc /tmp/.condarc
 
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
@@ -38,6 +38,9 @@ USER $NB_USER
 RUN jupyter serverextension enable --py jupyterlab_vre --user
 RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
+
+
+COPY init_script.sh /tmp
 
 RUN jupyter lab build --debug;
 cmd ["/usr/local/bin/start-jupyter-venv.sh"]

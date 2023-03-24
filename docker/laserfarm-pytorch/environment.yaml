@@ -1,16 +1,21 @@
 name: venv
 channels:
   - conda-forge
-  - defaults
-  - enable_revoked
 dependencies:
-  - scipy
-  - laspy
-  - pip
+  - cxx-compiler
+  - distro
+  - gcc
+  - gdal
+  - git
   - ipywidgets
-  - widgetsnbextension
-  - rclone
+  - laspy
+  - pdal
+  - python-pdal
+  - pyyaml
+  - scipy
+  - tornado
   - wradlib
   - pip:
-    - git+https://github.com/QCDIS/Laserfarm.git
-    - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
+      - git+https://github.com/QCDIS/Laserfarm.git
+      - pre-commit
+      - ggshield
