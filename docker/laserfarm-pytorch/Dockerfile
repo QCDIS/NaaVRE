@@ -40,6 +40,7 @@ USER $NB_USER
 RUN jupyter serverextension enable --py jupyterlab_vre --user
 RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
+RUN jupyter serverextension enable --py jupyter_archive --user
 
 RUN jupyter lab build --debug;
 
