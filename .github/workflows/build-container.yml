@@ -44,6 +44,8 @@ jobs:
 
     - name: add whl and start files 
       run: |
+          cp docker/init_script.sh docker/$DOCKER_FOLDER/
+          cp docker/start-jupyter.sh docker/$DOCKER_FOLDER/
           cp docker/start-jupyter.sh docker/$DOCKER_FOLDER/
           cp docker/start-jupyter-venv.sh docker/$DOCKER_FOLDER/
           cp -r docker/repo_utils docker/$DOCKER_FOLDER/repo_utils
