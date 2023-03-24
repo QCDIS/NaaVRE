@@ -45,6 +45,7 @@ RUN jupyter serverextension enable --py jupyter_archive --user
 RUN jupyter lab build --debug;
 
 COPY init_script.sh .
+
 COPY test_laserchicken.py .
 RUN python test_laserchicken.py
 RUN rm test_laserchicken.py
