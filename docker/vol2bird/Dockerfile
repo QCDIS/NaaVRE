@@ -1,4 +1,4 @@
-FROM qcdis/python-vol2birds:v1.0 AS vol2bird
+FROM qcdis/python-vol2birds:v1.1 AS vol2bird
 
 RUN conda install -c conda-forge conda-pack conda-merge mamba
 COPY naa-vre-environment.yaml .
