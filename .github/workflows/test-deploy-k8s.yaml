@@ -1,0 +1,68 @@
+name: test-deploy-k8s
+
+on:
+  workflow_call:
+    inputs:
+      environment_name:
+        required: true
+    secrets:
+      api_endpoint:
+        required: true
+      cell_github:
+        required: true
+      cell_github_token:
+        required: true
+      module_mapping_url:
+        required: true
+      naavre_api_token:
+        required: true
+      registry_url:
+        required: true
+      search_api_endpoint:
+        required: true
+      search_api_token:
+        required: true
+
+
+env:
+  CELL_GITHUB:  ${{ inputs.cell_github }}
+  CELL_GITHUB_TOKEN:  ${{ inputs.cell_github_token }}
+  MODULE_MAPPING_URL: ${{ inputs.module_mapping_url }}
+  NAAVRE_API_TOKEN: ${{ inputs.naavre_api_token }}
+  REGISTRY_URL: ${{ inputs.registry_url }}
+  SEARCH_API_ENDPOINT: ${{ inputs.search_api_endpoint }}
+  SEARCH_API_TOKEN: ${{ inputs.search_api_token }}
+
+jobs:
+  test-n-deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment_name }}
+    strategy:
+      matrix:
+        paths:
+          - "docker/test-values/test_values1.yaml"
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: add VARS
+        run: |
+            yq ".singleuser.extraEnv.CELL_GITHUB +=\"$CELL_GITHUB\"" docker/test-values/test_values1.yaml -i
+            yq ".singleuser.extraEnv.CELL_GITHUB_TOKEN +=\"$CELL_GITHUB_TOKEN\"" docker/test-values/test_values1.yaml -i
+            yq ".singleuser.extraEnv.MODULE_MAPPING_URL +=\"$MODULE_MAPPING_URL\"" docker/test-values/test_values1.yaml -i
+            yq ".singleuser.extraEnv.REGISTRY_URL +=\"$REGISTRY_URL\"" docker/test-values/test_values1.yaml -i
+            yq ".singleuser.extraEnv.SEARCH_API_ENDPOINT +=\"$SEARCH_API_ENDPOINT\"" docker/test-values/test_values1.yaml -i
+            yq ".singleuser.extraEnv.SEARCH_API_TOKEN +=\"$SEARCH_API_TOKEN\"" docker/test-values/test_values1.yaml -i
+      - uses: balchua/microk8s-actions@v0.3.0
+        with:
+          channel: '1.25/stable'
+      - name: Test ${{ matrix.paths }}
+        id: k8s
+        run: |
+#          helm template jupyterhub jupyterhub/jupyterhub -f ${{ matrix.paths }} -n vre
+          kubectl create ns vre
+#          kubectl apply -f output.yaml -n vre
+          helm upgrade --install jupyterhub jupyterhub/jupyterhub -f ${{ matrix.paths }} -n vre
+          sleep 150
+          kubectl get pods -n vre
+          kubectl get pods -n vre -o=jsonpath='{.items[*].status.containerStatuses}'  | jq
+
