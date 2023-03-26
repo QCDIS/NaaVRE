@@ -39,7 +39,7 @@ RUN chown $NB_USER -R /venv/
 
 COPY init_script.sh /tmp
 RUN chown $NB_USER -R /tmp/init_script.sh
-RUN chmod +x /tmp/init_script.sh
+RUN chmod ugo+x /tmp/init_script.sh
 
 USER $NB_USER
 RUN jupyter serverextension enable --py jupyterlab_vre --user

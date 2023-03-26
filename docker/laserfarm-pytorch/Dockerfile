@@ -34,7 +34,7 @@ COPY .condarc /tmp/.condarc
 
 COPY init_script.sh /tmp
 RUN chown $NB_USER -R /tmp/init_script.sh
-RUN chmod +x /tmp/init_script.sh
+RUN chmod ugo+x /tmp/init_script.sh
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 RUN chmod ugo+x /usr/local/bin/start-jupyter-venv.sh
