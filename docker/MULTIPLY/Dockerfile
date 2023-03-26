@@ -37,6 +37,10 @@ RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 RUN chmod ugo+x /usr/local/bin/start-jupyter-venv.sh
 RUN chown $NB_USER -R /venv/
 
+COPY init_script.sh /tmp
+RUN chown $NB_USER -R /tmp/init_script.sh
+RUN chmod +x /tmp/init_script.sh
+
 USER $NB_USER
 RUN jupyter serverextension enable --py jupyterlab_vre --user
 RUN jupyter serverextension enable --py jupyter_videochat --user
@@ -44,10 +48,6 @@ RUN jupyter serverextension enable --py jupyterlab_github --user
 
 
 RUN jupyter lab build --debug;
-RUN ls
-COPY init_script.sh /tmp
-RUN chown $NB_USER -R /tmp/init_script.sh
-RUN chmod +x /tmp/init_script.sh
 COPY test_multiply.py .
 RUN python test_multiply.py
 RUN rm test_multiply.py

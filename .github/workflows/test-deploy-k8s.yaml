@@ -52,9 +52,9 @@ jobs:
             yq ".singleuser.extraEnv.REGISTRY_URL +=\"$REGISTRY_URL\"" docker/test-values/test_values1.yaml -i
             yq ".singleuser.extraEnv.SEARCH_API_ENDPOINT +=\"$SEARCH_API_ENDPOINT\"" docker/test-values/test_values1.yaml -i
             yq ".singleuser.extraEnv.SEARCH_API_TOKEN +=\"$SEARCH_API_TOKEN\"" docker/test-values/test_values1.yaml -i
-      - uses: balchua/microk8s-actions@v0.3.0
+      - uses: balchua/microk8s-actions@v0.3.2
         with:
-          channel: '1.25/stable'
+          channel: '1.26/stable'
       - name: Test ${{ matrix.paths }}
         id: k8s
         run: |

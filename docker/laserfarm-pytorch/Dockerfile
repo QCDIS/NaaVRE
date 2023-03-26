@@ -32,6 +32,10 @@ COPY repo_utils /tmp/repo_utils
 
 COPY .condarc /tmp/.condarc
 
+COPY init_script.sh /tmp
+RUN chown $NB_USER -R /tmp/init_script.sh
+RUN chmod +x /tmp/init_script.sh
+
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 RUN chmod ugo+x /usr/local/bin/start-jupyter-venv.sh
 RUN chown $NB_USER -R /venv/
@@ -43,9 +47,6 @@ RUN jupyter serverextension enable --py jupyterlab_github --user
 
 
 RUN jupyter lab build --debug;
-
-COPY init_script.sh /tmp
-
 COPY test_laserchicken.py .
 RUN python test_laserchicken.py
 RUN rm test_laserchicken.py
