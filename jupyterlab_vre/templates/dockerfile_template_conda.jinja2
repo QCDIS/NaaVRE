@@ -1,5 +1,5 @@
 {% if base_image == 'qcdis/python-vol2bird' %}
-FROM continuumio/miniconda3 AS build
+FROM continuumio/miniconda3:22.11.1 AS build
 COPY {{ task_name }}-environment.yaml .
 RUN conda install -c conda-forge mamba
 RUN mamba env update -f {{ task_name }}-environment.yaml

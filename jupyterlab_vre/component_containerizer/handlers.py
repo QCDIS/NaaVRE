@@ -411,7 +411,7 @@ def get_files_info(cell=None, image_repo=None):
 
     cell_file_name = cell.task_name + '.py'
     dockerfile_name = 'Dockerfile.' + image_repo + '.' + cell.task_name
-    environment_file_name = cell.task_name + '-environment.yaml'
+    environment_file_name = cell.task_name + '-naa-vre-environment.yaml'
 
     if os.path.exists(cell_path):
         for files in os.listdir(cell_path):
