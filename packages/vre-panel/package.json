@@ -31,9 +31,6 @@
         "clean": "rimraf lib",
         "watch": "tsc -w"
     },
-    "dependencies": {
-
-    },
     "devDependencies": {
         "@types/node": "^18.15.3",
         "rimraf": "^4.4.0",
