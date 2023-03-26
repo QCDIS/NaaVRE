@@ -1,10 +1,12 @@
 name: jupyterlab
 channels:
   - conda-forge
-  - defaults
 dependencies:
+  - jupyterhub
+  - nbformat
+  - widgetsnbextension
   - jupyterlab=3.6.1
-  - nodejs=18.13.0
+  - nodejs=>18.13.0
   - python>=3.8
   - yarn=1.22.19
   - tinydb>=4.6.1
@@ -26,9 +28,10 @@ dependencies:
   - python-lsp-server[all]
   - nb_conda_kernels
   - rclone
+  - jupyter-archive
+  - zip
+  - unzip
+  - wget
   - git
-  - mamba
   - pip
   - pip:
-      - pre-commit
-      - ggshield
