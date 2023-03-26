@@ -116,3 +116,8 @@ dmypy.json
 .DS_Store
 /package-lock.json
 /workflow.yaml
+/docker/MULTIPLY/init_script.sh
+/docker/MULTIPLY/jupyterlab_vre-0.1.0-py3-none-any.whl
+/docker/MULTIPLY/naa-vre-environment.yaml
+/docker/MULTIPLY/start-jupyter.sh
+/docker/MULTIPLY/start-jupyter-venv.sh
