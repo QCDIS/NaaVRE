@@ -16,6 +16,16 @@
     "strict": true,
     "strictNullChecks": false,
     "target": "es2017",
-    "types": []
+    "types": [],
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "downlevelIteration": true,
+    "sourceMap": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true
   }
 }
+

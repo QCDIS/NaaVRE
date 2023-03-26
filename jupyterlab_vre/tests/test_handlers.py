@@ -17,8 +17,8 @@ from jupyterlab_vre.notebook_search.handlers import NotebookDownloadHandler
 
 if os.path.exists('resources'):
     base_path = 'resources'
-elif os.path.exists('jupyterlab_vre/tests/resources/'):
-    base_path = 'jupyterlab_vre/tests/resources/'
+elif os.path.exists('jupyterlab_vre/cypress/resources/'):
+    base_path = 'jupyterlab_vre/cypress/resources/'
 
 
 def delete_all_cells():
