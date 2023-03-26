@@ -101,6 +101,9 @@ jobs:
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
 #  call-test-deploy:
+#    strategy:
+#      matrix:
+#        environment_names: [ "test-vars" ]
 #    needs: [call-build-container-vanilla,call-build-container-pytorch,call-build-container-vol2bird,call-build-container-multiply,call-build-container-laserfarm]
 #    uses: QCDIS/NaaVRE/.github/workflows/test-deploy-k8s.yaml@main
 #    with:
