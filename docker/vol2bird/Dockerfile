@@ -37,6 +37,9 @@ COPY ./repo_utils /tmp/repo_utils
 
 COPY .condarc /tmp/.condarc
 
+COPY init_script.sh /tmp
+RUN chown $NB_USER -R /tmp/init_script.sh
+RUN chmod +x /tmp/init_script.sh
 
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 RUN chmod ugo+x /usr/local/bin/start-jupyter-venv.sh
@@ -48,7 +51,6 @@ RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
 RUN jupyter nbextension enable --py widgetsnbextension
 
-COPY init_script.sh /tmp
 
 RUN jupyter lab build --debug;
 

@@ -6,6 +6,7 @@ gitpuller https://github.com/QCDIS/lifewatch-notebooks main example_notebooks
 rm -f -- /home/jovyan/NaaVRE/module_name_mapping.json
 
 DIR=/home/jovyan/.multiply/
+
 if [ -d "$DIR" ];
 then
     echo "$DIR exists. skipping"
