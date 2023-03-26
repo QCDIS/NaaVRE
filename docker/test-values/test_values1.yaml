@@ -1,0 +1,100 @@
+                  hub:
+                    initContainers:
+                      - name: git-clone-templates
+                        image: alpine/git
+                        args:
+                          - clone
+                          - --single-branch
+                          - --branch=lifeWatch
+                          - --depth=1
+                          - --
+                          - https://github.com/QCDIS/k8s-jhub.git
+                          - /etc/jupyterhub/custom
+                        securityContext:
+                          runAsUser: 0
+                        volumeMounts:
+                          - name: hub-templates
+                            mountPath: /etc/jupyterhub/custom
+                      - name: replace-login-path
+                        image: busybox:1.28
+                        command: ["sh", "-c", "sed -i 's#/VRE_PATH/hub/oauth_login?next=#/n-a-a-vre/hub/oauth_login?next=#' /etc/jupyterhub/custom/templates/login.html"]
+                        securityContext:
+                          runAsUser: 0
+                        volumeMounts:
+                          - name: hub-templates
+                            mountPath: /etc/jupyterhub/custom
+                    extraVolumes:
+                      - name: hub-templates
+                        emptyDir: { }
+                    extraVolumeMounts:
+                      - name: hub-templates
+                        mountPath: /etc/jupyterhub/custom
+                    extraConfig:
+                      templates: |
+                        c.JupyterHub.template_paths = ['/etc/jupyterhub/custom/templates']
+                    concurrentSpawnLimit: 20
+                    consecutiveFailureLimit: 20
+                    activeServerLimit: 20
+                    namedServerLimitPerUser: 1
+                    shutdownOnLogout: true
+                    extraEnv:
+                      OAUTH2_TLS_VERIFY: 'false'
+                    baseUrl: /n-a-a-vre
+                    config:
+                      Authenticator:
+                        auto_login: true
+                  ingress:
+                    enabled: false
+                  proxy:
+                    service:
+                      type: ClusterIP
+                  singleuser:
+                    cmd: ['/usr/local/bin/start-jupyter-venv.sh']
+                    extraFiles:
+                      jupyter_notebook_config.json:
+                        mountPath: /etc/jupyter/jupyter_notebook_config.json
+                        data:
+                          ServerApp:
+                            iopub_data_rate_limit: 1.0e10
+                            iopub_msg_rate_limitFloat: 3000
+                    memory:
+                        limit: 3G
+                        guarantee: 2G
+                    storage:
+                        capacity: 0.1Gi
+                    cpu:
+                      limit: 1.0
+                      guarantee: 1.0
+                    lifecycleHooks:
+                      postStart:
+                        exec:
+                          command: ["sh", "-c", "ls -lah /tmp"]
+                    defaultUrl: "/lab"
+                    extraEnv:
+                      JUPYTERHUB_SINGLEUSER_APP: "jupyter_server.serverapp.ServerApp"
+                      MODULE_MAPPING_URL:
+                      NAAVRE_API_TOKEN:
+                      SEARCH_API_ENDPOINT:
+                      SEARCH_API_TOKEN:
+                      VLAB_SLUG:
+                      API_ENDPOINT:
+                      MULTIPLY_CONF_URL:
+                      CELL_GITHUB:
+                      CELL_GITHUB_TOKEN:
+                      REGISTRY_URL:
+                    profileList:
+                    - display_name: "vol2bird VL"
+                      description: "vol2bird VL"
+                      kubespawner_override:
+                        image: qcdis/n-a-a-vre-vol2bird
+                        pullPolicy: Always
+                    - display_name: "Rclone enabled VL with Laserfarm"
+                      description: "Rclone enabled VL"
+                      kubespawner_override:
+                        image: qcdis/n-a-a-vre-laserfarm
+                        pullPolicy: Always
+                    - display_name: "multiply VL"
+                      description: "multiply VL"
+                      kubespawner_override:
+                        image: qcdis/n-a-a-vre-multiply
+                        pullPolicy: Always
