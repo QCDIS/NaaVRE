@@ -2,8 +2,9 @@ import json
 import os
 import subprocess
 import sys
+from time import sleep
 from unittest import mock
-
+import datetime
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 from pathlib import Path
@@ -11,7 +12,8 @@ from github import Github, UnknownObjectException
 
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
     NotebookSearchHandler, NotebookSearchRatingHandler
-from jupyterlab_vre.component_containerizer.handlers import update_cell_in_repository, create_cell_in_repository
+from jupyterlab_vre.component_containerizer.handlers import update_cell_in_repository, create_cell_in_repository, \
+    get_github_workflow_runs, find_job
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.handlers import load_module_names_mapping
@@ -132,6 +134,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 Catalog.editor_buffer = test_cell
                 response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
                 self.assertEqual(200, response.code)
+                wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
                 cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
 
                 cell_exec = subprocess.Popen([sys.executable, cell_path, '--id', '0', '--split_laz_files', '[file]'],
@@ -144,6 +147,16 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 print("returncode:", cell_exec.returncode)
                 print('---------------------------------------------------')
                 self.assertEqual(0, cell_exec.returncode, text)
+                cat_repositories = Catalog.get_repositories()
+                repo_token = cat_repositories[0]['token']
+                owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
+                repository_name = cat_repositories[0]['url'].split(
+                    'https://github.com/')[1].split('/')[1]
+                if '.git' in repository_name:
+                    repository_name = repository_name.split('.git')[0]
+
+                sleep(300)
+                job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token)
 
     def test_commit_to_repository(self):
         files_info = {'cell': {'file_name': 'test-retiling-dev-skoulouzis.py',
@@ -172,3 +185,16 @@ class HandlersAPITest(AsyncHTTPTestCase):
         assert commit.totalCount > 0
         update_cell_in_repository(task_name=task_name, repository=gh_repository,
                                   files_info=files_info)
+
+    def test_get_gh_wf_runs(self):
+        last_minutes = str(
+            (datetime.datetime.now() - datetime.timedelta(hours=0, minutes=2)).strftime("%Y-%m-%dT%H:%M:%SZ"))
+        cat_repositories = Catalog.get_repositories()
+        gh = Github(cat_repositories[0]['token'])
+        owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
+        repository_name = cat_repositories[0]['url'].split(
+            'https://github.com/')[1].split('/')[1]
+        if '.git' in repository_name:
+            repository_name = repository_name.split('.git')[0]
+
+        runs = find_

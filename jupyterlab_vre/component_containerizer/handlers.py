@@ -27,8 +27,9 @@ from tornado import web
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-github_url_repos = 'https://api.github.com/repos/'
+github_url_repos = 'https://api.github.com/repos'
 github_workflow_file_name = 'build-push-docker.yml'
+cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
 
 
 # code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
@@ -148,6 +149,26 @@ class BaseImageHandler(APIHandler, Catalog):
         cell.base_image = base_image
 
 
+def find_job(wf_id=None, owner=None, repository_name=None, token=None):
+    last_minutes = str(
+        (datetime.datetime.now() - datetime.timedelta(hours=0, minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ"))
+    runs = get_github_workflow_runs(owner=owner, repository_name=repository_name, last_minutes=last_minutes,
+                                    token=token)
+    if not runs:
+        return None
+    the_job = None
+    for run in runs['workflow_runs']:
+        jobs_url = run['jobs_url']
+        jobs = get_github_workflow_jobs(jobs_url)
+        for job in jobs['jobs']:
+            if job['name'] == wf_id:
+                the_job = job
+                break
+        if the_job:
+            break
+    return the_job
+
+
 class CellsHandler(APIHandler, Catalog):
     logger = logging.getLogger(__name__)
 
@@ -185,8 +206,6 @@ class CellsHandler(APIHandler, Catalog):
         logger.debug('Delete if exists: ' + current_cell.task_name)
         Catalog.delete_cell_from_task_name(current_cell.task_name)
         Catalog.add_cell(current_cell)
-
-        cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
 
         if not os.path.exists(cells_path):
             os.mkdir(cells_path)
@@ -259,9 +278,9 @@ class CellsHandler(APIHandler, Catalog):
             self.write(resp.text)
             self.flush()
             return
-        last_minutes = str(
-            (datetime.datetime.now() - datetime.timedelta(hours=0, minutes=2)).strftime("%Y-%m-%dT%H:%M:%SZ"))
-        # runs = get_github_workflow_runs(owner=owner,repository_name=repository_name last_minutes=last_minutes)
+        # job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token)
+        # print(job)
+        self.write(json.dumps({'wf_id': wf_id}))
         self.flush()
 
 
@@ -290,7 +309,7 @@ def update_cell_in_repository(task_name=None, repository=None, files_info=None):
             local_content = f.read()
             local_hash = git_hash(local_content)
             remote_hash = remote_content.sha
-            logger.debug('local_hash: ' + local_hash+ ' remote_hash: ' + remote_hash)
+            logger.debug('local_hash: ' + local_hash + ' remote_hash: ' + remote_hash)
             if remote_hash != local_hash:
                 repository.update_file(
                     path=task_name + '/' + f_name,
@@ -303,7 +322,7 @@ def update_cell_in_repository(task_name=None, repository=None, files_info=None):
 
 def dispatch_github_workflow(owner, repository_name, cell, files_info, repository_token, image, wf_id=None):
     return requests.post(
-        url=github_url_repos + owner + '/' + repository_name + '/actions/workflows/' + github_workflow_file_name + '/dispatches',
+        url=github_url_repos + '/' + owner + '/' + repository_name + '/actions/workflows/' + github_workflow_file_name + '/dispatches',
         json={
             'ref': 'refs/heads/main',
             'inputs': {
@@ -320,9 +339,26 @@ def dispatch_github_workflow(owner, repository_name, cell, files_info, repositor
     )
 
 
-def get_github_workflow_runs(owner=None, repository_name=None, last_minutes=None):
-    workflow_runs = github_url_repos + '/' + owner + '/' + repository_name + '/actions/runs?created=' + last_minutes
-    return workflow_runs
+def get_github_workflow_runs(owner=None, repository_name=None, last_minutes=None, token=None):
+    workflow_runs_url = github_url_repos + '/' + owner + '/' + repository_name + '/actions/runs'
+    headers = {'Accept': 'application/vnd.github.v3+json'}
+    if token:
+        headers['Authorization'] = 'Bearer ' + token
+    workflow_runs = requests.get(url=workflow_runs_url, verify=False,
+                                 headers=headers)
+    if workflow_runs.status_code != 200:
+        return None
+    workflow_runs_json = json.loads(workflow_runs.text)
+    return workflow_runs_json
+
+
+def get_github_workflow_jobs(jobs_url):
+    jobs = requests.get(url=jobs_url, verify=False,
+                        headers={'Accept': 'application/vnd.github.v3+json'})
+    if jobs.status_code == 200:
+        return json.loads(jobs.text)
+    else:
+        raise Exception('Error getting jobs for workflow run: ' + jobs.text)
 
 
 def is_standard_module(module_name):
@@ -417,14 +453,13 @@ def build_templates(cell=None, files_info=None):
 
 
 def get_files_info(cell=None, image_repo=None):
-    cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
     if not os.path.exists(cells_path):
         os.mkdir(cells_path)
     cell_path = os.path.join(cells_path, cell.task_name)
 
     cell_file_name = cell.task_name + '.py'
     dockerfile_name = 'Dockerfile.' + image_repo + '.' + cell.task_name
-    environment_file_name = cell.task_name + '-naa-vre-environment.yaml'
+    environment_file_name = cell.task_name + '-environment.yaml'
 
     if os.path.exists(cell_path):
         for files in os.listdir(cell_path):
