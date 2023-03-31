@@ -10,10 +10,14 @@ dependencies:
   - ipywidgets
   - laspy
   - pdal
+  - dask
   - python-pdal
   - pyyaml
   - scipy
+  - webdavclient3
   - tornado
+  - laspy
+  - plyfile
   - wradlib
   - pip:
       - git+https://github.com/QCDIS/Laserfarm.git
