@@ -155,8 +155,19 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 if '.git' in repository_name:
                     repository_name = repository_name.split('.git')[0]
 
-                sleep(300)
-                job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token)
+                sleep(200)
+                job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token, job_id=None)
+                self.assertIsNotNone(job, 'Job not found')
+                counter = 0
+                while job['status'] != 'completed' or counter < 10:
+                    counter += 1
+                    print('--------------------------------------------------------')
+                    print(job['status'])
+                    sleep(40)
+                    job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token,
+                                   job_id=job['id'])
+                self.assertEqual('completed', job['status'], 'Job not completed')
+                self.assertEqual('success', job['conclusion'], 'Job not successful')
 
     def test_commit_to_repository(self):
         files_info = {'cell': {'file_name': 'test-retiling-dev-skoulouzis.py',

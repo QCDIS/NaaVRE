@@ -149,24 +149,24 @@ class BaseImageHandler(APIHandler, Catalog):
         cell.base_image = base_image
 
 
-def find_job(wf_id=None, owner=None, repository_name=None, token=None):
+def find_job(wf_id=None, owner=None, repository_name=None, token=None, job_id=None):
+    if job_id:
+        jobs_url = github_url_repos + '/' + owner + '/' + repository_name + '/actions/jobs/' + str(job_id)
+        job = get_github_workflow_jobs(jobs_url, token=token)
+        return job
     last_minutes = str(
         (datetime.datetime.now() - datetime.timedelta(hours=0, minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ"))
     runs = get_github_workflow_runs(owner=owner, repository_name=repository_name, last_minutes=last_minutes,
                                     token=token)
     if not runs:
         return None
-    the_job = None
     for run in runs['workflow_runs']:
         jobs_url = run['jobs_url']
         jobs = get_github_workflow_jobs(jobs_url)
         for job in jobs['jobs']:
             if job['name'] == wf_id:
-                the_job = job
-                break
-        if the_job:
-            break
-    return the_job
+                return job
+    return None
 
 
 class CellsHandler(APIHandler, Catalog):
@@ -237,8 +237,6 @@ class CellsHandler(APIHandler, Catalog):
             'https://github.com/')[1].split('/')[1]
         if '.git' in repository_name:
             repository_name = repository_name.split('.git')[0]
-        logger.debug('owner: ' + owner +
-                     ' repository_name: ' + repository_name)
         try:
             gh_repository = gh.get_repo(owner + '/' + repository_name)
         except Exception as ex:
@@ -267,7 +265,7 @@ class CellsHandler(APIHandler, Catalog):
         resp = dispatch_github_workflow(
             owner,
             repository_name,
-            current_cell,
+            current_cell.task_name,
             files_info,
             repo_token,
             image_repo,
@@ -320,16 +318,16 @@ def update_cell_in_repository(task_name=None, repository=None, files_info=None):
         f.close()
 
 
-def dispatch_github_workflow(owner, repository_name, cell, files_info, repository_token, image, wf_id=None):
-    return requests.post(
+def dispatch_github_workflow(owner, repository_name, task_name, files_info, repository_token, image, wf_id=None):
+    resp = requests.post(
         url=github_url_repos + '/' + owner + '/' + repository_name + '/actions/workflows/' + github_workflow_file_name + '/dispatches',
         json={
             'ref': 'refs/heads/main',
             'inputs': {
-                'build_dir': cell.task_name,
+                'build_dir': task_name,
                 'dockerfile': files_info['dockerfile']['file_name'],
                 'image_repo': image,
-                'image_tag': cell.task_name,
+                'image_tag': task_name,
                 "id": wf_id
             }
         },
@@ -337,6 +335,7 @@ def dispatch_github_workflow(owner, repository_name, cell, files_info, repositor
         headers={'Accept': 'application/vnd.github.v3+json',
                  'Authorization': 'token ' + repository_token}
     )
+    return resp
 
 
 def get_github_workflow_runs(owner=None, repository_name=None, last_minutes=None, token=None):
@@ -352,9 +351,12 @@ def get_github_workflow_runs(owner=None, repository_name=None, last_minutes=None
     return workflow_runs_json
 
 
-def get_github_workflow_jobs(jobs_url):
+def get_github_workflow_jobs(jobs_url=None, token=None):
+    headers = {'Accept': 'application/vnd.github.v3+json'}
+    if token:
+        headers['Authorization'] = 'Bearer ' + token
     jobs = requests.get(url=jobs_url, verify=False,
-                        headers={'Accept': 'application/vnd.github.v3+json'})
+                        headers=headers)
     if jobs.status_code == 200:
         return json.loads(jobs.text)
     else:
