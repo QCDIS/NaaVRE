@@ -221,7 +221,18 @@ class CellsHandler(APIHandler, Catalog):
             os.mkdir(cell_path)
 
         registry_credentials = Catalog.get_registry_credentials()
-        image_repo = registry_credentials[0]['url'].split(
+        if not registry_credentials or len(registry_credentials) <= 0:
+            self.set_status(400)
+            self.write_error('Registry credentials not found')
+            self.flush()
+            return
+        registry_url = registry_credentials[0]['url']
+        if not registry_url:
+            self.set_status(400)
+            self.write_error('Registry url not found')
+            self.flush()
+            return
+        image_repo = registry_url.split(
             'https://hub.docker.com/u/')[1]
 
         files_info = get_files_info(cell=current_cell, image_repo=image_repo)
@@ -230,6 +241,11 @@ class CellsHandler(APIHandler, Catalog):
         cat_repositories = Catalog.get_repositories()
 
         repo_token = cat_repositories[0]['token']
+        if not repo_token:
+            self.set_status(400)
+            self.write_error('Repository token not found')
+            self.flush()
+            return
 
         gh = Github(cat_repositories[0]['token'])
         owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]

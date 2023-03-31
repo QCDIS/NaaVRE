@@ -1,3 +1,4 @@
+import copy
 import json
 import os
 import subprocess
@@ -35,6 +36,7 @@ def delete_all_cells():
 
 def get_gh_repository():
     cat_repositories = Catalog.get_repositories()
+    assert len(cat_repositories) >= 1
     gh = Github(cat_repositories[0]['token'])
     owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
     repository_name = cat_repositories[0]['url'].split(
@@ -162,14 +164,19 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 sleep(200)
                 job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token, job_id=None)
                 self.assertIsNotNone(job, 'Job not found')
+                done = False
                 counter = 0
-                while job['status'] != 'completed' or counter < 10:
+                while counter < 20:
                     counter += 1
                     print('--------------------------------------------------------')
                     print(job['status'])
-                    sleep(25)
+                    sleep(20)
+
                     job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token,
                                    job_id=job['id'])
+                    if job['status'] == 'completed':
+                        done = True
+                        break
 
                 print(counter)
                 self.assertEqual('completed', job['status'], 'Job not completed')
