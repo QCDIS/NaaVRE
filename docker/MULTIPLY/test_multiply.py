@@ -1,17 +1,11 @@
-from multiply_data_access import DataAccessComponent
-from vm_support.utils import create_config_file, set_permissions
-from vm_support.sym_linker import create_sym_links
-import glob
-import pyproj
-
-
-
 import os
 import shutil
 
+from multiply_data_access import DataAccessComponent
+from vm_support.sym_linker import create_sym_links
+from vm_support.utils import set_permissions
 
 
-import os
 def create_dir(dir):
     try:
         if not os.path.exists(dir):
@@ -20,7 +14,10 @@ def create_dir(dir):
         print(dir)
     return
 
+from osgeo import osr
 
+wgs84_srs = osr.SpatialReference()
+wgs84_srs.ImportFromEPSG(4326)
 
 def get_working_dir(dir_name: str) -> str:
     working_dir = f'/datastore/working_dirs/{dir_name}'
