@@ -208,20 +208,20 @@ class CellsHandler(APIHandler, Catalog):
         files_info = get_files_info(cell=current_cell, image_repo=image_repo)
         build_templates(cell=current_cell, files_info=files_info)
 
-        repository = Catalog.get_repositories()
+        cat_repositories = Catalog.get_repositories()
 
-        repo_token = repository[0]['token']
+        repo_token = cat_repositories[0]['token']
 
-        gh = Github(repository[0]['token'])
-        owner = repository[0]['url'].split('https://github.com/')[1].split('/')[0]
-        repository_name = repository[0]['url'].split(
+        gh = Github(cat_repositories[0]['token'])
+        owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
+        repository_name = cat_repositories[0]['url'].split(
             'https://github.com/')[1].split('/')[1]
         if '.git' in repository_name:
             repository_name = repository_name.split('.git')[0]
         logger.debug('owner: ' + owner +
                      ' repository_name: ' + repository_name)
         try:
-            repository = gh.get_repo(owner + '/' + repository_name)
+            gh_repository = gh.get_repo(owner + '/' + repository_name)
         except Exception as ex:
             self.set_status(400)
             if hasattr(ex, 'message'):
@@ -231,15 +231,18 @@ class CellsHandler(APIHandler, Catalog):
             self.flush()
             return
 
-        commit = repository.get_commits(path=current_cell.task_name)
+        commit = gh_repository.get_commits(path=current_cell.task_name)
 
         if commit.totalCount > 0:
             try:
-                update_cell_in_repository(current_cell, repository, files_info)
+                update_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
+                                          files_info=files_info)
             except UnknownObjectException as ex:
-                create_cell_in_repository(current_cell, repository, files_info)
+                create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
+                                          files_info=files_info)
         elif commit.totalCount <= 0:
-            create_cell_in_repository(current_cell, repository, files_info)
+            create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
+                                      files_info=files_info)
 
         wf_id = str(uuid.uuid4())
         resp = dispatch_github_workflow(
@@ -251,41 +254,51 @@ class CellsHandler(APIHandler, Catalog):
             image_repo,
             wf_id=wf_id
         )
+        if resp.status_code != 201 and resp.status_code != 200 and resp.status_code != 204:
+            self.set_status(400)
+            self.write(resp.text)
+            self.flush()
+            return
         last_minutes = str(
             (datetime.datetime.now() - datetime.timedelta(hours=0, minutes=2)).strftime("%Y-%m-%dT%H:%M:%SZ"))
         # runs = get_github_workflow_runs(owner=owner,repository_name=repository_name last_minutes=last_minutes)
         self.flush()
 
 
-def create_cell_in_repository(cell, repository, files_info):
+def create_cell_in_repository(task_name=None, repository=None, files_info=None):
     for f_type, f_info in files_info.items():
         f_name = f_info['file_name']
         f_path = f_info['path']
         with open(f_path, 'rb') as f:
             content = f.read()
             repository.create_file(
-                path=cell.task_name + '/' + f_name,
-                message=cell.task_name + ' creation',
+                path=task_name + '/' + f_name,
+                message=task_name + ' creation',
                 content=content,
             )
 
 
-def update_cell_in_repository(cell, repository, files_info):
+def update_cell_in_repository(task_name=None, repository=None, files_info=None):
     for f_type, f_info in files_info.items():
         f_name = f_info['file_name']
         f_path = f_info['path']
+        logger.debug('get_contents: ' + task_name + '/' + f_name)
+        print('get_contents: ' + task_name + '/' + f_name)
         remote_content = repository.get_contents(
-            path=cell.task_name + '/' + f_name)
+            path=task_name + '/' + f_name)
         with open(f_path, 'rb') as f:
             local_content = f.read()
             local_hash = git_hash(local_content)
-            if remote_content.sha != git_hash(local_content):
+            remote_hash = remote_content.sha
+            logger.debug('local_hash: ' + local_hash+ ' remote_hash: ' + remote_hash)
+            if remote_hash != local_hash:
                 repository.update_file(
-                    path=cell.task_name + '/' + f_name,
-                    message=cell.task_name + ' update',
+                    path=task_name + '/' + f_name,
+                    message=task_name + ' update',
                     content=local_content,
                     sha=remote_content.sha
                 )
+        f.close()
 
 
 def dispatch_github_workflow(owner, repository_name, cell, files_info, repository_token, image, wf_id=None):

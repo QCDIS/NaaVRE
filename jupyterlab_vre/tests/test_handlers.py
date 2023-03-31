@@ -7,9 +7,11 @@ from unittest import mock
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 from pathlib import Path
+from github import Github, UnknownObjectException
 
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
     NotebookSearchHandler, NotebookSearchRatingHandler
+from jupyterlab_vre.component_containerizer.handlers import update_cell_in_repository, create_cell_in_repository
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.handlers import load_module_names_mapping
@@ -20,11 +22,24 @@ if os.path.exists('resources'):
 elif os.path.exists('jupyterlab_vre/tests/resources/'):
     base_path = 'jupyterlab_vre/tests/resources/'
 
+cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
+
 
 def delete_all_cells():
     for cell in Catalog.get_all_cells():
         print(cell)
         Catalog.delete_cell_from_title(cell['title'])
+
+
+def get_gh_repository():
+    cat_repositories = Catalog.get_repositories()
+    gh = Github(cat_repositories[0]['token'])
+    owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
+    repository_name = cat_repositories[0]['url'].split(
+        'https://github.com/')[1].split('/')[1]
+    if '.git' in repository_name:
+        repository_name = repository_name.split('.git')[0]
+    return gh.get_repo(owner + '/' + repository_name)
 
 
 class HandlersAPITest(AsyncHTTPTestCase):
@@ -53,8 +68,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
             #     payload = json.load(read_file)
             # response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
             # response.
-
-
 
     def test_execute_workflow_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
@@ -103,14 +116,13 @@ class HandlersAPITest(AsyncHTTPTestCase):
     def test_cells_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
-            cells_path = os.path.join(base_path, 'cells')
-            cells_files = os.listdir(cells_path)
+            cells_json_path = os.path.join(base_path, 'cells')
+            cells_files = os.listdir(cells_json_path)
             for cell_file in cells_files:
-                cell_path = os.path.join(cells_path, cell_file)
+                cell_path = os.path.join(cells_json_path, cell_file)
                 with open(cell_path, 'r') as file:
                     cell = json.load(file)
                 file.close()
-
                 test_cell = Cell(cell['title'], cell['task_name'], cell['original_source'], cell['inputs'],
                                  cell['outputs'],
                                  cell['params'], cell['confs'], cell['dependencies'], cell['container_source'],
@@ -118,17 +130,45 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 test_cell.types = cell['types']
                 test_cell.base_image = cell['base_image']
                 Catalog.editor_buffer = test_cell
-                # response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
-                # cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
-                # cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
-                #
-                # cell_exec = subprocess.Popen([sys.executable, cell_path, '--id', '0', '--split_laz_files', '[file]'],
-                #                              stdout=subprocess.PIPE)
-                # print('---------------------------------------------------')
-                # text = cell_exec.communicate()[0]
-                # print(text)
-                # print("stdout:", cell_exec.stdout)
-                # print("stderr:", cell_exec.stderr)
-                # print("returncode:", cell_exec.returncode)
+                response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
+                self.assertEqual(200, response.code)
+                cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
+
+                cell_exec = subprocess.Popen([sys.executable, cell_path, '--id', '0', '--split_laz_files', '[file]'],
+                                             stdout=subprocess.PIPE)
                 print('---------------------------------------------------')
-                # self.assertEqual(0, cell_exec.returncode, text)
+                text = cell_exec.communicate()[0]
+                print(text)
+                print("stdout:", cell_exec.stdout)
+                print("stderr:", cell_exec.stderr)
+                print("returncode:", cell_exec.returncode)
+                print('---------------------------------------------------')
+                self.assertEqual(0, cell_exec.returncode, text)
+
+    def test_commit_to_repository(self):
+        files_info = {'cell': {'file_name': 'test-retiling-dev-skoulouzis.py',
+                               'path': cells_path + '/test-retiling-dev-skoulouzis/test-retiling-dev-skoulouzis.py'},
+                      'dockerfile': {'file_name': 'Dockerfile.qcdis.test-retiling-dev-skoulouzis',
+                                     'path': cells_path + '/test-retiling-dev-skoulouzis/Dockerfile.qcdis.test-retiling-dev-skoulouzis'},
+                      'environment': {'file_name': 'test-retiling-dev-skoulouzis-naa-vre-environment.yaml',
+                                      'path': cells_path + '/test-retiling-dev-skoulouzis/test-retiling-dev-skoulouzis-naa-vre-environment.yaml'}}
+        task_name = 'test-retiling-dev-skoulouzis'
+
+        gh_repository = get_gh_repository()
+        commit = gh_repository.get_commits(path=task_name)
+
+        if commit.totalCount > 0:
+            try:
+                update_cell_in_repository(task_name=task_name, repository=gh_repository,
+                                          files_info=files_info)
+            except UnknownObjectException as ex:
+                create_cell_in_repository(task_name=task_name, repository=gh_repository,
+                                          files_info=files_info)
+        elif commit.totalCount <= 0:
+            create_cell_in_repository(task_name=task_name, repository=gh_repository,
+                                      files_info=files_info)
+
+        commit = gh_repository.get_commits(path=task_name)
+        assert commit.totalCount > 0
+        update_cell_in_repository(task_name=task_name, repository=gh_repository,
+                                  files_info=files_info)
