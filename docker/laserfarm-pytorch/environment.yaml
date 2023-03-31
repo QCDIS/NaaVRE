@@ -10,6 +10,7 @@ dependencies:
   - ipywidgets
   - laspy
   - pdal
+  - dask
   - python-pdal
   - pyyaml
   - scipy
