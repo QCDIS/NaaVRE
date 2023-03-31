@@ -27,6 +27,8 @@ on:
         required: true
       registry_url:
         required: true
+      naavre_api_token:
+        required: true
 
 env:
   CELL_GITHUB: ${{ secrets.cell_github }}
