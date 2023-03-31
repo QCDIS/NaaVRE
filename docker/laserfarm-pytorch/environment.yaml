@@ -14,6 +14,7 @@ dependencies:
   - python-pdal
   - pyyaml
   - scipy
+  - webdavclient3
   - tornado
   - wradlib
   - pip:
