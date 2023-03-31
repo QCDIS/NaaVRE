@@ -37,6 +37,7 @@ def delete_all_cells():
 def get_gh_repository():
     cat_repositories = Catalog.get_repositories()
     assert len(cat_repositories) >= 1
+
     gh = Github(cat_repositories[0]['token'])
     owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
     repository_name = cat_repositories[0]['url'].split(
