@@ -1,13 +1,9 @@
-import json
+import os
 import os
 import unittest
-import uuid
-import nbformat as nb
 
-from build.lib.jupyterlab_vre.tests.test_extractor import extract_cell, create_cell
-from jupyterlab_vre.database.cell import Cell
-from jupyterlab_vre.services.extractor.extractor import Extractor
 from jupyterlab_vre.database.database import Catalog
+from jupyterlab_vre.tests.test_extractor import create_cell
 
 
 class TestCatalog(unittest.TestCase):
