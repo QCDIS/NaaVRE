@@ -27,6 +27,8 @@ on:
         required: true
       registry_url:
         required: true
+      naavre_api_token:
+        required: true
 
 env:
   CELL_GITHUB: ${{ secrets.cell_github }}
@@ -44,7 +46,6 @@ env:
 jobs:
   build-linux:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment_name }}
     strategy:
       max-parallel: 5
     steps:
