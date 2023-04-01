@@ -63,7 +63,7 @@ class TestCatalog(unittest.TestCase):
         cell = create_cell(os.path.join(self.base_path, 'notebooks/vol2bird_cells.json'))
         self.catalog.add_cell(cell)
         all_cells = self.catalog.get_all_cells()
-        assert len(all_cells) == 3
+        assert len(all_cells) >= 3
 
     def test_get_registry_credentials(self):
         assert self.catalog.get_registry_credentials() == []

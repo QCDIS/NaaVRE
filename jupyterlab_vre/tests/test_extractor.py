@@ -76,8 +76,8 @@ def extract_cell(payload_path):
     node = ConverterReactFlowChart.get_node(
         cell.node_id,
         cell.title,
-        cell.ins,
-        cell.outs,
+        cell.inputs,
+        cell.outputs,
         cell.params,
         cell.dependencies
     )
