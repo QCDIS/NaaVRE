@@ -5,18 +5,12 @@ on:
   schedule:
     - cron: '0 4 5,25 * *'
 
-
 jobs:
   call-pytest:
-    strategy:
-      matrix:
-        environment_names: [ "test-vars" ]
     uses: QCDIS/NaaVRE/.github/workflows/python-package-conda.yml@main
-    with:
-      jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}
-      environment_name:  ${{ matrix.environment_names }}
-      vlab_slug: ${{ vars.VLAB_SLUG }}
     secrets:
+      jupyterhub_user: ${{ secrets.JUPYTERHUB_USER }}
+      vlab_slug: ${{ secrets.VLAB_SLUG }}
       cell_github: ${{ secrets.CELL_GITHUB }}
       cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
       api_endpoint: ${{ secrets.API_ENDPOINT }}

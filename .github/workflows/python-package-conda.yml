@@ -2,17 +2,11 @@ name: Python Package using Conda
 
 on:
   workflow_call:
-    inputs:
-      environment_name:
-        required: true
-        type: string
+    secrets:
       jupyterhub_user:
         required: true
-        type: string
       vlab_slug:
         required: true
-        type: string
-    secrets:
       cell_github:
         required: true
       cell_github_token:
@@ -35,9 +29,9 @@ env:
   CELL_GITHUB_TOKEN: ${{ secrets.cell_github_token }}
   REGISTRY_URL: ${{ secrets.registry_url }}
   NAAVRE_API_TOKEN: ${{ secrets.naavre_api_token }}
-  JUPYTERHUB_USER: ${{ inputs.jupyterhub_user }}
+  JUPYTERHUB_USER: ${{ secrets.jupyterhub_user }}
   API_ENDPOINT: ${{ secrets.api_endpoint }}
-  VLAB_SLUG: ${{ inputs.vlab_slug }}
+  VLAB_SLUG: ${{ secrets.vlab_slug }}
   MODULE_MAPPING_URL: ${{ secrets.module_mapping_url }}
   SEARCH_API_ENDPOINT: ${{ secrets.search_api_endpoint }}
   SEARCH_API_TOKEN: ${{ secrets.search_api_token }}
@@ -46,8 +40,6 @@ env:
 jobs:
   build-linux:
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 5
     steps:
       - name: Check secrets
         run: |
