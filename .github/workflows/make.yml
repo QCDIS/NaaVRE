@@ -8,10 +8,9 @@ on:
 jobs:
   call-pytest:
     uses: QCDIS/NaaVRE/.github/workflows/python-package-conda.yml@main
-    with:
+    secrets:
       jupyterhub_user: ${{ secrets.JUPYTERHUB_USER }}
       vlab_slug: ${{ secrets.VLAB_SLUG }}
-    secrets:
       cell_github: ${{ secrets.CELL_GITHUB }}
       cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
       api_endpoint: ${{ secrets.API_ENDPOINT }}

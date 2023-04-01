@@ -2,17 +2,11 @@ name: Python Package using Conda
 
 on:
   workflow_call:
-    inputs:
-      environment_name:
-        required: true
-        type: string
+    secrets:
       jupyterhub_user:
         required: true
-        type: string
       vlab_slug:
         required: true
-        type: string
-    secrets:
       cell_github:
         required: true
       cell_github_token:
