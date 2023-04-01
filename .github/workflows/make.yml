@@ -5,13 +5,9 @@ on:
   schedule:
     - cron: '0 4 5,25 * *'
 
-
-
 jobs:
   call-pytest:
-    strategy:
-      matrix:
-        environment_names: [ "test-vars" ]
+    environment: test-vars
     uses: QCDIS/NaaVRE/.github/workflows/python-package-conda.yml@main
     with:
       jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}

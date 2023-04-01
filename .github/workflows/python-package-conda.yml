@@ -46,9 +46,6 @@ env:
 jobs:
   build-linux:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment_name }}
-    strategy:
-      max-parallel: 5
     steps:
       - name: Check secrets
         run: |
