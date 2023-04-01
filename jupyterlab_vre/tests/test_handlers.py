@@ -36,6 +36,9 @@ def delete_all_cells():
 
 def get_gh_repository():
     cat_repositories = Catalog.get_repositories()
+
+    print(cat_repositories)
+    assert cat_repositories is not None
     assert len(cat_repositories) >= 1
 
     gh = Github(cat_repositories[0]['token'])
