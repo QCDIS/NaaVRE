@@ -29,7 +29,7 @@ env:
   CELL_GITHUB_TOKEN: ${{ secrets.cell_github_token }}
   REGISTRY_URL: ${{ secrets.registry_url }}
   NAAVRE_API_TOKEN: ${{ secrets.naavre_api_token }}
-  JUPYTERHUB_USER: ${{ inputs.jupyterhub_user }}
+  JUPYTERHUB_USER: ${{ secrets.jupyterhub_user }}
   API_ENDPOINT: ${{ secrets.api_endpoint }}
   VLAB_SLUG: ${{ inputs.vlab_slug }}
   MODULE_MAPPING_URL: ${{ secrets.module_mapping_url }}
