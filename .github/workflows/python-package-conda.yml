@@ -120,4 +120,5 @@ jobs:
       - name: Test with pytest
         run: |
           conda install pytest
+          pip install --upgrade build
           pytest --ignore=docker
