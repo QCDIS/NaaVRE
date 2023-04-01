@@ -31,7 +31,7 @@ env:
   NAAVRE_API_TOKEN: ${{ secrets.naavre_api_token }}
   JUPYTERHUB_USER: ${{ secrets.jupyterhub_user }}
   API_ENDPOINT: ${{ secrets.api_endpoint }}
-  VLAB_SLUG: ${{ inputs.vlab_slug }}
+  VLAB_SLUG: ${{ secrets.vlab_slug }}
   MODULE_MAPPING_URL: ${{ secrets.module_mapping_url }}
   SEARCH_API_ENDPOINT: ${{ secrets.search_api_endpoint }}
   SEARCH_API_TOKEN: ${{ secrets.search_api_token }}
