@@ -7,12 +7,10 @@ on:
 
 jobs:
   call-pytest:
-    environment: test-vars
     uses: QCDIS/NaaVRE/.github/workflows/python-package-conda.yml@main
     with:
-      jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}
-      environment_name:  ${{ matrix.environment_names }}
-      vlab_slug: ${{ vars.VLAB_SLUG }}
+      jupyterhub_user: ${{ secrets.JUPYTERHUB_USER }}
+      vlab_slug: ${{ secrets.VLAB_SLUG }}
     secrets:
       cell_github: ${{ secrets.CELL_GITHUB }}
       cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
