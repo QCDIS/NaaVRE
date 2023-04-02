@@ -250,14 +250,21 @@ class CellsHandler(APIHandler, Catalog):
             self.flush()
             return
 
-        gh = Github(cat_repositories[0]['token'])
-        owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
-        repository_name = cat_repositories[0]['url'].split(
-            'https://github.com/')[1].split('/')[1]
+        gh_token = Github(cat_repositories[0]['token'])
+        url_repos = cat_repositories[0]['url']
+        if not url_repos:
+            self.set_status(400)
+            self.write_error('Repository url not found')
+            logger.error('Repository url not found')
+            self.flush()
+            return
+
+        owner = url_repos.split('https://github.com/')[1].split('/')[0]
+        repository_name = url_repos.split('https://github.com/')[1].split('/')[1]
         if '.git' in repository_name:
             repository_name = repository_name.split('.git')[0]
         try:
-            gh_repository = gh.get_repo(owner + '/' + repository_name)
+            gh_repository = gh_token.get_repo(owner + '/' + repository_name)
         except Exception as ex:
             self.set_status(400)
             self.set_status(400)
