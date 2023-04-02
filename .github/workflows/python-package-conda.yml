@@ -107,6 +107,7 @@ jobs:
             if [ ! -e "$HOME/NaaVRE/NaaVRE_db.json" ] ; then echo "{}" > $HOME/NaaVRE/NaaVRE_db.json; fi
             jq ". + { \"gh_credentials\": {  \"1\": { \"name\": \"QCDIS/NaaVRE-n-a-a-vre-dev-VL\", \"url\": \"$CELL_GITHUB\", \"token\": \"$CELL_GITHUB_TOKEN\"}}, \"repositories\": { \"1\": { \"name\": \"QCDIS/NaaVRE-n-a-a-vre-dev-VL\", \"url\": \"$CELL_GITHUB\", \"token\": \"$CELL_GITHUB_TOKEN\"}},\"registry_credentials\": {\"1\": {\"name\": \"u/qcdis\",\"url\": \"$REGISTRY_URL\",\"token\": null}} }" $HOME/NaaVRE/NaaVRE_db.json > $HOME/NaaVRE/tmp.json
             mv $HOME/NaaVRE/tmp.json $HOME/NaaVRE/NaaVRE_db.json
+            python docker/repo_utils/conf_vl_repos.py  --force=False
             
 
       - name: Lint with flake8
