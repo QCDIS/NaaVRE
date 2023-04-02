@@ -2,17 +2,11 @@ name: Python Package using Conda
 
 on:
   workflow_call:
-    inputs:
-      environment_name:
-        required: true
-        type: string
+    secrets:
       jupyterhub_user:
         required: true
-        type: string
       vlab_slug:
         required: true
-        type: string
-    secrets:
       cell_github:
         required: true
       cell_github_token:
@@ -27,15 +21,69 @@ on:
         required: true
       registry_url:
         required: true
+      naavre_api_token:
+        required: true
+
+env:
+  CELL_GITHUB: ${{ secrets.cell_github }}
+  CELL_GITHUB_TOKEN: ${{ secrets.cell_github_token }}
+  REGISTRY_URL: ${{ secrets.registry_url }}
+  NAAVRE_API_TOKEN: ${{ secrets.naavre_api_token }}
+  JUPYTERHUB_USER: ${{ secrets.jupyterhub_user }}
+  API_ENDPOINT: ${{ secrets.api_endpoint }}
+  VLAB_SLUG: ${{ secrets.vlab_slug }}
+  MODULE_MAPPING_URL: ${{ secrets.module_mapping_url }}
+  SEARCH_API_ENDPOINT: ${{ secrets.search_api_endpoint }}
+  SEARCH_API_TOKEN: ${{ secrets.search_api_token }}
 
 
 jobs:
   build-linux:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment_name }}
-    strategy:
-      max-parallel: 5
     steps:
+      - name: Check secrets
+        run: |
+          if [ -z "$CELL_GITHUB" ]; then
+            echo "CELL_GITHUB not set"
+            exit 1
+          fi
+          if [ -z "$CELL_GITHUB_TOKEN" ]; then
+            echo "CELL_GITHUB_TOKEN not set"
+            exit 1
+          fi
+          if [ -z "$REGISTRY_URL" ]; then
+            echo "REGISTRY_URL not set"
+            exit 1
+          fi
+          if [ -z "$NAAVRE_API_TOKEN" ]; then
+            echo "NAAVRE_API_TOKEN not set"
+            exit 1
+          fi
+          if [ -z "$JUPYTERHUB_USER" ]; then
+            echo "JUPYTERHUB_USER not set"
+            exit 1
+          fi
+          if [ -z "$API_ENDPOINT" ]; then
+            echo "API_ENDPOINT not set"
+            exit 1
+          fi
+          if [ -z "$VLAB_SLUG" ]; then
+            echo "VLAB_SLUG not set"
+            exit 1
+          fi
+          if [ -z "$MODULE_MAPPING_URL" ]; then
+            echo "MODULE_MAPPING_URL not set"
+            exit 1
+          fi
+          if [ -z "$SEARCH_API_ENDPOINT" ]; then
+              echo "SEARCH_API_ENDPOINT not set"
+              exit 1
+          fi
+          if [ -z "$SEARCH_API_TOKEN" ]; then
+            echo "SEARCH_API_TOKEN not set"
+            exit 1
+          fi
+
       - uses: actions/checkout@v3
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
@@ -51,10 +99,6 @@ jobs:
           
 
       - name: setup env
-        env:
-          CELL_GITHUB: ${{ secrets.cell_github }}
-          CELL_GITHUB_TOKEN: ${{ secrets.cell_github_token }}
-          REGISTRY_URL: ${{ secrets.registry_url }}
         uses: sergeysova/jq-action@v2
         id: setup_env
         with:
@@ -74,16 +118,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Test with pytest
-        env:
-          NAAVRE_API_TOKEN: ${{ secrets.naavre_api_token }}
-          JUPYTERHUB_USER: ${{ inputs.jupyterhub_user }}
-          API_ENDPOINT: ${{ secrets.api_endpoint }}
-          VLAB_SLUG: ${{ inputs.vlab_slug }}
-          MODULE_MAPPING_URL: ${{ secrets.module_mapping_url }}
-          SEARCH_API_ENDPOINT: ${{ secrets.search_api_endpoint }}
-          SEARCH_API_TOKEN: ${{ secrets.search_api_token }}
-          CELL_GITHUB: ${{ secrets.cell_github }}
-          CELL_GITHUB_TOKEN: ${{ secrets.cell_github_token }}
         run: |
           conda install pytest
+          pip install --upgrade build
           pytest --ignore=docker
