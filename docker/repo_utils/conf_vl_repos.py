@@ -48,7 +48,6 @@ def add_repository_credentials(force_replace, repository_credentials):
         repositories.remove(where('url') == repository_credentials['url'])
     repositories.insert(repository_credentials)
 
-
 if __name__ == '__main__':
     github_url = os.getenv('CELL_GITHUB')
     github_token = os.getenv('CELL_GITHUB_TOKEN')
