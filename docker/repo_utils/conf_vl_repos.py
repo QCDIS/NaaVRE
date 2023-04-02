@@ -53,8 +53,6 @@ if __name__ == '__main__':
     github_url = os.getenv('CELL_GITHUB')
     github_token = os.getenv('CELL_GITHUB_TOKEN')
     registry_url = os.getenv('REGISTRY_URL')
-
-    print(github_url)
     input_repository_credentials = {'name': github_url.split('https://github.com/')[1], 'url': github_url,
                                     'token': github_token}
     add_gh_credentials(force_replace=force, repository_credentials=input_repository_credentials)
