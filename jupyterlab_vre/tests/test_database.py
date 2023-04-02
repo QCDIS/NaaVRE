@@ -26,6 +26,7 @@ class TestCatalog(TestCase):
 
     def test_get_gh_credentials(self):
         gh_credentials = Catalog.get_gh_credentials()
+        self.assertIsNotNone(gh_credentials)
         if len(gh_credentials) == 0:
             self.fail()
 
