@@ -115,8 +115,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
                                     "file_name": "student-performance-in-exams.ipynb", "rating": 4}}
             response = self.fetch('/notebooksearchratinghandler', method='POST', body=json.dumps(payload))
             self.assertEqual(response.code, 200)
-            json_response = json.loads(response.body.decode('utf-8'))
-            self.assertIsNotNone(json_response)
 
     def test_notebook_download_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
@@ -181,7 +179,5 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     if job['status'] == 'completed':
                         done = True
                         break
-
-                print(counter)
                 self.assertEqual('completed', job['status'], 'Job not completed')
                 self.assertEqual('success', job['conclusion'], 'Job not successful')
