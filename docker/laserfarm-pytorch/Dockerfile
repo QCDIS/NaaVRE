@@ -51,5 +51,4 @@ COPY test_laserchicken.py .
 RUN python test_laserchicken.py
 RUN rm test_laserchicken.py
 
-
 cmd ["/usr/local/bin/start-jupyter-venv.sh"]
