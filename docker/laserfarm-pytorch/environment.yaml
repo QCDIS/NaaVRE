@@ -21,3 +21,4 @@ dependencies:
   - wradlib
   - pip:
       - git+https://github.com/QCDIS/Laserfarm.git
+      - git+https://github.com/QCDIS/laserchicken.git
