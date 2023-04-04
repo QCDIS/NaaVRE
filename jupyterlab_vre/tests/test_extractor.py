@@ -19,7 +19,7 @@ elif os.path.exists('jupyterlab_vre/tests/resources/'):
     base_path = 'jupyterlab_vre/tests/resources/'
 
 
-def extratct_cell(payload_path):
+def create_cell(payload_path=None):
     with open(payload_path, 'r') as file:
         payload = json.load(file)
 
@@ -36,7 +36,7 @@ def extratct_cell(payload_path):
     if 'JUPYTERHUB_USER' in os.environ:
         title += '-' + os.environ['JUPYTERHUB_USER']
         title.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                 '_at_').strip()
+                                                                                              '_at_').strip()
 
     ins = []
     outs = []
@@ -66,18 +66,20 @@ def extratct_cell(payload_path):
         dependencies=dependencies,
         container_source=""
     )
-    if notebook.cells[cell_index].cell_type == 'code':
-        cell.integrate_configuration()
-        params = list(extractor.extract_cell_params(cell.original_source))
-        cell.params = params
+    return cell
+
+
+def extract_cell(payload_path):
+
+    cell = create_cell(payload_path)
 
     node = ConverterReactFlowChart.get_node(
-        node_id,
-        title,
-        ins,
-        outs,
-        params,
-        dependencies
+        cell.node_id,
+        cell.title,
+        cell.inputs,
+        cell.outputs,
+        cell.params,
+        cell.dependencies
     )
 
     chart = {
@@ -86,7 +88,7 @@ def extratct_cell(payload_path):
             'y': 0,
         },
         'scale': 1,
-        'nodes': {node_id: node},
+        'nodes': {cell.node_id: node},
         'links': {},
         'selected': {},
         'hovered': {},
@@ -99,14 +101,14 @@ def extratct_cell(payload_path):
 class TestExtractor(TestCase):
 
     def test_extract_cell(self):
-        cell = extratct_cell(os.path.join(base_path, 'notebooks/MULTIPLY_framework_cells.json'))
-        cell = extratct_cell(os.path.join(base_path, 'notebooks/laserfarm_cells.json'))
-        cell = extratct_cell(os.path.join(base_path, 'notebooks/vol2bird_cells.json'))
+        cell = extract_cell(os.path.join(base_path, 'notebooks/MULTIPLY_framework_cells.json'))
+        cell = extract_cell(os.path.join(base_path, 'notebooks/laserfarm_cells.json'))
+        cell = extract_cell(os.path.join(base_path, 'notebooks/vol2bird_cells.json'))
         try:
-            cell = extratct_cell(os.path.join(base_path, 'notebooks/MULTIPLY_framework_2.json'))
+            cell = extract_cell(os.path.join(base_path, 'notebooks/MULTIPLY_framework_2.json'))
         except SyntaxError as e:
             logger.warning(str(e))
-        cell = json.loads(extratct_cell(os.path.join(base_path, 'notebooks/laserfarm.json')))
+        cell = json.loads(extract_cell(os.path.join(base_path, 'notebooks/laserfarm.json')))
         for conf_name in (cell['confs']):
             self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
                              'conf_ values should not contain conf_ prefix in '
