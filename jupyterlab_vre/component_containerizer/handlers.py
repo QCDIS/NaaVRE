@@ -27,8 +27,9 @@ from tornado import web
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-github_url_repos = 'https://api.github.com/repos/'
+github_url_repos = 'https://api.github.com/repos'
 github_workflow_file_name = 'build-push-docker.yml'
+cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
 
 
 # code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
@@ -148,6 +149,26 @@ class BaseImageHandler(APIHandler, Catalog):
         cell.base_image = base_image
 
 
+def find_job(wf_id=None, owner=None, repository_name=None, token=None, job_id=None):
+    if job_id:
+        jobs_url = github_url_repos + '/' + owner + '/' + repository_name + '/actions/jobs/' + str(job_id)
+        job = get_github_workflow_jobs(jobs_url, token=token)
+        return job
+    last_minutes = str(
+        (datetime.datetime.now() - datetime.timedelta(hours=0, minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ"))
+    runs = get_github_workflow_runs(owner=owner, repository_name=repository_name, last_minutes=last_minutes,
+                                    token=token)
+    if not runs:
+        return None
+    for run in runs['workflow_runs']:
+        jobs_url = run['jobs_url']
+        jobs = get_github_workflow_jobs(jobs_url)
+        for job in jobs['jobs']:
+            if job['name'] == wf_id:
+                return job
+    return None
+
+
 class CellsHandler(APIHandler, Catalog):
     logger = logging.getLogger(__name__)
 
@@ -186,8 +207,6 @@ class CellsHandler(APIHandler, Catalog):
         Catalog.delete_cell_from_task_name(current_cell.task_name)
         Catalog.add_cell(current_cell)
 
-        cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
-
         if not os.path.exists(cells_path):
             os.mkdir(cells_path)
 
@@ -202,102 +221,143 @@ class CellsHandler(APIHandler, Catalog):
             os.mkdir(cell_path)
 
         registry_credentials = Catalog.get_registry_credentials()
-        image_repo = registry_credentials[0]['url'].split(
+        if not registry_credentials or len(registry_credentials) <= 0:
+            self.set_status(400)
+            self.write_error('Registry credentials not found')
+            logger.error('Registry credentials not found')
+            self.flush()
+            return
+        registry_url = registry_credentials[0]['url']
+        if not registry_url:
+            self.set_status(400)
+            self.write_error('Registry url not found')
+            logger.error('Registry url not found')
+            self.flush()
+            return
+        image_repo = registry_url.split(
             'https://hub.docker.com/u/')[1]
 
         files_info = get_files_info(cell=current_cell, image_repo=image_repo)
         build_templates(cell=current_cell, files_info=files_info)
 
-        repository = Catalog.get_repositories()
+        cat_repositories = Catalog.get_repositories()
 
-        repo_token = repository[0]['token']
-
-        gh = Github(repository[0]['token'])
-        owner = repository[0]['url'].split('https://github.com/')[1].split('/')[0]
-        repository_name = repository[0]['url'].split(
-            'https://github.com/')[1].split('/')[1]
-        if '.git' in repository_name:
-            repository_name = repository_name.split('.git')[0]
-        logger.debug('owner: ' + owner +
-                     ' repository_name: ' + repository_name)
-        try:
-            repository = gh.get_repo(owner + '/' + repository_name)
-        except Exception as ex:
+        repo_token = cat_repositories[0]['token']
+        if not repo_token:
             self.set_status(400)
-            if hasattr(ex, 'message'):
-                self.write(ex.message)
-            else:
-                self.write(str(ex))
+            self.write_error('Repository token not found')
+            logger.error('Repository token not found')
             self.flush()
             return
 
-        commit = repository.get_commits(path=current_cell.task_name)
+        gh_token = Github(cat_repositories[0]['token'])
+        url_repos = cat_repositories[0]['url']
+        if not url_repos:
+            self.set_status(400)
+            self.write_error('Repository url not found')
+            logger.error('Repository url not found')
+            self.flush()
+            return
+
+        owner = url_repos.split('https://github.com/')[1].split('/')[0]
+        repository_name = url_repos.split('https://github.com/')[1].split('/')[1]
+        if '.git' in repository_name:
+            repository_name = repository_name.split('.git')[0]
+        try:
+            gh_repository = gh_token.get_repo(owner + '/' + repository_name)
+        except Exception as ex:
+            self.set_status(400)
+            self.set_status(400)
+            if hasattr(ex, 'message'):
+                error_message = 'Error getting repository: ' + str(ex) + ' ' + ex.message
+            else:
+                error_message = 'Error getting repository: ' + str(ex)
+            self.write(error_message)
+            logger.error(error_message)
+            self.flush()
+            return
+
+        commit = gh_repository.get_commits(path=current_cell.task_name)
 
         if commit.totalCount > 0:
             try:
-                update_cell_in_repository(current_cell, repository, files_info)
+                update_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
+                                          files_info=files_info)
             except UnknownObjectException as ex:
-                create_cell_in_repository(current_cell, repository, files_info)
+                create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
+                                          files_info=files_info)
         elif commit.totalCount <= 0:
-            create_cell_in_repository(current_cell, repository, files_info)
+            create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
+                                      files_info=files_info)
 
         wf_id = str(uuid.uuid4())
         resp = dispatch_github_workflow(
             owner,
             repository_name,
-            current_cell,
+            current_cell.task_name,
             files_info,
             repo_token,
             image_repo,
             wf_id=wf_id
         )
-        last_minutes = str(
-            (datetime.datetime.now() - datetime.timedelta(hours=0, minutes=2)).strftime("%Y-%m-%dT%H:%M:%SZ"))
-        # runs = get_github_workflow_runs(owner=owner,repository_name=repository_name last_minutes=last_minutes)
+        if resp.status_code != 201 and resp.status_code != 200 and resp.status_code != 204:
+            self.set_status(400)
+            self.write(resp.text)
+            logger.error(resp.text)
+            self.flush()
+            return
+        # job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token)
+        # print(job)
+        self.write(json.dumps({'wf_id': wf_id}))
         self.flush()
 
 
-def create_cell_in_repository(cell, repository, files_info):
+def create_cell_in_repository(task_name=None, repository=None, files_info=None):
     for f_type, f_info in files_info.items():
         f_name = f_info['file_name']
         f_path = f_info['path']
         with open(f_path, 'rb') as f:
             content = f.read()
             repository.create_file(
-                path=cell.task_name + '/' + f_name,
-                message=cell.task_name + ' creation',
+                path=task_name + '/' + f_name,
+                message=task_name + ' creation',
                 content=content,
             )
 
 
-def update_cell_in_repository(cell, repository, files_info):
+def update_cell_in_repository(task_name=None, repository=None, files_info=None):
     for f_type, f_info in files_info.items():
         f_name = f_info['file_name']
         f_path = f_info['path']
+        logger.debug('get_contents: ' + task_name + '/' + f_name)
+        print('get_contents: ' + task_name + '/' + f_name)
         remote_content = repository.get_contents(
-            path=cell.task_name + '/' + f_name)
+            path=task_name + '/' + f_name)
         with open(f_path, 'rb') as f:
             local_content = f.read()
             local_hash = git_hash(local_content)
-            if remote_content.sha != git_hash(local_content):
+            remote_hash = remote_content.sha
+            logger.debug('local_hash: ' + local_hash + ' remote_hash: ' + remote_hash)
+            if remote_hash != local_hash:
                 repository.update_file(
-                    path=cell.task_name + '/' + f_name,
-                    message=cell.task_name + ' update',
+                    path=task_name + '/' + f_name,
+                    message=task_name + ' update',
                     content=local_content,
                     sha=remote_content.sha
                 )
+        f.close()
 
 
-def dispatch_github_workflow(owner, repository_name, cell, files_info, repository_token, image, wf_id=None):
-    return requests.post(
-        url=github_url_repos + owner + '/' + repository_name + '/actions/workflows/' + github_workflow_file_name + '/dispatches',
+def dispatch_github_workflow(owner, repository_name, task_name, files_info, repository_token, image, wf_id=None):
+    resp = requests.post(
+        url=github_url_repos + '/' + owner + '/' + repository_name + '/actions/workflows/' + github_workflow_file_name + '/dispatches',
         json={
             'ref': 'refs/heads/main',
             'inputs': {
-                'build_dir': cell.task_name,
+                'build_dir': task_name,
                 'dockerfile': files_info['dockerfile']['file_name'],
                 'image_repo': image,
-                'image_tag': cell.task_name,
+                'image_tag': task_name,
                 "id": wf_id
             }
         },
@@ -305,11 +365,32 @@ def dispatch_github_workflow(owner, repository_name, cell, files_info, repositor
         headers={'Accept': 'application/vnd.github.v3+json',
                  'Authorization': 'token ' + repository_token}
     )
+    return resp
 
 
-def get_github_workflow_runs(owner=None, repository_name=None, last_minutes=None):
-    workflow_runs = github_url_repos + '/' + owner + '/' + repository_name + '/actions/runs?created=' + last_minutes
-    return workflow_runs
+def get_github_workflow_runs(owner=None, repository_name=None, last_minutes=None, token=None):
+    workflow_runs_url = github_url_repos + '/' + owner + '/' + repository_name + '/actions/runs'
+    headers = {'Accept': 'application/vnd.github.v3+json'}
+    if token:
+        headers['Authorization'] = 'Bearer ' + token
+    workflow_runs = requests.get(url=workflow_runs_url, verify=False,
+                                 headers=headers)
+    if workflow_runs.status_code != 200:
+        return None
+    workflow_runs_json = json.loads(workflow_runs.text)
+    return workflow_runs_json
+
+
+def get_github_workflow_jobs(jobs_url=None, token=None):
+    headers = {'Accept': 'application/vnd.github.v3+json'}
+    if token:
+        headers['Authorization'] = 'Bearer ' + token
+    jobs = requests.get(url=jobs_url, verify=False,
+                        headers=headers)
+    if jobs.status_code == 200:
+        return json.loads(jobs.text)
+    else:
+        raise Exception('Error getting jobs for workflow run: ' + jobs.text)
 
 
 def is_standard_module(module_name):
@@ -404,14 +485,13 @@ def build_templates(cell=None, files_info=None):
 
 
 def get_files_info(cell=None, image_repo=None):
-    cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
     if not os.path.exists(cells_path):
         os.mkdir(cells_path)
     cell_path = os.path.join(cells_path, cell.task_name)
 
     cell_file_name = cell.task_name + '.py'
     dockerfile_name = 'Dockerfile.' + image_repo + '.' + cell.task_name
-    environment_file_name = cell.task_name + '-naa-vre-environment.yaml'
+    environment_file_name = cell.task_name + '-environment.yaml'
 
     if os.path.exists(cell_path):
         for files in os.listdir(cell_path):
