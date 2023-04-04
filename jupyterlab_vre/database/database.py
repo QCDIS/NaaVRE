@@ -11,12 +11,14 @@ logger.setLevel(logging.DEBUG)
 
 
 class Catalog:
+
     naa_vre_path = os.path.join(str(Path.home()), 'NaaVRE')
 
     if not os.path.exists(naa_vre_path):
         os.mkdir(naa_vre_path)
 
-    db = TinyDB(os.path.join(naa_vre_path, 'NaaVRE_db.json'))
+    db_path = os.path.join(naa_vre_path, 'NaaVRE_db.json')
+    db = TinyDB(db_path)
 
     cells = db.table('cells')
     workflows = db.table('workflows')
