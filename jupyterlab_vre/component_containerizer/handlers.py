@@ -224,12 +224,14 @@ class CellsHandler(APIHandler, Catalog):
         if not registry_credentials or len(registry_credentials) <= 0:
             self.set_status(400)
             self.write_error('Registry credentials not found')
+            logger.error('Registry credentials not found')
             self.flush()
             return
         registry_url = registry_credentials[0]['url']
         if not registry_url:
             self.set_status(400)
             self.write_error('Registry url not found')
+            logger.error('Registry url not found')
             self.flush()
             return
         image_repo = registry_url.split(
@@ -244,23 +246,34 @@ class CellsHandler(APIHandler, Catalog):
         if not repo_token:
             self.set_status(400)
             self.write_error('Repository token not found')
+            logger.error('Repository token not found')
             self.flush()
             return
 
-        gh = Github(cat_repositories[0]['token'])
-        owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
-        repository_name = cat_repositories[0]['url'].split(
-            'https://github.com/')[1].split('/')[1]
+        gh_token = Github(cat_repositories[0]['token'])
+        url_repos = cat_repositories[0]['url']
+        if not url_repos:
+            self.set_status(400)
+            self.write_error('Repository url not found')
+            logger.error('Repository url not found')
+            self.flush()
+            return
+
+        owner = url_repos.split('https://github.com/')[1].split('/')[0]
+        repository_name = url_repos.split('https://github.com/')[1].split('/')[1]
         if '.git' in repository_name:
             repository_name = repository_name.split('.git')[0]
         try:
-            gh_repository = gh.get_repo(owner + '/' + repository_name)
+            gh_repository = gh_token.get_repo(owner + '/' + repository_name)
         except Exception as ex:
             self.set_status(400)
+            self.set_status(400)
             if hasattr(ex, 'message'):
-                self.write(ex.message)
+                error_message = 'Error getting repository: ' + str(ex) + ' ' + ex.message
             else:
-                self.write(str(ex))
+                error_message = 'Error getting repository: ' + str(ex)
+            self.write(error_message)
+            logger.error(error_message)
             self.flush()
             return
 
@@ -290,6 +303,7 @@ class CellsHandler(APIHandler, Catalog):
         if resp.status_code != 201 and resp.status_code != 200 and resp.status_code != 204:
             self.set_status(400)
             self.write(resp.text)
+            logger.error(resp.text)
             self.flush()
             return
         # job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token)

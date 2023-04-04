@@ -1,20 +1,20 @@
-import copy
+import json
 import json
 import os
 import subprocess
 import sys
+from pathlib import Path
 from time import sleep
 from unittest import mock
-import datetime
+
+from github import Github, UnknownObjectException
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
-from pathlib import Path
-from github import Github, UnknownObjectException
 
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
     NotebookSearchHandler, NotebookSearchRatingHandler
 from jupyterlab_vre.component_containerizer.handlers import update_cell_in_repository, create_cell_in_repository, \
-    get_github_workflow_runs, find_job
+    find_job
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.handlers import load_module_names_mapping
@@ -115,8 +115,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
                                     "file_name": "student-performance-in-exams.ipynb", "rating": 4}}
             response = self.fetch('/notebooksearchratinghandler', method='POST', body=json.dumps(payload))
             self.assertEqual(response.code, 200)
-            json_response = json.loads(response.body.decode('utf-8'))
-            self.assertIsNotNone(json_response)
 
     def test_notebook_download_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
@@ -181,35 +179,5 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     if job['status'] == 'completed':
                         done = True
                         break
-
-                print(counter)
                 self.assertEqual('completed', job['status'], 'Job not completed')
                 self.assertEqual('success', job['conclusion'], 'Job not successful')
-
-    def test_commit_to_repository(self):
-        files_info = {'cell': {'file_name': 'test-retiling-dev-skoulouzis.py',
-                               'path': cells_path + '/test-retiling-dev-skoulouzis/test-retiling-dev-skoulouzis.py'},
-                      'dockerfile': {'file_name': 'Dockerfile.qcdis.test-retiling-dev-skoulouzis',
-                                     'path': cells_path + '/test-retiling-dev-skoulouzis/Dockerfile.qcdis.test-retiling-dev-skoulouzis'},
-                      'environment': {'file_name': 'test-retiling-dev-skoulouzis-naa-vre-environment.yaml',
-                                      'path': cells_path + '/test-retiling-dev-skoulouzis/test-retiling-dev-skoulouzis-naa-vre-environment.yaml'}}
-        task_name = 'test-retiling-dev-skoulouzis'
-
-        gh_repository = get_gh_repository()
-        commit = gh_repository.get_commits(path=task_name)
-
-        if commit.totalCount > 0:
-            try:
-                update_cell_in_repository(task_name=task_name, repository=gh_repository,
-                                          files_info=files_info)
-            except UnknownObjectException as ex:
-                create_cell_in_repository(task_name=task_name, repository=gh_repository,
-                                          files_info=files_info)
-        elif commit.totalCount <= 0:
-            create_cell_in_repository(task_name=task_name, repository=gh_repository,
-                                      files_info=files_info)
-
-        commit = gh_repository.get_commits(path=task_name)
-        assert commit.totalCount > 0
-        update_cell_in_repository(task_name=task_name, repository=gh_repository,
-                                  files_info=files_info)

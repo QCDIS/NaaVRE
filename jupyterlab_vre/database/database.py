@@ -9,23 +9,26 @@ from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-naa_vre_path = os.path.join(str(Path.home()), 'NaaVRE')
-
-if not os.path.exists(naa_vre_path):
-    os.mkdir(naa_vre_path)
-
-db = TinyDB(os.path.join(naa_vre_path, 'NaaVRE_db.json'))
-
-cells = db.table('cells')
-workflows = db.table('workflows')
-repositories = db.table('repositories')
-gh_credentials = db.table('gh_credentials')
-registry_credentials = db.table('registry_credentials')
-search_entry = db.table('search_entries')
-editor_buffer: Cell
-
 
 class Catalog:
+
+    naa_vre_path = os.path.join(str(Path.home()), 'NaaVRE')
+
+    if not os.path.exists(naa_vre_path):
+        os.mkdir(naa_vre_path)
+
+    db_path = os.path.join(naa_vre_path, 'NaaVRE_db.json')
+    db = TinyDB(db_path)
+
+    cells = db.table('cells')
+    workflows = db.table('workflows')
+    repositories = db.table('repositories')
+    gh_credentials = db.table('gh_credentials')
+    registry_credentials = db.table('registry_credentials')
+    search_entry = db.table('search_entries')
+
+    editor_buffer: Cell
+
     @classmethod
     def add_search_entry(cls, query: dict):
         cls.search_entry.insert(query)
