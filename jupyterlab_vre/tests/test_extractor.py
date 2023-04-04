@@ -15,9 +15,10 @@ logger.setLevel(logging.DEBUG)
 
 if os.path.exists('resources'):
     base_path = 'resources'
-elif os.path.exists('jupyterlab_vre/cypress/resources/'):
-    base_path = 'jupyterlab_vre/cypress/resources/'
+elif os.path.exists('jupyterlab_vre/tests/resources/'):
+    base_path = 'jupyterlab_vre/tests/resources/'
 
+assert os.path.exists(base_path)
 
 def create_cell(payload_path=None):
     with open(payload_path, 'r') as file:
