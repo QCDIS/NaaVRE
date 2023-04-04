@@ -15,4 +15,4 @@ else
   unzip /tmp/multiply.zip -d ~/.multiply
 fi
 
-python /tmp/repo_utils/conf_vl_repos.py --force=True --github_url=$CELL_GITHUB --github_token=$CELL_GITHUB_TOKEN --registry_url=$REGISTRY_URL
+python /tmp/repo_utils/conf_vl_repos.py --force=False
