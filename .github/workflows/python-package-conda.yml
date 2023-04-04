@@ -109,5 +109,4 @@ jobs:
         run: |
           python docker/repo_utils/conf_vl_repos.py  --force=True
           conda install pytest
-          pip install --upgrade build
           pytest --ignore=docker
