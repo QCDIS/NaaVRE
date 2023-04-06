@@ -48,10 +48,8 @@ class NotebookExtractorHandler(APIHandler, Catalog):
                     replace('.', '-').strip() if title[0] == '#' \
                     else 'Untitled'
                 if 'JUPYTERHUB_USER' in os.environ:
-                    title += '-' + os.environ['JUPYTERHUB_USER']
-                    title.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@','_at_').\
-                        strip()
-
+                    title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
+                                                                                                     '_at_').strip()
         dependencies = extractor.infer_cell_dependencies(source, confs)
 
         node_id = str(uuid.uuid4())[:7]

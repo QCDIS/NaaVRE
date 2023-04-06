@@ -52,9 +52,8 @@ class ExportWorkflowHandler(APIHandler):
         template = template_env.get_template('workflow_template_v2.jinja2')
         if cell:
             if 'JUPYTERHUB_USER' in os.environ:
-                workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER']
-                workflow_name.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                      '_at_').strip()
+                workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
+                                                                                                     '_at_').strip()
 
             template.stream(
                 vlab_slug=vlab_slug,
@@ -134,9 +133,8 @@ class ExecuteWorkflowHandler(APIHandler):
         template = template_env.get_template('workflow_template_v2.jinja2')
 
         if 'JUPYTERHUB_USER' in os.environ:
-            workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER']
-            workflow_name.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                            '_at_').strip()
+            workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
+                                                                                                     '_at_').strip()
         template = template.render(
             vlab_slug=vlab_slug,
             deps_dag=deps_dag,

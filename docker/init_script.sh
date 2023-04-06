@@ -1,11 +1,11 @@
 #!/bin/sh
 
-mkdir -p /home/jovyan/NaaVRE
-cp -r /tmp/repo_utils/conf_vl_repos.py /home/jovyan/NaaVRE/
+mkdir -p $HOME/NaaVRE
+cp -r /tmp/repo_utils/conf_vl_repos.py $HOME/NaaVRE/
 gitpuller https://github.com/QCDIS/lifewatch-notebooks main example_notebooks
-rm -f -- /home/jovyan/NaaVRE/module_name_mapping.json
+rm -f -- $HOME/NaaVRE/module_name_mapping.json
 
-DIR=/home/jovyan/.multiply/
+DIR=$HOME/.multiply/
 
 if [ -d "$DIR" ];
 then

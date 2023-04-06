@@ -39,8 +39,10 @@ class Cell:
             node_id='',
     ) -> None:
 
-        self.title = title
-        self.task_name = task_name
+        self.title = title.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
+                                                                                                     '_at_').strip()
+        self.task_name = task_name.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
+                                                                                                     '_at_').strip()
         self.original_source = original_source
         self.inputs = list(inputs)
         self.outputs = list(outputs)
@@ -70,6 +72,14 @@ class Cell:
             lines.pop(ir)
 
         self.original_source = "\n".join(lines)
+
+    def clean_task_name(self):
+        self.task_name = self.task_name.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
+                                                                                                     '_at_').strip()
+
+    def clean_title(self):
+        self.title = self.title.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
+                                                                                                     '_at_').strip()
 
     def integrate_configuration(self):
         lines = self.original_source.splitlines()

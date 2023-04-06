@@ -62,8 +62,8 @@ class ExtractorHandler(APIHandler, Catalog):
             '_', '-').replace('(', '-').replace(')', '-').strip() if title and title[0] == "#" else "Untitled"
 
         if 'JUPYTERHUB_USER' in os.environ:
-            title += '-' + os.environ['JUPYTERHUB_USER']
-            title.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@', '_at_').strip()
+            title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
+                                                                                                     '_at_').strip()
 
         ins = []
         outs = []
@@ -182,6 +182,8 @@ class CellsHandler(APIHandler, Catalog):
     async def post(self, *args, **kwargs):
         current_cell = Catalog.editor_buffer
         current_cell.clean_code()
+        current_cell.clean_title()
+        current_cell.clean_task_name()
 
         all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
         for parm_name in all_vars:
@@ -458,9 +460,7 @@ def map_dependencies(dependencies=None):
 
 def build_templates(cell=None, files_info=None):
     logger.debug('files_info: ' + str(files_info))
-
     logger.debug('cell.dependencies: ' + str(cell.dependencies))
-    print('cell.dependencies: ' + str(cell.dependencies))
     set_conda_deps, set_pip_deps = map_dependencies(dependencies=cell.dependencies)
     loader = PackageLoader('jupyterlab_vre', 'templates')
     template_env = Environment(
