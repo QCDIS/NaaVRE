@@ -69,7 +69,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
         return self.app
 
     def test_export_workflow_handler(self):
-        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+        with mock.patch.object(ExportWorkflowHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
             workflow_path = os.path.join(base_path, 'workflows/get_files.json')
             # with open(workflow_path, 'r') as read_file:
@@ -78,7 +78,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             # response.
 
     def test_execute_workflow_handler(self):
-        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+        with mock.patch.object(ExecuteWorkflowHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
             workflow_path = os.path.join(base_path, 'workflows/laserfarm.json')
             # with open(workflow_path, 'r') as read_file:
@@ -89,7 +89,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
         load_module_names_mapping()
 
     def test_extractor_handler_MULTIPLY(self):
-        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+        with mock.patch.object(ExportWorkflowHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
             workflow_path = os.path.join(base_path, 'notebooks/MULTIPLY_framework_2.json')
             # with open(workflow_path, 'r') as read_file:
@@ -97,7 +97,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             # response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
 
     def test_search_handler(self):
-        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+        with mock.patch.object(NotebookSearchHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
             payload = {'keyword': 'explosion'}
             # response = self.fetch('/notebooksearch', method='POST', body=json.dumps(payload))
@@ -117,14 +117,14 @@ class HandlersAPITest(AsyncHTTPTestCase):
             self.assertEqual(response.code, 200)
 
     def test_notebook_download_handler(self):
-        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+        with mock.patch.object(NotebookSearchRatingHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
             payload = {'docid': 'Kaggle219', 'notebook_name': 'Laserfarm.ipynb'}
             response = self.fetch('/notebookdownloadhandler', method='POST', body=json.dumps(payload))
             self.assertEqual(response.code, 200)
 
     def test_cells_handler(self):
-        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+        with mock.patch.object(CellsHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
             cells_json_path = os.path.join(base_path, 'cells')
             cells_files = os.listdir(cells_json_path)
