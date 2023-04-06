@@ -182,6 +182,8 @@ class CellsHandler(APIHandler, Catalog):
     async def post(self, *args, **kwargs):
         current_cell = Catalog.editor_buffer
         current_cell.clean_code()
+        current_cell.clean_title()
+        current_cell.clean_task_name()
 
         all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
         for parm_name in all_vars:
