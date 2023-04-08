@@ -11,13 +11,6 @@ from jupyterlab_vre.database.database import Catalog
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-module_mapping = {
-    'torch.nn': 'torch',
-    'torchvision.models': 'torchvision',
-    'cv2': 'opencv-python-headless',
-    'webdav3': 'webdavclient3'
-}
-
 
 def load_module_names_mapping():
     module_mapping_url = os.getenv('MODULE_MAPPING_URL')

@@ -80,10 +80,10 @@ class HandlersAPITest(AsyncHTTPTestCase):
     def test_execute_workflow_handler(self):
         with mock.patch.object(ExecuteWorkflowHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
-            workflow_path = os.path.join(base_path, 'workflows/laserfarm.json')
-            # with open(workflow_path, 'r') as read_file:
-            #     payload = json.load(read_file)
-            # response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
+            workflow_path = os.path.join(base_path, 'workflows/simple_workflow.json')
+            with open(workflow_path, 'r') as read_file:
+                payload = json.load(read_file)
+            response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
 
     def test_load_module_names_mapping(self):
         load_module_names_mapping()

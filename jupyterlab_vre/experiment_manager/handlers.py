@@ -73,7 +73,10 @@ class ExecuteWorkflowHandler(APIHandler):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
+        print('-----------------ExecuteWorkflowHandler---------------------')
         payload = self.get_json_body()
+        print(json.dumps(payload, indent=4))
+        print('-------------------------------------------------------------')
         chart = payload['chart']
         params = payload['params']
 
