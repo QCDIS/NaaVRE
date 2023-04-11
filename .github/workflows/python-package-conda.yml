@@ -23,6 +23,10 @@ on:
         required: true
       naavre_api_token:
         required: true
+      argo_url:
+        required: true
+      argo_api_token:
+        required: true
 
 env:
   CELL_GITHUB: ${{ secrets.cell_github }}
@@ -35,6 +39,8 @@ env:
   MODULE_MAPPING_URL: ${{ secrets.module_mapping_url }}
   SEARCH_API_ENDPOINT: ${{ secrets.search_api_endpoint }}
   SEARCH_API_TOKEN: ${{ secrets.search_api_token }}
+  ARGO_URL: ${{ secrets.ARGO_URL }}
+  ARGO_API_TOKEN: ${{ secrets.ARGO_API_TOKEN }}
 
 
 jobs:
@@ -83,6 +89,15 @@ jobs:
             echo "SEARCH_API_TOKEN not set"
             exit 1
           fi
+          if [ -z "ARGO_URL" ]; then
+            echo "ARGO_URL not set"
+            exit 1
+          fi
+          if [ -z "ARGO_API_TOKEN" ]; then
+            echo "ARGO_API_TOKEN not set"
+            exit 1
+          fi
+
 
       - uses: actions/checkout@v3
       - name: Set up Python 3.10
