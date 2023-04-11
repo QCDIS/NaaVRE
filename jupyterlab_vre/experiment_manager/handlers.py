@@ -158,6 +158,7 @@ class ExecuteWorkflowHandler(APIHandler):
                 "workflow": workflow_doc
             }
         }
+        print('Submitting workflow: ' + api_endpoint + '/api/workflows/submit/')
         resp = requests.post(
             f"{api_endpoint}/api/workflows/submit/",
             data=json.dumps(req_body),
@@ -166,7 +167,7 @@ class ExecuteWorkflowHandler(APIHandler):
                 'Content-Type': 'application/json'
             }
         )
-
+        print('Workflow submission response: ' + str(resp.content))
         if resp.status_code != 200:
             logger.error('Workflow submission failed: ' + str(resp.content))
             self.set_status(resp.status_code)
