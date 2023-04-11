@@ -52,8 +52,11 @@ class ExportWorkflowHandler(APIHandler):
         template = template_env.get_template('workflow_template_v2.jinja2')
         if cell:
             if 'JUPYTERHUB_USER' in os.environ:
-                workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                     '_at_').strip()
+                workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(',
+                                                                                                       '-').replace(')',
+                                                                                                                    '-').replace(
+                    '.', '-').replace('@',
+                                      '-at-').strip()
 
             template.stream(
                 vlab_slug=vlab_slug,
@@ -81,7 +84,6 @@ class ExecuteWorkflowHandler(APIHandler):
         params = payload['params']
 
         api_endpoint = os.getenv('API_ENDPOINT')
-        logger.debug('API_ENDPOINT: ' + api_endpoint)
         if not api_endpoint:
             logger.error('NaaVRE API endpoint environment variable "API_ENDPOINT" is not set!')
             self.set_status(400)
@@ -136,8 +138,9 @@ class ExecuteWorkflowHandler(APIHandler):
         template = template_env.get_template('workflow_template_v2.jinja2')
 
         if 'JUPYTERHUB_USER' in os.environ:
-            workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                     '_at_').strip()
+            workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(
+                ')', '-').replace('.', '-').replace('@',
+                                                    '-at-').strip()
         template = template.render(
             vlab_slug=vlab_slug,
             deps_dag=deps_dag,
@@ -165,10 +168,10 @@ class ExecuteWorkflowHandler(APIHandler):
         )
 
         if resp.status_code != 200:
-            logger.error('Workflow submission failed: '+str(resp.content))
+            logger.error('Workflow submission failed: ' + str(resp.content))
             self.set_status(resp.status_code)
-            self.write('Workflow submission failed: '+str(resp.content))
-            self.write_error('Workflow submission failed: '+str(resp.content))
+            self.write('Workflow submission failed: ' + str(resp.content))
+            self.write_error('Workflow submission failed: ' + str(resp.content))
             self.flush()
             return
         self.write(resp.json())

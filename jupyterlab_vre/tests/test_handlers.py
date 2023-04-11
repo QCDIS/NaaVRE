@@ -7,6 +7,7 @@ from pathlib import Path
 from time import sleep
 from unittest import mock
 
+import requests
 from github import Github, UnknownObjectException
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
@@ -84,6 +85,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             with open(workflow_path, 'r') as read_file:
                 payload = json.load(read_file)
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
+            json_response = json.loads(response.body.decode('utf-8'))
 
     def test_load_module_names_mapping(self):
         load_module_names_mapping()
@@ -181,3 +183,36 @@ class HandlersAPITest(AsyncHTTPTestCase):
                         break
                 self.assertEqual('completed', job['status'], 'Job not completed')
                 self.assertEqual('success', job['conclusion'], 'Job not successful')
+
+    def test_argo_api(self):
+        argo_workflow_path = os.path.join(base_path, 'workflows/argo_workflow2.json')
+        self.submit_workflow(argo_workflow_path)
+
+    def submit_workflow(self,argo_workflow_path):
+        ago_ns = 'argo'
+        ARGO_API_URL = os.getenv('ARGO_URL') + '/api/v1/workflows/' + ago_ns
+        with open(argo_workflow_path, 'r') as read_file:
+            workflow = json.load(read_file)
+        token = os.getenv('ARGO_API_TOKEN')
+        self.assertIsNotNone(token, 'ARGO_API_TOKEN not set')
+
+        resp_submit = requests.post(
+            ARGO_API_URL,
+            json=workflow,
+            headers={
+                'Authorization': token
+            }
+        )
+        self.assertEqual(200, resp_submit.status_code, resp_submit.text)
+
+        resp_submit_data = resp_submit.json()
+        self.assertIsNotNone(resp_submit_data['metadata']['name'], 'No workflow name returned')
+        resp_detail = requests.get(
+            f"{ARGO_API_URL}/{resp_submit_data['metadata']['name']}",
+            json=workflow,
+            headers={
+                'Authorization': token
+            }
+        )
+        self.assertEqual(200, resp_detail.status_code, resp_detail.text)
+        resp_detail_data = resp_detail.json()
