@@ -18,6 +18,8 @@ jobs:
       search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
       registry_url: ${{ secrets.REGISTRY_URL }}
       naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
+      argo_url: ${{ secrets.ARGO_URL }}
+      argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
   call-build-wheel:
     needs: call-pytest
     uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@main
