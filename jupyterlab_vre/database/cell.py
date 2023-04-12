@@ -40,9 +40,9 @@ class Cell:
     ) -> None:
 
         self.title = title.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                     '_at_').strip()
+                                                                                                     '-at-').strip()
         self.task_name = task_name.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                     '_at_').strip()
+                                                                                                     '-at-').strip()
         self.original_source = original_source
         self.inputs = list(inputs)
         self.outputs = list(outputs)
@@ -75,11 +75,11 @@ class Cell:
 
     def clean_task_name(self):
         self.task_name = self.task_name.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                     '_at_').strip()
+                                                                                                     '-at-').strip()
 
     def clean_title(self):
         self.title = self.title.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                     '_at_').strip()
+                                                                                                     '-at-').strip()
 
     def integrate_configuration(self):
         lines = self.original_source.splitlines()

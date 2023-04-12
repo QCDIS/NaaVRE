@@ -63,7 +63,7 @@ class ExtractorHandler(APIHandler, Catalog):
 
         if 'JUPYTERHUB_USER' in os.environ:
             title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                     '_at_').strip()
+                                                                                                     '-at-').strip()
 
         ins = []
         outs = []
