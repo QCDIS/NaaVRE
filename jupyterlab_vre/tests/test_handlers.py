@@ -8,14 +8,13 @@ from time import sleep
 from unittest import mock
 
 import requests
-from github import Github, UnknownObjectException
+from github import Github
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
     NotebookSearchHandler, NotebookSearchRatingHandler
-from jupyterlab_vre.component_containerizer.handlers import update_cell_in_repository, create_cell_in_repository, \
-    find_job
+from jupyterlab_vre.component_containerizer.handlers import find_job
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.handlers import load_module_names_mapping
