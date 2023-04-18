@@ -23,7 +23,14 @@ class ExportWorkflowHandler(APIHandler):
         nodes = payload['nodes']
         links = payload['links']
 
-        parser = WorkflowParser(nodes, links)
+        try:
+            parser = WorkflowParser(nodes, links)
+        except Exception as e:
+            self.set_status(400)
+            self.write('Workflow is not valid!')
+            self.write_error('Workflow is not valid!')
+            self.flush()
+            return
 
         cells = parser.get_workflow_cells()
         deps_dag = parser.get_dependencies_dag()

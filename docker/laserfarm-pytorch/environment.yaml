@@ -16,9 +16,17 @@ dependencies:
   - scipy
   - webdavclient3
   - tornado
-  - laspy
   - plyfile
   - wradlib
+  - numpy
+  - libgcc=5.2.0
+  - asyncssh
+  - dask-core
+  - fire
+  - lazrs-python
+  - pyshp
+  - shapely
+  - pip
   - pip:
       - git+https://github.com/QCDIS/Laserfarm.git
       - git+https://github.com/QCDIS/laserchicken.git
