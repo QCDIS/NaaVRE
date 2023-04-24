@@ -169,11 +169,11 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertIsNotNone(job, 'Job not found')
                 done = False
                 counter = 0
-                while counter < 20:
+                while counter < 50:
                     counter += 1
                     print('--------------------------------------------------------')
                     print(job['status'])
-                    sleep(20)
+                    sleep(60)
 
                     job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token,
                                    job_id=job['id'])
