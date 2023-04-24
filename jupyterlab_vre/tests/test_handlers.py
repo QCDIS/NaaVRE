@@ -189,6 +189,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
 
     def submit_workflow(self,argo_workflow_path):
         ago_ns = 'argo'
+        self.assertIsNotNone(os.getenv('ARGO_URL'), 'ARGO_URL not set')
         ARGO_API_URL = os.getenv('ARGO_URL') + '/api/v1/workflows/' + ago_ns
         with open(argo_workflow_path, 'r') as read_file:
             workflow = json.load(read_file)
