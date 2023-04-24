@@ -71,6 +71,14 @@ class WorkflowParser:
             to_node = self.nodes[link['to']['nodeId']]
             from_node = self.nodes[link['from']['nodeId']]
 
+            if not from_node:
+                raise Exception('Error while parsing link: ' + link['from'] + ' from node not found')
+            if 'type' not in from_node:
+                raise Exception('Error while parsing link: ' + link['from'] + ' from node has no type')
+            if 'id' not in from_node:
+                raise Exception('Error while parsing link: ' + link['from'] + ' from node has no id')
+
+
             from_special_node = (from_node['type'] == 'merger' or from_node['type'] == 'splitter')
 
             task_name = f'{from_node["type"]}-{from_node["id"][:7]}' if from_special_node else \
