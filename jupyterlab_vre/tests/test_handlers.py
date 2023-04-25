@@ -169,11 +169,11 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertIsNotNone(job, 'Job not found')
                 done = False
                 counter = 0
-                while counter < 20:
+                while counter < 50:
                     counter += 1
                     print('--------------------------------------------------------')
                     print(job['status'])
-                    sleep(20)
+                    sleep(60)
 
                     job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token,
                                    job_id=job['id'])
@@ -189,6 +189,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
 
     def submit_workflow(self,argo_workflow_path):
         ago_ns = 'argo'
+        self.assertIsNotNone(os.getenv('ARGO_URL'), 'ARGO_URL not set')
         ARGO_API_URL = os.getenv('ARGO_URL') + '/api/v1/workflows/' + ago_ns
         with open(argo_workflow_path, 'r') as read_file:
             workflow = json.load(read_file)
