@@ -33,6 +33,6 @@ dependencies:
   - unzip
   - wget
   - git
-  - pathlib
+  - pathlib2
   - pip
   - pip:

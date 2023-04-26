@@ -267,7 +267,7 @@ make install-backend && make build-frontend && make install-ui && make link-ui
 
 Build the extension  and start a jupyterlab instance:
 ```shell
-jupyter lab build && jupyter lab --debug --watch
+source export_VARS && jupyter lab build && cp -r ~/workspace/NaaVRE/docker/repo_utils/ /tmp/ && ~/workspace/NaaVRE/docker/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*'
 ```
 
 Build wheel file for release:
@@ -275,9 +275,32 @@ Build wheel file for release:
 make release
 ```
 
+## Troubleshooting
 
-When running make install-backend, the following error occurs:
+When running make install-backend, if the following error occurs:
+
+```python
+Traceback (most recent call last):
+  File "setup.py", line 2, in <module>
+    from pathlib import Path
+ImportError: No module named pathlib
+make: *** [build-backend] Error 1
+```
+
+
+Removed Anaconda entirely from the machine (MacOS), and do a full reinstall as follows:
 
 ```shell
+brew install anaconda
+export PATH="/usr/local/anaconda3/bin:$PATH"
+```
+
+Next, sett up the Anaconda environment:
+    
+```shell    
+conda create -n jupyterlab  python=3.9 
+conda activate jupyterlab
+```
+
 
 
