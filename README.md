@@ -243,14 +243,7 @@ Close the terminal and start a new one to activate conda.
 
 Create and activate conda environment:
 ```shell
-conda create -n jupyterlab  python=3.9 
-conda activate jupyterlab
-```
-
-## Install requirements in conda 
-```shell
-conda install jupyterlab nodejs yarn
-conda install -c conda-forge typescript 
+conda env update -f environment.yml
 ```
 
 Clone project:
@@ -265,16 +258,10 @@ git branch <BRANCH_NAME>
 git checkout <BRANCH_NAME>
 ```
 
-Go to the project folder and install nodejs dependencies :
-```shell 
-npm install lerna --force
-npm install --force
-```
+Go to the project folder and run make :
+
 Build the backend and frontend:
 ```shell
-npx lerna run build --scope @jupyter_vre/chart-customs
-npx lerna run build --scope @jupyter_vre/core
-npx lerna run build --scope @jupyter_vre/components
 make install-backend && make build-frontend && make install-ui && make link-ui
 ```
 
@@ -287,4 +274,10 @@ Build wheel file for release:
 ```shell
 make release
 ```
+
+
+When running make install-backend, the following error occurs:
+
+```shell
+
 
