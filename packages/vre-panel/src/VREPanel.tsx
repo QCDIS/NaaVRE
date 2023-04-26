@@ -85,6 +85,8 @@ export class VREPanel extends React.Component<IProps> {
         }
     }
 
+    // TODO: this is the panel
+
     render() {
         return (
             <ThemeProvider theme={theme}>

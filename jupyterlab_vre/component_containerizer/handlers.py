@@ -74,7 +74,7 @@ class ExtractorHandler(APIHandler, Catalog):
         # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(
         # source)'
         if notebook.cells[cell_index].cell_type == 'code':
-            ins = set(extractor.infere_cell_inputs(source))
+            ins = set(extractor.infere_cell_inputs(source)) # todo: 
             outs = set(extractor.infere_cell_outputs(source))
 
             confs = extractor.extract_cell_conf_ref(source)
@@ -168,7 +168,7 @@ def find_job(wf_id=None, owner=None, repository_name=None, token=None, job_id=No
                 return job
     return None
 
-
+# Add to the catalog
 class CellsHandler(APIHandler, Catalog):
     logger = logging.getLogger(__name__)
 
@@ -240,7 +240,7 @@ class CellsHandler(APIHandler, Catalog):
             'https://hub.docker.com/u/')[1]
 
         files_info = get_files_info(cell=current_cell, image_repo=image_repo)
-        build_templates(cell=current_cell, files_info=files_info)
+        build_templates(cell=current_cell, files_info=files_info) # TODO: check this
 
         cat_repositories = Catalog.get_repositories()
 
@@ -466,7 +466,7 @@ def build_templates(cell=None, files_info=None):
     template_env = Environment(
         loader=loader, trim_blocks=True, lstrip_blocks=True)
 
-    template_cell = template_env.get_template('cell_template.jinja2')
+    template_cell = template_env.get_template('cell_template.jinja2') # TODO: look at these templates
     template_dockerfile = template_env.get_template(
         'dockerfile_template_conda.jinja2')
     template_conda = template_env.get_template('conda_env_template.jinja2')
@@ -477,7 +477,7 @@ def build_templates(cell=None, files_info=None):
     cell.container_source = compiled_code
 
     template_cell.stream(cell=cell, deps=cell.generate_dependencies(), types=cell.types,
-                         confs=cell.generate_configuration()).dump(files_info['cell']['path'])
+                         confs=cell.generate_configuration()).dump(files_info['cell']['path']) # TODO: the variables are set here
     template_dockerfile.stream(task_name=cell.task_name, base_image=cell.base_image).dump(
         files_info['dockerfile']['path'])
     template_conda.stream(base_image=cell.base_image, conda_deps=list(set_conda_deps),

@@ -115,6 +115,7 @@ export class CellTracker extends React.Component<IProps, IState> {
         this.setState({ baseImageSelected: true });
     };
 
+    // TODO: look at this
     exctractor = async (notebookModel: INotebookModel, save = false) => {
         // try {
             const extractedCell = await requestAPI<any>('containerizer/extract', {
@@ -199,6 +200,7 @@ export class CellTracker extends React.Component<IProps, IState> {
         return dep['module'] + " • " + dep['name'] ? dep['module'] != "" : dep['name'];
     }
 
+    // TODO: check this
     render() {
         return (
             <ThemeProvider theme={theme}>
