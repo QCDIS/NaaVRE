@@ -34,6 +34,7 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -47,6 +48,7 @@ jobs:
 
       - name: add whl and start files
         run: |
+            ls -lah 
             cp docker/init_script.sh docker/$DOCKER_FOLDER/
             cp docker/start-jupyter.sh docker/$DOCKER_FOLDER/
             cp docker/start-jupyter.sh docker/$DOCKER_FOLDER/
