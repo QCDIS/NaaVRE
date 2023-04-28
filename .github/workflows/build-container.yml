@@ -64,6 +64,18 @@ jobs:
       run: |
           docker run -d -p 8888:8888 $TAG:latest jupyter lab
 
+
+    - name: Check file existence
+      id: check_files
+      uses: andstor/file-existence-action@v2
+      with:
+        files: "cypress/e2e/launcher.cy.ts"
+
+
+    - name: Cypress run
+      uses: cypress-io/github-action@v5
+      if: steps.check_files.outputs.files_exists == 'true'
+
     - name: Login to gitlab Registry
       if: ${{ inputs.push }}
       uses: docker/login-action@v2
