@@ -1,4 +1,4 @@
-FROM condaforge/mambaforge:23.1.0-1 AS naavre-multiply-build
+FROM condaforge/mambaforge:22.11.1-4 AS naavre-multiply-build
 
 RUN conda install -c conda-forge conda-pack conda-merge mamba
 COPY environment.yaml .
@@ -7,7 +7,7 @@ RUN conda-merge environment.yaml naa-vre-environment.yaml > merged-environment.y
 
 ADD ./jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 
-RUN conda env update --name venv -f merged-environment.yaml
+RUN mamba env update --name venv -f merged-environment.yaml
 RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
     rm /tmp/env.tar
