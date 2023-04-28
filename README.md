@@ -303,4 +303,8 @@ conda activate jupyterlab
 ```
 
 
+## Docker 
 
+```commandline
+docker run -it -p 8888:8888 --env-file ~/Downloads/notbooks/VARS qcdis/n-a-a-vre-laserfarm /tmp/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*'
+```
