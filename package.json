@@ -2,6 +2,7 @@
   "name": "jupyter_vre",
   "version": "0.1.0",
   "private": true,
+//  "type": "module",
   "workspaces": [
     "packages/*"
   ],
@@ -10,7 +11,8 @@
     "@types/react-window": "^1.8.5",
     "cypress": "^12.9.0",
     "lerna": "^6.5.1",
-    "typescript": "^5.0.2"
+    "ts-node": "~10.9.1",
+    "typescript": "~5.0.2"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",
@@ -29,6 +31,7 @@
     "@mui/icons-material": "^5.6.1",
     "@mui/material": "5.11.15",
     "lodash": "^4.17.21",
-    "react-window": "^1.8.6"
+    "react-window": "^1.8.6",
+    "ts-node": "~10.9.1"
   }
 }

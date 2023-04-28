@@ -25,6 +25,8 @@ if os.path.exists('resources'):
 elif os.path.exists('jupyterlab_vre/tests/resources/'):
     base_path = 'jupyterlab_vre/tests/resources/'
 
+assert os.path.exists(base_path)
+
 cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
 
 
