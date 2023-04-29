@@ -1,10 +1,10 @@
 FROM continuumio/miniconda3:22.11.1 AS naavre-build
 
-RUN conda install -c conda-forge conda-pack mamba
+RUN conda install -c conda-forge conda-pack
 COPY naa-vre-environment.yaml .
 ADD jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 
-RUN mamba env update --name venv -f naa-vre-environment.yaml
+RUN conda env update --name venv -f naa-vre-environment.yaml
 RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
     rm /tmp/env.tar

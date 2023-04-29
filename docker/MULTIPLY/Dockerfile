@@ -1,4 +1,4 @@
-FROM condaforge/mambaforge:23.1.0-1 AS naavre-multiply-build
+FROM condaforge/mambaforge:22.11.1-4 AS naavre-multiply-build
 
 RUN conda install -c conda-forge conda-pack conda-merge mamba
 COPY environment.yaml .
