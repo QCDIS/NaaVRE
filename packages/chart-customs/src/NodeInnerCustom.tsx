@@ -30,6 +30,7 @@ export const NodeInnerCustom = ({ node, config }: INodeInnerDefaultProps) => {
                 <CallMergeIcon sx={{fontSize: '50px', transform: 'rotate(90deg)'}}/>
             )
         }
+        return null
     }
 
     return (
