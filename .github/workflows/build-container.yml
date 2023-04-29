@@ -31,136 +31,85 @@ env:
   DOCKERHUB_IMAGE_ID: "qcdis/"
 
 jobs:
-  docker:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+    - uses: actions/checkout@v3
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ inputs.wheel_artifact_name }}
+        path: docker/${{ inputs.docker_folder }}
+    - uses: mikefarah/yq@v4.33.2
 
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ inputs.wheel_artifact_name }}
-          path: docker/${{ inputs.docker_folder }}
-
-      - name: add whl and start files
-        run: |
-            ls -lah 
-            cp docker/init_script.sh docker/$DOCKER_FOLDER/
-            cp docker/start-jupyter.sh docker/$DOCKER_FOLDER/
-            cp docker/start-jupyter.sh docker/$DOCKER_FOLDER/
-            cp docker/start-jupyter-venv.sh docker/$DOCKER_FOLDER/
-            cp -r docker/repo_utils docker/$DOCKER_FOLDER/repo_utils
-            cp environment.yml docker/$DOCKER_FOLDER/
-            mv docker/$DOCKER_FOLDER/environment.yml docker/$DOCKER_FOLDER/naa-vre-environment.yaml
-            yq '.dependencies[-1].pip += ["/home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl"]' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i
-            if test -f "docker/$DOCKER_FOLDER/environment.yaml"; then yq 'del(.channels[] | select(. == "defaults"))' docker/$DOCKER_FOLDER/environment.yaml -i; fi
-            yq 'del(.channels[] | select(. == "defaults"))' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.docker_username }}
-          password: ${{ secrets.docker_password }}
-      - name: Build and push
-        uses: docker/build-push-action@v4
-        with:
-          context: docker/${{ inputs.docker_folder }}
-          push: true
-          tags: qcdis/${{ inputs.tag }}:latest
+    - name: add whl and start files 
+      run: |
+          cp docker/init_script.sh docker/$DOCKER_FOLDER/
+          cp docker/start-jupyter.sh docker/$DOCKER_FOLDER/
+          cp docker/start-jupyter.sh docker/$DOCKER_FOLDER/
+          cp docker/start-jupyter-venv.sh docker/$DOCKER_FOLDER/
+          cp -r docker/repo_utils docker/$DOCKER_FOLDER/repo_utils
+          cp environment.yml docker/$DOCKER_FOLDER/
+          mv docker/$DOCKER_FOLDER/environment.yml docker/$DOCKER_FOLDER/naa-vre-environment.yaml
+          yq '.dependencies[-1].pip += ["/home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl"]' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i 
+          if test -f "docker/$DOCKER_FOLDER/environment.yaml"; then yq 'del(.channels[] | select(. == "defaults"))' docker/$DOCKER_FOLDER/environment.yaml -i; fi
+          yq 'del(.channels[] | select(. == "defaults"))' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i 
 
 
+    - name: Build docker
+      run: |
+          cd docker/$DOCKER_FOLDER && docker build . --file Dockerfile -t $TAG
+
+    - name: Start docker
+      run: |
+          docker run -d -p 8888:8888 $TAG:latest jupyter lab
 
 
+    - name: Login to gitlab Registry
+      if: ${{ inputs.push }}
+      uses: docker/login-action@v2
+      with:
+        registry: "registry.gitlab.com/qcd1/registry"
+        username: ${{ secrets.gitlab_username }}
+        password: ${{ secrets.gitlab_password }}
+    - name: Push image to container Registry
+      if: ${{ inputs.push }}
+      run: |
+        # Change all uppercase to lowercase
+        IMAGE_ID=$GITLAB_IMAGE_ID$TAG
+        IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+        # Strip git ref prefix from version
+        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+        echo IMAGE_ID=$IMAGE_ID
+        echo VERSION=$VERSION
+        docker tag $TAG $IMAGE_ID:$VERSION
+        if [ "${{ secrets.gitlab_password }}" != '' ]; then
+          docker push $IMAGE_ID:$VERSION
+          docker tag $TAG $IMAGE_ID:latest
+          docker push $IMAGE_ID:latest
+        fi
+      
 
-
-
-
-
-
-
-
-#
-#  build:
-#    runs-on: ubuntu-latest
-#    steps:
-#    - uses: actions/checkout@v3
-#    - name: Download artifact
-#      uses: actions/download-artifact@v3
-#      with:
-#        name: ${{ inputs.wheel_artifact_name }}
-#        path: docker/${{ inputs.docker_folder }}
-#    - uses: mikefarah/yq@v4.33.2
-#
-#    - name: add whl and start files
-#      run: |
-#          cp docker/init_script.sh docker/$DOCKER_FOLDER/
-#          cp docker/start-jupyter.sh docker/$DOCKER_FOLDER/
-#          cp docker/start-jupyter.sh docker/$DOCKER_FOLDER/
-#          cp docker/start-jupyter-venv.sh docker/$DOCKER_FOLDER/
-#          cp -r docker/repo_utils docker/$DOCKER_FOLDER/repo_utils
-#          cp environment.yml docker/$DOCKER_FOLDER/
-#          mv docker/$DOCKER_FOLDER/environment.yml docker/$DOCKER_FOLDER/naa-vre-environment.yaml
-#          yq '.dependencies[-1].pip += ["/home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl"]' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i
-#          if test -f "docker/$DOCKER_FOLDER/environment.yaml"; then yq 'del(.channels[] | select(. == "defaults"))' docker/$DOCKER_FOLDER/environment.yaml -i; fi
-#          yq 'del(.channels[] | select(. == "defaults"))' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i
-#
-#
-#    - name: Build docker
-#      run: |
-#          cd docker/$DOCKER_FOLDER && docker build . --file Dockerfile -t $TAG
-#
-#    - name: Start docker
-#      run: |
-#          docker run -d -p 8888:8888 $TAG:latest jupyter lab
-#
-#    - name: Login to gitlab Registry
-#      if: ${{ inputs.push }}
-#      uses: docker/login-action@v2
-#      with:
-#        registry: "registry.gitlab.com/qcd1/registry"
-#        username: ${{ secrets.gitlab_username }}
-#        password: ${{ secrets.gitlab_password }}
-#    - name: Push image to container Registry
-#      if: ${{ inputs.push }}
-#      run: |
-#        # Change all uppercase to lowercase
-#        IMAGE_ID=$GITLAB_IMAGE_ID$TAG
-#        IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-#        # Strip git ref prefix from version
-#        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-#        echo IMAGE_ID=$IMAGE_ID
-#        echo VERSION=$VERSION
-#        docker tag $TAG $IMAGE_ID:$VERSION
-#        if [ "${{ secrets.gitlab_password }}" != '' ]; then
-#          docker push $IMAGE_ID:$VERSION
-#          docker tag $TAG $IMAGE_ID:latest
-#          docker push $IMAGE_ID:latest
-#        fi
-#
-#
-#    - name: Login to github Registry
-#      if: ${{ inputs.push }}
-#      uses: docker/login-action@v2
-#      with:
-#        registry: "https://index.docker.io/v1/"
-#        username: ${{ secrets.docker_username }}
-#        password: ${{ secrets.docker_password }}
-#    - name: Push image to container Registry
-#      if: ${{ inputs.push }}
-#      run: |
-#        # Change all uppercase to lowercase
-#        IMAGE_ID=$DOCKERHUB_IMAGE_ID$TAG
-#        IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-#        # Strip git ref prefix from version
-#        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-#        echo IMAGE_ID=$IMAGE_ID
-#        echo VERSION=$VERSION
-#        docker tag $TAG $IMAGE_ID:$VERSION
-#        if [ "${{ secrets.docker_password }}" != '' ]; then
-#          docker push $IMAGE_ID:$VERSION
-#          docker tag $TAG $IMAGE_ID:latest
-#          docker push $IMAGE_ID:latest
-#        fi
+    - name: Login to github Registry
+      if: ${{ inputs.push }}
+      uses: docker/login-action@v2
+      with:
+        registry: "https://index.docker.io/v1/"
+        username: ${{ secrets.docker_username }}
+        password: ${{ secrets.docker_password }}
+    - name: Push image to container Registry
+      if: ${{ inputs.push }}
+      run: |
+        # Change all uppercase to lowercase
+        IMAGE_ID=$DOCKERHUB_IMAGE_ID$TAG
+        IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+        # Strip git ref prefix from version
+        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+        echo IMAGE_ID=$IMAGE_ID
+        echo VERSION=$VERSION
+        docker tag $TAG $IMAGE_ID:$VERSION        
+        if [ "${{ secrets.docker_password }}" != '' ]; then
+          docker push $IMAGE_ID:$VERSION
+          docker tag $TAG $IMAGE_ID:latest
+          docker push $IMAGE_ID:latest
+        fi
