@@ -28,7 +28,7 @@ jobs:
       upload: true
   call-build-container-laserfarm:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@new_branch
     with:
       wheel_artifact_name: jupyterlab_vre
       docker_folder: laserfarm-pytorch
