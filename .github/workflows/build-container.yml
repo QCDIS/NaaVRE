@@ -63,22 +63,6 @@ jobs:
         with:
           username: ${{ secrets.docker_username }}
           password: ${{ secrets.docker_password }}
-
-      - name: Build
-        uses: docker/build-push-action@v4
-        with:
-          context: docker/${{ inputs.docker_folder }}
-          push: false
-          tags: qcdis/${{ inputs.tag }}:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-
-      - name: Start Docker container
-        uses: docker/start-container-action@v1
-        with:
-          image: qcdis/${{ inputs.tag }}:latest
-          ports: 8888:8888
-
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
@@ -87,6 +71,15 @@ jobs:
           tags: qcdis/${{ inputs.tag }}:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
+
+
+
+
+
+
+
+
+
 
 
 
@@ -102,7 +95,18 @@ jobs:
 #        path: docker/${{ inputs.docker_folder }}
 #    - uses: mikefarah/yq@v4.33.2
 #
-
+#    - name: add whl and start files
+#      run: |
+#          cp docker/init_script.sh docker/$DOCKER_FOLDER/
+#          cp docker/start-jupyter.sh docker/$DOCKER_FOLDER/
+#          cp docker/start-jupyter.sh docker/$DOCKER_FOLDER/
+#          cp docker/start-jupyter-venv.sh docker/$DOCKER_FOLDER/
+#          cp -r docker/repo_utils docker/$DOCKER_FOLDER/repo_utils
+#          cp environment.yml docker/$DOCKER_FOLDER/
+#          mv docker/$DOCKER_FOLDER/environment.yml docker/$DOCKER_FOLDER/naa-vre-environment.yaml
+#          yq '.dependencies[-1].pip += ["/home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl"]' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i
+#          if test -f "docker/$DOCKER_FOLDER/environment.yaml"; then yq 'del(.channels[] | select(. == "defaults"))' docker/$DOCKER_FOLDER/environment.yaml -i; fi
+#          yq 'del(.channels[] | select(. == "defaults"))' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i
 #
 #
 #    - name: Build docker
