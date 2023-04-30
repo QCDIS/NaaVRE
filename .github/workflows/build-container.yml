@@ -64,6 +64,21 @@ jobs:
           username: ${{ secrets.docker_username }}
           password: ${{ secrets.docker_password }}
 
+      - name: Build
+        uses: docker/build-push-action@v4
+        with:
+          context: docker/${{ inputs.docker_folder }}
+          push: false
+          tags: qcdis/${{ inputs.tag }}:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Start Docker container
+        uses: docker/start-container-action@v1
+        with:
+          image: qcdis/${{ inputs.tag }}:latest
+          ports: 8888:8888
+
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
@@ -72,6 +87,8 @@ jobs:
           tags: qcdis/${{ inputs.tag }}:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
+
+
 
 #
 #  build:
