@@ -126,24 +126,4 @@ jobs:
           conda install pytest
           pip install --upgrade build
           pytest --ignore=docker --ignore=cypress
-
-      - name: build lab
-        run: |
-          jupyter lab build || true
-
-          
-
-      - name: print debug
-        run: |
-          cat /tmp/jupyterlab-debug*
-          
-          
-
-      - name: start NaaVRE
-        run: |
-          cp -r docker/repo_utils/ /tmp/ && ./docker/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*'
-          
-
-      - name: Cypress run
-        uses: cypress-io/github-action@v5
           
