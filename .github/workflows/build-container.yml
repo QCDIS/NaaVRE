@@ -68,7 +68,9 @@ jobs:
         with:
           context: docker/${{ inputs.docker_folder }}
           push: ${{ inputs.push }}
-          tags: qcdis/${{ inputs.tag }}:latest
+          tags: | 
+            qcdis/${{ inputs.tag }}:latest
+            qcdis/${{ inputs.tag }}:${{ github.ref }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
