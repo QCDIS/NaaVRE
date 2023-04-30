@@ -129,7 +129,15 @@ jobs:
 
       - name: build lab
         run: |
-          jupyter lab build
+          jupyter lab build || true
+
+          
+
+      - name: print debug
+        run: |
+          cat /tmp/jupyterlab-debug*
+          
+          
 
       - name: start NaaVRE
         run: |
