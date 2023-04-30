@@ -70,7 +70,7 @@ jobs:
           push: ${{ inputs.push }}
           tags: | 
             qcdis/${{ inputs.tag }}:latest
-            qcdis/${{ inputs.tag }}:${{ github.ref.replace('/', '') }}
+            qcdis/${{ inputs.tag }}:${{ github.ref.replaceAll('/', '') }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
 
