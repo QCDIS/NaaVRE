@@ -36,7 +36,6 @@ class Extractor:
                                 'asname': n.asname or None,
                                 'module': node.module if isinstance(node, ast.ImportFrom) else ""
                             }
-        print(imports)
         return imports
 
     def __extract_configurations(self, sources):
@@ -64,7 +63,6 @@ class Extractor:
                     prefix = name.split('_')[0]
                     if prefix == 'param':
                         params.add(name)
-        print(params)
         return params
 
     def infere_cell_outputs(self, cell_source):

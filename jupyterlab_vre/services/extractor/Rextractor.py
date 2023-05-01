@@ -1,7 +1,6 @@
 import re
 from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
 import ast
-import rpy2.robjects as robjects
 
 # TODO: create an interface such that it can be easily extended to other kernels
 
@@ -49,7 +48,6 @@ class Extractor:
             # Extract the variable names from the matches
             for match in matches:
                 params.add(match)
-        print(params)
         return params
 
     def infere_cell_outputs(self, cell_source): # TODO: check

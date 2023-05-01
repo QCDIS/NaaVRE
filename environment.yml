@@ -34,5 +34,5 @@ dependencies:
   - wget
   - git
   - pip
-  - rpy2
+  - rpy2 # TODO: not used
   - pip:
