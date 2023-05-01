@@ -33,7 +33,7 @@
     },
     "devDependencies": {
         "@types/node": "^18.15.3",
-        "rimraf": "^4.4.0",
+        "rimraf": "^5.0.0",
         "typescript": "~5.0.2"
     },
     "publishConfig": {
