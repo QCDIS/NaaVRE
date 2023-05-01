@@ -49,55 +49,73 @@ jobs:
     steps:
       - name: Check secrets
         run: |
+          vars_not_set=0
+          concatenated_error_message=""
           if [ -z "$CELL_GITHUB" ]; then
             echo "CELL_GITHUB not set"
-            exit 1
+            concatenated_error_message="$concatenated_error_message CELL_GITHUB not set"
+            vars_not_set=1
           fi
           if [ -z "$CELL_GITHUB_TOKEN" ]; then
             echo "CELL_GITHUB_TOKEN not set"
-            exit 1
+            concatenated_error_message="$concatenated_error_message CELL_GITHUB_TOKEN not set"
+            vars_not_set=1
           fi
           if [ -z "$REGISTRY_URL" ]; then
             echo "REGISTRY_URL not set"
-            exit 1
+            concatenated_error_message="$concatenated_error_message REGISTRY_URL not set"
+            vars_not_set=1
           fi
           if [ -z "$NAAVRE_API_TOKEN" ]; then
             echo "NAAVRE_API_TOKEN not set"
-            exit 1
+            concatenated_error_message="$concatenated_error_message NAAVRE_API_TOKEN not set"
+            vars_not_set=1
           fi
           if [ -z "$JUPYTERHUB_USER" ]; then
             echo "JUPYTERHUB_USER not set"
-            exit 1
+            concatenated_error_message="$concatenated_error_message JUPYTERHUB_USER not set"
+            vars_not_set=1
           fi
           if [ -z "$API_ENDPOINT" ]; then
             echo "API_ENDPOINT not set"
-            exit 1
+            concatenated_error_message="$concatenated_error_message API_ENDPOINT not set"
+            vars_not_set=1
           fi
           if [ -z "$VLAB_SLUG" ]; then
             echo "VLAB_SLUG not set"
-            exit 1
+            concatenated_error_message="$concatenated_error_message VLAB_SLUG not set"
+            vars_not_set=1
           fi
           if [ -z "$MODULE_MAPPING_URL" ]; then
             echo "MODULE_MAPPING_URL not set"
-            exit 1
+            concatenated_error_message="$concatenated_error_message MODULE_MAPPING_URL not set"
+            vars_not_set=1
           fi
           if [ -z "$SEARCH_API_ENDPOINT" ]; then
-              echo "SEARCH_API_ENDPOINT not set"
-              exit 1
+            echo "SEARCH_API_ENDPOINT not set"
+            concatenated_error_message="$concatenated_error_message SEARCH_API_ENDPOINT not set"
+            vars_not_set=1
           fi
           if [ -z "$SEARCH_API_TOKEN" ]; then
             echo "SEARCH_API_TOKEN not set"
-            exit 1
+            concatenated_error_message="$concatenated_error_message SEARCH_API_TOKEN not set"
+            vars_not_set=1
           fi
           if [ -z "ARGO_URL" ]; then
             echo "ARGO_URL not set"
-            exit 1
+            concatenated_error_message="$concatenated_error_message ARGO_URL not set"
+            vars_not_set=1
           fi
           if [ -z "ARGO_API_TOKEN" ]; then
             echo "ARGO_API_TOKEN not set"
+            concatenated_error_message="$concatenated_error_message ARGO_API_TOKEN not set"
+            vars_not_set=1
+          fi
+          if [ $vars_not_set -eq 1 ]; then
+            echo "Exiting with error"
+            echo $concatenated_error_message
             exit 1
           fi
-
 
       - uses: actions/checkout@v3
       - name: Set up Python 3.10
