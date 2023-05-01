@@ -20,7 +20,7 @@ from jinja2 import Environment, PackageLoader
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.services.extractor.extractor import Extractor
+from jupyterlab_vre.services.extractor.Rextractor import Extractor
 from notebook.base.handlers import APIHandler
 from tornado import web
 
@@ -50,8 +50,12 @@ class ExtractorHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
+        # initial information
+        programming_language = "R" # TODO: this should be dynamically determined
+
+        # handle request
         payload = self.get_json_body()
-        print(json.dumps(payload))
+        # print(json.dumps(payload))
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
         extractor = Extractor(notebook)
@@ -74,11 +78,12 @@ class ExtractorHandler(APIHandler, Catalog):
         # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(
         # source)'
         if notebook.cells[cell_index].cell_type == 'code':
-            ins = set(extractor.infere_cell_inputs(source)) # todo: 
+            dependencies = extractor.infer_cell_dependencies(source, confs)
+            ins = set(extractor.infere_cell_inputs(source)) 
             outs = set(extractor.infere_cell_outputs(source))
 
             confs = extractor.extract_cell_conf_ref(source)
-            dependencies = extractor.infer_cell_dependencies(source, confs)
+        print('inputs:', ins)
 
         node_id = str(uuid.uuid4())[:7]
         cell = Cell(
@@ -97,7 +102,7 @@ class ExtractorHandler(APIHandler, Catalog):
             cell.integrate_configuration()
             params = list(extractor.extract_cell_params(cell.original_source))
             cell.params = params
-
+    
         node = ConverterReactFlowChart.get_node(
             node_id,
             title,
