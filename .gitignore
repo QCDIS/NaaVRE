@@ -121,3 +121,4 @@ dmypy.json
 /docker/MULTIPLY/naa-vre-environment.yaml
 /docker/MULTIPLY/start-jupyter.sh
 /docker/MULTIPLY/start-jupyter-venv.sh
+/cypress/videos/
