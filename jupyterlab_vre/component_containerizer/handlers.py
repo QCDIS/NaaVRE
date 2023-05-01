@@ -227,25 +227,27 @@ class CellsHandler(APIHandler, Catalog):
         else:
             os.mkdir(cell_path)
 
-        registry_credentials = Catalog.get_registry_credentials()
-        if not registry_credentials or len(registry_credentials) <= 0:
-            self.set_status(400)
-            self.write_error('Registry credentials not found')
-            logger.error('Registry credentials not found')
-            self.flush()
-            return
-        registry_url = registry_credentials[0]['url']
-        if not registry_url:
-            self.set_status(400)
-            self.write_error('Registry url not found')
-            logger.error('Registry url not found')
-            self.flush()
-            return
-        image_repo = registry_url.split(
-            'https://hub.docker.com/u/')[1]
+        # TODO: I need credentials from Spiros. Uncomment stuff from below
+        # registry_credentials = Catalog.get_registry_credentials()
+        # if not registry_credentials or len(registry_credentials) <= 0:
+        #     self.set_status(400)
+        #     self.write_error('Registry credentials not found')
+        #     logger.error('Registry credentials not found')
+        #     self.flush()
+        #     return
+        # registry_url = registry_credentials[0]['url']
+        # if not registry_url:
+        #     self.set_status(400)
+        #     self.write_error('Registry url not found')
+        #     logger.error('Registry url not found')
+        #     self.flush()
+        #     return
+        # image_repo = registry_url.split(
+        #     'https://hub.docker.com/u/')[1]
+        image_repo = "dedder123" # Remove this later
 
-        files_info = get_files_info(cell=current_cell, image_repo=image_repo)
-        build_templates(cell=current_cell, files_info=files_info) # TODO: check this
+        files_info = get_files_info_r(cell=current_cell, image_repo=image_repo) # TODO: check this
+        build_templates_r(cell=current_cell, files_info=files_info) # TODO: check this
 
         cat_repositories = Catalog.get_repositories()
 
@@ -489,12 +491,60 @@ def build_templates(cell=None, files_info=None):
                           pip_deps=list(set_pip_deps)).dump(files_info['environment']['path'])
 
 
+def build_templates_r(cell=None, files_info=None):
+    logger.debug('files_info: ' + str(files_info))
+    logger.debug('cell.dependencies: ' + str(cell.dependencies))
+   
+    # create the source code file
+    with open(files_info['cell']['path'], "w") as file:
+        file.write("The source code comes here...")
+    
+    # create the Dockerfile
+    with open(files_info['dockerfile']['path'], "w") as file:
+        file.write("The Dockerfile code comes here...")
+
+    # template_conda.stream(base_image=cell.base_image, conda_deps=list(set_conda_deps), # You probably do not need this as you write this in the dockerfile
+    #   pip_deps=list(set_pip_deps)).dump(files_info['environment']['path'])
+
+
 def get_files_info(cell=None, image_repo=None):
     if not os.path.exists(cells_path):
         os.mkdir(cells_path)
     cell_path = os.path.join(cells_path, cell.task_name)
 
     cell_file_name = cell.task_name + '.py'
+    dockerfile_name = 'Dockerfile.' + image_repo + '.' + cell.task_name
+    environment_file_name = cell.task_name + '-environment.yaml'
+
+    if os.path.exists(cell_path):
+        for files in os.listdir(cell_path):
+            path = os.path.join(cell_path, files)
+            if os.path.isfile(path):
+                os.remove(path)
+    else:
+        os.mkdir(cell_path)
+
+    cell_file_path = os.path.join(cell_path, cell_file_name)
+    dockerfile_file_path = os.path.join(cell_path, dockerfile_name)
+    env_file_path = os.path.join(cell_path, environment_file_name)
+    return {'cell': {
+        'file_name': cell_file_name,
+        'path': cell_file_path},
+        'dockerfile': {
+            'file_name': dockerfile_name,
+            'path': dockerfile_file_path},
+        'environment': {
+            'file_name': environment_file_name,
+            'path': env_file_path}
+    }
+
+def get_files_info_r(cell=None, image_repo=None):
+    if not os.path.exists(cells_path):
+        os.mkdir(cells_path)
+    cell_path = os.path.join(cells_path, cell.task_name)
+    print(cell_path)
+
+    cell_file_name = cell.task_name + '.R'
     dockerfile_name = 'Dockerfile.' + image_repo + '.' + cell.task_name
     environment_file_name = cell.task_name + '-environment.yaml'
 
