@@ -20,7 +20,8 @@ from jinja2 import Environment, PackageLoader
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.services.extractor.Rextractor import Extractor
+from jupyterlab_vre.services.extractor.RExtractor import RExtractor
+from jupyterlab_vre.services.extractor.extractor import Extractor
 from notebook.base.handlers import APIHandler
 from tornado import web
 
@@ -50,16 +51,22 @@ class ExtractorHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-        # initial information
-        programming_language = "R" # TODO: this should be dynamically determined
 
         # handle request
         payload = self.get_json_body()
         # print(json.dumps(payload))
+        kernel = payload['kernel']
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-        extractor = Extractor(notebook)
 
+        # extractor based on the kernel
+        extractor = None
+        if kernel == "IRkernel":
+            extractor = RExtractor(notebook)
+        else:
+            extractor = Extractor(notebook)
+
+        # initialize variables
         source = notebook.cells[cell_index].source
         title = source.partition('\n')[0]
         title = title.replace('#', '').replace('.', '-').replace(
@@ -83,7 +90,6 @@ class ExtractorHandler(APIHandler, Catalog):
             outs = set(extractor.infere_cell_outputs(source))
 
             confs = extractor.extract_cell_conf_ref(source)
-        print('inputs:', ins)
 
         node_id = str(uuid.uuid4())[:7]
         cell = Cell(
@@ -498,7 +504,7 @@ def build_templates_r(cell=None, files_info=None):
     # create the source code file
     with open(files_info['cell']['path'], "w") as file:
         print(cell.types)
-        file.write("setwd('/app)")
+        file.write("setwd('/app') \n")
 
         if len(cell.types) > 0:
             file.write("library(optparse) \n")
@@ -513,7 +519,7 @@ def build_templates_r(cell=None, files_info=None):
                 else:
                     raise ValueError("Not a valid type")
 
-                file.write('''\t make_option(c("--{}"), action="store", default=NA, type='{}', help="my description")'''.format(key, type))
+                file.write('''\t make_option(c("--{}"), action="store", default=NA, type='{}', help="my description")'''.format(key, type)) # https://gist.github.com/ericminikel/8428297
                 
                 if i != len(cell.types) - 1:
                     file.write(",")
@@ -542,12 +548,8 @@ def build_templates_r(cell=None, files_info=None):
             file.write('''RUN R -e "install.packages('{}', repos='http://cran.rstudio.com')" \n'''.format(dep['name']))
         file.write("\n")
 
-        file.write("mkdir -p /app \n")
+        file.write("RUN mkdir -p /app \n")
         file.write("COPY {} /app".format(files_info['cell']['file_name']))
-
-
-    # template_conda.stream(base_image=cell.base_image, conda_deps=list(set_conda_deps), # You probably do not need this as you write this in the dockerfile
-    #   pip_deps=list(set_pip_deps)).dump(files_info['environment']['path'])
 
 
 def get_files_info(cell=None, image_repo=None):

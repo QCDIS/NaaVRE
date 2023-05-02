@@ -113,15 +113,20 @@ export class CellTracker extends React.Component<IProps, IState> {
     // TODO: look at this
     exctractor = async (notebookModel: INotebookModel, save = false) => {
         // try {
+            const sessionContext = this.props.notebook.context.sessionContext;
+            const kernelObject = sessionContext?.session?.kernel; // https://jupyterlab.readthedocs.io/en/stable/api/interfaces/services.kernel.ikernelconnection-1.html#serversettings
+            const kernel = (await kernelObject.info).implementation;
+
             const extractedCell = await requestAPI<any>('containerizer/extract', {
                 body: JSON.stringify({
                     save: save,
+                    kernel,
                     cell_index: this.state.currentCellIndex,
                     notebook: notebookModel.toJSON()
                 }),
                 method: 'POST'
             });
-            console.log(extractedCell);
+
             this.setState({ currentCell: extractedCell });
             let typeSelections: { [type: string]: boolean } = {}
     
@@ -158,7 +163,7 @@ export class CellTracker extends React.Component<IProps, IState> {
     };
 
     connectAndInitWhenReady = (notebook: NotebookPanel) => {
-        notebook.context.ready.then(() => {
+        notebook.context.ready.then(async () => {
             this.props.notebook.content.activeCellChanged.connect(this.onActiveCellChanged);
             this.props.notebook.context.saveState.connect(this.handleSaveState);
             this.setState({ currentCellIndex: notebook.content.activeCellIndex });
@@ -196,7 +201,6 @@ export class CellTracker extends React.Component<IProps, IState> {
         return dep['module'] + " • " + dep['name'] ? dep['module'] != "" : dep['name'];
     }
 
-    // TODO: check this
     render() {
         return (
             <ThemeProvider theme={theme}>

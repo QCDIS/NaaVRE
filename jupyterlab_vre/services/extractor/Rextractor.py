@@ -4,7 +4,7 @@ import ast
 
 # TODO: create an interface such that it can be easily extended to other kernels
 
-class Extractor:
+class RExtractor:
     sources: list
     imports: list
     configurations: dict
