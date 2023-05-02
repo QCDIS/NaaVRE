@@ -42,14 +42,6 @@ const baseImages = [
     { label: "Jupyter Notebook", id: "jupyter/r-notebook:70178b8e48d7"},
 ]
 
-const AddCellDialogOptions: Partial<Dialog.IOptions<any>> = {
-    title: '',
-    body: ReactWidget.create(
-        <AddCellDialog />
-    ) as Dialog.IBodyWidget<any>,
-    buttons: []
-};
-
 export class CellTracker extends React.Component<IProps, IState> {
 
     state = DefaultState;
@@ -61,6 +53,13 @@ export class CellTracker extends React.Component<IProps, IState> {
     }
 
     handleCreateCell = async () => {
+        const AddCellDialogOptions: Partial<Dialog.IOptions<any>> = {
+            title: '',
+            body: ReactWidget.create(
+                <AddCellDialog notebook={this.props.notebook}/>
+            ) as Dialog.IBodyWidget<any>,
+            buttons: []
+        };
         showDialog(AddCellDialogOptions)
     }
 

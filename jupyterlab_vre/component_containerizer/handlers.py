@@ -22,6 +22,7 @@ from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.RExtractor import RExtractor
 from jupyterlab_vre.services.extractor.extractor import Extractor
+from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
 from notebook.base.handlers import APIHandler
 from tornado import web
 
@@ -54,7 +55,7 @@ class ExtractorHandler(APIHandler, Catalog):
 
         # handle request
         payload = self.get_json_body()
-        # print(json.dumps(payload))
+        print(json.dumps(payload))
         kernel = payload['kernel']
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
@@ -250,11 +251,22 @@ class CellsHandler(APIHandler, Catalog):
         #     return
         # image_repo = registry_url.split(
         #     'https://hub.docker.com/u/')[1]
-        image_repo = "dedder123" # Remove this later
+        image_repo = "dedder123" # TODO: Remove this later
 
-        files_info = get_files_info_r(cell=current_cell, image_repo=image_repo) # TODO: check this
-        build_templates_r(cell=current_cell, files_info=files_info) # TODO: check this
+        # handle request
+        payload = self.get_json_body()
+        kernel = payload['kernel']
 
+        # extractor based on the kernel
+        files_info = None
+        if kernel == "IRkernel":
+            files_info = Rcontainerizer.get_files_info(cell=current_cell, image_repo=image_repo, cells_path=cells_path) 
+            Rcontainerizer.build_templates(cell=current_cell, files_info=files_info)
+        else:
+            files_info = get_files_info(cell=current_cell, image_repo=image_repo) 
+            build_templates(cell=current_cell, files_info=files_info)
+
+        # upload to GIT
         cat_repositories = Catalog.get_repositories()
 
         repo_token = cat_repositories[0]['token']
@@ -497,99 +509,12 @@ def build_templates(cell=None, files_info=None):
                           pip_deps=list(set_pip_deps)).dump(files_info['environment']['path'])
 
 
-def build_templates_r(cell=None, files_info=None):
-    logger.debug('files_info: ' + str(files_info))
-    logger.debug('cell.dependencies: ' + str(cell.dependencies))
-   
-    # create the source code file
-    with open(files_info['cell']['path'], "w") as file:
-        print(cell.types)
-        file.write("setwd('/app') \n")
-
-        if len(cell.types) > 0:
-            file.write("library(optparse) \n")
-            file.write("option_list = list( \n")
-
-            for i, (key, value) in enumerate(cell.types.items()): # TODO: support more types
-                type = None
-                if value == "str":
-                    type = "character"
-                elif value == "int":
-                    type = "integer"
-                else:
-                    raise ValueError("Not a valid type")
-
-                file.write('''\t make_option(c("--{}"), action="store", default=NA, type='{}', help="my description")'''.format(key, type)) # https://gist.github.com/ericminikel/8428297
-                
-                if i != len(cell.types) - 1:
-                    file.write(",")
-                file.write("\n")
-
-            file.write(")\n\n")
-            file.write("opt = parse_args(OptionParser(option_list=option_list)) \n\n")
-
-        # replace inputs
-        original_source = cell.original_source
-        for key, value in cell.types.items():
-            original_source = original_source.replace(key, "opt$" + key)
-        file.write(original_source)
-
-    
-    # create the Dockerfile
-    with open(files_info['dockerfile']['path'], "w") as file:
-        
-        # Step 1: base image.
-        file.write("FROM {}\n\n".format(cell.base_image))
-        file.write("USER root \n\n") # in case of this image, we need root permissions
-
-        # Step 2: install dependencies. for now, a naive way
-        print(cell.dependencies)
-        for dep in cell.dependencies:
-            file.write('''RUN R -e "install.packages('{}', repos='http://cran.rstudio.com')" \n'''.format(dep['name']))
-        file.write("\n")
-
-        file.write("RUN mkdir -p /app \n")
-        file.write("COPY {} /app".format(files_info['cell']['file_name']))
-
-
 def get_files_info(cell=None, image_repo=None):
     if not os.path.exists(cells_path):
         os.mkdir(cells_path)
     cell_path = os.path.join(cells_path, cell.task_name)
 
     cell_file_name = cell.task_name + '.py'
-    dockerfile_name = 'Dockerfile.' + image_repo + '.' + cell.task_name
-    environment_file_name = cell.task_name + '-environment.yaml'
-
-    if os.path.exists(cell_path):
-        for files in os.listdir(cell_path):
-            path = os.path.join(cell_path, files)
-            if os.path.isfile(path):
-                os.remove(path)
-    else:
-        os.mkdir(cell_path)
-
-    cell_file_path = os.path.join(cell_path, cell_file_name)
-    dockerfile_file_path = os.path.join(cell_path, dockerfile_name)
-    env_file_path = os.path.join(cell_path, environment_file_name)
-    return {'cell': {
-        'file_name': cell_file_name,
-        'path': cell_file_path},
-        'dockerfile': {
-            'file_name': dockerfile_name,
-            'path': dockerfile_file_path},
-        'environment': {
-            'file_name': environment_file_name,
-            'path': env_file_path}
-    }
-
-def get_files_info_r(cell=None, image_repo=None):
-    if not os.path.exists(cells_path):
-        os.mkdir(cells_path)
-    cell_path = os.path.join(cells_path, cell.task_name)
-    print(cell_path)
-
-    cell_file_name = cell.task_name + '.R'
     dockerfile_name = 'Dockerfile.' + image_repo + '.' + cell.task_name
     environment_file_name = cell.task_name + '-environment.yaml'
 
