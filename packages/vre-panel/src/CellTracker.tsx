@@ -122,6 +122,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                 }),
                 method: 'POST'
             });
+            console.log(extractedCell);
 
             this.setState({ currentCell: extractedCell });
             let typeSelections: { [type: string]: boolean } = {}
@@ -159,7 +160,7 @@ export class CellTracker extends React.Component<IProps, IState> {
     };
 
     connectAndInitWhenReady = (notebook: NotebookPanel) => {
-        notebook.context.ready.then(async () => {
+        notebook.context.ready.then(() => {
             this.props.notebook.content.activeCellChanged.connect(this.onActiveCellChanged);
             this.props.notebook.context.saveState.connect(this.handleSaveState);
             this.setState({ currentCellIndex: notebook.content.activeCellIndex });
@@ -167,7 +168,6 @@ export class CellTracker extends React.Component<IProps, IState> {
     };
 
     componentDidMount = () => {
-        // TODO: retrieve possible docker images from the backend, this depends on the programming
         if (this.props.notebook) {
             this.connectAndInitWhenReady(this.props.notebook);
         }

@@ -16,8 +16,8 @@ const CatalogBody = styled('div')({
 })
 
 interface AddCellDialogProps {
-    notebook: NotebookPanel;
-  }
+    notebook: NotebookPanel
+}
 
 interface IState {
     loading: boolean

@@ -58,8 +58,8 @@ export class VREPanel extends React.Component<IProps> {
             this.setState({ loading: true });
 
             try {
-                // TODO: check if you should give the kernel here in the request
-                await requestAPI<any>('containerizer/addcell', {
+
+                await requestAPI<any>('containerizer/addcell', { // TODO: check if you should give the kernel here in the request
                     body: JSON.stringify({}),
                     method: 'POST'
                 });
@@ -84,8 +84,6 @@ export class VREPanel extends React.Component<IProps> {
             }
         }
     }
-
-    // TODO: this is the panel
 
     render() {
         return (

@@ -86,11 +86,11 @@ class ExtractorHandler(APIHandler, Catalog):
         # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(
         # source)'
         if notebook.cells[cell_index].cell_type == 'code':
-            dependencies = extractor.infer_cell_dependencies(source, confs)
             ins = set(extractor.infere_cell_inputs(source)) 
             outs = set(extractor.infere_cell_outputs(source))
 
             confs = extractor.extract_cell_conf_ref(source)
+            dependencies = extractor.infer_cell_dependencies(source, confs)
 
         node_id = str(uuid.uuid4())[:7]
         cell = Cell(
@@ -109,7 +109,7 @@ class ExtractorHandler(APIHandler, Catalog):
             cell.integrate_configuration()
             params = list(extractor.extract_cell_params(cell.original_source))
             cell.params = params
-    
+
         node = ConverterReactFlowChart.get_node(
             node_id,
             title,
@@ -180,7 +180,6 @@ def find_job(wf_id=None, owner=None, repository_name=None, token=None, job_id=No
                 return job
     return None
 
-# Add to the catalog
 class CellsHandler(APIHandler, Catalog):
     logger = logging.getLogger(__name__)
 
@@ -262,7 +261,7 @@ class CellsHandler(APIHandler, Catalog):
         if kernel == "IRkernel":
             files_info = Rcontainerizer.get_files_info(cell=current_cell, image_repo=image_repo, cells_path=cells_path) 
             Rcontainerizer.build_templates(cell=current_cell, files_info=files_info)
-        else:
+        else: # this is executed when the kernel is not R, and this approach works for Python. however, when other languages should be supported, this has to change
             files_info = get_files_info(cell=current_cell, image_repo=image_repo) 
             build_templates(cell=current_cell, files_info=files_info)
 
@@ -491,7 +490,7 @@ def build_templates(cell=None, files_info=None):
     template_env = Environment(
         loader=loader, trim_blocks=True, lstrip_blocks=True)
 
-    template_cell = template_env.get_template('cell_template.jinja2') # TODO: look at these templates
+    template_cell = template_env.get_template('cell_template.jinja2')
     template_dockerfile = template_env.get_template(
         'dockerfile_template_conda.jinja2')
     template_conda = template_env.get_template('conda_env_template.jinja2')
@@ -502,7 +501,7 @@ def build_templates(cell=None, files_info=None):
     cell.container_source = compiled_code
 
     template_cell.stream(cell=cell, deps=cell.generate_dependencies(), types=cell.types,
-                         confs=cell.generate_configuration()).dump(files_info['cell']['path']) # TODO: the variables are set here
+                         confs=cell.generate_configuration()).dump(files_info['cell']['path'])
     template_dockerfile.stream(task_name=cell.task_name, base_image=cell.base_image).dump(
         files_info['dockerfile']['path'])
     template_conda.stream(base_image=cell.base_image, conda_deps=list(set_conda_deps),

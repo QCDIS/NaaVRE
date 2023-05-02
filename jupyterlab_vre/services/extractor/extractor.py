@@ -2,8 +2,6 @@ import re
 from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
 import ast
 
-# TODO: create an interface such that it can be easily extended to other kernels
-
 class Extractor:
     sources: list
     imports: list

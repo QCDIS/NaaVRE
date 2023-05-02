@@ -47,7 +47,7 @@ class Rcontainerizer:
                 file.write("library(optparse) \n")
                 file.write("option_list = list( \n")
 
-                for i, (key, value) in enumerate(cell.types.items()): # TODO: support more types
+                for i, (key, value) in enumerate(cell.types.items()): # TODO: support more types and write more clean
                     type = None
                     if value == "str":
                         type = "character"
