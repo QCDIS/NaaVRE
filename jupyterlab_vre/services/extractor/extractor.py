@@ -2,6 +2,7 @@ import re
 from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
 import ast
 
+
 class Extractor:
     sources: list
     imports: list

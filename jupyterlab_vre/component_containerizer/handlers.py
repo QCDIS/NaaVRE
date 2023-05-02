@@ -52,8 +52,6 @@ class ExtractorHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-
-        # handle request
         payload = self.get_json_body()
         print(json.dumps(payload))
         kernel = payload['kernel']
@@ -86,7 +84,7 @@ class ExtractorHandler(APIHandler, Catalog):
         # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(
         # source)'
         if notebook.cells[cell_index].cell_type == 'code':
-            ins = set(extractor.infere_cell_inputs(source)) 
+            ins = set(extractor.infere_cell_inputs(source))
             outs = set(extractor.infere_cell_outputs(source))
 
             confs = extractor.extract_cell_conf_ref(source)

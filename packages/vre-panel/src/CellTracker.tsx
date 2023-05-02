@@ -123,7 +123,6 @@ export class CellTracker extends React.Component<IProps, IState> {
                 method: 'POST'
             });
             console.log(extractedCell);
-
             this.setState({ currentCell: extractedCell });
             let typeSelections: { [type: string]: boolean } = {}
     
