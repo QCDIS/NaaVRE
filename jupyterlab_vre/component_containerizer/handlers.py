@@ -494,16 +494,17 @@ def build_templates(cell=None, files_info=None):
 def build_templates_r(cell=None, files_info=None):
     logger.debug('files_info: ' + str(files_info))
     logger.debug('cell.dependencies: ' + str(cell.dependencies))
-    # print(cell.original_source)
    
     # create the source code file
     with open(files_info['cell']['path'], "w") as file:
         print(cell.types)
+        file.write("setwd('/app)")
+
         if len(cell.types) > 0:
             file.write("library(optparse) \n")
             file.write("option_list = list( \n")
 
-            for i, (key, value) in enumerate(cell.types.items()):
+            for i, (key, value) in enumerate(cell.types.items()): # TODO: support more types
                 type = None
                 if value == "str":
                     type = "character"
@@ -521,16 +522,29 @@ def build_templates_r(cell=None, files_info=None):
             file.write(")\n\n")
             file.write("opt = parse_args(OptionParser(option_list=option_list)) \n\n")
 
-            # replace inputs
-            original_source = cell.original_source
-            for key, value in cell.types.items():
-                original_source = original_source.replace(key, "opt$" + key)
-            file.write(original_source)
+        # replace inputs
+        original_source = cell.original_source
+        for key, value in cell.types.items():
+            original_source = original_source.replace(key, "opt$" + key)
+        file.write(original_source)
 
     
     # create the Dockerfile
     with open(files_info['dockerfile']['path'], "w") as file:
-        file.write("The Dockerfile code comes here...")
+        
+        # Step 1: base image.
+        file.write("FROM {}\n\n".format(cell.base_image))
+        file.write("USER root \n\n") # in case of this image, we need root permissions
+
+        # Step 2: install dependencies. for now, a naive way
+        print(cell.dependencies)
+        for dep in cell.dependencies:
+            file.write('''RUN R -e "install.packages('{}', repos='http://cran.rstudio.com')" \n'''.format(dep['name']))
+        file.write("\n")
+
+        file.write("mkdir -p /app \n")
+        file.write("COPY {} /app".format(files_info['cell']['file_name']))
+
 
     # template_conda.stream(base_image=cell.base_image, conda_deps=list(set_conda_deps), # You probably do not need this as you write this in the dockerfile
     #   pip_deps=list(set_pip_deps)).dump(files_info['environment']['path'])

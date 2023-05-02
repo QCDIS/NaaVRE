@@ -39,7 +39,7 @@ const DefaultState: IState = {
 type SaveState = 'started' | 'completed' | 'failed';
 
 const baseImages = [
-    { label: "Jupyter Notebook", id: "jupyter/r-notebook"},
+    { label: "Jupyter Notebook", id: "jupyter/r-notebook:70178b8e48d7"},
 ]
 
 const AddCellDialogOptions: Partial<Dialog.IOptions<any>> = {
