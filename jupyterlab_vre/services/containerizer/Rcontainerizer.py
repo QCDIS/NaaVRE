@@ -68,7 +68,10 @@ class Rcontainerizer:
             # replace inputs
             original_source = cell.original_source
             for key, value in cell.types.items():
-                original_source = original_source.replace(key, "opt$" + key)
+                file.write('''{} = opt${} \n'''.format(key, key))
+            file.write("\n")
+
+            print("the original source: ", original_source)
             file.write(original_source)
 
         # create the Dockerfile
