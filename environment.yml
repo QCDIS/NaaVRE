@@ -34,4 +34,6 @@ dependencies:
   - wget
   - git
   - pip
+  - pandas
+  - rpy2 # TODO: also download the R package 'renv'
   - pip:

@@ -1,6 +1,9 @@
 import re
-from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
-import ast
+import rpy2.robjects.packages as rpackages
+import pandas as pd
+from rpy2.robjects import r
+import tempfile
+import os
 
 # TODO: create an interface such that it can be easily extended to other kernels
 
@@ -24,13 +27,32 @@ class RExtractor:
 
     def __extract_imports(self, sources):
         imports = {}
-        for s in sources: # here, we loop through every cell
-            packages = re.findall(r'(?:library|require)\((?:package=)?(?:")?(\w+)(?:")?\)', s) # matches cases: require(pkg), library(pkg), library("pkg"), library(package=pkg), library(package="pkg")
+        for s in sources: # loop through every cell
+            packages = []
+
+            ''' Approach 1: Simple regex.
+                this matches the following cases: require(pkg), library(pkg), library("pkg"), library(package=pkg), library(package="pkg")
+            '''
+            # packages = re.findall(r'(?:library|require)\((?:package=)?(?:")?(\w+)(?:")?\)', s)
+            
+            ''' Approach 2: Static analysis using 'renv' package.
+                this approach is more safe as it covers more cases and checks comments
+            '''
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.R') as tmp_file:
+                tmp_file.write(s.encode())
+                tmp_file.flush()
+                renv = rpackages.importr('renv')
+                function_list = renv.dependencies(tmp_file.name)
+                packages = list(pd.DataFrame(function_list).transpose().iloc[:, 1])
+                tmp_file.close()
+                os.remove(tmp_file.name)
+            
+            # format the packages
             for package in packages:
-                imports[package] = {
-                    'name': package, # TODO: is this correct?
-                    'asname': '', # TODO
-                    'module': '' # TODO
+                imports[package] = { # TODO: check these properties
+                    'name': package,
+                    'asname': '',
+                    'module': '' 
                 }
         return imports
 
