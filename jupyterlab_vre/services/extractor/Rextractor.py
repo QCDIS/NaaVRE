@@ -42,7 +42,7 @@ class Extractor:
         params = set()
         for s in sources:
             # Find all variable assignments with a prefix of "param"
-            pattern = r"param_[a-zA-Z0,9]{0,}"
+            pattern = r"param_[a-zA-Z0-9_]{0,}"
             matches = re.findall(pattern, s)
             
             # Extract the variable names from the matches

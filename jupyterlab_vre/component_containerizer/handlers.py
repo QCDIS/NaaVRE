@@ -494,10 +494,39 @@ def build_templates(cell=None, files_info=None):
 def build_templates_r(cell=None, files_info=None):
     logger.debug('files_info: ' + str(files_info))
     logger.debug('cell.dependencies: ' + str(cell.dependencies))
+    # print(cell.original_source)
    
     # create the source code file
     with open(files_info['cell']['path'], "w") as file:
-        file.write("The source code comes here...")
+        print(cell.types)
+        if len(cell.types) > 0:
+            file.write("library(optparse) \n")
+            file.write("option_list = list( \n")
+
+            for i, (key, value) in enumerate(cell.types.items()):
+                type = None
+                if value == "str":
+                    type = "character"
+                elif value == "int":
+                    type = "integer"
+                else:
+                    raise ValueError("Not a valid type")
+
+                file.write('''\t make_option(c("--{}"), action="store", default=NA, type='{}', help="my description")'''.format(key, type))
+                
+                if i != len(cell.types) - 1:
+                    file.write(",")
+                file.write("\n")
+
+            file.write(")\n\n")
+            file.write("opt = parse_args(OptionParser(option_list=option_list)) \n\n")
+
+            # replace inputs
+            original_source = cell.original_source
+            for key, value in cell.types.items():
+                original_source = original_source.replace(key, "opt$" + key)
+            file.write(original_source)
+
     
     # create the Dockerfile
     with open(files_info['dockerfile']['path'], "w") as file:
