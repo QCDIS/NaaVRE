@@ -256,7 +256,6 @@ class CellsHandler(APIHandler, Catalog):
 
         # extractor based on the kernel
         files_info = None
-        print("My kernel is", kernel)
         if kernel == "IRkernel":
             files_info = Rcontainerizer.get_files_info(cell=current_cell, image_repo=image_repo, cells_path=cells_path) 
             Rcontainerizer.build_templates(cell=current_cell, files_info=files_info)

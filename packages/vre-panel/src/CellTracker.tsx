@@ -191,15 +191,15 @@ export class CellTracker extends React.Component<IProps, IState> {
         }
     }
 
+    renderDepName(dep: any): string {
+        return dep['module'] + " • " + dep['name'] ? dep['module'] != "" : dep['name'];
+    }
+
     async getKernel(){
         const sessionContext = this.props.notebook.context.sessionContext;
         const kernelObject = sessionContext?.session?.kernel; // https://jupyterlab.readthedocs.io/en/stable/api/interfaces/services.kernel.ikernelconnection-1.html#serversettings
         const kernel = (await kernelObject.info).implementation;
         return kernel
-    }
-
-    renderDepName(dep: any): string {
-        return dep['module'] + " • " + dep['name'] ? dep['module'] != "" : dep['name'];
     }
 
     render() {
