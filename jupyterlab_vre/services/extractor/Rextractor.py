@@ -96,7 +96,7 @@ class RExtractor:
         return configurations
 
 
-    def __extract_params(self, sources): # TODO: naive way of extracting params, look at the AST (source https://adv-r.hadley.nz/expressions.html)
+    def __extract_params(self, sources): # check source https://adv-r.hadley.nz/expressions.html)
         params = set()
         for s in sources:
             
@@ -124,7 +124,7 @@ class RExtractor:
                 c = str(expr[0])
                 variable = str(expr[1]) 
 
-                # Only look at assignments, check = or <- # TODO: is there a better way to check if it is an assignment
+                # Only look at assignments, check = or <-
                 if not ((c == "<-" or c == "=") and variable.split("_")[0] == "param"):
                     continue
                 params.add(variable)
@@ -140,7 +140,10 @@ class RExtractor:
         return [und for und in cell_undefined if
                 und not in self.imports and und not in self.configurations and und not in self.global_params]
 
-    def infer_cell_dependencies(self, cell_source, confs): # TODO: check this code, you have removed logic
+    def infer_cell_dependencies(self, cell_source, confs): 
+        # TODO: check this code, you have removed logic. 
+        # we probably like to only use dependencies that are necessary to execute the cell
+        # however this is challenging in R as functions are non-scoped
         print("(infer_cell_dependencies). confs are:", confs)
         dependencies = []
         for name in self.imports:
@@ -161,11 +164,11 @@ class RExtractor:
         names = set()
         parsed_r = robjects.r['parse'](text=cell_source)
         vars_r = robjects.r['all.vars'](parsed_r)
-        
+
         for avar in vars_r:
             # TODO: this should not include functions because they are not scoped (this is probably already not the case)
 
-            # TODO: in the exmaple script 'state' is recognized as a variable. is this true?
+            # TODO: in the exmaple script 'state' and 'n' are recognized as variables.this should be fixed
 
             if avar not in self.imports: # Difficulty: filter out stuff like libraries. Because when using "library(cool)", it recognies cool as a variable, but not in the case of "library('cool')"
                 names.add(avar) 
@@ -200,13 +203,9 @@ class RExtractor:
         undef_vars = set()
 
         # Approach 1: get all vars and substract the ones with the approach as in 
-        print("------------ cell undefined ----------")
         cell_names = self.__extract_cell_names(cell_source)
         expression_variables = self.expression_variables(cell_source)
         undef_vars = cell_names.difference(set(expression_variables))
-        print("cell names:", cell_names)
-        print("assigned names:", expression_variables)
-        print("result:", undef_vars)
 
         # Approach 2: (TODO: check this) dynamic analysis approach. this is complex for R as functions might be seen as that they are not
         # defined so we have to include the imports
