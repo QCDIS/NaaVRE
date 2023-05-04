@@ -103,10 +103,12 @@ class Extractor:
         for module in ast.walk(tree):
             if isinstance(module, (ast.Name,)):
                 names.add(module.id)
+        print("The cell names are: ", names)
         return names
 
     def __extract_cell_undefined(self, cell_source):
-
+        print("--------------")
+        print("the source is: ", cell_source)
         flakes_stdout = StreamList()
         flakes_stderr = StreamList()
         rep = pyflakes_reporter.Reporter(
@@ -122,9 +124,12 @@ class Extractor:
         out = rep._stdout()
         undef_vars = set()
 
+        print("My standard output is: ", out)
+
         for line in filter(lambda a: a != '\n' and 'undefined name' in a, out):
             var_search = re.search(p, line)
             undef_vars.add(var_search.group(1))
+        print("undefined vars:", undef_vars)
         return undef_vars
 
     def extract_cell_params(self, cell_source):

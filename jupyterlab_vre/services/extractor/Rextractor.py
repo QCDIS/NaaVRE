@@ -66,7 +66,6 @@ class RExtractor:
     def __extract_configurations(self, sources): 
         configurations = {}
         for s in sources:
-            # Parse the script using rpy2's parse() function with keep.source = TRUE
             parsed_expr = base.parse(text=s, keep_source=True) 
             parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
             lines = s.splitlines()
@@ -109,8 +108,7 @@ class RExtractor:
             # for match in matches:
                 # params.add(match)
 
-            '''Approach 2: Look at the AST'''
-            # Parse the script using rpy2's parse() function with keep.source = TRUE
+            '''Approach 2: Look at the AST''' # TODO: combine logic with config as it is almost the same
             parsed_expr = base.parse(text=s, keep_source=True) 
             parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
             lines = s.splitlines()
@@ -130,8 +128,6 @@ class RExtractor:
                 if not ((c == "<-" or c == "=") and variable.split("_")[0] == "param"):
                     continue
                 params.add(variable)
-
-        print(params)
         return params
 
     def infere_cell_outputs(self, cell_source):
@@ -139,16 +135,20 @@ class RExtractor:
         return [name for name in cell_names if name not in self.__extract_cell_undefined(cell_source) \
                 and name not in self.imports and name in self.undefined and name not in self.configurations and name not in self.global_params]
 
-    def infere_cell_inputs(self, cell_source): # TODO: check this code, you have removed logic
-        return self.global_params
+    def infere_cell_inputs(self, cell_source):
+        cell_undefined = self.__extract_cell_undefined(cell_source)
+        return [und for und in cell_undefined if
+                und not in self.imports and und not in self.configurations and und not in self.global_params]
 
     def infer_cell_dependencies(self, cell_source, confs): # TODO: check this code, you have removed logic
+        print("(infer_cell_dependencies). confs are:", confs)
         dependencies = []
         for name in self.imports:
             dependencies.append(self.imports.get(name))
         return dependencies
 
     def infer_cell_conf_dependencies(self, confs):
+        print("(infer_cell_conf_dependencies). confs are:", confs)
         dependencies = []
         for ck in confs:
             for name in self.__extract_cell_names(confs[ck]):
@@ -157,18 +157,60 @@ class RExtractor:
 
         return dependencies
 
-    def __extract_cell_names(self, cell_source): # TODO: filter out stuff like libraries?
+    def __extract_cell_names(self, cell_source):
         names = set()
-        
         parsed_r = robjects.r['parse'](text=cell_source)
         vars_r = robjects.r['all.vars'](parsed_r)
+        
         for avar in vars_r:
-            names.add(avar) 
+            # TODO: this should not include functions because they are not scoped (this is probably already not the case)
 
+            # TODO: in the exmaple script 'state' is recognized as a variable. is this true?
+
+            if avar not in self.imports: # Difficulty: filter out stuff like libraries. Because when using "library(cool)", it recognies cool as a variable, but not in the case of "library('cool')"
+                names.add(avar) 
+        print("The cell names are: ", names)
         return set(names)
 
-    def __extract_cell_undefined(self, cell_source): # TODO
-        undef_vars = set() 
+    def expression_variables(self, text):
+        result = []
+        parsed_expr = base.parse(text=text, keep_source=True) 
+        parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
+
+        # Loop through the first level of the AST
+        for expr in parsed_expr_py:
+
+            # Check for a specific type. otherwise continue
+            if not isinstance(expr, rinterface.LangSexpVector):
+                continue
+
+            # check for matches
+            c = str(expr[0])
+            variable = str(expr[1]) 
+
+            # check if Assignment
+            if not ((c == "<-" or c == "=")):
+                continue
+            
+            result.append(variable)
+        return result
+
+
+    def __extract_cell_undefined(self, cell_source): 
+        undef_vars = set()
+
+        # Approach 1: get all vars and substract the ones with the approach as in 
+        print("------------ cell undefined ----------")
+        cell_names = self.__extract_cell_names(cell_source)
+        expression_variables = self.expression_variables(cell_source)
+        undef_vars = cell_names.difference(set(expression_variables))
+        print("cell names:", cell_names)
+        print("assigned names:", expression_variables)
+        print("result:", undef_vars)
+
+        # Approach 2: (TODO: check this) dynamic analysis approach. this is complex for R as functions might be seen as that they are not
+        # defined so we have to include the imports
+
         return undef_vars
 
     def extract_cell_params(self, cell_source):
