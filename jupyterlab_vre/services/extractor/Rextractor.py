@@ -68,8 +68,6 @@ class RExtractor:
         for s in sources:
             # Parse the script using rpy2's parse() function with keep.source = TRUE
             parsed_expr = base.parse(text=s, keep_source=True) 
-
-            # Convert the expression to a Python object using rpy2's conversion functions
             parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
             lines = s.splitlines()
 
@@ -95,24 +93,48 @@ class RExtractor:
                     if len(matches) > 0 and variable not in configurations:
                         configurations[variable] = line
                         break
-                        
-        print(configurations)
+
         return configurations
 
 
     def __extract_params(self, sources): # TODO: naive way of extracting params, look at the AST (source https://adv-r.hadley.nz/expressions.html)
         params = set()
         for s in sources:
-            # Find all variable assignments with a prefix of "param"
-            pattern = r"param_[a-zA-Z0-9_]{0,}"
-            matches = re.findall(pattern, s)
             
+            '''Approach 1: Naive way
+            Find all variable assignments with a prefix of "param"'''
+            # pattern = r"param_[a-zA-Z0-9_]{0,}"
+            # matches = re.findall(pattern, s) 
             # Extract the variable names from the matches
-            for match in matches:
-                params.add(match)
+            # for match in matches:
+                # params.add(match)
+
+            '''Approach 2: Look at the AST'''
+            # Parse the script using rpy2's parse() function with keep.source = TRUE
+            parsed_expr = base.parse(text=s, keep_source=True) 
+            parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
+            lines = s.splitlines()
+
+            # Loop through the first level of the AST
+            for expr in parsed_expr_py:
+
+                # Check for a specific type. otherwise continue
+                if not isinstance(expr, rinterface.LangSexpVector):
+                    continue
+
+                # check for matches
+                c = str(expr[0])
+                variable = str(expr[1]) 
+
+                # Only look at assignments, check = or <- # TODO: is there a better way to check if it is an assignment
+                if not ((c == "<-" or c == "=") and variable.split("_")[0] == "param"):
+                    continue
+                params.add(variable)
+
+        print(params)
         return params
 
-    def infere_cell_outputs(self, cell_source): # TODO: check
+    def infere_cell_outputs(self, cell_source):
         cell_names = self.__extract_cell_names(cell_source)
         return [name for name in cell_names if name not in self.__extract_cell_undefined(cell_source) \
                 and name not in self.imports and name in self.undefined and name not in self.configurations and name not in self.global_params]
@@ -135,15 +157,21 @@ class RExtractor:
 
         return dependencies
 
-    def __extract_cell_names(self, cell_source):
-        names = set() # TODO: what does this code code?
+    def __extract_cell_names(self, cell_source): # TODO: filter out stuff like libraries?
+        names = set()
+        
+        parsed_r = robjects.r['parse'](text=cell_source)
+        vars_r = robjects.r['all.vars'](parsed_r)
+        for avar in vars_r:
+            names.add(avar) 
+
         return set(names)
 
-    def __extract_cell_undefined(self, cell_source):
-        undef_vars = set() # TODO: later
+    def __extract_cell_undefined(self, cell_source): # TODO
+        undef_vars = set() 
         return undef_vars
 
-    def extract_cell_params(self, cell_source): # TODO: check
+    def extract_cell_params(self, cell_source):
         cell_unds = self.__extract_cell_undefined(cell_source)
         return self.global_params.intersection(cell_unds)
 
