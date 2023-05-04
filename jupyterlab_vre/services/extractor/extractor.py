@@ -50,6 +50,7 @@ class Extractor:
                         prefix = name.split('_')[0]
                         if prefix == 'conf' and name not in configurations:
                             configurations[name] = lines[node.lineno - 1]
+        print("The configurations are:", configurations)
         return self.__resolve_configurations(configurations)
 
     def __extract_params(self, sources):

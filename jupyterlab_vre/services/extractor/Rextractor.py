@@ -4,6 +4,13 @@ import pandas as pd
 from rpy2.robjects import r
 import tempfile
 import os
+import rpy2.robjects as robjects
+import rpy2.rinterface as rinterface
+from rpy2.robjects.packages import importr
+import re
+
+# Load the base R package for parsing and evaluation
+base = importr('base')
 
 # TODO: create an interface such that it can be easily extended to other kernels
 
@@ -56,9 +63,42 @@ class RExtractor:
                 }
         return imports
 
-    def __extract_configurations(self, sources):
+    def __extract_configurations(self, sources): 
         configurations = {}
-        return configurations # TODO: later
+        for s in sources:
+            # Parse the script using rpy2's parse() function with keep.source = TRUE
+            parsed_expr = base.parse(text=s, keep_source=True) 
+
+            # Convert the expression to a Python object using rpy2's conversion functions
+            parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
+            lines = s.splitlines()
+
+            # Loop through the first level of the AST
+            for expr in parsed_expr_py:
+
+                # Check for a specific type. otherwise continue
+                if not isinstance(expr, rinterface.LangSexpVector):
+                    continue
+
+                # check for matches
+                c = str(expr[0])
+                variable = str(expr[1]) 
+
+                # Only look at assignments, check = or <- # TODO: is there a better way to check if it is an assignment
+                if not ((c == "<-" or c == "=") and variable.split("_")[0] == "conf"):
+                    continue
+                
+                # find the line
+                for line in lines:
+                    matches = re.findall(r'{}\s*(=|<-)'.format(variable), line)
+                    
+                    if len(matches) > 0 and variable not in configurations:
+                        configurations[variable] = line
+                        break
+                        
+        print(configurations)
+        return configurations
+
 
     def __extract_params(self, sources): # TODO: naive way of extracting params, look at the AST (source https://adv-r.hadley.nz/expressions.html)
         params = set()
