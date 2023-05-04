@@ -34,7 +34,7 @@ class RExtractor:
 
     def __extract_imports(self, sources):
         imports = {}
-        for s in sources: # loop through every cell
+        for s in sources: 
             packages = []
 
             ''' Approach 1: Simple regex.
@@ -70,22 +70,15 @@ class RExtractor:
             parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
             lines = s.splitlines()
 
-            # Loop through the first level of the AST
-            for expr in parsed_expr_py:
+            # loop through all assignment variables
+            assignment_variables = self.assignment_variables(s)
+            for variable in assignment_variables:
 
-                # Check for a specific type. otherwise continue
-                if not isinstance(expr, rinterface.LangSexpVector):
-                    continue
-
-                # check for matches
-                c = str(expr[0])
-                variable = str(expr[1]) 
-
-                # Only look at assignments, check = or <- # TODO: is there a better way to check if it is an assignment
-                if not ((c == "<-" or c == "=") and variable.split("_")[0] == "conf"):
+                # the prefix should be 'conf'
+                if not (variable.split("_")[0] == "conf"):
                     continue
                 
-                # find the line. TODO: this approach assumes that there is only one expression in one line.
+                # find the line of the assignment. (TODO) this approach assumes that there is only one expression in one line.
                 # this might not work when we have something like: a <- 3; b = 7
                 for line in lines:
                     matches = re.findall(r'{}\s*(=|<-)'.format(variable), line)
@@ -93,7 +86,6 @@ class RExtractor:
                     if len(matches) > 0 and variable not in configurations:
                         configurations[variable] = line
                         break
-
         return configurations
 
 
@@ -109,24 +101,12 @@ class RExtractor:
             # for match in matches:
                 # params.add(match)
 
-            '''Approach 2: Look at the AST''' # TODO: combine logic with config as it is almost the same
-            parsed_expr = base.parse(text=s, keep_source=True) 
-            parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
-            lines = s.splitlines()
+            '''Approach 2: Look at the AST''' # (TODO) combine logic with config as it is almost the same
+            assignment_variables = self.assignment_variables(s)
+            for variable in assignment_variables:
 
-            # Loop through the first level of the AST
-            for expr in parsed_expr_py:
-
-                # Check for a specific type. otherwise continue
-                if not isinstance(expr, rinterface.LangSexpVector):
-                    continue
-
-                # check for matches
-                c = str(expr[0])
-                variable = str(expr[1]) 
-
-                # Only look at assignments, check = or <-
-                if not ((c == "<-" or c == "=") and variable.split("_")[0] == "param"):
+                # the prefix should be 'conf'
+                if not (variable.split("_")[0] == "param"):
                     continue
                 params.add(variable)
         return params
@@ -145,14 +125,12 @@ class RExtractor:
         # TODO: check this code, you have removed logic. 
         # we probably like to only use dependencies that are necessary to execute the cell
         # however this is challenging in R as functions are non-scoped
-        print("(infer_cell_dependencies). confs are:", confs)
         dependencies = []
         for name in self.imports:
             dependencies.append(self.imports.get(name))
         return dependencies
 
     def infer_cell_conf_dependencies(self, confs):
-        print("(infer_cell_conf_dependencies). confs are:", confs)
         dependencies = []
         for ck in confs:
             for name in self.__extract_cell_names(confs[ck]):
@@ -166,17 +144,16 @@ class RExtractor:
         parsed_r = robjects.r['parse'](text=cell_source)
         vars_r = robjects.r['all.vars'](parsed_r)
 
+        # challenge 1: filter out stuff like libraries. Because when using "library(cool)", it recognies cool as a variable,
+        #              but not in the case of "library('cool')". this is sort of solved now but does not cover all cases
+        # challenge 2 (TODO): in the example script 'state' and 'n' are recognized as variables. 
+        #              this should be solved as we do not want this
         for avar in vars_r:
-            # TODO: this should not include functions because they are not scoped (this is probably already not the case)
-
-            # TODO: in the exmaple script 'state' and 'n' are recognized as variables.this should be fixed
-
-            if avar not in self.imports: # Difficulty: filter out stuff like libraries. Because when using "library(cool)", it recognies cool as a variable, but not in the case of "library('cool')"
+            if avar not in self.imports
                 names.add(avar) 
-        print("The cell names are: ", names)
         return set(names)
 
-    def expression_variables(self, text):
+    def assignment_variables(self, text):
         result = []
         parsed_expr = base.parse(text=text, keep_source=True) 
         parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
@@ -192,7 +169,7 @@ class RExtractor:
             c = str(expr[0])
             variable = str(expr[1]) 
 
-            # check if Assignment
+            # check if assignment. (TODO) is there a better way to check if it is an assignment?
             if not ((c == "<-" or c == "=")):
                 continue
             
@@ -205,11 +182,12 @@ class RExtractor:
 
         # Approach 1: get all vars and substract the ones with the approach as in 
         cell_names = self.__extract_cell_names(cell_source)
-        expression_variables = self.expression_variables(cell_source)
-        undef_vars = cell_names.difference(set(expression_variables))
+        assignment_variables = self.assignment_variables(cell_source)
+        undef_vars = cell_names.difference(set(assignment_variables))
 
-        # Approach 2: (TODO: check this) dynamic analysis approach. this is complex for R as functions might be seen as that they are not
-        # defined so we have to include the imports
+        # Approach 2: (TODO) dynamic analysis approach. this is complex for R as functions 
+        # as they are not scoped (which is the case in python). As such, we might have to include
+        # all the libraries to make sure that those functions work
 
         return undef_vars
 
