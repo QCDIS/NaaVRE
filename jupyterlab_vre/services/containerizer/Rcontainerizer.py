@@ -88,8 +88,9 @@ class Rcontainerizer:
             if len(outputs) > 0:
                 file.write("\n\n# capturing outputs \n")
                 for out in outputs:
+                    file.write("library(jsonlite) \n")
                     file.write("file <- file(paste0('/tmp/{}_', id, '.json')) \n".format(out))
-                    file.write("writeLines(as.character({}), file) \n".format(out))
+                    file.write("writeLines(toJSON({}, auto_unbox=TRUE), file) \n".format(out))
                     file.write("close(file) \n")
 
         # create the Dockerfile

@@ -35,5 +35,5 @@ dependencies:
   - git
   - pip
   - pandas
-  - rpy2 # TODO: also download the R package 'renv'
+  - rpy2 # TODO: also download the R packages: renv, jsonlite
   - pip:

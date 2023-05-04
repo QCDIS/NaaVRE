@@ -85,7 +85,8 @@ class RExtractor:
                 if not ((c == "<-" or c == "=") and variable.split("_")[0] == "conf"):
                     continue
                 
-                # find the line
+                # find the line. TODO: this approach assumes that there is only one expression in one line.
+                # this might not work when we have something like: a <- 3; b = 7
                 for line in lines:
                     matches = re.findall(r'{}\s*(=|<-)'.format(variable), line)
                     
