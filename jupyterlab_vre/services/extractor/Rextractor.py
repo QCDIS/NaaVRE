@@ -56,7 +56,7 @@ class RExtractor:
             
             # format the packages
             for package in packages:
-                imports[package] = { # TODO: check these properties
+                imports[package] = { # asname and module are specific to Python packages. So you can probably leave them out here
                     'name': package,
                     'asname': '',
                     'module': '' 
