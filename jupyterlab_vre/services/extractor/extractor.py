@@ -50,7 +50,6 @@ class Extractor:
                         prefix = name.split('_')[0]
                         if prefix == 'conf' and name not in configurations:
                             configurations[name] = lines[node.lineno - 1]
-        print("The configurations are:", configurations)
         return self.__resolve_configurations(configurations)
 
     def __extract_params(self, sources):
@@ -106,6 +105,7 @@ class Extractor:
         return names
 
     def __extract_cell_undefined(self, cell_source):
+
         flakes_stdout = StreamList()
         flakes_stderr = StreamList()
         rep = pyflakes_reporter.Reporter(
@@ -124,7 +124,6 @@ class Extractor:
         for line in filter(lambda a: a != '\n' and 'undefined name' in a, out):
             var_search = re.search(p, line)
             undef_vars.add(var_search.group(1))
-        print("undefined vars:", undef_vars)
         return undef_vars
 
     def extract_cell_params(self, cell_source):

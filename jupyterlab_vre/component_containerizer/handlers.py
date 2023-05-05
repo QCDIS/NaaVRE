@@ -20,8 +20,8 @@ from jinja2 import Environment, PackageLoader
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.services.extractor.RExtractor import RExtractor
 from jupyterlab_vre.services.extractor.extractor import Extractor
+from jupyterlab_vre.services.extractor.RExtractor import RExtractor
 from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
 from notebook.base.handlers import APIHandler
 from tornado import web
@@ -451,7 +451,6 @@ def load_module_names_mapping():
 
 def map_dependencies(dependencies=None):
     module_name_mapping = load_module_names_mapping()
-    print(module_name_mapping)
     set_conda_deps = set([])
     set_pip_deps = set([])
     for dep in dependencies:
