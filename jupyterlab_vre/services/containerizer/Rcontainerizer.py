@@ -35,7 +35,18 @@ class Rcontainerizer:
                 'file_name': environment_file_name,
                 'path': env_file_path}
         }
-    
+
+    @staticmethod 
+    def get_type(value):
+        if value == "str" or value == "list":
+            return "character"
+        elif value == "int":
+            return "integer"
+        elif value == "float":
+            return "numeric"
+        else:
+            raise ValueError("Not a valid type")
+
     @staticmethod 
     def build_templates(cell=None, files_info=None):
   
@@ -53,29 +64,33 @@ class Rcontainerizer:
             file.write("library(optparse) \n")
             file.write("option_list = list( \n")
 
-            for i, (key, value) in enumerate(inputs.items()): # TODO: support more types and write more clean
-                type = None
-                if value == "str":
-                    type = "character"
-                elif value == "int":
-                    type = "integer"
-                else:
-                    raise ValueError("Not a valid type")
-
-                file.write('''\t make_option(c("--{}"), action="store", default=NA, type='{}', help="my description")'''.format(key, type)) # https://gist.github.com/ericminikel/8428297
+            for i, (key, value) in enumerate(inputs.items()):
+                my_type = self.get_type(value)
+                file.write('''\t make_option(c("--{}"), action="store", default=NA, type='{}', help="my description")'''.format(key, my_type)) # https://gist.github.com/ericminikel/8428297
                 
                 if i != len(cell.types) - 1:
                     file.write(",")
                 file.write("\n")
+            
+            # TODO: in the jinja template this step is also repeated for params, but in my script it seems that params are already included in the inputs?
 
             file.write(")\n\n")
             file.write("# set input parameters accordingly \n")
             file.write("opt = parse_args(OptionParser(option_list=option_list)) \n")
 
             # replace inputs
+            file.write("library(jsonlite) \n")
             original_source = cell.original_source
             for key, value in cell.types.items():
-                file.write('''{} = opt${} \n'''.format(key, key))
+                file.write('''{} = fromJSON(opt${}) \n'''.format(key, key))
+            file.write("\n")
+
+            # check that the fields are set
+            file.write("# check if the fields are set \n")
+            for key, value in cell.types.items():
+                file.write("if(is.na({}){{ \n".format(key))
+                file.write("   stop('the `{}` parameter is not correctly set. See script usage (--help)') \n".format(key))
+                file.write("}\n")
             file.write("\n")
 
             # print source
@@ -88,7 +103,6 @@ class Rcontainerizer:
             if len(outputs) > 0:
                 file.write("\n\n# capturing outputs \n")
                 for out in outputs:
-                    file.write("library(jsonlite) \n")
                     file.write("file <- file(paste0('/tmp/{}_', id, '.json')) \n".format(out))
                     file.write("writeLines(toJSON({}, auto_unbox=TRUE), file) \n".format(out))
                     file.write("close(file) \n")

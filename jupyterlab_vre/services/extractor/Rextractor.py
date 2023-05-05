@@ -101,7 +101,7 @@ class RExtractor:
             # for match in matches:
                 # params.add(match)
 
-            '''Approach 2: Look at the AST''' # (TODO) combine logic with config as it is almost the same
+            '''Approach 2: Look at the AST'''
             assignment_variables = self.assignment_variables(s)
             for variable in assignment_variables:
 
@@ -149,7 +149,7 @@ class RExtractor:
         # challenge 2 (TODO): in the example script 'state' and 'n' are recognized as variables. 
         #              this should be solved as we do not want this
         for avar in vars_r:
-            if avar not in self.imports
+            if avar not in self.imports:
                 names.add(avar) 
         return set(names)
 

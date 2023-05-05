@@ -451,6 +451,7 @@ def load_module_names_mapping():
 
 def map_dependencies(dependencies=None):
     module_name_mapping = load_module_names_mapping()
+    print(module_name_mapping)
     set_conda_deps = set([])
     set_pip_deps = set([])
     for dep in dependencies:
