@@ -15,7 +15,8 @@ static_repos = [{
 
 # Load the JSON string from a file
 def packages_repositories():
-    for i, repo in enumerate(static_repos):
+    repos = static_repos
+    for i, repo in enumerate(repos):
         with open('{}.json'.format(repo['file']), 'r') as f:
             json_string = f.read()
             packages = json.loads(json_string)
@@ -29,7 +30,7 @@ def get_package_details(package):
     try:
         return dict(zip(list(resultRKernel.names), list(resultRKernel))) # TODO: make it more readable
     except:
-        print("Not locally, proceed...")
+        a = 1
 
     # Step 2: Check Repository MetaData
     repos = packages_repositories()
@@ -65,12 +66,12 @@ def get_package_details(package):
         a = 1
     return "Error: The package cannot be found"
 
+packages = [
+    "adegenet",
+    "mariokart",
+    "dplyr"
+]
 
-
-#print(get_package_details("adegenet"))
-print(get_package_details("mariokart"))
-# get_package_details("dplyr")
-
-# print("package diference: ", len(reps[1]['packages']) - len(reps[0]['packages']))
-# print(len(set(reps[1]['packages']) - set(reps[0]['packages'])))
-# print(len(set(reps[0]['packages']) - set(reps[1]['packages'])))
+for package in packages:
+    print("---- Package '{}' -----".format(package))
+    print(get_package_details(package))
