@@ -230,25 +230,23 @@ class CellsHandler(APIHandler, Catalog):
                     os.remove(path)
         else:
             os.mkdir(cell_path)
-
-        # TODO: I need credentials from Spiros. Uncomment stuff from below
-        # registry_credentials = Catalog.get_registry_credentials()
-        # if not registry_credentials or len(registry_credentials) <= 0:
-        #     self.set_status(400)
-        #     self.write_error('Registry credentials not found')
-        #     logger.error('Registry credentials not found')
-        #     self.flush()
-        #     return
-        # registry_url = registry_credentials[0]['url']
-        # if not registry_url:
-        #     self.set_status(400)
-        #     self.write_error('Registry url not found')
-        #     logger.error('Registry url not found')
-        #     self.flush()
-        #     return
-        # image_repo = registry_url.split(
-        #     'https://hub.docker.com/u/')[1]
-        image_repo = "dedder123" # TODO: Remove this later
+            
+        registry_credentials = Catalog.get_registry_credentials()
+        if not registry_credentials or len(registry_credentials) <= 0:
+            self.set_status(400)
+            self.write_error('Registry credentials not found')
+            logger.error('Registry credentials not found')
+            self.flush()
+            return
+        registry_url = registry_credentials[0]['url']
+        if not registry_url:
+            self.set_status(400)
+            self.write_error('Registry url not found')
+            logger.error('Registry url not found')
+            self.flush()
+            return
+        image_repo = registry_url.split(
+            'https://hub.docker.com/u/')[1]
 
         # handle request
         payload = self.get_json_body()

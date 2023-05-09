@@ -2,6 +2,16 @@ import os
 
 # TODO: create an interface for other programming languages
 
+def get_type(value):
+    if value == "str" or value == "list":
+        return "character"
+    elif value == "int":
+        return "integer"
+    elif value == "float":
+        return "numeric"
+    else:
+        raise ValueError("Not a valid type")
+
 class Rcontainerizer:
 
     @staticmethod
@@ -37,17 +47,6 @@ class Rcontainerizer:
         }
 
     @staticmethod 
-    def get_type(value):
-        if value == "str" or value == "list":
-            return "character"
-        elif value == "int":
-            return "integer"
-        elif value == "float":
-            return "numeric"
-        else:
-            raise ValueError("Not a valid type")
-
-    @staticmethod 
     def build_templates(cell=None, files_info=None):
   
         # create the source code file
@@ -65,7 +64,7 @@ class Rcontainerizer:
             file.write("option_list = list( \n")
 
             for i, (key, value) in enumerate(inputs.items()):
-                my_type = self.get_type(value)
+                my_type = get_type(value)
                 file.write('''\t make_option(c("--{}"), action="store", default=NA, type='{}', help="my description")'''.format(key, my_type)) # https://gist.github.com/ericminikel/8428297
                 
                 if i != len(cell.types) - 1:
@@ -98,7 +97,7 @@ class Rcontainerizer:
             file.write(original_source)
 
             # outputs
-            outputs = ['myOutputVar'] # TODO: retrieve this dynamically
+            outputs = cell.outputs # TODO: retrieve this dynamically
 
             if len(outputs) > 0:
                 file.write("\n\n# capturing outputs \n")
