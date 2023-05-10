@@ -28,8 +28,9 @@ def get_package_details(package):
 
     # Step 1: Check kernel
     try:
+        resultRKernel = robjects.r("packageDescription('{}')".format(package)) # TODO: execute this in a container of the end user
         return dict(zip(list(resultRKernel.names), list(resultRKernel))) # TODO: make it more readable
-    except:
+    except Exception as e:
         a = 1
 
     # Step 2: Check Repository MetaData
