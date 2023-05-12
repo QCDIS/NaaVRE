@@ -81,13 +81,16 @@ class Rcontainerizer:
             file.write("library(jsonlite) \n")
             original_source = cell.original_source
             for value in inputs:
-                file.write('''{} = fromJSON(opt${}) \n'''.format(value, value))
+                if types[value] == "list":
+                    file.write('''{} = fromJSON(opt${}) \n'''.format(value, value))
+                else:
+                    file.write('''{} = opt${} \n'''.format(value, value))
             file.write("\n")
 
             # check that the fields are set
             file.write("# check if the fields are set \n")
             for value in inputs: 
-                file.write("if(is.na({}){{ \n".format(value))
+                file.write("if(is.na({})){{ \n".format(value))
                 file.write("   stop('the `{}` parameter is not correctly set. See script usage (--help)') \n".format(value))
                 file.write("}\n")
             file.write("\n")
@@ -114,8 +117,12 @@ class Rcontainerizer:
             file.write("USER root \n\n") # in case of this image, we need root permissions
 
             # Step 2: install dependencies. for now, a naive way
-            print(cell.dependencies)
-            for dep in cell.dependencies:
+            dependencies = cell.dependencies
+            dependencies.append({
+                "name": "optparse"
+            })
+
+            for dep in dependencies:
                 file.write('''RUN R -e "install.packages('{}', repos='http://cran.rstudio.com')" \n'''.format(dep['name']))
             file.write("\n")
 
