@@ -281,6 +281,7 @@ class CellsHandler(APIHandler, Catalog):
             self.flush()
             return
 
+        print("We are here..........")
         owner = url_repos.split('https://github.com/')[1].split('/')[0]
         repository_name = url_repos.split('https://github.com/')[1].split('/')[1]
         if '.git' in repository_name:
@@ -300,7 +301,7 @@ class CellsHandler(APIHandler, Catalog):
             return
 
         commit = gh_repository.get_commits(path=current_cell.task_name)
-
+        print("We are here2..........")
         if commit.totalCount > 0:
             try:
                 update_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
@@ -311,7 +312,7 @@ class CellsHandler(APIHandler, Catalog):
         elif commit.totalCount <= 0:
             create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
                                       files_info=files_info)
-
+        print("We are here3..........")
         wf_id = str(uuid.uuid4())
         resp = dispatch_github_workflow(
             owner,

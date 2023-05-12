@@ -22,7 +22,6 @@ class Rcontainerizer:
 
         cell_file_name = cell.task_name + '.R'
         dockerfile_name = 'Dockerfile.' + image_repo + '.' + cell.task_name
-        environment_file_name = cell.task_name + '-environment.yaml'
 
         if os.path.exists(cell_path):
             for files in os.listdir(cell_path):
@@ -34,16 +33,12 @@ class Rcontainerizer:
 
         cell_file_path = os.path.join(cell_path, cell_file_name)
         dockerfile_file_path = os.path.join(cell_path, dockerfile_name)
-        env_file_path = os.path.join(cell_path, environment_file_name)
         return {'cell': {
             'file_name': cell_file_name,
             'path': cell_file_path},
             'dockerfile': {
                 'file_name': dockerfile_name,
-                'path': dockerfile_file_path},
-            'environment': {
-                'file_name': environment_file_name,
-                'path': env_file_path}
+                'path': dockerfile_file_path}
         }
 
     @staticmethod 
@@ -54,8 +49,13 @@ class Rcontainerizer:
             file.write("setwd('/app') \n\n")
 
             # we also want to always add the id to the input parameters
-            inputs = cell.types 
-            inputs['id'] = 'str'
+            inputs = cell.inputs 
+            types = cell.types
+            inputs.append('id')
+            types['id'] = 'str'
+            print("inputs: ", cell.inputs)
+            print("types: ", cell.types)
+            print("outpus ", cell.outputs)
 
             # we should dynamically add this value to the script
             # this is done using the 'optparse' library, which does something similar as in the Python script
@@ -63,11 +63,11 @@ class Rcontainerizer:
             file.write("library(optparse) \n")
             file.write("option_list = list( \n")
 
-            for i, (key, value) in enumerate(inputs.items()):
-                my_type = get_type(value)
-                file.write('''\t make_option(c("--{}"), action="store", default=NA, type='{}', help="my description")'''.format(key, my_type)) # https://gist.github.com/ericminikel/8428297
+            for i, (value) in enumerate(inputs):
+                my_type = get_type(types[value])
+                file.write('''\t make_option(c("--{}"), action="store", default=NA, type='{}', help="my description")'''.format(value, my_type)) # https://gist.github.com/ericminikel/8428297
                 
-                if i != len(cell.types) - 1:
+                if i != len(inputs) - 1:
                     file.write(",")
                 file.write("\n")
             
@@ -80,15 +80,15 @@ class Rcontainerizer:
             # replace inputs
             file.write("library(jsonlite) \n")
             original_source = cell.original_source
-            for key, value in cell.types.items():
-                file.write('''{} = fromJSON(opt${}) \n'''.format(key, key))
+            for value in inputs:
+                file.write('''{} = fromJSON(opt${}) \n'''.format(value, value))
             file.write("\n")
 
             # check that the fields are set
             file.write("# check if the fields are set \n")
-            for key, value in cell.types.items():
-                file.write("if(is.na({}){{ \n".format(key))
-                file.write("   stop('the `{}` parameter is not correctly set. See script usage (--help)') \n".format(key))
+            for value in inputs: 
+                file.write("if(is.na({}){{ \n".format(value))
+                file.write("   stop('the `{}` parameter is not correctly set. See script usage (--help)') \n".format(value))
                 file.write("}\n")
             file.write("\n")
 
