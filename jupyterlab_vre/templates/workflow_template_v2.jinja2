@@ -99,6 +99,7 @@ spec:
       {% else %}
       container:
         image: "{{ image_repo }}/{{ cells[nid]['task_name'] }}"
+        imagePullPolicy: Always
         command: ["/bin/bash", "-c"]
         args:
           - source /venv/bin/activate; python {{ cells[nid]['task_name'] }}.py
