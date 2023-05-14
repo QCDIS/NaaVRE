@@ -1,4 +1,4 @@
-FROM qcdis/miniconda3-pdal AS naavre-pdal-build
+FROM continuumio/miniconda3:22.11.1 AS naavre-pdal-build
 
 RUN conda install -c conda-forge conda-pack
 COPY naa-vre-environment.yaml .
