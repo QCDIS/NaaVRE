@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3:22.11.1 AS naavre-pdal-build
+FROM condaforge/mambaforge:23.1.0-1 AS naavre-pdal-build
 RUN conda install -c conda-forge conda-pack conda-merge mamba
 COPY environment.yaml .
 COPY naa-vre-environment.yaml .
