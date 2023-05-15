@@ -2,31 +2,50 @@ name: venv
 channels:
   - conda-forge
 dependencies:
-  - cxx-compiler
-  - distro
-  - gcc
-  - gdal
-  - git
-  - ipywidgets
-  - laspy
-  - pdal
-  - dask
-  - python-pdal
-  - pyyaml
-  - scipy
-  - webdavclient3
-  - tornado
-  - plyfile
-  - wradlib
-  - numpy
-  - libgcc=5.2.0
   - asyncssh
+  - beautifulsoup4
+  - cxx-compiler
+  - dask
   - dask-core
+  - distro
   - fire
+  - flake8
+  - gcc
+  - gcc=12.1.0
+  - gdal
+  - gdal=3.5.0
+  - git
+  - gitpython
+  - html5lib
+  - ipywidgets
+  - Jinja2
+  - laspy
+  - laspy
   - lazrs-python
-  - pyshp
-  - shapely
+  - libgcc
+  - libstdcxx-ng
+  - lxml
+  - matplotlib
+  - notebook
+  - numpy
+  - pdal
   - pip
+  - plyfile
+  - pyshp
+  - pytest
+  - pytest-shutil
+  - python-pdal
+  - python>=3.8
+  - pyyaml
+  - requests
+  - scipy
+  - sentinelhub
+  - setuptools
+  - shapely
+  - tornado
+  - webdavclient3
+  - wradlib
+  - xarray
   - pip:
       - git+https://github.com/QCDIS/Laserfarm.git
       - git+https://github.com/QCDIS/laserchicken.git
