@@ -23,6 +23,8 @@ RUN source /venv/bin/activate
 RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
+RUN conda install -c r r-irkernel
+
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
 COPY ./repo_utils /tmp/repo_utils
