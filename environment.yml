@@ -34,6 +34,5 @@ dependencies:
   - wget
   - git
   - pathlib2
-  - r::r-irkernel
   - pip
   - pip:
