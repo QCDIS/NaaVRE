@@ -3,16 +3,11 @@ channels:
   - conda-forge
 dependencies:
   - asyncssh
-  - beautifulsoup4
   - cxx-compiler
   - dask
   - dask-core
   - distro
-  - fire
-  - flake8
-  - gcc
   - gcc=12.1.0
-  - gdal
   - gdal=3.5.0
   - git
   - gitpython
@@ -20,11 +15,9 @@ dependencies:
   - ipywidgets
   - Jinja2
   - laspy
-  - laspy
   - lazrs-python
   - libgcc
   - libstdcxx-ng
-  - lxml
   - matplotlib
   - notebook
   - numpy
@@ -42,10 +35,8 @@ dependencies:
   - sentinelhub
   - setuptools
   - shapely
-  - tornado
   - webdavclient3
   - wradlib
-  - xarray
   - pip:
       - git+https://github.com/QCDIS/Laserfarm.git
       - git+https://github.com/QCDIS/laserchicken.git
