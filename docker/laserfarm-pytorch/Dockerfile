@@ -1,5 +1,5 @@
 FROM condaforge/mambaforge:23.1.0-1 AS naavre-pdal-build
-RUN conda install -c conda-forge conda-pack conda-merge mamba
+RUN conda install -c conda-forge conda-pack conda-merge
 COPY environment.yaml .
 COPY naa-vre-environment.yaml .
 RUN conda-merge environment.yaml naa-vre-environment.yaml > merged-environment.yaml
