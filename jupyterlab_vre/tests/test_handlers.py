@@ -105,6 +105,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             # json_response = json.loads(response.body.decode('utf-8'))
             # self.assertIsNotNone(json_response)
 
+
     def test_search_rating_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
