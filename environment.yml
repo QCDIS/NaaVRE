@@ -33,6 +33,7 @@ dependencies:
   - unzip
   - wget
   - git
+  - pathlib2
   - pip
   - pandas
   - rpy2 # TODO: also download the R packages: renv, jsonlite

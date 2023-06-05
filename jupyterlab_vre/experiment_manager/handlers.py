@@ -165,16 +165,23 @@ class ExecuteWorkflowHandler(APIHandler):
                 "workflow": workflow_doc
             }
         }
-        print('Submitting workflow: ' + api_endpoint + '/api/workflows/submit/')
-        resp = requests.post(
-            f"{api_endpoint}/api/workflows/submit/",
-            data=json.dumps(req_body),
-            headers={
-                'Authorization': f"Bearer {naavre_api_token}",
-                'Content-Type': 'application/json'
-            }
-        )
-        print('Workflow submission response: ' + str(resp.content))
+        try:
+            resp = requests.post(
+                f"{api_endpoint}/api/workflows/submit/",
+                data=json.dumps(req_body),
+                headers={
+                    'Authorization': f"Bearer {naavre_api_token}",
+                    'Content-Type': 'application/json'
+                }
+            )
+            logger.info('Workflow submission response: ' + str(resp.content))
+        except Exception as e:
+            logger.error('Workflow submission failed: ' + str(e))
+            self.set_status(400)
+            self.write('Workflow submission failed: ' + str(e))
+            self.write_error('Workflow submission failed: ' + str(e))
+            self.flush()
+            return
         if resp.status_code != 200:
             logger.error('Workflow submission failed: ' + str(resp.content))
             self.set_status(resp.status_code)

@@ -243,14 +243,7 @@ Close the terminal and start a new one to activate conda.
 
 Create and activate conda environment:
 ```shell
-conda create -n jupyterlab  python=3.9 
-conda activate jupyterlab
-```
-
-## Install requirements in conda 
-```shell
-conda install jupyterlab nodejs yarn
-conda install -c conda-forge typescript 
+conda env update -f environment.yml
 ```
 
 Clone project:
@@ -265,22 +258,16 @@ git branch <BRANCH_NAME>
 git checkout <BRANCH_NAME>
 ```
 
-Go to the project folder and install nodejs dependencies :
-```shell 
-npm install lerna --force
-npm install --force
-```
+Go to the project folder and run make :
+
 Build the backend and frontend:
 ```shell
-npx lerna run build --scope @jupyter_vre/chart-customs
-npx lerna run build --scope @jupyter_vre/core
-npx lerna run build --scope @jupyter_vre/components
 make install-backend && make build-frontend && make install-ui && make link-ui
 ```
 
 Build the extension  and start a jupyterlab instance:
 ```shell
-jupyter lab build && jupyter lab --debug --watch
+source export_VARS && jupyter lab build && cp -r ~/workspace/NaaVRE/docker/repo_utils/ /tmp/ && ~/workspace/NaaVRE/docker/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*'
 ```
 
 Build wheel file for release:
@@ -288,3 +275,36 @@ Build wheel file for release:
 make release
 ```
 
+## Troubleshooting
+
+When running make install-backend, if the following error occurs:
+
+```python
+Traceback (most recent call last):
+  File "setup.py", line 2, in <module>
+    from pathlib import Path
+ImportError: No module named pathlib
+make: *** [build-backend] Error 1
+```
+
+
+Removed Anaconda entirely from the machine (MacOS), and do a full reinstall as follows:
+
+```shell
+brew install anaconda
+export PATH="/usr/local/anaconda3/bin:$PATH"
+```
+
+Next, sett up the Anaconda environment:
+    
+```shell    
+conda create -n jupyterlab  python=3.9 
+conda activate jupyterlab
+```
+
+
+## Docker 
+
+```commandline
+docker run -it -p 8888:8888 --env-file ~/Downloads/notbooks/docker_VARS qcdis/n-a-a-vre-laserfarm /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*'"
+```
