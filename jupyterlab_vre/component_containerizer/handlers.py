@@ -21,7 +21,7 @@ from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.extractor import Extractor
-from jupyterlab_vre.services.extractor.RExtractor import RExtractor
+from jupyterlab_vre.services.extractor.Rextractor import RExtractor
 from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
 from notebook.base.handlers import APIHandler
 from tornado import web
