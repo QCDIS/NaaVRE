@@ -36,6 +36,9 @@ dependencies:
   - pathlib2
   - pip
   - r
+  - r-irkernel
   - pandas
-  - rpy2 # TODO: also download the R packages: renv, jsonlite
+  - rpy2
+  - r-renv
+  - r-jsonlite
   - pip:
