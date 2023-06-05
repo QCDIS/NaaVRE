@@ -38,8 +38,13 @@ const DefaultState: IState = {
 
 type SaveState = 'started' | 'completed' | 'failed';
 
-const baseImages = [ // TODO: make these based on the kernel type
-    { label: "Jupyter Notebook", id: "jupyter/r-notebook:70178b8e48d7"},
+const baseImages = [
+    { label: "miniconda3", id: "qcdis/miniconda3" },
+    { label: "Laserfarm", id: "qcdis/miniconda3-pdal" },
+    { label: "vol2bird", id: "qcdis/python-vol2bird" },
+    { label: "distributed-learning", id: "qcdis/miniconda3-distributed-learning" },
+    { label: "MULTIPLY", id: "qcdis/miniconda3-multiply" },
+    { label: "Jupyter R Notebook", id: "jupyter/r-notebook:70178b8e48d7"}
 ]
 
 export class CellTracker extends React.Component<IProps, IState> {
