@@ -12,6 +12,7 @@ import re
 # Load the base R package for parsing and evaluation
 base = importr('base')
 
+
 # TODO: create an interface such that it can be easily extended to other kernels
 
 class RExtractor:
@@ -34,14 +35,14 @@ class RExtractor:
 
     def __extract_imports(self, sources):
         imports = {}
-        for s in sources: 
+        for s in sources:
             packages = []
 
             ''' Approach 1: Simple regex.
                 this matches the following cases: require(pkg), library(pkg), library("pkg"), library(package=pkg), library(package="pkg")
             '''
             # packages = re.findall(r'(?:library|require)\((?:package=)?(?:")?(\w+)(?:")?\)', s)
-            
+
             ''' Approach 2: Static analysis using 'renv' package.
                 this approach is more safe as it covers more cases and checks comments
             '''
@@ -53,20 +54,21 @@ class RExtractor:
                 packages = list(pd.DataFrame(function_list).transpose().iloc[:, 1])
                 tmp_file.close()
                 os.remove(tmp_file.name)
-            
+
             # format the packages
             for package in packages:
-                imports[package] = { # asname and module are specific to Python packages. So you can probably leave them out here
+                imports[package] = {
+                    # asname and module are specific to Python packages. So you can probably leave them out here
                     'name': package,
                     'asname': '',
-                    'module': '' 
+                    'module': ''
                 }
         return imports
 
-    def __extract_configurations(self, sources): 
+    def __extract_configurations(self, sources):
         configurations = {}
         for s in sources:
-            parsed_expr = base.parse(text=s, keep_source=True) 
+            parsed_expr = base.parse(text=s, keep_source=True)
             parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
             lines = s.splitlines()
 
@@ -77,29 +79,28 @@ class RExtractor:
                 # the prefix should be 'conf'
                 if not (variable.split("_")[0] == "conf"):
                     continue
-                
+
                 # find the line of the assignment. (TODO) this approach assumes that there is only one expression in one line.
                 # this might not work when we have something like: a <- 3; b = 7
                 for line in lines:
                     matches = re.findall(r'{}\s*(=|<-)'.format(variable), line)
-                    
+
                     if len(matches) > 0 and variable not in configurations:
                         configurations[variable] = line
                         break
         return configurations
 
-
-    def __extract_params(self, sources): # check source https://adv-r.hadley.nz/expressions.html)
+    def __extract_params(self, sources):  # check source https://adv-r.hadley.nz/expressions.html)
         params = set()
         for s in sources:
-            
+
             '''Approach 1: Naive way
             Find all variable assignments with a prefix of "param"'''
             # pattern = r"param_[a-zA-Z0-9_]{0,}"
             # matches = re.findall(pattern, s) 
             # Extract the variable names from the matches
             # for match in matches:
-                # params.add(match)
+            # params.add(match)
 
             '''Approach 2: Look at the AST'''
             assignment_variables = self.assignment_variables(s)
@@ -121,7 +122,7 @@ class RExtractor:
         return [und for und in cell_undefined if
                 und not in self.imports and und not in self.configurations and und not in self.global_params]
 
-    def infer_cell_dependencies(self, cell_source, confs): 
+    def infer_cell_dependencies(self, cell_source, confs):
         # TODO: check this code, you have removed logic. 
         # we probably like to only use dependencies that are necessary to execute the cell
         # however this is challenging in R as functions are non-scoped
@@ -150,12 +151,12 @@ class RExtractor:
         #              this should be solved as we do not want this
         for avar in vars_r:
             if avar not in self.imports:
-                names.add(avar) 
+                names.add(avar)
         return set(names)
 
     def assignment_variables(self, text):
         result = []
-        parsed_expr = base.parse(text=text, keep_source=True) 
+        parsed_expr = base.parse(text=text, keep_source=True)
         parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
 
         # Loop through the first level of the AST
@@ -167,17 +168,16 @@ class RExtractor:
 
             # check for matches
             c = str(expr[0])
-            variable = str(expr[1]) 
+            variable = str(expr[1])
 
             # check if assignment. (TODO) is there a better way to check if it is an assignment?
             if not ((c == "<-" or c == "=")):
                 continue
-            
+
             result.append(variable)
         return result
 
-
-    def __extract_cell_undefined(self, cell_source): 
+    def __extract_cell_undefined(self, cell_source):
         undef_vars = set()
 
         # Approach 1: get all vars and substract the ones with the approach as in 
@@ -213,12 +213,13 @@ class RExtractor:
                 confs_in_assignment[conf_name] = conf
         for conf_name in configurations:
             for confs_in_assignment_name in confs_in_assignment:
-                if conf_name in confs_in_assignment[confs_in_assignment_name] and conf_name not in resolved_configurations:
+                if conf_name in confs_in_assignment[
+                    confs_in_assignment_name] and conf_name not in resolved_configurations:
                     replace_value = configurations[conf_name].split('=')[1]
                     if confs_in_assignment_name in resolved_configurations:
-                        new_value = resolved_configurations[confs_in_assignment_name].replace(conf_name,replace_value)
+                        new_value = resolved_configurations[confs_in_assignment_name].replace(conf_name, replace_value)
                     else:
-                        new_value = confs_in_assignment[confs_in_assignment_name].replace(conf_name,replace_value)
+                        new_value = confs_in_assignment[confs_in_assignment_name].replace(conf_name, replace_value)
                     resolved_configurations[confs_in_assignment_name] = new_value
         configurations.update(resolved_configurations)
         return configurations

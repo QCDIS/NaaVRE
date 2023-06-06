@@ -23,6 +23,7 @@ class Cell:
     node_id: str
     container_source: str
     global_conf: dict
+    kernel: str
 
     def __init__(
             self,
@@ -37,6 +38,7 @@ class Cell:
             container_source,
             chart_obj=None,
             node_id='',
+            kernel=''
     ) -> None:
 
         self.title = title.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
@@ -53,6 +55,7 @@ class Cell:
         self.chart_obj = chart_obj
         self.node_id = node_id
         self.container_source = container_source
+        self.kernel = kernel
 
     def clean_code(self):
         indices_to_remove = []

@@ -69,9 +69,13 @@ export class CellTracker extends React.Component<IProps, IState> {
     }
 
     allTypesSelected = () => {
+        console.log('allTypesSelected' )
+        for (let key in this.state.typeSelections) {
+            console.log(key + ": " + this.state.typeSelections[key]);
+          }
 
+        console.log('Object.values(this.state.typeSelections).length: '+Object.values(this.state.typeSelections).length)
         if (Object.values(this.state.typeSelections).length > 0) {
-
             return (
                 Object.values(this.state.typeSelections).reduce(
                     (prev, curr) => {
@@ -96,7 +100,7 @@ export class CellTracker extends React.Component<IProps, IState> {
 
         let currTypeSelections = this.state.typeSelections
         currTypeSelections[port] = true
-
+        console.log('currTypeSelections: '+currTypeSelections)
         this.setState({
             typeSelections: currTypeSelections
         })
@@ -110,7 +114,6 @@ export class CellTracker extends React.Component<IProps, IState> {
             }),
             method: 'POST'
         });
-        
         this.setState({ baseImageSelected: true });
     };
 
@@ -142,7 +145,11 @@ export class CellTracker extends React.Component<IProps, IState> {
             this.state.currentCell.params.forEach((el: string) => {
                 typeSelections[el] = false
             })
-    
+            console.log('containerizer/extract typeSelections: '+typeSelections)  
+
+            for (let key in typeSelections) {
+                console.log(key + ": " + typeSelections[key]);
+            }
             this.setState({ typeSelections: typeSelections })
     
             this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);

@@ -27,7 +27,18 @@ from notebook.base.handlers import APIHandler
 from tornado import web
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+
+# Create a formatter for the log messages
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# Add the formatter to the handler
+handler.setFormatter(formatter)
+
+# Add the handler to the logger
+logger.addHandler(handler)
 
 github_url_repos = 'https://api.github.com/repos'
 github_workflow_file_name = 'build-push-docker.yml'
@@ -53,13 +64,15 @@ class ExtractorHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        print(json.dumps(payload))
+        logger.debug('ExtractorHandler. payload: ' + str(payload))
+        print('ExtractorHandler. payload: '+ str(payload))
         kernel = payload['kernel']
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
 
         # extractor based on the kernel
         extractor = None
+        print('ExtractorHandler. kernel:'+ kernel)
         if kernel == "IRkernel":
             extractor = RExtractor(notebook)
         else:
@@ -72,8 +85,9 @@ class ExtractorHandler(APIHandler, Catalog):
             '_', '-').replace('(', '-').replace(')', '-').strip() if title and title[0] == "#" else "Untitled"
 
         if 'JUPYTERHUB_USER' in os.environ:
-            title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                     '-at-').strip()
+            title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace(
+                '.', '-').replace('@',
+                                  '-at-').strip()
 
         ins = []
         outs = []
@@ -101,7 +115,8 @@ class ExtractorHandler(APIHandler, Catalog):
             params=params,
             confs=confs,
             dependencies=dependencies,
-            container_source=""
+            container_source="",
+            kernel=kernel
         )
         if notebook.cells[cell_index].cell_type == 'code':
             cell.integrate_configuration()
@@ -130,19 +145,18 @@ class ExtractorHandler(APIHandler, Catalog):
         }
 
         cell.chart_obj = chart
-
         Catalog.editor_buffer = copy.deepcopy(cell)
-
         self.write(cell.toJSON())
-
         self.flush()
 
 
 class TypesHandler(APIHandler, Catalog):
+    logger = logging.getLogger(__name__)
 
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
+        logger.debug('TypesHandler. payload: ' + str(payload))
         port = payload['port']
         p_type = payload['type']
         cell = Catalog.editor_buffer
@@ -150,10 +164,12 @@ class TypesHandler(APIHandler, Catalog):
 
 
 class BaseImageHandler(APIHandler, Catalog):
+    logger = logging.getLogger(__name__)
 
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
+        logger.debug('BaseImageHandler. payload: ' + str(payload))
         base_image = payload['image']
         cell = Catalog.editor_buffer
         cell.base_image = base_image
@@ -177,6 +193,7 @@ def find_job(wf_id=None, owner=None, repository_name=None, token=None, job_id=No
             if job['name'] == wf_id:
                 return job
     return None
+
 
 class CellsHandler(APIHandler, Catalog):
     logger = logging.getLogger(__name__)
@@ -230,7 +247,7 @@ class CellsHandler(APIHandler, Catalog):
                     os.remove(path)
         else:
             os.mkdir(cell_path)
-            
+
         registry_credentials = Catalog.get_registry_credentials()
         if not registry_credentials or len(registry_credentials) <= 0:
             self.set_status(400)

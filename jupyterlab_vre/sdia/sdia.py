@@ -20,10 +20,7 @@ class SDIA:
 
     @staticmethod
     def provision(credentials: SDIACredentials, template_id):
-
         provision_path = credentials['endpoint'] + 'orchestrator/provisioner/provision/' + template_id
-        print(provision_path)
-
         try:
 
             return requests.get(

@@ -1,5 +1,6 @@
 import os
 
+
 # TODO: create an interface for other programming languages
 
 def get_type(value):
@@ -11,6 +12,7 @@ def get_type(value):
         return "numeric"
     else:
         raise ValueError("Not a valid type")
+
 
 class Rcontainerizer:
 
@@ -41,15 +43,15 @@ class Rcontainerizer:
                 'path': dockerfile_file_path}
         }
 
-    @staticmethod 
+    @staticmethod
     def build_templates(cell=None, files_info=None):
-  
+
         # create the source code file
         with open(files_info['cell']['path'], "w") as file:
             file.write("setwd('/app') \n\n")
 
             # we also want to always add the id to the input parameters
-            inputs = cell.inputs 
+            inputs = cell.inputs
             types = cell.types
             inputs.append('id')
             types['id'] = 'str'
@@ -65,12 +67,14 @@ class Rcontainerizer:
 
             for i, (value) in enumerate(inputs):
                 my_type = get_type(types[value])
-                file.write('''\t make_option(c("--{}"), action="store", default=NA, type='{}', help="my description")'''.format(value, my_type)) # https://gist.github.com/ericminikel/8428297
-                
+                file.write(
+                    '''\t make_option(c("--{}"), action="store", default=NA, type='{}', help="my description")'''.format(
+                        value, my_type))  # https://gist.github.com/ericminikel/8428297
+
                 if i != len(inputs) - 1:
                     file.write(",")
                 file.write("\n")
-            
+
             # TODO: in the jinja template this step is also repeated for params, but in my script it seems that params are already included in the inputs?
 
             file.write(")\n\n")
@@ -89,9 +93,10 @@ class Rcontainerizer:
 
             # check that the fields are set
             file.write("# check if the fields are set \n")
-            for value in inputs: 
+            for value in inputs:
                 file.write("if(is.na({})){{ \n".format(value))
-                file.write("   stop('the `{}` parameter is not correctly set. See script usage (--help)') \n".format(value))
+                file.write(
+                    "   stop('the `{}` parameter is not correctly set. See script usage (--help)') \n".format(value))
                 file.write("}\n")
             file.write("\n")
 
@@ -100,7 +105,7 @@ class Rcontainerizer:
             file.write(original_source)
 
             # outputs
-            outputs = cell.outputs # TODO: retrieve this dynamically
+            outputs = cell.outputs  # TODO: retrieve this dynamically
 
             if len(outputs) > 0:
                 file.write("\n\n# capturing outputs \n")
@@ -111,10 +116,10 @@ class Rcontainerizer:
 
         # create the Dockerfile
         with open(files_info['dockerfile']['path'], "w") as file:
-            
+
             # Step 1: base image.
             file.write("FROM {}\n\n".format(cell.base_image))
-            file.write("USER root \n\n") # in case of this image, we need root permissions
+            file.write("USER root \n\n")  # in case of this image, we need root permissions
 
             # Step 2: install dependencies. for now, a naive way
             dependencies = cell.dependencies
@@ -123,9 +128,9 @@ class Rcontainerizer:
             })
 
             for dep in dependencies:
-                file.write('''RUN R -e "install.packages('{}', repos='http://cran.rstudio.com')" \n'''.format(dep['name']))
+                file.write(
+                    '''RUN R -e "install.packages('{}', repos='http://cran.rstudio.com')" \n'''.format(dep['name']))
             file.write("\n")
 
             file.write("RUN mkdir -p /app \n")
             file.write("COPY {} /app".format(files_info['cell']['file_name']))
-
