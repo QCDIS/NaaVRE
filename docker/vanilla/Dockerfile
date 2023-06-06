@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3:22.11.1 AS naavre-build
+FROM continuumio/miniconda3:23.3.1-0 AS naavre-build
 
 RUN conda install -c conda-forge conda-pack mamba
 COPY naa-vre-environment.yaml .
@@ -23,6 +23,8 @@ RUN source /venv/bin/activate
 RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
+RUN  conda install -c conda-forge r-irkernel
+
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
 COPY ./repo_utils /tmp/repo_utils
@@ -43,4 +45,5 @@ RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
 
 RUN jupyter lab build --debug;
+
 cmd ["/usr/local/bin/start-jupyter-venv.sh"]
