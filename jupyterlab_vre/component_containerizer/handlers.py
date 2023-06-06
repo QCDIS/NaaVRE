@@ -211,6 +211,10 @@ class CellsHandler(APIHandler, Catalog):
         current_cell.clean_title()
         current_cell.clean_task_name()
 
+        print('--------------------------------------')
+        print('current_cell: ' + current_cell.toJSON())
+        print('--------------------------------------')
+
         all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
         for parm_name in all_vars:
             if parm_name not in current_cell.types:

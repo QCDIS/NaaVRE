@@ -105,7 +105,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
             # json_response = json.loads(response.body.decode('utf-8'))
             # self.assertIsNotNone(json_response)
 
-
     def test_search_rating_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
@@ -139,7 +138,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 test_cell = Cell(cell['title'], cell['task_name'], cell['original_source'], cell['inputs'],
                                  cell['outputs'],
                                  cell['params'], cell['confs'], cell['dependencies'], cell['container_source'],
-                                 cell['chart_obj'], cell['node_id'])
+                                 cell['chart_obj'], cell['node_id'], cell['kernel'])
                 test_cell.types = cell['types']
                 test_cell.base_image = cell['base_image']
                 Catalog.editor_buffer = test_cell
@@ -189,7 +188,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
         argo_workflow_path = os.path.join(base_path, 'workflows/argo_workflow2.json')
         self.submit_workflow(argo_workflow_path)
 
-    def submit_workflow(self,argo_workflow_path):
+    def submit_workflow(self, argo_workflow_path):
         ago_ns = 'argo'
         self.assertIsNotNone(os.getenv('ARGO_URL'), 'ARGO_URL not set')
         ARGO_API_URL = os.getenv('ARGO_URL') + '/api/v1/workflows/' + ago_ns
