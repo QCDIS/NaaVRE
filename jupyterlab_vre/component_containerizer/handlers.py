@@ -268,17 +268,23 @@ class CellsHandler(APIHandler, Catalog):
             return
         image_repo = registry_url.split(
             'https://hub.docker.com/u/')[1]
-        # extractor based on the kernel
-        files_info = None
+
+        if not image_repo:
+            self.set_status(400)
+            self.write_error('Registry not found')
+            logger.error('Registry not found')
+            self.flush()
+            return
+
         if current_cell.kernel == "IRkernel":
             files_info = Rcontainerizer.get_files_info(cell=current_cell, image_repo=image_repo, cells_path=cells_path)
             Rcontainerizer.build_templates(cell=current_cell, files_info=files_info)
-        # elif 'python' in current_cell.kernel.lower() :
-        #     files_info = get_files_info(cell=current_cell, image_repo=image_repo)
-        #     build_templates(cell=current_cell, files_info=files_info)
+        elif current_cell.kernel.lower() == 'ipython':
+            files_info = get_files_info(cell=current_cell, image_repo=image_repo)
+            build_templates(cell=current_cell, files_info=files_info)
         else:
             self.set_status(400)
-            self.write_error('Kernel: '+current_cell.kernel +' not supported')
+            self.write_error('Kernel: ' + current_cell.kernel +' not supported')
             logger.error('Kernel: '+current_cell.kernel +' not supported')
             self.flush()
             return
