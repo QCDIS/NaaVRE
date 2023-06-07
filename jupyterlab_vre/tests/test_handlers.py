@@ -164,7 +164,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     'https://github.com/')[1].split('/')[1]
                 if '.git' in repository_name:
                     repository_name = repository_name.split('.git')[0]
-
                 sleep(200)
                 job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token, job_id=None)
                 self.assertIsNotNone(job, 'Job not found')
