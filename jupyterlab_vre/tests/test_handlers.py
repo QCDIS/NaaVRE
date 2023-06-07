@@ -43,6 +43,7 @@ def delete_text(file_path, text_to_delete):
     with open(file_path, 'w') as file:
         file.writelines(updated_lines)
 
+
 def delete_all_cells():
     for cell in Catalog.get_all_cells():
         print(cell)
@@ -162,20 +163,23 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
                 if test_cell.kernel == 'python3':
                     cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
+                    exec_args = [sys.executable, cell_path] + cell['example_inputs']
+                    cell_exec = subprocess.Popen(exec_args,
+                                                 stdout=subprocess.PIPE)
+                    print('---------------------------------------------------')
+                    text = cell_exec.communicate()[0]
+                    print(text)
+                    print("stdout:", cell_exec.stdout)
+                    print("stderr:", cell_exec.stderr)
+                    print("return code:", cell_exec.returncode)
+                    print('---------------------------------------------------')
+                    self.assertEqual(0, cell_exec.returncode, text)
                 elif test_cell.kernel == 'IRkernel':
-                    cell_path = os.path.join('Rscript '+cells_path, test_cell.task_name, test_cell.task_name + '.R')
+                    cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.R')
                     delete_text(cell_path, 'setwd(\'/app\')')
-                exec_args = [sys.executable, cell_path] + cell['example_inputs']
-                cell_exec = subprocess.Popen(exec_args,
-                                             stdout=subprocess.PIPE)
-                print('---------------------------------------------------')
-                text = cell_exec.communicate()[0]
-                print(text)
-                print("stdout:", cell_exec.stdout)
-                print("stderr:", cell_exec.stderr)
-                print("returncode:", cell_exec.returncode)
-                print('---------------------------------------------------')
-                self.assertEqual(0, cell_exec.returncode, text)
+                    subprocess.call(['Rscript', cell_path])
+
+
                 cat_repositories = Catalog.get_repositories()
                 repo_token = cat_repositories[0]['token']
                 owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
