@@ -163,7 +163,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 if test_cell.kernel == 'python3':
                     cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
                 elif test_cell.kernel == 'IRkernel':
-                    cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.R')
+                    cell_path = os.path.join('Rscript '+cells_path, test_cell.task_name, test_cell.task_name + '.R')
                     delete_text(cell_path, 'setwd(\'/app\')')
                 exec_args = [sys.executable, cell_path] + cell['example_inputs']
                 cell_exec = subprocess.Popen(exec_args,
