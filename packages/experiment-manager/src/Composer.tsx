@@ -109,8 +109,12 @@ export class Composer extends React.Component<IProps, IState> {
 
 	exportWorkflow = async () => {
 		try {
+			const kernel = "IRkernel" // TODO: do not hardcode this
 			let resp = await requestAPI<any>('expmanager/export', {
-				body: JSON.stringify(this.state.chart),
+				body: JSON.stringify({
+					...this.state.chart,
+					kernel
+				}),
 				method: 'POST'
 			});
 			console.log(resp);
