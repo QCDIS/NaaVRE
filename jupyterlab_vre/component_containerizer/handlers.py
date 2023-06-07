@@ -53,7 +53,6 @@ class ExtractorHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        print(json.dumps(payload))
         kernel = payload['kernel']
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
@@ -261,7 +260,6 @@ class CellsHandler(APIHandler, Catalog):
             files_info = get_files_info(cell=current_cell, image_repo=image_repo) 
             build_templates(cell=current_cell, files_info=files_info)
 
-        # upload to GIT
         cat_repositories = Catalog.get_repositories()
 
         repo_token = cat_repositories[0]['token']
@@ -311,7 +309,6 @@ class CellsHandler(APIHandler, Catalog):
         elif commit.totalCount <= 0:
             create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
                                       files_info=files_info)
-        
         wf_id = str(uuid.uuid4())
         resp = dispatch_github_workflow(
             owner,
