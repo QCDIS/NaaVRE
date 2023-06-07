@@ -24,8 +24,6 @@ class ExportWorkflowHandler(APIHandler):
         links = payload['links']
         kernel = payload['kernel']
 
-        print("My payload: ", payload)
-
         try:
             parser = WorkflowParser(nodes, links)
         except Exception as e:
