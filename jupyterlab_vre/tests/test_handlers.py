@@ -145,7 +145,15 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
                 self.assertEqual(200, response.code)
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
-                cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
+                if test_cell['kernel'] == 'python3':
+                    cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
+                elif test_cell['kernel'] == 'IRkernel':
+                    cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.R')
+                input_args = ''
+                for input_arg in test_cell.inputs:
+                    input_args += input['name'] + ' '
+                print('---------------------------------------------------')
+                print('input_args : ' + input_args)
 
                 cell_exec = subprocess.Popen([sys.executable, cell_path, '--id', '0', '--split_laz_files', '[file]'],
                                              stdout=subprocess.PIPE)
