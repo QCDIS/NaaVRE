@@ -38,4 +38,5 @@ dependencies:
   - r
   - r-irkernel
   - pandas
+  - rpy2
   - pip:
