@@ -149,7 +149,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
                 elif test_cell.kernel == 'IRkernel':
                     cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.R')
-                exec_args = [sys.executable, cell_path, '--id', '0', '--split_laz_files', '[file]'] + cell['example_inputs']
+                exec_args = [sys.executable, cell_path] + cell['example_inputs']
                 cell_exec = subprocess.Popen(exec_args,
                                              stdout=subprocess.PIPE)
                 print('---------------------------------------------------')
