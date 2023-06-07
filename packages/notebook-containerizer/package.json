@@ -35,7 +35,7 @@
         "@jupyterlab/notebook": "~3.6.1"
     },
     "devDependencies": {
-        "@types/node": "^18.15.0",
+        "@types/node": "^20.2.5",
         "rimraf": "^5.0.0",
         "typescript": "~5.0.2"
     },
