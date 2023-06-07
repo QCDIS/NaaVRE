@@ -1,5 +1,6 @@
 import subprocess
 
+
 # Step 1: get all dependencies that are not installed in the base image
 def dependencies_not_in_dockerimage(image, packages):
     result = []
@@ -10,6 +11,7 @@ def dependencies_not_in_dockerimage(image, packages):
         except Exception as e:
             result.append(package)
     return result
+
 
 # Step 2: get all dependencies that are necessary to run the script succesfully
 def dependencies_to_be_installed(image, packages, code):
@@ -27,8 +29,8 @@ def dependencies_to_be_installed(image, packages, code):
             result.append(package)
     return result
 
-def minimal_set_dependencies(base_image, user_container, packages, code):
 
+def minimal_set_dependencies(base_image, user_container, packages, code):
     # Step 1
     candidate_packages = dependencies_not_in_dockerimage(base_image, packages)
     print("Candidate images: ", candidate_packages)
@@ -37,6 +39,7 @@ def minimal_set_dependencies(base_image, user_container, packages, code):
     result = dependencies_to_be_installed(user_container, candidate_packages, code)
     print("Minimal set: ", result)
     return result
+
 
 minimal_set_dependencies(
     "f3533c4dbecb",
