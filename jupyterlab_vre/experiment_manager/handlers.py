@@ -22,6 +22,7 @@ class ExportWorkflowHandler(APIHandler):
         payload = self.get_json_body()
         nodes = payload['nodes']
         links = payload['links']
+        kernel = payload['kernel']
 
         try:
             parser = WorkflowParser(nodes, links)
@@ -56,7 +57,15 @@ class ExportWorkflowHandler(APIHandler):
         loader = PackageLoader('jupyterlab_vre', 'templates')
         template_env = Environment(
             loader=loader, trim_blocks=True, lstrip_blocks=True)
-        template = template_env.get_template('workflow_template_v2.jinja2')
+
+        # Correct template depends on the kernel
+        template = None
+        if kernel == "IRkernel":
+            template = template_env.get_template('workflow_template_v2-r.jinja2')
+        else: # We assume that python is here
+            template = template_env.get_template('workflow_template_v2.jinja2')
+        
+        print("My deps dag: ", deps_dag)
         if cell:
             if 'JUPYTERHUB_USER' in os.environ:
                 workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(',

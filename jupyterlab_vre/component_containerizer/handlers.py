@@ -289,7 +289,7 @@ class CellsHandler(APIHandler, Catalog):
             self.flush()
             return
 
-
+        # upload to GIT
         cat_repositories = Catalog.get_repositories()
 
         repo_token = cat_repositories[0]['token']
@@ -328,6 +328,7 @@ class CellsHandler(APIHandler, Catalog):
             return
 
         commit = gh_repository.get_commits(path=current_cell.task_name)
+        print("We are here2..........")
         if commit.totalCount > 0:
             try:
                 update_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
