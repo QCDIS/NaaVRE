@@ -135,6 +135,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 with open(cell_path, 'r') as file:
                     cell = json.load(file)
                 file.close()
+
                 test_cell = Cell(cell['title'], cell['task_name'], cell['original_source'], cell['inputs'],
                                  cell['outputs'],
                                  cell['params'], cell['confs'], cell['dependencies'], cell['container_source'],
