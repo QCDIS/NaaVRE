@@ -17,7 +17,7 @@ base = importr('base')
 
 class RExtractor:
     sources: list
-    imports: list
+    imports: set
     configurations: dict
     global_params: set
     undefined: set

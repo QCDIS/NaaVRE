@@ -181,7 +181,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     run_local_cell_path = os.path.join(cells_path, test_cell.task_name, 'run_local.R')
                     shutil.copy(cell_path, run_local_cell_path)
                     delete_text(run_local_cell_path, 'setwd(\'/app\')')
-                    command = 'Rscript ' + run_local_cell_path + ' ' + cell['example_inputs']
+                    example_inputs = ' '.join(cell['example_inputs'])
+                    command = 'Rscript ' + run_local_cell_path + ' ' + example_inputs
                     result = subprocess.run(shlex.split(command), capture_output=True, text=True)
                     self.assertEqual(0, result.returncode, text)
 
