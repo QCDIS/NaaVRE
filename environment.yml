@@ -36,4 +36,5 @@ dependencies:
   - pathlib2
   - pip
   - r
+  - r-irkernel
   - pip:
