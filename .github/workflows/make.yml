@@ -7,7 +7,7 @@ on:
 
 jobs:
   call-pytest:
-    uses: QCDIS/NaaVRE/.github/workflows/python-package-conda.yml@main
+    uses: QCDIS/NaaVRE/.github/workflows/python-package-conda.yml@r-script
     secrets:
       jupyterhub_user: ${{ secrets.JUPYTERHUB_USER }}
       vlab_slug: ${{ secrets.VLAB_SLUG }}
