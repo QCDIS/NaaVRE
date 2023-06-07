@@ -1,6 +1,8 @@
 import json
 import json
 import os
+import shlex
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -176,9 +178,12 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     self.assertEqual(0, cell_exec.returncode, text)
                 elif test_cell.kernel == 'IRkernel':
                     cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.R')
-                    delete_text(cell_path, 'setwd(\'/app\')')
-                    subprocess.call(['Rscript', cell_path])
-
+                    run_local_cell_path = os.path.join(cells_path, test_cell.task_name, 'run_local.R')
+                    shutil.copy(cell_path, run_local_cell_path)
+                    delete_text(run_local_cell_path, 'setwd(\'/app\')')
+                    command = 'Rscript ' + run_local_cell_path + ' ' + cell['example_inputs']
+                    result = subprocess.run(shlex.split(command), capture_output=True, text=True)
+                    self.assertEqual(0, result.returncode, text)
 
                 cat_repositories = Catalog.get_repositories()
                 repo_token = cat_repositories[0]['token']
