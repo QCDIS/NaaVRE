@@ -18,7 +18,8 @@
     "node_id": "fe8b944",
     "types": {"split_laz_files": "list", "retiler_output": "str"},
     "base_image": "qcdis/miniconda3-pdal",
-    "kernel": "python3"
+    "kernel": "python3",
+    "example_inputs": ["--id", "0", "--split_laz_files", "[file]"]
 }
 
 

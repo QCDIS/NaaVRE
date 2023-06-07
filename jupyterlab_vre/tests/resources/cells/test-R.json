@@ -29,7 +29,7 @@
                 "properties": {
                     "deps": [],
                     "inputs": [
-                        "numbers"
+                        "inputs"
                     ],
                     "og_node_id": "3e02fbc",
                     "outputs": [
@@ -80,5 +80,6 @@
     "types": {
         "average": "float",
         "numbers": "list"
-    }
+    },
+    "example_inputs": ["--id", "0", "--numbers", "[1,2, 3, 4, 5]"]
 }
