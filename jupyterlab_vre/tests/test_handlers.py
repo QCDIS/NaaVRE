@@ -101,6 +101,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
         with mock.patch.object(NotebookSearchHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
             payload = {'keyword': 'explosion'}
+
             # response = self.fetch('/notebooksearch', method='POST', body=json.dumps(payload))
             # json_response = json.loads(response.body.decode('utf-8'))
             # self.assertIsNotNone(json_response)

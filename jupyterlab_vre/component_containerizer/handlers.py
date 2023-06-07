@@ -280,7 +280,6 @@ class CellsHandler(APIHandler, Catalog):
             return
 
         commit = gh_repository.get_commits(path=current_cell.task_name)
-
         if commit.totalCount > 0:
             try:
                 update_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
