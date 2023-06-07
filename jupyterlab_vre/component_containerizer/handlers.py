@@ -279,7 +279,7 @@ class CellsHandler(APIHandler, Catalog):
         if current_cell.kernel == "IRkernel":
             files_info = Rcontainerizer.get_files_info(cell=current_cell, image_repo=image_repo, cells_path=cells_path)
             Rcontainerizer.build_templates(cell=current_cell, files_info=files_info)
-        elif current_cell.kernel.lower() == 'ipython':
+        elif 'python' in current_cell.kernel.lower():
             files_info = get_files_info(cell=current_cell, image_repo=image_repo)
             build_templates(cell=current_cell, files_info=files_info)
         else:
