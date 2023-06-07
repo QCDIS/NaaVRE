@@ -512,7 +512,7 @@ def build_templates(cell=None, files_info=None):
     template_env = Environment(
         loader=loader, trim_blocks=True, lstrip_blocks=True)
 
-    template_cell = template_env.get_template('cell_template.jinja2')
+    template_cell = template_env.get_template('py_cell_template.jinja2')
     template_dockerfile = template_env.get_template(
         'dockerfile_template_conda.jinja2')
     template_conda = template_env.get_template('conda_env_template.jinja2')

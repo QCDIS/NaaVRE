@@ -1,4 +1,6 @@
 import os
+import logging
+from jinja2 import Environment, PackageLoader
 
 
 # TODO: create an interface for other programming languages
@@ -12,6 +14,21 @@ def get_type(value):
         return "numeric"
     else:
         raise ValueError("Not a valid type")
+
+
+logger = logging.getLogger(__name__)
+
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+
+# Create a formatter for the log messages
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# Add the formatter to the handler
+handler.setFormatter(formatter)
+
+# Add the handler to the logger
+logger.addHandler(handler)
 
 
 class Rcontainerizer:
@@ -45,92 +62,36 @@ class Rcontainerizer:
 
     @staticmethod
     def build_templates(cell=None, files_info=None):
+        # we also want to always add the id to the input parameters
+        inputs = cell.inputs
+        types = cell.types
+        inputs.append('id')
+        types['id'] = 'str'
+        logger.debug("inputs: " + str(cell.inputs))
+        logger.debug("types: " + str(cell.types))
+        logger.debug("params: " + str(cell.params))
+        logger.debug("outputs: " + str(cell.outputs))
 
-        # create the source code file
-        with open(files_info['cell']['path'], "w") as file:
-            file.write("setwd('/app') \n\n")
+        logger.debug('files_info: ' + str(files_info))
+        logger.debug('cell.dependencies: ' + str(cell.dependencies))
 
-            # we also want to always add the id to the input parameters
-            inputs = cell.inputs
-            types = cell.types
-            inputs.append('id')
-            types['id'] = 'str'
-            print("inputs: ", cell.inputs)
-            print("types: ", cell.types)
-            print("outpus ", cell.outputs)
+        loader = PackageLoader('jupyterlab_vre', 'templates')
+        template_env = Environment(
+            loader=loader, trim_blocks=True, lstrip_blocks=True)
 
-            # we should dynamically add this value to the script
-            # this is done using the 'optparse' library, which does something similar as in the Python script
-            file.write("# retrieve input parameters\n")
-            file.write("library(optparse) \n")
-            file.write("option_list = list( \n")
+        template_cell = template_env.get_template('R_cell_template.jinja2')
+        template_dockerfile = template_env.get_template(
+            'dockerfile_template_conda.jinja2')
 
-            for i, (value) in enumerate(inputs):
-                my_type = get_type(types[value])
-                file.write(
-                    '''\t make_option(c("--{}"), action="store", default=NA, type='{}', help="my description")'''.format(
-                        value, my_type))  # https://gist.github.com/ericminikel/8428297
+        compiled_code = template_cell.render(cell=cell, deps=cell.generate_dependencies(), types=cell.types,
+                                             confs=cell.generate_configuration())
+        cell.container_source = compiled_code
 
-                if i != len(inputs) - 1:
-                    file.write(",")
-                file.write("\n")
-
-            # TODO: in the jinja template this step is also repeated for params, but in my script it seems that params are already included in the inputs?
-
-            file.write(")\n\n")
-            file.write("# set input parameters accordingly \n")
-            file.write("opt = parse_args(OptionParser(option_list=option_list)) \n")
-
-            # replace inputs
-            file.write("library(jsonlite) \n")
-            original_source = cell.original_source
-            for value in inputs:
-                if types[value] == "list":
-                    file.write('''{} = fromJSON(opt${}) \n'''.format(value, value))
-                else:
-                    file.write('''{} = opt${} \n'''.format(value, value))
-            file.write("\n")
-
-            # check that the fields are set
-            file.write("# check if the fields are set \n")
-            for value in inputs:
-                file.write("if(is.na({})){{ \n".format(value))
-                file.write(
-                    "   stop('the `{}` parameter is not correctly set. See script usage (--help)') \n".format(value))
-                file.write("}\n")
-            file.write("\n")
-
-            # print source
-            file.write("# source code \n")
-            file.write(original_source)
-
-            # outputs
-            outputs = cell.outputs  # TODO: retrieve this dynamically
-
-            if len(outputs) > 0:
-                file.write("\n\n# capturing outputs \n")
-                for out in outputs:
-                    file.write("file <- file(paste0('/tmp/{}_', id, '.json')) \n".format(out))
-                    file.write("writeLines(toJSON({}, auto_unbox=TRUE), file) \n".format(out))
-                    file.write("close(file) \n")
-
-        # create the Dockerfile
-        with open(files_info['dockerfile']['path'], "w") as file:
-
-            # Step 1: base image.
-            file.write("FROM {}\n\n".format(cell.base_image))
-            file.write("USER root \n\n")  # in case of this image, we need root permissions
-
-            # Step 2: install dependencies. for now, a naive way
-            dependencies = cell.dependencies
-            dependencies.append({
-                "name": "optparse"
-            })
-
-            for dep in dependencies:
-                file.write(
-                    '''RUN R -e "install.packages('{}', repos='http://cran.rstudio.com')" \n'''.format(dep['name']))
-            file.write("\n")
-
-            file.write("RUN mkdir -p /app \n")
-            file.write("COPY {} /app".format(files_info['cell']['file_name']))
+        template_cell.stream(cell=cell, deps=cell.generate_dependencies(), types=cell.types,
+                             confs=cell.generate_configuration()).dump(files_info['cell']['path'])
+        template_dockerfile.stream(task_name=cell.task_name, base_image=cell.base_image).dump(
+            files_info['dockerfile']['path'])
+        # set_conda_deps, set_pip_deps = map_dependencies(dependencies=cell.dependencies)
+        # template_conda = template_env.get_template('conda_env_template.jinja2')
+        # template_conda.stream(base_image=cell.base_image, conda_deps=list(set_conda_deps),
+        #                       pip_deps=list(set_pip_deps)).dump(files_info['environment']['path'])

@@ -28,6 +28,21 @@ elif os.path.exists('jupyterlab_vre/tests/resources/'):
 cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
 
 
+def delete_text(file_path, text_to_delete):
+    # Read the file
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    # Remove the text from each line
+    updated_lines = []
+    for line in lines:
+        updated_line = line.replace(text_to_delete, '')
+        updated_lines.append(updated_line)
+
+    # Write the updated lines to the file
+    with open(file_path, 'w') as file:
+        file.writelines(updated_lines)
+
 def delete_all_cells():
     for cell in Catalog.get_all_cells():
         print(cell)
@@ -149,6 +164,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
                 elif test_cell.kernel == 'IRkernel':
                     cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.R')
+                    delete_text(cell_path, 'setwd(\'/app\')')
                 exec_args = [sys.executable, cell_path] + cell['example_inputs']
                 cell_exec = subprocess.Popen(exec_args,
                                              stdout=subprocess.PIPE)
