@@ -1,7 +1,9 @@
 import os
 from unittest import TestCase
-from github import Github
+
 from jupyterlab_vre.database.database import Catalog
+
+
 # from jupyterlab_vre.storage.catalog import Catalog
 
 

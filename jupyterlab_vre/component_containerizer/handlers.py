@@ -1,4 +1,5 @@
 import copy
+import datetime
 import hashlib
 import importlib
 import json
@@ -7,7 +8,6 @@ import os
 import sys
 import uuid
 from builtins import Exception
-import datetime
 from pathlib import Path
 
 import autopep8
@@ -17,14 +17,15 @@ import requests
 from github import Github
 from github.GithubException import UnknownObjectException
 from jinja2 import Environment, PackageLoader
-from jupyterlab_vre.database.cell import Cell
-from jupyterlab_vre.database.database import Catalog
-from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.services.extractor.extractor import Extractor
-from jupyterlab_vre.services.extractor.Rextractor import RExtractor
-from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
 from notebook.base.handlers import APIHandler
 from tornado import web
+
+from jupyterlab_vre.database.cell import Cell
+from jupyterlab_vre.database.database import Catalog
+from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
+from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
+from jupyterlab_vre.services.extractor.Rextractor import RExtractor
+from jupyterlab_vre.services.extractor.extractor import Extractor
 
 logger = logging.getLogger(__name__)
 
@@ -71,8 +72,6 @@ class ExtractorHandler(APIHandler, Catalog):
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
 
         # extractor based on the kernel
-        extractor = None
-        print('ExtractorHandler. kernel:'+ kernel)
         if kernel == "IRkernel":
             extractor = RExtractor(notebook)
         else:

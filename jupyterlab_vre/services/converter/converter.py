@@ -1,5 +1,7 @@
 import uuid
+
 from colorhash import ColorHash
+
 
 class ConverterReactFlowChart:
 

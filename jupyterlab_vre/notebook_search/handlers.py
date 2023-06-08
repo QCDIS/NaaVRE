@@ -3,12 +3,13 @@ import logging
 import os
 import time
 from builtins import print
+from pathlib import Path
 
 import requests
 from notebook.base.handlers import APIHandler
 from tornado import web
+
 from jupyterlab_vre.database.database import Catalog
-from pathlib import Path
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

@@ -1,11 +1,11 @@
 import json
-import yaml
 import logging
 import os
 
+import requests
+import yaml
 from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
-import requests
 from tornado import web
 
 from jupyterlab_vre.database.database import Catalog

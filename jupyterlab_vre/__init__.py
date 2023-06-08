@@ -1,7 +1,7 @@
-from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
-from ._version import __version__ 
 from notebook.utils import url_path_join
 
+from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
+from ._version import __version__
 from .component_containerizer.handlers import ExtractorHandler, TypesHandler, BaseImageHandler, CellsHandler
 from .experiment_manager.handlers import ExportWorkflowHandler, ExecuteWorkflowHandler
 from .handlers import CatalogGetAllHandler

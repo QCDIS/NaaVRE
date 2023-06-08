@@ -1,13 +1,12 @@
-import re
-import rpy2.robjects.packages as rpackages
-import pandas as pd
-from rpy2.robjects import r
-import tempfile
 import os
-import rpy2.robjects as robjects
-import rpy2.rinterface as rinterface
-from rpy2.robjects.packages import importr
 import re
+import tempfile
+
+import pandas as pd
+import rpy2.rinterface as rinterface
+import rpy2.robjects as robjects
+import rpy2.robjects.packages as rpackages
+from rpy2.robjects.packages import importr
 
 # Load the base R package for parsing and evaluation
 base = importr('base')

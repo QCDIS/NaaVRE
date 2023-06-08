@@ -1,3 +1,4 @@
+import glob
 import json
 import json
 import os
@@ -103,6 +104,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 payload = json.load(read_file)
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
             json_response = json.loads(response.body.decode('utf-8'))
+            self.assertIsNotNone(json_response)
 
     def test_load_module_names_mapping(self):
         load_module_names_mapping()
@@ -124,7 +126,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             # self.assertIsNotNone(json_response)
 
     def test_search_rating_handler(self):
-        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+        with mock.patch.object(NotebookSearchRatingHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
             payload = {"keyword": "math",
                        "notebook": {"docid": "D1089", "name": "student-performance-in-exams", "source": "Kaggle",
@@ -212,6 +214,19 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertEqual('completed', job['status'], 'Job not completed')
                 self.assertEqual('success', job['conclusion'], 'Job not successful')
 
+    def test_extractor_handler(self):
+        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+            m.return_value = 'cookie'
+            notebooks_json_path = os.path.join(base_path, 'notebooks')
+            notebooks_files = glob.glob(os.path.join(notebooks_json_path, "*.json"))
+            for notebook_file in notebooks_files:
+                notebook_path = os.path.join(notebooks_json_path, notebook_file)
+                with open(notebook_path, 'r') as file:
+                    notebook = json.load(file)
+                file.close()
+                response = self.fetch('/extractorhandler', method='POST', body=json.dumps(notebook))
+                self.assertEqual(response.code, 200)
+
     def test_argo_api(self):
         argo_workflow_path = os.path.join(base_path, 'workflows/argo_workflow2.json')
         self.submit_workflow(argo_workflow_path)
@@ -245,3 +260,5 @@ class HandlersAPITest(AsyncHTTPTestCase):
         )
         self.assertEqual(200, resp_detail.status_code, resp_detail.text)
         resp_detail_data = resp_detail.json()
+
+

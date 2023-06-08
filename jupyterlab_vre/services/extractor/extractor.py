@@ -1,6 +1,7 @@
-import re
-from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
 import ast
+import re
+
+from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
 
 
 class Extractor:
