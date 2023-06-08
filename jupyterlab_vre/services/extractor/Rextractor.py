@@ -2,7 +2,6 @@ import os
 import re
 import tempfile
 
-import pandas as pd
 import rpy2.rinterface as rinterface
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
@@ -25,7 +24,7 @@ class RExtractor:
         self.sources = [nbcell.source for nbcell in notebook.cells if
                         nbcell.cell_type == 'code' and len(nbcell.source) > 0]
 
-        self.imports = self.__extract_imports(self.sources)
+        self.imports = set()  #self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
         self.global_params = self.__extract_params(self.sources)
         self.undefined = set()
@@ -50,7 +49,7 @@ class RExtractor:
                 tmp_file.flush()
                 renv = rpackages.importr('renv')
                 function_list = renv.dependencies(tmp_file.name)
-                packages = list(pd.DataFrame(function_list).transpose().iloc[:, 1])
+                packages = [] #list(pd.DataFrame(function_list).transpose().iloc[:, 1])
                 tmp_file.close()
                 os.remove(tmp_file.name)
 

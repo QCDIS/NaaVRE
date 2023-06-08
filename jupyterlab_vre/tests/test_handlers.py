@@ -109,21 +109,13 @@ class HandlersAPITest(AsyncHTTPTestCase):
     def test_load_module_names_mapping(self):
         load_module_names_mapping()
 
-    def test_extractor_handler_MULTIPLY(self):
-        with mock.patch.object(ExportWorkflowHandler, 'get_secure_cookie') as m:
-            m.return_value = 'cookie'
-            workflow_path = os.path.join(base_path, 'notebooks/MULTIPLY_framework_2.json')
-            # with open(workflow_path, 'r') as read_file:
-            #     payload = json.load(read_file)
-            # response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
-
     def test_search_handler(self):
         with mock.patch.object(NotebookSearchHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
             payload = {'keyword': 'explosion'}
-            # response = self.fetch('/notebooksearch', method='POST', body=json.dumps(payload))
-            # json_response = json.loads(response.body.decode('utf-8'))
-            # self.assertIsNotNone(json_response)
+            response = self.fetch('/notebooksearch', method='POST', body=json.dumps(payload))
+            json_response = json.loads(response.body.decode('utf-8'))
+            self.assertIsNotNone(json_response)
 
     def test_search_rating_handler(self):
         with mock.patch.object(NotebookSearchRatingHandler, 'get_secure_cookie') as m:
@@ -220,8 +212,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             notebooks_json_path = os.path.join(base_path, 'notebooks')
             notebooks_files = glob.glob(os.path.join(notebooks_json_path, "*.json"))
             for notebook_file in notebooks_files:
-                notebook_path = os.path.join(notebooks_json_path, notebook_file)
-                with open(notebook_path, 'r') as file:
+                with open(notebook_file, 'r') as file:
                     notebook = json.load(file)
                 file.close()
                 response = self.fetch('/extractorhandler', method='POST', body=json.dumps(notebook))
