@@ -81,5 +81,5 @@
         "average": "float",
         "numbers": "list"
     },
-    "example_inputs": ["--id", "0", "--numbers", "[1,2, 3, 4, 5]"]
+    "example_inputs": ["--id", "0", "--numbers", "\"[1, 2, 3, 4, 5]\""]
 }

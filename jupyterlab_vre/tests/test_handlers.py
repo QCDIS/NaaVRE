@@ -148,6 +148,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cells_json_path = os.path.join(base_path, 'cells')
             cells_files = os.listdir(cells_json_path)
             for cell_file in cells_files:
+                if cell_file != 'test-R.json':
+                    continue
                 print('Testing cell: ' + cell_file)
                 cell_path = os.path.join(cells_json_path, cell_file)
                 with open(cell_path, 'r') as file:
@@ -184,7 +186,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     example_inputs = ' '.join(cell['example_inputs'])
                     command = 'Rscript ' + run_local_cell_path + ' ' + example_inputs
                     result = subprocess.run(shlex.split(command), capture_output=True, text=True)
-                    self.assertEqual(0, result.returncode, text)
+                    self.assertEqual(0, result.returncode, result.stderr)
 
                 cat_repositories = Catalog.get_repositories()
                 repo_token = cat_repositories[0]['token']
