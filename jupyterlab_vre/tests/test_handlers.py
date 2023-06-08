@@ -148,9 +148,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cells_json_path = os.path.join(base_path, 'cells')
             cells_files = os.listdir(cells_json_path)
             for cell_file in cells_files:
-                if cell_file != 'test-R.json':
-                    continue
-                print('Testing cell: ' + cell_file)
                 cell_path = os.path.join(cells_json_path, cell_file)
                 with open(cell_path, 'r') as file:
                     cell = json.load(file)
