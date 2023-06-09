@@ -41,6 +41,7 @@ env:
   SEARCH_API_TOKEN: ${{ secrets.search_api_token }}
   ARGO_URL: ${{ secrets.ARGO_URL }}
   ARGO_API_TOKEN: ${{ secrets.ARGO_API_TOKEN }}
+  ASYNC_TEST_TIMEOUT: 30
 
 
 jobs:
