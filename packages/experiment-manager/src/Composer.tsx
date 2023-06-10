@@ -109,11 +109,9 @@ export class Composer extends React.Component<IProps, IState> {
 
 	exportWorkflow = async () => {
 		try {
-			const kernel = "IRkernel" // TODO: do not hardcode this but dynamically retrieve the kernel
 			let resp = await requestAPI<any>('expmanager/export', {
 				body: JSON.stringify({
-					...this.state.chart,
-					kernel
+					...this.state.chart
 				}),
 				method: 'POST'
 			});

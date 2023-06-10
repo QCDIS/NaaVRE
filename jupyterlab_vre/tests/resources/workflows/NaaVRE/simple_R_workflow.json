@@ -5,11 +5,11 @@
     },
     "scale": 1,
     "nodes": {
-        "c49679af-524e-4e38-94b7-57857e8a0f92": {
-            "id": "c49679af-524e-4e38-94b7-57857e8a0f92",
+        "928eae58-e82d-4a80-906a-1323ede80357": {
+            "id": "928eae58-e82d-4a80-906a-1323ede80357",
             "position": {
-                "x": 534,
-                "y": 145
+                "x": 510,
+                "y": 149
             },
             "orientation": 0,
             "type": "input-output",
@@ -41,7 +41,7 @@
                 "outputs": [
                     "numbers"
                 ],
-                "og_node_id": "89db128",
+                "og_node_id": "0927ec0",
                 "deps": []
             },
             "size": {
@@ -49,11 +49,11 @@
                 "height": 150
             }
         },
-        "a28ef816-bdc5-414b-92d7-2b0a89a3814f": {
-            "id": "a28ef816-bdc5-414b-92d7-2b0a89a3814f",
+        "3eb47f47-3fdb-4f08-9207-d7b2843e801d": {
+            "id": "3eb47f47-3fdb-4f08-9207-d7b2843e801d",
             "position": {
-                "x": 961,
-                "y": 118
+                "x": 908,
+                "y": 135
             },
             "orientation": 0,
             "type": "input-output",
@@ -104,7 +104,7 @@
                 "outputs": [
                     "average"
                 ],
-                "og_node_id": "aa94278",
+                "og_node_id": "6998a68",
                 "deps": []
             },
             "size": {
@@ -114,19 +114,18 @@
         }
     },
     "links": {
-        "503d2d9b-9f15-47e4-8311-dfe64bd4f49d": {
-            "id": "503d2d9b-9f15-47e4-8311-dfe64bd4f49d",
+        "6f1908a4-6149-4f28-a2ab-507e3b25fae0": {
+            "id": "6f1908a4-6149-4f28-a2ab-507e3b25fae0",
             "from": {
-                "nodeId": "c49679af-524e-4e38-94b7-57857e8a0f92",
+                "nodeId": "928eae58-e82d-4a80-906a-1323ede80357",
                 "portId": "numbers"
             },
             "to": {
-                "nodeId": "a28ef816-bdc5-414b-92d7-2b0a89a3814f",
+                "nodeId": "3eb47f47-3fdb-4f08-9207-d7b2843e801d",
                 "portId": "numbers"
             }
         }
     },
     "selected": {},
-    "hovered": {},
-    "kernel": "IRkernel"
+    "hovered": {}
 }

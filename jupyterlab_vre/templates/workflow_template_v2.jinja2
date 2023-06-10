@@ -102,6 +102,7 @@ spec:
         imagePullPolicy: Always
         command: ["/bin/bash", "-c"]
         args:
+        {% if cells[nid]['kernel'] == 'ipython' %}
           - source /venv/bin/activate; python {{ cells[nid]['task_name'] }}.py
             {% for d in deps_dag[nid] %}
             {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
@@ -113,5 +114,18 @@ spec:
             --{{ p }}{{ ' "{{workflow.parameters.' }}{{ p }}{{ '}}"' }}
             {% endfor %}
             --id {{'"'}}{{cells[nid]['node_id']}}{{'"'}}{{";"}}
+        {% elif cells[nid]['kernel'] == 'IRkernel' %}
+          - Rscript /app/{{ cells[nid]['task_name'] }}.R
+            {% for d in deps_dag[nid] %}
+            {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
+            {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}
+            {% set stdinname_base = stdinname.split('_')[0] %}
+            --{{ stdinname_base }}{{ ' "{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}"' }}
+            {% endfor %}
+            {% for p in params %}
+            --{{ p }}{{ ' "{{workflow.parameters.' }}{{ p }}{{ '}}"' }}
+            {% endfor %}
+            --id {{'"'}}{{cells[nid]['node_id']}}{{'"'}}{{";"}}
+        {% endif %}
       {% endif %}
     {% endfor %}

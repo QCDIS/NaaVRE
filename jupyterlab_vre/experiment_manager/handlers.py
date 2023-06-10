@@ -22,7 +22,6 @@ class ExportWorkflowHandler(APIHandler):
         payload = self.get_json_body()
         nodes = payload['nodes']
         links = payload['links']
-        kernel = payload['kernel']
 
         try:
             parser = WorkflowParser(nodes, links)
@@ -57,18 +56,7 @@ class ExportWorkflowHandler(APIHandler):
         loader = PackageLoader('jupyterlab_vre', 'templates')
         template_env = Environment(
             loader=loader, trim_blocks=True, lstrip_blocks=True)
-
-        if kernel == "IRkernel":
-            template = template_env.get_template('workflow_template_v2-r.jinja2')
-        elif 'python' in kernel.lower():
-            template = template_env.get_template('workflow_template_v2.jinja2')
-        else: # We assume that python is here
-            self.set_status(400)
-            self.write_error('Kernel: ' + kernel + ' not supported')
-            logger.error('Kernel: ' + kernel + ' not supported')
-            self.flush()
-            return
-
+        template = template_env.get_template('workflow_template_v2.jinja2')
         if cell:
             if 'JUPYTERHUB_USER' in os.environ:
                 workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(',
@@ -95,10 +83,7 @@ class ExecuteWorkflowHandler(APIHandler):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-        print('-----------------ExecuteWorkflowHandler---------------------')
         payload = self.get_json_body()
-        print(json.dumps(payload, indent=4))
-        print('-------------------------------------------------------------')
         chart = payload['chart']
         params = payload['params']
         kernel = payload['kernel']
