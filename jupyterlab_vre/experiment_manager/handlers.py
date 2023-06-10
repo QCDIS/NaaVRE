@@ -153,7 +153,8 @@ class ExecuteWorkflowHandler(APIHandler):
         image_repo = registry_credentials[0]['url'].split(
             'https://hub.docker.com/u/')[1]
         loader = PackageLoader('jupyterlab_vre', 'templates')
-
+        template_env = Environment(
+            loader=loader, trim_blocks=True, lstrip_blocks=True)
         if kernel == "IRkernel":
             template = template_env.get_template('workflow_template_v2-r.jinja2')
         elif 'python' in kernel.lower():
