@@ -90,17 +90,24 @@ class HandlersAPITest(AsyncHTTPTestCase):
     def test_export_workflow_handler(self):
         with mock.patch.object(ExportWorkflowHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
-            workflow_path = os.path.join(base_path, 'workflows/get_files.json')
-            # with open(workflow_path, 'r') as read_file:
-            #     payload = json.load(read_file)
-            # response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
-            # response.
+            workflow_path = os.path.join(base_path, 'workflows','NaaVRE')
+            workflow_files = os.listdir(workflow_path)
+            for workflow_file in workflow_files:
+                workflow_file_path = os.path.join(workflow_path, workflow_file)
+                with open(workflow_file_path, 'r') as read_file:
+                    payload = json.load(read_file)
+                read_file.close()
+                response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
+                self. assertEqual(response.code, 200)
 
     def test_execute_workflow_handler(self):
+        workflow_path = os.path.join(base_path, 'workflows', 'NaaVRE')
+        workflow_files = os.listdir(workflow_path)
         with mock.patch.object(ExecuteWorkflowHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
-            workflow_path = os.path.join(base_path, 'workflows/simple_workflow.json')
-            with open(workflow_path, 'r') as read_file:
+        for workflow_file in workflow_files:
+            workflow_file_path = os.path.join(workflow_path, workflow_file)
+            with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
             json_response = json.loads(response.body.decode('utf-8'))
@@ -158,7 +165,11 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
                 if test_cell.kernel == 'python3':
                     cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
-                    exec_args = [sys.executable, cell_path] + cell['example_inputs']
+                    if 'example_inputs' in cell:
+                        exec_args = [sys.executable, cell_path] + cell['example_inputs']
+                    else:
+                        exec_args = [sys.executable, cell_path]
+
                     cell_exec = subprocess.Popen(exec_args,
                                                  stdout=subprocess.PIPE)
                     print('---------------------------------------------------')
@@ -174,7 +185,9 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     run_local_cell_path = os.path.join(cells_path, test_cell.task_name, 'run_local.R')
                     shutil.copy(cell_path, run_local_cell_path)
                     delete_text(run_local_cell_path, 'setwd(\'/app\')')
-                    example_inputs = ' '.join(cell['example_inputs'])
+                    example_inputs = ''
+                    if 'example_inputs' in cell:
+                        example_inputs = ' '.join(cell['example_inputs'])
                     command = 'Rscript ' + run_local_cell_path + ' ' + example_inputs
                     result = subprocess.run(shlex.split(command), capture_output=True, text=True)
                     self.assertEqual(0, result.returncode, result.stderr)
@@ -219,8 +232,11 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertEqual(response.code, 200)
 
     def test_argo_api(self):
-        argo_workflow_path = os.path.join(base_path, 'workflows/argo_workflow2.json')
-        self.submit_workflow(argo_workflow_path)
+        argo_workflow_path = os.path.join(base_path, 'workflows', 'argo')
+        argo_workflow_files = os.listdir(argo_workflow_path)
+        for argo_workflow_file in argo_workflow_files:
+            argo_workflow_file_path = os.path.join(argo_workflow_path, argo_workflow_file)
+            self.submit_workflow(argo_workflow_file_path)
 
     def submit_workflow(self, argo_workflow_path):
         ago_ns = 'argo'

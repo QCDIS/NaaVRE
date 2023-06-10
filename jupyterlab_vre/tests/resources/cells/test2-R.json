@@ -4,22 +4,15 @@
         "hovered": {},
         "links": {},
         "nodes": {
-            "3e02fbc": {
-                "id": "3e02fbc",
+            "f1d98e9": {
+                "id": "f1d98e9",
                 "ports": {
-                    "average": {
-                        "id": "average",
-                        "properties": {
-                            "color": "#e0c96c"
-                        },
-                        "type": "right"
-                    },
                     "numbers": {
                         "id": "numbers",
                         "properties": {
                             "color": "#592d86"
                         },
-                        "type": "left"
+                        "type": "right"
                     }
                 },
                 "position": {
@@ -28,26 +21,18 @@
                 },
                 "properties": {
                     "deps": [],
-                    "inputs": [
-                        "inputs"
-                    ],
-                    "og_node_id": "3e02fbc",
+                    "inputs": [],
+                    "og_node_id": "f1d98e9",
                     "outputs": [
-                        "average"
+                        "numbers"
                     ],
                     "params": [],
-                    "title": "csddfv-dev-user-name-at-domain-com",
+                    "title": "input-dev-user-name-at-domain-com",
                     "vars": [
                         {
                             "color": "#592d86",
-                            "direction": "input",
-                            "name": "numbers",
-                            "type": "datatype"
-                        },
-                        {
-                            "color": "#e0c96c",
                             "direction": "output",
-                            "name": "average",
+                            "name": "numbers",
                             "type": "datatype"
                         }
                     ]
@@ -65,23 +50,17 @@
     "confs": {},
     "container_source": "",
     "dependencies": [],
-    "inputs": [
+    "inputs": [],
+    "kernel": "IRkernel",
+    "node_id": "f1d98e9",
+    "original_source": "a = 2 \nnumbers <- c(a, 4, 6, 8, 10)",
+    "outputs": [
         "numbers"
     ],
-    "kernel": "IRkernel",
-    "node_id": "3e02fbc",
-    "original_source": "average <- mean(numbers)",
-    "outputs": [
-        "average"
-    ],
     "params": [],
-    "task_name": "csddfv-dev-user-name-at-domain-com",
-    "title": "csddfv-dev-user-name-at-domain-com",
+    "task_name": "input-dev-user-name-at-domain-com",
+    "title": "input-dev-user-name-at-domain-com",
     "types": {
-        "average": "float",
         "numbers": "list"
-    },
-    "example_inputs": ["--id", "0", "--numbers", "\"[1, 2, 3, 4, 5]\""]
+    }
 }
-
-

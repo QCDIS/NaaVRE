@@ -1,0 +1,132 @@
+{
+    "offset": {
+        "x": 0,
+        "y": 0
+    },
+    "scale": 1,
+    "nodes": {
+        "c49679af-524e-4e38-94b7-57857e8a0f92": {
+            "id": "c49679af-524e-4e38-94b7-57857e8a0f92",
+            "position": {
+                "x": 534,
+                "y": 145
+            },
+            "orientation": 0,
+            "type": "input-output",
+            "ports": {
+                "numbers": {
+                    "properties": {
+                        "color": "#592d86"
+                    },
+                    "id": "numbers",
+                    "type": "right",
+                    "position": {
+                        "x": 216.5,
+                        "y": 74.5
+                    }
+                }
+            },
+            "properties": {
+                "title": "input-dev-user-name-at-domain-com",
+                "vars": [
+                    {
+                        "name": "numbers",
+                        "direction": "output",
+                        "type": "datatype",
+                        "color": "#592d86"
+                    }
+                ],
+                "params": [],
+                "inputs": [],
+                "outputs": [
+                    "numbers"
+                ],
+                "og_node_id": "89db128",
+                "deps": []
+            },
+            "size": {
+                "width": 250,
+                "height": 150
+            }
+        },
+        "a28ef816-bdc5-414b-92d7-2b0a89a3814f": {
+            "id": "a28ef816-bdc5-414b-92d7-2b0a89a3814f",
+            "position": {
+                "x": 961,
+                "y": 118
+            },
+            "orientation": 0,
+            "type": "input-output",
+            "ports": {
+                "numbers": {
+                    "properties": {
+                        "color": "#592d86"
+                    },
+                    "id": "numbers",
+                    "type": "left",
+                    "position": {
+                        "x": 31.5,
+                        "y": 74.5
+                    }
+                },
+                "average": {
+                    "properties": {
+                        "color": "#e0c96c"
+                    },
+                    "id": "average",
+                    "type": "right",
+                    "position": {
+                        "x": 219,
+                        "y": 74.5
+                    }
+                }
+            },
+            "properties": {
+                "title": "csddfv-dev-user-name-at-domain-com",
+                "vars": [
+                    {
+                        "name": "numbers",
+                        "direction": "input",
+                        "type": "datatype",
+                        "color": "#592d86"
+                    },
+                    {
+                        "name": "average",
+                        "direction": "output",
+                        "type": "datatype",
+                        "color": "#e0c96c"
+                    }
+                ],
+                "params": [],
+                "inputs": [
+                    "numbers"
+                ],
+                "outputs": [
+                    "average"
+                ],
+                "og_node_id": "aa94278",
+                "deps": []
+            },
+            "size": {
+                "width": 250,
+                "height": 150
+            }
+        }
+    },
+    "links": {
+        "503d2d9b-9f15-47e4-8311-dfe64bd4f49d": {
+            "id": "503d2d9b-9f15-47e4-8311-dfe64bd4f49d",
+            "from": {
+                "nodeId": "c49679af-524e-4e38-94b7-57857e8a0f92",
+                "portId": "numbers"
+            },
+            "to": {
+                "nodeId": "a28ef816-bdc5-414b-92d7-2b0a89a3814f",
+                "portId": "numbers"
+            }
+        }
+    },
+    "selected": {},
+    "hovered": {},
+    "kernel": "IRkernel"
+}

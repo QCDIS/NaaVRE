@@ -58,14 +58,17 @@ class ExportWorkflowHandler(APIHandler):
         template_env = Environment(
             loader=loader, trim_blocks=True, lstrip_blocks=True)
 
-        # Correct template depends on the kernel
-        template = None
         if kernel == "IRkernel":
             template = template_env.get_template('workflow_template_v2-r.jinja2')
-        else: # We assume that python is here
+        elif 'python' in kernel.lower():
             template = template_env.get_template('workflow_template_v2.jinja2')
-        
-        print("My deps dag: ", deps_dag)
+        else: # We assume that python is here
+            self.set_status(400)
+            self.write_error('Kernel: ' + kernel + ' not supported')
+            logger.error('Kernel: ' + kernel + ' not supported')
+            self.flush()
+            return
+
         if cell:
             if 'JUPYTERHUB_USER' in os.environ:
                 workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(',
@@ -98,6 +101,7 @@ class ExecuteWorkflowHandler(APIHandler):
         print('-------------------------------------------------------------')
         chart = payload['chart']
         params = payload['params']
+        kernel = payload['kernel']
 
         api_endpoint = os.getenv('API_ENDPOINT')
         if not api_endpoint:
@@ -149,10 +153,17 @@ class ExecuteWorkflowHandler(APIHandler):
         image_repo = registry_credentials[0]['url'].split(
             'https://hub.docker.com/u/')[1]
         loader = PackageLoader('jupyterlab_vre', 'templates')
-        template_env = Environment(
-            loader=loader, trim_blocks=True, lstrip_blocks=True)
-        template = template_env.get_template('workflow_template_v2.jinja2')
 
+        if kernel == "IRkernel":
+            template = template_env.get_template('workflow_template_v2-r.jinja2')
+        elif 'python' in kernel.lower():
+            template = template_env.get_template('workflow_template_v2.jinja2')
+        else: # We assume that python is here
+            self.set_status(400)
+            self.write_error('Kernel: ' + kernel + ' not supported')
+            logger.error('Kernel: ' + kernel + ' not supported')
+            self.flush()
+            return
         if 'JUPYTERHUB_USER' in os.environ:
             workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(
                 ')', '-').replace('.', '-').replace('@',
