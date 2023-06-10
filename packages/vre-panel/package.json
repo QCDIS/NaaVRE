@@ -32,8 +32,8 @@
         "watch": "tsc -w"
     },
     "devDependencies": {
-        "@types/node": "^18.15.3",
-        "rimraf": "^4.4.0",
+        "@types/node": "^20.2.5",
+        "rimraf": "^5.0.0",
         "typescript": "~5.0.2"
     },
     "publishConfig": {

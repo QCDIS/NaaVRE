@@ -2,7 +2,6 @@
 
 mkdir -p $HOME/NaaVRE
 cp -r /tmp/repo_utils/conf_vl_repos.py $HOME/NaaVRE/
-gitpuller https://github.com/QCDIS/lifewatch-notebooks main example_notebooks
 rm -f -- $HOME/NaaVRE/module_name_mapping.json
 
 DIR=$HOME/.multiply/
@@ -12,7 +11,9 @@ then
     echo "$DIR exists. skipping"
 else
   wget $MULTIPLY_CONF_URL -O /tmp/multiply.zip
-  unzip /tmp/multiply.zip -d ~/.multiply
+  unzip /tmp/multiply.zip -d ~/multiply
+  mv multiply/multiply .multiply
+  rm -r multiply
 fi
 
 python /tmp/repo_utils/conf_vl_repos.py --force=False
