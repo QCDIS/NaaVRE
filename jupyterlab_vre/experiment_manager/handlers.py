@@ -86,7 +86,6 @@ class ExecuteWorkflowHandler(APIHandler):
         payload = self.get_json_body()
         chart = payload['chart']
         params = payload['params']
-        kernel = payload['kernel']
 
         api_endpoint = os.getenv('API_ENDPOINT')
         if not api_endpoint:
