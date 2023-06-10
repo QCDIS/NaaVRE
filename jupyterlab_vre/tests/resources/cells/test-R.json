@@ -1,0 +1,87 @@
+{
+    "base_image": "jupyter/r-notebook:70178b8e48d7",
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "3e02fbc": {
+                "id": "3e02fbc",
+                "ports": {
+                    "average": {
+                        "id": "average",
+                        "properties": {
+                            "color": "#e0c96c"
+                        },
+                        "type": "right"
+                    },
+                    "numbers": {
+                        "id": "numbers",
+                        "properties": {
+                            "color": "#592d86"
+                        },
+                        "type": "left"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [],
+                    "inputs": [
+                        "inputs"
+                    ],
+                    "og_node_id": "3e02fbc",
+                    "outputs": [
+                        "average"
+                    ],
+                    "params": [],
+                    "title": "csddfv-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#592d86",
+                            "direction": "input",
+                            "name": "numbers",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#e0c96c",
+                            "direction": "output",
+                            "name": "average",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {},
+    "container_source": "",
+    "dependencies": [],
+    "inputs": [
+        "numbers"
+    ],
+    "kernel": "IRkernel",
+    "node_id": "3e02fbc",
+    "original_source": "average <- mean(numbers)",
+    "outputs": [
+        "average"
+    ],
+    "params": [],
+    "task_name": "csddfv-dev-user-name-at-domain-com",
+    "title": "csddfv-dev-user-name-at-domain-com",
+    "types": {
+        "average": "float",
+        "numbers": "list"
+    },
+    "example_inputs": ["--id", "0", "--numbers", "\"[1, 2, 3, 4, 5]\""]
+}
+
+

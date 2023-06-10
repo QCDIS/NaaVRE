@@ -3,12 +3,13 @@ import logging
 import os
 import time
 from builtins import print
+from pathlib import Path
 
 import requests
 from notebook.base.handlers import APIHandler
 from tornado import web
+
 from jupyterlab_vre.database.database import Catalog
-from pathlib import Path
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -29,7 +30,6 @@ class NotebookSearchHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        print(json.dumps(payload))
         term = payload['keyword']
         search_api_endpoint = os.getenv('SEARCH_API_ENDPOINT')
         search_api_token = os.getenv('SEARCH_API_TOKEN')
@@ -92,7 +92,6 @@ class NotebookSearchRatingHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        print(json.dumps(payload))
         term = payload['keyword']
         notebook = payload['notebook']
         search_api_endpoint = os.getenv('SEARCH_API_ENDPOINT')

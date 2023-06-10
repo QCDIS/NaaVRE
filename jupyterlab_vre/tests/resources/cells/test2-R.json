@@ -1,0 +1,66 @@
+{
+    "base_image": "jupyter/r-notebook:70178b8e48d7",
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "f1d98e9": {
+                "id": "f1d98e9",
+                "ports": {
+                    "numbers": {
+                        "id": "numbers",
+                        "properties": {
+                            "color": "#592d86"
+                        },
+                        "type": "right"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [],
+                    "inputs": [],
+                    "og_node_id": "f1d98e9",
+                    "outputs": [
+                        "numbers"
+                    ],
+                    "params": [],
+                    "title": "input-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#592d86",
+                            "direction": "output",
+                            "name": "numbers",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {},
+    "container_source": "",
+    "dependencies": [],
+    "inputs": [],
+    "kernel": "IRkernel",
+    "node_id": "f1d98e9",
+    "original_source": "a = 2 \nnumbers <- c(a, 4, 6, 8, 10)",
+    "outputs": [
+        "numbers"
+    ],
+    "params": [],
+    "task_name": "input-dev-user-name-at-domain-com",
+    "title": "input-dev-user-name-at-domain-com",
+    "types": {
+        "numbers": "list"
+    }
+}

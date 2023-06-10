@@ -14,6 +14,8 @@ from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.extractor import Extractor
 
 
+# TODO: we might have to do something similar here where we have to determine the kernel and based on that get the extractor
+
 class NotebookExtractorHandler(APIHandler, Catalog):
 
     @web.authenticated

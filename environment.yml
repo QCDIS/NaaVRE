@@ -35,4 +35,10 @@ dependencies:
   - git
   - pathlib2
   - pip
+  - r
+  - r-irkernel
+#  - pandas
+  - rpy2
+  - r-renv
+  - r-jsonlite
   - pip:

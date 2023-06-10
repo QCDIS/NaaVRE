@@ -1,4 +1,5 @@
 import copy
+import datetime
 import hashlib
 import importlib
 import json
@@ -7,7 +8,6 @@ import os
 import sys
 import uuid
 from builtins import Exception
-import datetime
 from pathlib import Path
 
 import autopep8
@@ -17,15 +17,29 @@ import requests
 from github import Github
 from github.GithubException import UnknownObjectException
 from jinja2 import Environment, PackageLoader
-from jupyterlab_vre.database.cell import Cell
-from jupyterlab_vre.database.database import Catalog
-from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.services.extractor.extractor import Extractor
 from notebook.base.handlers import APIHandler
 from tornado import web
 
+from jupyterlab_vre.database.cell import Cell
+from jupyterlab_vre.database.database import Catalog
+from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
+from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
+from jupyterlab_vre.services.extractor.Rextractor import RExtractor
+from jupyterlab_vre.services.extractor.extractor import Extractor
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+
+# Create a formatter for the log messages
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# Add the formatter to the handler
+handler.setFormatter(formatter)
+
+# Add the handler to the logger
+logger.addHandler(handler)
 
 github_url_repos = 'https://api.github.com/repos'
 github_workflow_file_name = 'build-push-docker.yml'
@@ -51,19 +65,28 @@ class ExtractorHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        print(json.dumps(payload))
+        logger.debug('ExtractorHandler. payload: ' + str(payload))
+        print('ExtractorHandler. payload: '+ str(payload))
+        kernel = payload['kernel']
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-        extractor = Extractor(notebook)
 
+        # extractor based on the kernel
+        if kernel == "IRkernel":
+            extractor = RExtractor(notebook)
+        else:
+            extractor = Extractor(notebook)
+
+        # initialize variables
         source = notebook.cells[cell_index].source
         title = source.partition('\n')[0]
         title = title.replace('#', '').replace('.', '-').replace(
             '_', '-').replace('(', '-').replace(')', '-').strip() if title and title[0] == "#" else "Untitled"
 
         if 'JUPYTERHUB_USER' in os.environ:
-            title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                     '-at-').strip()
+            title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace(
+                '.', '-').replace('@',
+                                  '-at-').strip()
 
         ins = []
         outs = []
@@ -91,7 +114,8 @@ class ExtractorHandler(APIHandler, Catalog):
             params=params,
             confs=confs,
             dependencies=dependencies,
-            container_source=""
+            container_source="",
+            kernel=kernel
         )
         if notebook.cells[cell_index].cell_type == 'code':
             cell.integrate_configuration()
@@ -120,19 +144,18 @@ class ExtractorHandler(APIHandler, Catalog):
         }
 
         cell.chart_obj = chart
-
         Catalog.editor_buffer = copy.deepcopy(cell)
-
         self.write(cell.toJSON())
-
         self.flush()
 
 
 class TypesHandler(APIHandler, Catalog):
+    logger = logging.getLogger(__name__)
 
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
+        logger.debug('TypesHandler. payload: ' + str(payload))
         port = payload['port']
         p_type = payload['type']
         cell = Catalog.editor_buffer
@@ -140,10 +163,12 @@ class TypesHandler(APIHandler, Catalog):
 
 
 class BaseImageHandler(APIHandler, Catalog):
+    logger = logging.getLogger(__name__)
 
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
+        logger.debug('BaseImageHandler. payload: ' + str(payload))
         base_image = payload['image']
         cell = Catalog.editor_buffer
         cell.base_image = base_image
@@ -184,6 +209,10 @@ class CellsHandler(APIHandler, Catalog):
         current_cell.clean_code()
         current_cell.clean_title()
         current_cell.clean_task_name()
+
+        print('--------------------------------------')
+        print('current_cell: ' + current_cell.toJSON())
+        print('--------------------------------------')
 
         all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
         for parm_name in all_vars:
@@ -239,9 +268,27 @@ class CellsHandler(APIHandler, Catalog):
         image_repo = registry_url.split(
             'https://hub.docker.com/u/')[1]
 
-        files_info = get_files_info(cell=current_cell, image_repo=image_repo)
-        build_templates(cell=current_cell, files_info=files_info)
+        if not image_repo:
+            self.set_status(400)
+            self.write_error('Registry not found')
+            logger.error('Registry not found')
+            self.flush()
+            return
 
+        if current_cell.kernel == "IRkernel":
+            files_info = Rcontainerizer.get_files_info(cell=current_cell, image_repo=image_repo, cells_path=cells_path)
+            Rcontainerizer.build_templates(cell=current_cell, files_info=files_info)
+        elif 'python' in current_cell.kernel.lower():
+            files_info = get_files_info(cell=current_cell, image_repo=image_repo)
+            build_templates(cell=current_cell, files_info=files_info)
+        else:
+            self.set_status(400)
+            self.write_error('Kernel: ' + current_cell.kernel +' not supported')
+            logger.error('Kernel: '+current_cell.kernel +' not supported')
+            self.flush()
+            return
+
+        # upload to GIT
         cat_repositories = Catalog.get_repositories()
 
         repo_token = cat_repositories[0]['token']
@@ -280,7 +327,6 @@ class CellsHandler(APIHandler, Catalog):
             return
 
         commit = gh_repository.get_commits(path=current_cell.task_name)
-
         if commit.totalCount > 0:
             try:
                 update_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
@@ -291,7 +337,6 @@ class CellsHandler(APIHandler, Catalog):
         elif commit.totalCount <= 0:
             create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
                                       files_info=files_info)
-
         wf_id = str(uuid.uuid4())
         resp = dispatch_github_workflow(
             owner,
@@ -466,7 +511,7 @@ def build_templates(cell=None, files_info=None):
     template_env = Environment(
         loader=loader, trim_blocks=True, lstrip_blocks=True)
 
-    template_cell = template_env.get_template('cell_template.jinja2')
+    template_cell = template_env.get_template('py_cell_template.jinja2')
     template_dockerfile = template_env.get_template(
         'dockerfile_template_conda.jinja2')
     template_conda = template_env.get_template('conda_env_template.jinja2')
