@@ -47,6 +47,32 @@ describe('JupyterLab', () => {
   // Verify that the content is added to the code cell
   cy.get('@codeCell1').contains('print("Hello, World!")').should('be.visible');
 
+  // Create a new code cell
+  cy.get('.jp-NotebookPanel-toolbar .jp-ToolbarButtonComponent[title="Insert a cell below (B)"]').click();
+
+  // Get the new code cell you want to add content to
+  cy.get('.jp-NotebookPanel-notebook .jp-Cell').eq(1).as('codeCell2');
+
+  // Execute cell 1 by pressing shift+enter
+  cy.get('@codeCell1').type('{shift}{enter}');
+
+
+  // Click on the code cell to activate it
+    cy.get('@codeCell2').click();
+
+  // Type or paste content into the code cell
+  cy.get('@codeCell2').type('print("Hello, Universe!")');
+
+  cy.get('@codeCell2').contains('print("Hello, Universe!")').should('be.visible');
+
+  // Execute cell 2 by pressing shift+enter
+  cy.get('@codeCell2').type('{shift}{enter}');
+
+  //Save the notebook
+  cy.get('.jp-NotebookPanel-toolbar .jp-ToolbarButtonComponent[title="Save and create checkpoint (Ctrl+S)"]').click();
+
+  //In the pop-up window, click on the "Rename" button
+  cy.get('.jp-Dialog-content .jp-Dialog-button.jp-mod-accept').click();
 
 
 
