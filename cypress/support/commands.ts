@@ -37,13 +37,7 @@
 // }
 
 
-Cypress.Commands.add('resetJupyterLab', (): void => {
-  // open jupyterlab with a clean workspace
-  cy.visit('?reset');
-  cy.findByRole('tab', { name: /file browser/i, timeout: 25000 }).should(
-    'exist'
-  );
-});
+
 
 
 Cypress.Commands.add('deleteFile', (name: string): void => {

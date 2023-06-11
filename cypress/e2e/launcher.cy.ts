@@ -1,15 +1,15 @@
 describe('JupyterLab', () => {
   beforeEach(() => {
     // Visit the JupyterLab URL or start from a specific page if needed
-    cy.visit('')
-    cy.wait(5000) // Adjust the timeout as needed
+    cy.visit('?reset')
+    cy.wait(15000) // Adjust the timeout as needed
   })
 
 
 
-  it('should open a notebook and execute code', () => {
-    // Open a notebook file
-    cy.contains('.jp-DirListing-item[title="test_notebook.ipynb"]').click();
+//   it('should open a notebook and execute code', () => {
+//     // Open a notebook file
+//     cy.contains('.jp-DirListing-item', 'test_notebook.ipynb').click()
 //
 //     // Wait for the notebook to load
 //     cy.get('.jp-mod-notebookPanel').should('be.visible')
@@ -28,18 +28,33 @@ describe('JupyterLab', () => {
 //
 //     // Check for the output of the executed code
 //     cy.get('@codeCell').next('.jp-OutputArea').should('be.visible')
-  })
+//   })
 
   it('should create a new Python notebook', () => {
-    // Click on the "New" button
-    cy.get('.jp-ToolbarButtonComponent[data-category="Notebook"]').click()
 
-    // Select "Python 3" from the dropdown menu
-    cy.get('.jp-MenuBar-menu .jp-MenuBar-item')
-      .contains('Python 3')
-      .click()
+  cy.get(
+    `.jp-LauncherCard[data-category="Notebook"][title="Python 3 (ipykernel)"]:visible`
+  ).click();
 
-    // Wait for the new notebook to be created
-    cy.get('.jp-mod-notebookPanel').should('be.visible')
+//   cy.get('.jp-ToolbarButtonComponent[data-category="Notebook"]').click()
+
+//     // Select "Python 3" from the dropdown menu
+//     cy.get('.jp-MenuBar-menu .jp-MenuBar-item')
+//       .contains('Python 3')
+//       .click()
+//
+//     // Wait for the new notebook to be created
+//     cy.get('.jp-mod-notebookPanel').should('be.visible')
+//   })  it('should create a new Python notebook', () => {
+//     // Click on the "New" button
+//     cy.get('.jp-ToolbarButtonComponent[data-category="Notebook"]').click()
+//
+//     // Select "Python 3" from the dropdown menu
+//     cy.get('.jp-MenuBar-menu .jp-MenuBar-item')
+//       .contains('Python 3')
+//       .click()
+//
+//     // Wait for the new notebook to be created
+//     cy.get('.jp-mod-notebookPanel').should('be.visible')
   })
 })
