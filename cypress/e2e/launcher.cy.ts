@@ -74,7 +74,16 @@ describe('JupyterLab', () => {
   //In the pop-up window, click on the "Rename" button
   cy.get('.jp-Dialog-content .jp-Dialog-button.jp-mod-accept').click();
 
+  //click on the element with the title "Notebook Search"
+  cy.get('.lm-TabBar-tab.p-TabBar-tab[title="Notebook Search"]').click();
+
+  //click on the element with the title "LifeWatch Panel"
+  cy.get('.lm-TabBar-tab.p-TabBar-tab[title="LifeWatch Panel"]').click();
 
 
   });
 })
+
+
+
+
