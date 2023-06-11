@@ -80,7 +80,7 @@ jobs:
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vanilla:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@11-frontend-code-cypress
     with:
       wheel_artifact_name: jupyterlab_vre
       docker_folder: vanilla
