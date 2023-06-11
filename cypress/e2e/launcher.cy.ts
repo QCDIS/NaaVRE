@@ -31,30 +31,24 @@ describe('JupyterLab', () => {
 //   })
 
   it('should create a new Python notebook', () => {
-
   cy.get(
     `.jp-LauncherCard[data-category="Notebook"][title="Python 3 (ipykernel)"]:visible`
   ).click();
 
-//   cy.get('.jp-ToolbarButtonComponent[data-category="Notebook"]').click()
+  // Get the code cell you want to add content to
+  cy.get('.jp-NotebookPanel-notebook .jp-Cell').first().as('codeCell1');
 
-//     // Select "Python 3" from the dropdown menu
-//     cy.get('.jp-MenuBar-menu .jp-MenuBar-item')
-//       .contains('Python 3')
-//       .click()
-//
-//     // Wait for the new notebook to be created
-//     cy.get('.jp-mod-notebookPanel').should('be.visible')
-//   })  it('should create a new Python notebook', () => {
-//     // Click on the "New" button
-//     cy.get('.jp-ToolbarButtonComponent[data-category="Notebook"]').click()
-//
-//     // Select "Python 3" from the dropdown menu
-//     cy.get('.jp-MenuBar-menu .jp-MenuBar-item')
-//       .contains('Python 3')
-//       .click()
-//
-//     // Wait for the new notebook to be created
-//     cy.get('.jp-mod-notebookPanel').should('be.visible')
-  })
+  // Click on the code cell to activate it
+  cy.get('@codeCell1').click();
+
+  // Type or paste content into the code cell
+  cy.get('@codeCell1').type('print("Hello, World!")');
+
+  // Verify that the content is added to the code cell
+  cy.get('@codeCell1').contains('print("Hello, World!")').should('be.visible');
+
+
+
+
+  });
 })
