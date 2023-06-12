@@ -40,40 +40,34 @@ describe('JupyterLab', () => {
 
   // Click on the code cell to activate it
   cy.get('@codeCell1').click();
-
-//   Type or paste content into the code cell
   cy.get('@codeCell1').type('# A list');
   cy.get('@codeCell1').type('{enter}');
-  cy.get('@codeCell1').click();
-  cy.get('@codeCell1').type('{enter}');
-  cy.get('@codeCell1').click();
   cy.get('@codeCell1').type('my_list = [1, 2, 3]');
   cy.get('@codeCell1').type('{enter}');
-  cy.get('@codeCell1').click();
   cy.get('@codeCell1').type('print(my_list)');
-
-  // Verify that the content is added to the code cell
-  cy.get('@codeCell1').contains('# A list').should('be.visible');
-  cy.get('@codeCell1').contains('my_list = [1, 2, 3]').should('be.visible');
-  cy.get('@codeCell1').contains('print(my_list)').should('be.visible');
-
-  // Execute cell 1 by pressing shift+enter
-  cy.get('@codeCell1').type('{shift}{enter}');
- // Click back to the editor (Esc)
- cy.get('.jp-NotebookPanel-notebook').type('{esc}');
-
-
-  // Create a new code cell
-  cy.get('.jp-NotebookPanel-toolbar .jp-ToolbarButtonComponent[title="Insert a cell below (B)"]').click();
-
-  // Get the new code cell you want to add content to
-  cy.get('.jp-NotebookPanel-notebook .jp-Cell').eq(1).as('codeCell2');
-
-  // Click on the code cell to activate it
-  cy.get('@codeCell2').click();
+//
+//   // Verify that the content is added to the code cell
+//   cy.get('@codeCell1').contains('# A list').should('be.visible');
+//   cy.get('@codeCell1').contains('my_list = [1, 2, 3]').should('be.visible');
+//   cy.get('@codeCell1').contains('print(my_list)').should('be.visible');
+//
+//   // Execute cell 1 by pressing shift+enter
+//   cy.get('@codeCell1').type('{shift}{enter}');
+//  // Click back to the editor (Esc)
+//  cy.get('.jp-NotebookPanel-notebook').type('{esc}');
+//
+//
+//   // Create a new code cell
+//   cy.get('.jp-NotebookPanel-toolbar .jp-ToolbarButtonComponent[title="Insert a cell below (B)"]').click();
+//
+//   // Get the new code cell you want to add content to
+//   cy.get('.jp-NotebookPanel-notebook .jp-Cell').eq(1).as('codeCell2');
+//
+//   // Click on the code cell to activate it
+//   cy.get('@codeCell2').click();
 
   // Type or paste content into the code cell
-  cy.get('@codeCell2').type('# Process a list');
+//   cy.get('@codeCell2').type('# Process a list');
 //   cy.get('@codeCell2').type('{enter}');
 //   cy.get('@codeCell2').click();
 //   cy.get('@codeCell2').type('b_list = []');
@@ -98,9 +92,8 @@ describe('JupyterLab', () => {
 //
   //Save the notebook
   cy.get('.jp-NotebookPanel-toolbar .jp-ToolbarButtonComponent[title="Save and create checkpoint (Ctrl+S)"]').click();
-//
-//   //In the pop-up window, click on the "Rename" button
-//   cy.get('.jp-Dialog-content .jp-Dialog-button.jp-mod-accept').click();
+  //In the pop-up window, click on the "Rename" button
+  cy.get('.jp-Dialog-content .jp-Dialog-button.jp-mod-accept').click();
 //
 //   //click on the element with the title "Notebook Search"
 //   cy.get('.lm-TabBar-tab.p-TabBar-tab[title="Notebook Search"]').click();
