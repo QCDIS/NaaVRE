@@ -84,11 +84,16 @@ describe('JupyterLab', () => {
   cy.get('.jp-Dialog-content .jp-Dialog-button.jp-mod-accept').click();
 
   //click on the element with the title "LifeWatch Panel"
-  cy.get('.lm-TabBar-tab.p-TabBar-tab[title="LifeWatch Panel"]').click();
+  cy.get('.lm-TabBar-tab.p-TabBar-tab[title="LifeWatch Panel"]').as('containerizer')
+  cy.get('@containerizer').click();
 
 
   //Click on codeCell1
   cy.get('@codeCell1').click();
+
+
+  //Get the .lw-panel-preview named 'my_list'
+  cy.get('.lw-panel-preview').contains('my_list').as('my_list')
 
   });
 })
