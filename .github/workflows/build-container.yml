@@ -99,19 +99,18 @@ jobs:
 
     - name: Save environment variables in a file
       run: |
-          echo $CELL_GITHUB > env_vars.txt
-          echo $CELL_GITHUB_TOKEN >> env_vars.txt
-          echo $REGISTRY_URL >> env_vars.txt
-          echo $NAAVRE_API_TOKEN >> env_vars.txt
-          echo $JUPYTERHUB_USER >> env_vars.txt
-          echo $API_ENDPOINT >> env_vars.txt
-          echo $VLAB_SLUG >> env_vars.txt
-          echo $MODULE_MAPPING_URL >> env_vars.txt
-          echo $SEARCH_API_ENDPOINT >> env_vars.txt
-          echo $SEARCH_API_TOKEN >> env_vars.txt
-          echo $ARGO_URL >> env_vars.txt
-          echo $ARGO_API_TOKEN >> env_vars.txt
-
+          echo CELL_GITHUB=$CELL_GITHUB > env_vars.txt
+          echo CELL_GITHUB_TOKEN=$CELL_GITHUB_TOKEN >> env_vars.txt
+          echo REGISTRY_URL=$REGISTRY_URL >> env_vars.txt
+          echo NAAVRE_API_TOKEN=$NAAVRE_API_TOKEN >> env_vars.txt
+          echo JUPYTERHUB_USER=$JUPYTERHUB_USER >> env_vars.txt
+          echo API_ENDPOINT=$API_ENDPOINT >> env_vars.txt
+          echo VLAB_SLUG=$VLAB_SLUG >> env_vars.txt
+          echo MODULE_MAPPING_URL=$MODULE_MAPPING_URL >> env_vars.txt
+          echo SEARCH_API_ENDPOINT=$SEARCH_API_ENDPOINT >> env_vars.txt
+          echo SEARCH_API_TOKEN=$SEARCH_API_TOKEN >> env_vars.txt
+          echo ARGO_URL=$ARGO_URL >> env_vars.txt
+          echo ARGO_API_TOKEN=$ARGO_API_TOKEN >> env_vars.txt
 
     - name: Start docker
       run: |
