@@ -24,11 +24,47 @@ on:
         required: true
       docker_password:
         required: true
+      jupyterhub_user:
+        required: true
+      vlab_slug:
+        required: true
+      cell_github:
+        required: true
+      cell_github_token:
+        required: true
+      api_endpoint:
+        required: true
+      module_mapping_url:
+        required: true
+      search_api_endpoint:
+        required: true
+      search_api_token:
+        required: true
+      registry_url:
+        required: true
+      naavre_api_token:
+        required: true
+      argo_url:
+        required: true
+      argo_api_token:
+        required: true
 env:
   DOCKER_FOLDER:  ${{ inputs.docker_folder }}
   TAG:  ${{ inputs.tag }}
   GITLAB_IMAGE_ID: "registry.gitlab.com/qcd1/registry/"
   DOCKERHUB_IMAGE_ID: "qcdis/"
+  CELL_GITHUB: ${{ secrets.cell_github }}
+  CELL_GITHUB_TOKEN: ${{ secrets.cell_github_token }}
+  REGISTRY_URL: ${{ secrets.registry_url }}
+  NAAVRE_API_TOKEN: ${{ secrets.naavre_api_token }}
+  JUPYTERHUB_USER: ${{ secrets.jupyterhub_user }}
+  API_ENDPOINT: ${{ secrets.api_endpoint }}
+  VLAB_SLUG: ${{ secrets.vlab_slug }}
+  MODULE_MAPPING_URL: ${{ secrets.module_mapping_url }}
+  SEARCH_API_ENDPOINT: ${{ secrets.search_api_endpoint }}
+  SEARCH_API_TOKEN: ${{ secrets.search_api_token }}
+  ARGO_URL: ${{ secrets.ARGO_URL }}
+  ARGO_API_TOKEN: ${{ secrets.ARGO_API_TOKEN }}
 
 jobs:
   build:
@@ -60,14 +96,31 @@ jobs:
       run: |
           cd docker/$DOCKER_FOLDER && docker build . --file Dockerfile -t $TAG
 
+
+    - name: Save environment variables in a file
+      run: |
+          echo $CELL_GITHUB > env_vars.txt
+          echo $CELL_GITHUB_TOKEN >> env_vars.txt
+          echo $REGISTRY_URL >> env_vars.txt
+          echo $NAAVRE_API_TOKEN >> env_vars.txt
+          echo $JUPYTERHUB_USER >> env_vars.txt
+          echo $API_ENDPOINT >> env_vars.txt
+          echo $VLAB_SLUG >> env_vars.txt
+          echo $MODULE_MAPPING_URL >> env_vars.txt
+          echo $SEARCH_API_ENDPOINT >> env_vars.txt
+          echo $SEARCH_API_TOKEN >> env_vars.txt
+          echo $ARGO_URL >> env_vars.txt
+          echo $ARGO_API_TOKEN >> env_vars.txt
+
+
     - name: Start docker
       run: |
-          docker run -d -p 8888:8888 $TAG:latest /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*'"
+          docker run -d -p 8888:8888 --env-file env_vars.txt $TAG:latest /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*'"
           sleep 5
 
     - name: Check if jupyter is running
       run: |
-          curl -s http://localhost:8888 | grep -q "JupyterLab"
+          curl -s http://localhost:8888/lab | grep -q "JupyterLab"
           if [ $? -ne 0 ]; then
             echo "JupyterLab is not running"
             exit 1
