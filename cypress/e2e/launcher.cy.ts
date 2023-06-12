@@ -59,6 +59,8 @@ describe('JupyterLab', () => {
 
   // Execute cell 1 by pressing shift+enter
   cy.get('@codeCell1').type('{shift}{enter}');
+ // Click back to the editor (Esc)
+ cy.get('.jp-NotebookPanel-notebook').type('{esc}');
 
 
   // Create a new code cell
@@ -69,18 +71,21 @@ describe('JupyterLab', () => {
 
   // Click on the code cell to activate it
   cy.get('@codeCell2').click();
-//
-//   // Type or paste content into the code cell
-//   cy.get('@codeCell2').type('# Process a list');
+
+  // Type or paste content into the code cell
+  cy.get('@codeCell2').type('# Process a list');
 //   cy.get('@codeCell2').type('{enter}');
+//   cy.get('@codeCell2').click();
 //   cy.get('@codeCell2').type('b_list = []');
 //   cy.get('@codeCell2').type('{enter}');
+//   cy.get('@codeCell2').click();
 //   cy.get('@codeCell2').type('for elem in my_list:');
 //   cy.get('@codeCell2').type('{enter}');
+// //   cy.get('@codeCell2').click();
 //   cy.get('@codeCell2').type('    b_list.append(elem * 2)');
 //   cy.get('@codeCell2').type('{enter}');
 //
-//   // Verify that the content is added to the code cell
+  // Verify that the content is added to the code cell
 //   cy.get('@codeCell2').contains('# Process a list').should('be.visible');
 //   cy.get('@codeCell2').contains('b_list = []').should('be.visible');
 //   cy.get('@codeCell2').contains('for elem in my_list:').should('be.visible');
@@ -88,9 +93,11 @@ describe('JupyterLab', () => {
 //
 //   // Execute cell 2 by pressing shift+enter
 //   cy.get('@codeCell2').type('{shift}{enter}');
+//   // Click back to the editor (Esc)
+//   cy.get('.jp-NotebookPanel-notebook').type('{esc}');
 //
-//   //Save the notebook
-//   cy.get('.jp-NotebookPanel-toolbar .jp-ToolbarButtonComponent[title="Save and create checkpoint (Ctrl+S)"]').click();
+  //Save the notebook
+  cy.get('.jp-NotebookPanel-toolbar .jp-ToolbarButtonComponent[title="Save and create checkpoint (Ctrl+S)"]').click();
 //
 //   //In the pop-up window, click on the "Rename" button
 //   cy.get('.jp-Dialog-content .jp-Dialog-button.jp-mod-accept').click();
