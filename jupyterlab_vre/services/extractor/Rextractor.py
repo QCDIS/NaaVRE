@@ -6,10 +6,10 @@ import rpy2.rinterface as rinterface
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
 from rpy2.robjects.packages import importr
+import pandas as pd
 
 # Load the base R package for parsing and evaluation
 base = importr('base')
-
 
 # TODO: create an interface such that it can be easily extended to other kernels
 
@@ -152,31 +152,36 @@ class RExtractor:
                 names.add(avar)
         return set(names)
 
+    def recursive_variables(self, my_expr, result):
+        if isinstance(my_expr, rinterface.LangSexpVector):
+
+            # check if there are enough data values. for an assignment there must be three namely VARIABLE SYMBOL VALUE. e.g. a = 3
+            if len(my_expr) >= 3:
+
+                # check for matches
+                c = str(my_expr[0])
+                variable = my_expr[1]
+
+                # check if assignment. (TODO) is there a better way to check if it is an assignment?
+                if (c == "<-" or c == "="):
+                    if isinstance(my_expr[1], rinterface.SexpSymbol):
+                        result.add(str(variable))    
+        try:
+            for expr in my_expr:
+                result = self.recursive_variables(expr, result)
+        except Exception as e:
+            pass
+        return result
+
     def assignment_variables(self, text):
+
+        # TODO: very inefficient solution
         result = []
         parsed_expr = base.parse(text=text, keep_source=True)
         parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
+        result = list(self.recursive_variables(parsed_expr_py, set()))
+        print("My assignment variables: ", result)
 
-        # Loop through the first level of the AST
-        for expr in parsed_expr_py:
-
-            # Check for a specific type. otherwise continue
-            if not isinstance(expr, rinterface.LangSexpVector):
-                continue
-
-            # check if there are enough data values. for an assignment there must be three namely VARIABLE SYMBOL VALUE. e.g. a = 3
-            if len(expr) <= 2:
-                continue
-
-            # check for matches
-            c = str(expr[0])
-            variable = str(expr[1])
-
-            # check if assignment. (TODO) is there a better way to check if it is an assignment?
-            if not ((c == "<-" or c == "=")):
-                continue
-
-            result.append(variable)
         return result
 
     def __extract_cell_undefined(self, cell_source):
