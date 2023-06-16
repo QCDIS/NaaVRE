@@ -1,6 +1,7 @@
 import os
 import re
 import tempfile
+import pandas as pd
 
 import rpy2.rinterface as rinterface
 import rpy2.robjects as robjects
@@ -24,7 +25,7 @@ class RExtractor:
         self.sources = [nbcell.source for nbcell in notebook.cells if
                         nbcell.cell_type == 'code' and len(nbcell.source) > 0]
 
-        self.imports = set()  #self.__extract_imports(self.sources)
+        self.imports = self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
         self.global_params = self.__extract_params(self.sources)
         self.undefined = set()
@@ -49,7 +50,7 @@ class RExtractor:
                 tmp_file.flush()
                 renv = rpackages.importr('renv')
                 function_list = renv.dependencies(tmp_file.name)
-                packages = [] #list(pd.DataFrame(function_list).transpose().iloc[:, 1])
+                packages = list(pd.DataFrame(function_list).transpose().iloc[:, 1])
                 tmp_file.close()
                 os.remove(tmp_file.name)
 
@@ -145,6 +146,7 @@ class RExtractor:
 
         # challenge 1: filter out stuff like libraries. Because when using "library(cool)", it recognies cool as a variable,
         #              but not in the case of "library('cool')". this is sort of solved now but does not cover all cases
+
         # challenge 2 (TODO): in the example script 'state' and 'n' are recognized as variables. 
         #              this should be solved as we do not want this. # TODO: look at CodeDepends and the function 'getVariables(sc)', this might solve this
         for avar in vars_r:
