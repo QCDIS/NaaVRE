@@ -164,6 +164,10 @@ class RExtractor:
             if not isinstance(expr, rinterface.LangSexpVector):
                 continue
 
+            # check if there are enough data values. for an assignment there must be three namely VARIABLE SYMBOL VALUE. e.g. a = 3
+            if len(expr) <= 2:
+                continue
+
             # check for matches
             c = str(expr[0])
             variable = str(expr[1])
