@@ -222,6 +222,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                         <TableCell component="th" scope="row">
                                                             <FormControl fullWidth>
                                                                 <Select
+                                                                    className={input}
                                                                     labelId="io-types-select-label"
                                                                     id={this.state.currentCell.node_id + "-" + input + "-select"}
                                                                     label="Type"

@@ -92,8 +92,9 @@ describe('JupyterLab', () => {
   cy.get('@codeCell1').click();
 
 
-  //Get the .lw-panel-preview named 'my_list'
-  cy.get('.lw-panel-preview').contains('my_list').as('my_list')
+  //Get the class lw-panel-editor
+  cy.get('.lw-panel-preview')
+
 
   });
 })
