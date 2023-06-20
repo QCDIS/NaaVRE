@@ -1,5 +1,7 @@
 import json
 import logging
+import re
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -41,9 +43,9 @@ class Cell:
     ) -> None:
 
         self.title = title.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                     '-at-').strip()
+                                                                                                           '-at-').strip()
         self.task_name = task_name.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                     '-at-').strip()
+                                                                                                                   '-at-').strip()
         self.original_source = original_source
         self.inputs = list(inputs)
         self.outputs = list(outputs)
@@ -62,12 +64,17 @@ class Cell:
         self.original_source = ""
 
         for line_i in range(0, len(lines)):
-
             line = lines[line_i]
+            # Do not remove line that startswith param_ if not in the self.params
+            if line.startswith('param_'):
+                # clean param name
+                pattern = r"\b(param_\w+)\b"
+                param_name = re.findall(pattern, line)[0]
+                if param_name in self.params:
+                    indices_to_remove.append(line_i)
             if line.startswith('import') or \
                     line.startswith('from') or \
-                    line.startswith('#') or \
-                    line.startswith('param_'):
+                    line.startswith('#'):
                 indices_to_remove.append(line_i)
 
         for ir in sorted(indices_to_remove, reverse=True):
@@ -76,12 +83,13 @@ class Cell:
         self.original_source = "\n".join(lines)
 
     def clean_task_name(self):
-        self.task_name = self.task_name.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                     '-at-').strip()
+        self.task_name = self.task_name.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace(
+            '@',
+            '-at-').strip()
 
     def clean_title(self):
         self.title = self.title.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                     '-at-').strip()
+                                                                                                                '-at-').strip()
 
     def integrate_configuration(self):
         lines = self.original_source.splitlines()

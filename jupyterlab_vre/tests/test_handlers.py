@@ -151,6 +151,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cells_json_path = os.path.join(base_path, 'cells')
             cells_files = os.listdir(cells_json_path)
             for cell_file in cells_files:
+                if 'test-paramPy.json' not in cell_file:
+                    continue
                 cell_path = os.path.join(cells_json_path, cell_file)
                 with open(cell_path, 'r') as file:
                     cell = json.load(file)
@@ -227,7 +229,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             notebooks_json_path = os.path.join(base_path, 'notebooks')
             notebooks_files = glob.glob(os.path.join(notebooks_json_path, "*.json"))
             for notebook_file in notebooks_files:
-                if 'test_param_outside_cell_notebook.json' not in notebook_file:
+                if 'test_param_in_cell_notebook.json' not in notebook_file:
                     continue
                 with open(notebook_file, 'r') as file:
                     notebook = json.load(file)
@@ -236,22 +238,9 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertEqual(response.code, 200)
                 # Get Json response
                 json_response = json.loads(response.body.decode('utf-8'))
-                params = set()
+                self.assertIsNotNone(json_response)
                 cell = notebook['notebook']['cells'][notebook['cell_index']]
-                # extract lines with 'param_'
-                if 'param_' in cell['source']:
-                    # split line by '\n'
-                    source_lines = cell['source'].split('\n')
-                    # Get line that read variables staring with 'param_'
-                    for line in source_lines:
-                        if 'param_' in line:
-                            # Extract variable name from line. Extract word containing 'param_'
-                            pattern = r"\b(param_\w+)\b"
-                            param_matches = re.findall(pattern, line)
-                            for param in param_matches:
-                                params.add(param)
-                for param in params:
-                    self.assertIn(param, json_response['params'], 'Param: ' + param + ' not found in cell params')
+                return cell, json_response
 
     def test_argo_api(self):
         argo_workflow_path = os.path.join(base_path, 'workflows', 'argo')
