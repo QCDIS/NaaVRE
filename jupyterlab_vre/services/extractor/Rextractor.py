@@ -104,7 +104,7 @@ class RExtractor:
             assignment_variables = self.assignment_variables(s)
             for variable in assignment_variables:
 
-                # the prefix should be 'conf'
+                # the prefix should be 'param'
                 if not (variable.split("_")[0] == "param"):
                     continue
                 params.add(variable)

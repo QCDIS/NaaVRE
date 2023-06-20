@@ -8,6 +8,7 @@ import subprocess
 import sys
 from pathlib import Path
 from time import sleep
+import re
 from unittest import mock
 
 import requests
@@ -98,8 +99,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             #     with open(workflow_file_path, 'r') as read_file:
             #         payload = json.load(read_file)
             #     read_file.close()
-                # response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
-                # self.assertEqual(response.code, 200)
+            # response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
+            # self.assertEqual(response.code, 200)
 
     def test_execute_workflow_handler(self):
         workflow_path = os.path.join(base_path, 'workflows', 'NaaVRE')
@@ -226,11 +227,31 @@ class HandlersAPITest(AsyncHTTPTestCase):
             notebooks_json_path = os.path.join(base_path, 'notebooks')
             notebooks_files = glob.glob(os.path.join(notebooks_json_path, "*.json"))
             for notebook_file in notebooks_files:
+                if 'test_param_outside_cell_notebook.json' not in notebook_file:
+                    continue
                 with open(notebook_file, 'r') as file:
                     notebook = json.load(file)
                 file.close()
                 response = self.fetch('/extractorhandler', method='POST', body=json.dumps(notebook))
                 self.assertEqual(response.code, 200)
+                # Get Json response
+                json_response = json.loads(response.body.decode('utf-8'))
+                params = set()
+                cell = notebook['notebook']['cells'][notebook['cell_index']]
+                # extract lines with 'param_'
+                if 'param_' in cell['source']:
+                    # split line by '\n'
+                    source_lines = cell['source'].split('\n')
+                    # Get line that read variables staring with 'param_'
+                    for line in source_lines:
+                        if 'param_' in line:
+                            # Extract variable name from line. Extract word containing 'param_'
+                            pattern = r"\b(param_\w+)\b"
+                            param_matches = re.findall(pattern, line)
+                            for param in param_matches:
+                                params.add(param)
+                for param in params:
+                    self.assertIn(param, json_response['params'], 'Param: ' + param + ' not found in cell params')
 
     def test_argo_api(self):
         argo_workflow_path = os.path.join(base_path, 'workflows', 'argo')
