@@ -10,7 +10,7 @@ from notebook.base.handlers import APIHandler
 from tornado import web
 
 from jupyterlab_vre.database.cell import Cell
-from jupyterlab_vre.database.database import Catalog
+from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.extractor import Extractor
 
