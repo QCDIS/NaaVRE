@@ -1,6 +1,6 @@
 import logging
 
-from jupyterlab_vre.database.database import Catalog
+from jupyterlab_vre.database.catalog import Catalog
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

@@ -3,7 +3,7 @@ import json
 from notebook.base.handlers import APIHandler
 from tornado import web
 
-from jupyterlab_vre.database.database import Catalog
+from jupyterlab_vre.database.catalog import Catalog
 
 
 class RegistriesHandler(APIHandler, Catalog):

@@ -8,7 +8,7 @@ from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
 from tornado import web
 
-from jupyterlab_vre.database.database import Catalog
+from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.services.parser.parser import WorkflowParser
 
 logger = logging.getLogger(__name__)

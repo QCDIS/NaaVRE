@@ -8,6 +8,7 @@ import subprocess
 import sys
 from pathlib import Path
 from time import sleep
+import re
 from unittest import mock
 
 import requests
@@ -19,7 +20,7 @@ from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportW
     NotebookSearchHandler, NotebookSearchRatingHandler
 from jupyterlab_vre.component_containerizer.handlers import find_job
 from jupyterlab_vre.database.cell import Cell
-from jupyterlab_vre.database.database import Catalog
+from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.handlers import load_module_names_mapping
 from jupyterlab_vre.notebook_search.handlers import NotebookDownloadHandler
 
@@ -98,8 +99,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             #     with open(workflow_file_path, 'r') as read_file:
             #         payload = json.load(read_file)
             #     read_file.close()
-                # response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
-                # self.assertEqual(response.code, 200)
+            # response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
+            # self.assertEqual(response.code, 200)
 
     def test_execute_workflow_handler(self):
         workflow_path = os.path.join(base_path, 'workflows', 'NaaVRE')
@@ -231,6 +232,10 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 file.close()
                 response = self.fetch('/extractorhandler', method='POST', body=json.dumps(notebook))
                 self.assertEqual(response.code, 200)
+                # Get Json response
+                json_response = json.loads(response.body.decode('utf-8'))
+                self.assertIsNotNone(json_response)
+                cell = notebook['notebook']['cells'][notebook['cell_index']]
 
     def test_argo_api(self):
         argo_workflow_path = os.path.join(base_path, 'workflows', 'argo')

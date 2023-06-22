@@ -1,7 +1,8 @@
 import os
 from unittest import TestCase
+from pathlib import Path
 
-from jupyterlab_vre.database.database import Catalog
+from jupyterlab_vre.database.catalog import Catalog
 
 
 # from jupyterlab_vre.storage.catalog import Catalog
@@ -48,5 +49,3 @@ class TestCatalog(TestCase):
         self.assertIsNotNone(owner)
         repository_name = url_repos.split('https://github.com/')[1].split('/')[1]
         self.assertIsNotNone(repository_name)
-
-

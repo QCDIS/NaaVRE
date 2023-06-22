@@ -21,7 +21,7 @@ from notebook.base.handlers import APIHandler
 from tornado import web
 
 from jupyterlab_vre.database.cell import Cell
-from jupyterlab_vre.database.database import Catalog
+from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.Rextractor import RExtractor
@@ -65,8 +65,8 @@ class ExtractorHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        logger.debug('ExtractorHandler. payload: ' + str(payload))
-        print('ExtractorHandler. payload: '+ str(payload))
+        logging.getLogger(__name__).debug('ExtractorHandler. payload: ' + json.dumps(payload, indent=4))
+        print('ExtractorHandler. payload: ' + json.dumps(payload, indent=4))
         kernel = payload['kernel']
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
