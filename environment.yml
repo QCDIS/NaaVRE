@@ -38,7 +38,7 @@ dependencies:
 #  - r
 #  - r-irkernel
 ##  - pandas
-#  - rpy2
+  - rpy2
 #  - r-renv
 #  - r-jsonlite
   - pip:
