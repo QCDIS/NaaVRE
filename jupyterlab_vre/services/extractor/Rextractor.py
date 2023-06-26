@@ -261,7 +261,6 @@ class RExtractor:
         return result
 
     def assignment_variables(self, text):
-        print("-------------------------")
         result = []
 
         # Solution 1: Write our own recursive function that in Python that parses the R output. This is very inefficient. 
