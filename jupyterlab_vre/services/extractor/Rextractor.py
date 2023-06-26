@@ -7,6 +7,93 @@ import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
 from rpy2.robjects.packages import importr
 import pandas as pd
+import re
+
+# Create an R environment
+r_env = robjects.globalenv
+
+# This R code is used to obtain all assignment variables (source https://adv-r.hadley.nz/expressions.html)
+r_env["result"] = robjects.r("""
+library(rlang)
+library(lobstr)
+library(purrr)
+
+expr_type <- function(x) {
+  if (rlang::is_syntactic_literal(x)) {
+    "constant"
+  } else if (is.symbol(x)) {
+    "symbol"
+  } else if (is.call(x)) {
+    "call"
+  } else if (is.pairlist(x)) {
+    "pairlist"
+  } else {
+    typeof(x)
+  }
+}
+
+switch_expr <- function(x, ...) {
+  switch(expr_type(x),
+    ...,
+    stop("Don't know how to handle type ", typeof(x), call. = FALSE)
+  )
+}
+
+recurse_call <- function(x) {
+  switch_expr(x,
+    # Base cases
+    symbol = ,
+    constant = ,
+
+    # Recursive cases
+    call = ,
+    pairlist =
+  )
+}
+
+logical_abbr_rec <- function(x) {
+  switch_expr(x,
+    constant = FALSE,
+    symbol = as_string(x) %in% c("F", "T")
+  )
+}
+
+logical_abbr <- function(x) {
+  logical_abbr_rec(enexpr(x))
+}
+
+find_assign_rec <- function(x) {
+  switch_expr(x,
+    constant = ,
+    symbol = character()
+  )
+}
+find_assign <- function(x) unique(find_assign_rec(enexpr(x)))
+
+flat_map_chr <- function(.x, .f, ...) {
+  purrr::flatten_chr(purrr::map(.x, .f, ...))
+}
+
+find_assign_rec <- function(x) {
+  switch_expr(x,
+    # Base cases
+    constant = ,
+    symbol = character(),
+
+    # Recursive cases
+    pairlist = flat_map_chr(as.list(x), find_assign_rec),
+    call = {
+      if (is_call(x, "<-") || is_call(x, "=")) { # TODO: also added is_call(x, "=") here
+        if (typeof(x[[2]]) == "symbol"){ # TODO: added the type check here
+            as_string(x[[2]])
+        }
+      } else {
+        flat_map_chr(as.list(x), find_assign_rec)
+      }
+    }
+  )
+}
+""") 
 
 # Load the base R package for parsing and evaluation
 base = importr('base')
@@ -174,14 +261,19 @@ class RExtractor:
         return result
 
     def assignment_variables(self, text):
-
-        # TODO: very inefficient solution
+        print("-------------------------")
         result = []
-        parsed_expr = base.parse(text=text, keep_source=True)
-        parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
-        result = list(self.recursive_variables(parsed_expr_py, set()))
-        print("My assignment variables: ", result)
 
+        # Solution 1: Write our own recursive function that in Python that parses the R output. This is very inefficient. 
+        # parsed_expr = base.parse(text=text, keep_source=True)
+        # parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
+        # result = list(self.recursive_variables(parsed_expr_py, set()))
+
+        # Solution 2: Use built-in recursive cases of R (source https://adv-r.hadley.nz/expressions.html). This method is significantly faster.
+        output_r = robjects.r("""find_assign({
+            %s
+        })""" % text)
+        result = re.findall(r'"([^"]*)"', str(output_r))
         return result
 
     def __extract_cell_undefined(self, cell_source):
