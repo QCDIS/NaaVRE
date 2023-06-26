@@ -85,7 +85,7 @@ export class CellTracker extends React.Component<IProps, IState> {
             )
         }
 
-        return false;
+        return true;
     };
 
     typesUpdate = async (event: React.ChangeEvent<{ name?: string; value: unknown; }>, port: string) => {
