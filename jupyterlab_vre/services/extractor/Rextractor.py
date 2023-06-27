@@ -143,13 +143,25 @@ class RExtractor:
         parsed_r = robjects.r['parse'](text=cell_source)
         vars_r = robjects.r['all.vars'](parsed_r) 
 
-        # challenge 1: filter out stuff like libraries. Because when using "library(cool)", it recognies cool as a variable,
-        #              but not in the case of "library('cool')". this is sort of solved now but does not cover all cases
-        # challenge 2 (TODO): in the example script 'state' and 'n' are recognized as variables. 
-        #              this should be solved as we do not want this. # TODO: look at CodeDepends and the function 'getVariables(sc)', this might solve this
+        # Challenge 1: Function Parameters
+
+        # Challenge 2: Built-in Constants
+        built_in_cons = ["T", "F", "pi", "is.numeric"]
+        vars_r = list(filter(lambda x: x not in built_in_cons, vars_r))
+
+        # Challenge 3: Iterator Variables
+
+        # Challenge 4: Apply built-in functions
+        # MANUALLY SOLVABLE
+
+        # Challenge 5: Libraries
         for avar in vars_r:
-            if avar not in self.imports:
-                names.add(avar)
+          if avar not in self.imports:
+            names.add(avar)
+
+        # Challenge 6: Variable-based data access
+        # MANUALLY SOLVABLE
+
         return set(names)
 
     def assignment_variables(self, text):
