@@ -239,26 +239,26 @@ class RExtractor:
                 names.add(avar)
         return set(names)
 
-    # def recursive_variables(self, my_expr, result):
-    #     if isinstance(my_expr, rinterface.LangSexpVector):
+    # This is a very inefficient approach to obtain all assignment variables (Solution 1)
+    def recursive_variables(self, my_expr, result):
+        if isinstance(my_expr, rinterface.LangSexpVector):
+            # check if there are enough data values. for an assignment there must be three namely VARIABLE SYMBOL VALUE. e.g. a = 3
+            if len(my_expr) >= 3:
 
-    #         # check if there are enough data values. for an assignment there must be three namely VARIABLE SYMBOL VALUE. e.g. a = 3
-    #         if len(my_expr) >= 3:
+                # check for matches
+                c = str(my_expr[0])
+                variable = my_expr[1]
 
-    #             # check for matches
-    #             c = str(my_expr[0])
-    #             variable = my_expr[1]
-
-    #             # Check if assignment. 
-    #             if (c == "<-" or c == "="):
-    #                 if isinstance(my_expr[1], rinterface.SexpSymbol):
-    #                     result.add(str(variable))    
-    #     try:
-    #         for expr in my_expr:
-    #             result = self.recursive_variables(expr, result)
-    #     except Exception as e:
-    #         pass
-    #     return result
+                # Check if assignment. 
+                if (c == "<-" or c == "="):
+                    if isinstance(my_expr[1], rinterface.SexpSymbol):
+                        result.add(str(variable))    
+        try:
+            for expr in my_expr:
+                result = self.recursive_variables(expr, result)
+        except Exception as e:
+            pass
+        return result
 
     def assignment_variables(self, text):
         result = []
