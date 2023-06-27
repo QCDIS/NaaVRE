@@ -138,31 +138,58 @@ class RExtractor:
 
         return dependencies
 
+    def get_function_parameters(self, cell_source):
+      result = []
+
+      # Approach 1: Naive Regex
+      functions = re.findall(r'function\s*\((.*?)\)', cell_source)
+      for params in functions:
+          result.extend(re.findall(r'\b\w+\b', params))
+
+      # Approach 2: AST based
+      # TODO
+
+      return list(set(result))
+
+    def get_iterator_variables(self, cell_source):
+      result = []
+
+      # Approach 1: Naive Regex. This means that iterator variables are in the following format:
+      # for ( <IT_VAR> .....)
+      result = re.findall(r'for\s*\(\s*(\w+)\s+in', cell_source)
+
+      # Approach 2: Parse AST. Much cleaner option as iterator variables can appear in differen syntaxes.
+      # TODO 
+
+      return result
+
     def __extract_cell_names(self, cell_source):
         names = set()
         parsed_r = robjects.r['parse'](text=cell_source)
         vars_r = robjects.r['all.vars'](parsed_r) 
 
         # Challenge 1: Function Parameters
+        function_parameters = self.get_function_parameters(cell_source)
+        vars_r = list(filter(lambda x: x not in function_parameters, vars_r))
 
         # Challenge 2: Built-in Constants
         built_in_cons = ["T", "F", "pi", "is.numeric"]
         vars_r = list(filter(lambda x: x not in built_in_cons, vars_r))
 
         # Challenge 3: Iterator Variables
+        iterator_variables = self.get_iterator_variables(cell_source)
+        vars_r = list(filter(lambda x: x not in iterator_variables, vars_r))
 
         # Challenge 4: Apply built-in functions
         # MANUALLY SOLVABLE
 
         # Challenge 5: Libraries
-        for avar in vars_r:
-          if avar not in self.imports:
-            names.add(avar)
+        vars_r = list(filter(lambda x: x not in self.imports, vars_r))
 
         # Challenge 6: Variable-based data access
         # MANUALLY SOLVABLE
 
-        return set(names)
+        return set(vars_r)
 
     def assignment_variables(self, text):
         result = []
