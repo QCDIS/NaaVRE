@@ -40,5 +40,5 @@ dependencies:
 ##  - pandas
   - rpy2
 #  - r-renv
-#  - r-jsonlite
+  - r-jsonlite
   - pip:
