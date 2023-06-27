@@ -35,7 +35,7 @@ dependencies:
   - git
   - pathlib2
   - pip
-#  - r
+  - r
   - r-irkernel
 ##  - pandas
   - rpy2
