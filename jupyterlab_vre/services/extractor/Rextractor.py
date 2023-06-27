@@ -181,13 +181,13 @@ class RExtractor:
         vars_r = list(filter(lambda x: x not in iterator_variables, vars_r))
 
         # Challenge 4: Apply built-in functions
-        # MANUALLY SOLVABLE
+        # MANUALLY SOLVED
 
         # Challenge 5: Libraries
         vars_r = list(filter(lambda x: x not in self.imports, vars_r))
 
         # Challenge 6: Variable-based data access
-        # MANUALLY SOLVABLE
+        # MANUALLY SOLVED
 
         return set(vars_r)
 
