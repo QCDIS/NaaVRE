@@ -2,7 +2,6 @@ import json
 import logging
 import re
 
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -51,12 +50,16 @@ class Cell:
         self.outputs = list(outputs)
         self.params = list(params)
         self.confs = confs
+        self.all_inputs = list(inputs) + list(params)
         self.types = dict()
         self.dependencies = dependencies
         self.chart_obj = chart_obj
         self.node_id = node_id
         self.container_source = container_source
         self.kernel = kernel
+
+    def concatenate_all_inputs(self):
+        self.all_inputs = list(self.inputs) + list(self.params)
 
     def clean_code(self):
         indices_to_remove = []
