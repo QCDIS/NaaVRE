@@ -263,7 +263,8 @@ class RExtractor:
     def assignment_variables(self, text):
         result = []
 
-        # Solution 1: Write our own recursive function that in Python that parses the R output. This is very inefficient. 
+        # Solution 1: Write our own recursive function that in Python that parses the Abstract Syntax Tree of the R cell
+        # This is a very inefficient solution
         # parsed_expr = base.parse(text=text, keep_source=True)
         # parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
         # result = list(self.recursive_variables(parsed_expr_py, set()))
@@ -273,6 +274,8 @@ class RExtractor:
             %s
         })""" % text)
         result = re.findall(r'"([^"]*)"', str(output_r))
+        
+        # Return the result
         return result
 
     def __extract_cell_undefined(self, cell_source):
