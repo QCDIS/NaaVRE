@@ -27,7 +27,7 @@ class WorkflowParser:
         }
         self.cells_in_use = {}
         for node in nodes:
-            if nodes[node]['type'] != 'splitter' and nodes[node]['type'] != 'merger':
+            if nodes[node]['type'] != 'splitter' and nodes[node]['type'] != 'merger' and nodes[node]['type'] != 'visualizer':
                 try:
                     self.cells_in_use[nodes[node]['id']] = Catalog.get_cell_from_og_node_id(
                         nodes[node]['properties']['og_node_id'])
@@ -43,7 +43,7 @@ class WorkflowParser:
 
         for nid, node in self.nodes.items():
             for pid, port in node['ports'].items():
-                is_special = node['type'] == 'splitter' or node['type'] == 'merger'
+                is_special = node['type'] == 'splitter' or node['type'] == 'merger' or node['type'] == 'visualizer'
                 trailing_id = nid if is_special else node['properties']['og_node_id']
                 self.nodes[nid]['ports'][pid]['id'] = f"{pid}_{trailing_id[:7]}"
 
@@ -51,8 +51,8 @@ class WorkflowParser:
             node_from = self.nodes[link['from']['nodeId']]
             node_to = self.nodes[link['to']['nodeId']]
 
-            from_is_special = node_from['type'] == 'splitter' or node_from['type'] == 'merger'
-            to_is_special = node_to['type'] == 'splitter' or node_to['type'] == 'merger'
+            from_is_special = node_from['type'] == 'splitter' or node_from['type'] == 'merger' or node_from['type'] == 'visualizer'
+            to_is_special = node_to['type'] == 'splitter' or node_to['type'] == 'merger' or node_to['type'] == 'visualizer'
 
             from_trailing_id = node_from['id'] if from_is_special else node_from['properties']['og_node_id']
             to_trailing_id = node_to['id'] if to_is_special else node_to['properties']['og_node_id']
@@ -78,7 +78,7 @@ class WorkflowParser:
                 raise Exception('Error while parsing link: ' + link['from'] + ' from node has no id')
 
 
-            from_special_node = (from_node['type'] == 'merger' or from_node['type'] == 'splitter')
+            from_special_node = (from_node['type'] == 'merger' or from_node['type'] == 'splitter' or from_node['type'] == 'visualizer')
 
             task_name = f'{from_node["type"]}-{from_node["id"][:7]}' if from_special_node else \
                 Catalog.get_cell_from_og_node_id(

@@ -48,7 +48,7 @@ export const WorkspaceItem = ({ itemKey, type, ports, properties, itemDeleteActi
         event.dataTransfer.setData(REACT_FLOW_CHART, JSON.stringify({ type, ports, properties }))
       }}
     >
-      {type != "splitter" && type != "merger" ? (
+      {type != "splitter" && type != "merger" && type!= "visualizer" ? (
         <div>
           <Title>{properties['title']}</Title>
           <div style={{ marginTop: '5px', cursor: 'pointer' }} onClick={() => { itemDeleteAction(itemKey) }}>

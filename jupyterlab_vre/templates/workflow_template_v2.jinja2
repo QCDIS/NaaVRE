@@ -17,8 +17,9 @@ spec:
       dag:
         tasks:
         {% for nid in nodes %}
-        {% set is_special_node = nodes[nid]['type'] == 'splitter' or nodes[nid]['type'] == 'merger' %}
+        {% set is_special_node = nodes[nid]['type'] == 'splitter' or nodes[nid]['type'] == 'merger' or nodes[nid]['type'] == 'visualizer' %}
         {% set is_splitter = nodes[nid]['type'] == 'splitter' %}
+        {% set is_visualizer = nodes[nid]['type'] == 'visualizer' %}
         {% set task_name =  nodes[nid]['type'] + "-" + nid[:7] if is_special_node else cells[nid]['task_name']+ "-" + nid[:7] %}
         {% set params =  [] if is_special_node else cells[nid]['params'] %}
         - name: {{ task_name }}
@@ -44,8 +45,9 @@ spec:
         {% endfor %}
 
     {% for nid in nodes %}
-    {% set is_special_node = nodes[nid]['type'] == 'splitter' or nodes[nid]['type'] == 'merger' %}
+    {% set is_special_node = nodes[nid]['type'] == 'splitter' or nodes[nid]['type'] == 'merger' or nodes[nid]['type'] == 'visualizer' %}
     {% set is_splitter = nodes[nid]['type'] == 'splitter' %}
+    {% set is_visualizer = nodes[nid]['type'] == 'visualizer' %}
     {% set task_name = nodes[nid]['type'] + "-" + nid[:7] if is_special_node else cells[nid]['task_name'] + "-" + nid[:7] %}
     {% set params = [] if is_special_node else cells[nid]['params'] %}
     {% set ports = nodes[nid]['ports'] %}
@@ -70,6 +72,7 @@ spec:
         {% endif %}
         {% endfor %}
       {% if is_special_node %}
+      {% if not is_visualizer %}
         {% set special_dep = deps_dag[nid][0] %}
       script:
         image: python:alpine3.9
@@ -96,6 +99,10 @@ spec:
           {% endif %}
            {% endif %}
           {% endfor %}
+          {% else %}
+      container:
+        image: "adeelaashraf/naavre_visualization:latest"
+        imagePullPolicy: Always
       {% else %}
       container:
         image: "{{ image_repo }}/{{ cells[nid]['task_name'] }}"
@@ -105,7 +112,7 @@ spec:
         {% if cells[nid]['kernel'] == 'ipython' %}
           - source /venv/bin/activate; python {{ cells[nid]['task_name'] }}.py
             {% for d in deps_dag[nid] %}
-            {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
+            {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' or d['type'] == 'visualizer' %}
             {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}
             {% set stdinname_base = stdinname.split('_')[0] %}
             --{{ stdinname_base }}{{ ' "{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}"' }}
@@ -117,7 +124,7 @@ spec:
         {% elif cells[nid]['kernel'] == 'IRkernel' %}
           - Rscript /app/{{ cells[nid]['task_name'] }}.R
             {% for d in deps_dag[nid] %}
-            {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
+            {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' or d['type'] == 'visualizer' %}
             {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}
             {% set stdinname_base = stdinname.split('_')[0] %}
             --{{ stdinname_base }}{{ ' "{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}"' }}

@@ -13,6 +13,7 @@ import { VRECell, requestAPI } from '@jupyter_vre/core';
 import { CellEditor, Page } from '@jupyter_vre/components';
 import { Workspace } from './Workspace';
 import { Parallelization } from './Parallelization';
+import { Visualization } from './Visualization';
 import BasicSpeedDial from './SpeedDial';
 import { ExecuteWorkflowDialog } from './ExecuteWorkflowDialog';
 
@@ -137,6 +138,10 @@ export class Composer extends React.Component<IProps, IState> {
 				return (
 					<div>Merger</div>
 				);
+			case "visualizer":
+				return (
+					<div>Visualizer</div>
+				);
 		}
 
 		return (
@@ -170,6 +175,7 @@ export class Composer extends React.Component<IProps, IState> {
 							(<div></div>)
 						}
 						<Parallelization />
+						<Visualization />
 						<BasicSpeedDial
 							handleDialSelection={this.handleDialSelection}
 						/>
