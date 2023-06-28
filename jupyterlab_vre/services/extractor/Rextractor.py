@@ -263,13 +263,13 @@ class RExtractor:
     def assignment_variables(self, text):
         result = []
 
-        # Solution 1: Write our own recursive function that in Python that parses the Abstract Syntax Tree of the R cell
+        # Solution 1 (Native-Python): Write our own recursive function that in Python that parses the Abstract Syntax Tree of the R cell
         # This is a very inefficient solution
         # parsed_expr = base.parse(text=text, keep_source=True)
         # parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
         # result = list(self.recursive_variables(parsed_expr_py, set()))
 
-        # Solution 2: Use built-in recursive cases of R (source https://adv-r.hadley.nz/expressions.html). This method is significantly faster.
+        # Solution 2 (Native-R): Use built-in recursive cases of R (source https://adv-r.hadley.nz/expressions.html). This method is significantly faster.
         output_r = robjects.r("""find_assign({
             %s
         })""" % text)
