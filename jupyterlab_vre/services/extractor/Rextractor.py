@@ -149,7 +149,6 @@ class RExtractor:
 
         # challenge 1: filter out stuff like libraries. Because when using "library(cool)", it recognies cool as a variable,
         #              but not in the case of "library('cool')". this is sort of solved now but does not cover all cases
-
         # challenge 2 (TODO): in the example script 'state' and 'n' are recognized as variables. 
         #              this should be solved as we do not want this. # TODO: look at CodeDepends and the function 'getVariables(sc)', this might solve this
         for avar in vars_r:
