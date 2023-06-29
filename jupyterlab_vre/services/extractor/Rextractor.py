@@ -6,10 +6,96 @@ import rpy2.rinterface as rinterface
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
 from rpy2.robjects.packages import importr
+import re
+
+# Create an R environment
+r_env = robjects.globalenv
+
+# This R code is used to obtain all assignment variables (source https://adv-r.hadley.nz/expressions.html)
+r_env["result"] = robjects.r("""
+library(rlang)
+library(lobstr)
+library(purrr)
+
+expr_type <- function(x) {
+  if (rlang::is_syntactic_literal(x)) {
+    "constant"
+  } else if (is.symbol(x)) {
+    "symbol"
+  } else if (is.call(x)) {
+    "call"
+  } else if (is.pairlist(x)) {
+    "pairlist"
+  } else {
+    typeof(x)
+  }
+}
+
+switch_expr <- function(x, ...) {
+  switch(expr_type(x),
+    ...,
+    stop("Don't know how to handle type ", typeof(x), call. = FALSE)
+  )
+}
+
+recurse_call <- function(x) {
+  switch_expr(x,
+    # Base cases
+    symbol = ,
+    constant = ,
+
+    # Recursive cases
+    call = ,
+    pairlist =
+  )
+}
+
+logical_abbr_rec <- function(x) {
+  switch_expr(x,
+    constant = FALSE,
+    symbol = as_string(x) %in% c("F", "T")
+  )
+}
+
+logical_abbr <- function(x) {
+  logical_abbr_rec(enexpr(x))
+}
+
+find_assign_rec <- function(x) {
+  switch_expr(x,
+    constant = ,
+    symbol = character()
+  )
+}
+find_assign <- function(x) unique(find_assign_rec(enexpr(x)))
+
+flat_map_chr <- function(.x, .f, ...) {
+  purrr::flatten_chr(purrr::map(.x, .f, ...))
+}
+
+find_assign_rec <- function(x) {
+  switch_expr(x,
+    # Base cases
+    constant = ,
+    symbol = character(),
+
+    # Recursive cases
+    pairlist = flat_map_chr(as.list(x), find_assign_rec),
+    call = {
+      if (is_call(x, "<-") || is_call(x, "=")) { # TODO: also added is_call(x, "=") here
+        if (typeof(x[[2]]) == "symbol"){ # TODO: added the type check here
+            as_string(x[[2]])
+        }
+      } else {
+        flat_map_chr(as.list(x), find_assign_rec)
+      }
+    }
+  )
+}
+""") 
 
 # Load the base R package for parsing and evaluation
 base = importr('base')
-
 
 # TODO: create an interface such that it can be easily extended to other kernels
 
@@ -191,27 +277,43 @@ class RExtractor:
 
         return set(vars_r)
 
+    # This is a very inefficient approach to obtain all assignment variables (Solution 1)
+    def recursive_variables(self, my_expr, result):
+        if isinstance(my_expr, rinterface.LangSexpVector):
+            # check if there are enough data values. for an assignment there must be three namely VARIABLE SYMBOL VALUE. e.g. a = 3
+            if len(my_expr) >= 3:
+
+                # check for matches
+                c = str(my_expr[0])
+                variable = my_expr[1]
+
+                # Check if assignment. 
+                if (c == "<-" or c == "="):
+                    if isinstance(my_expr[1], rinterface.SexpSymbol):
+                        result.add(str(variable))    
+        try:
+            for expr in my_expr:
+                result = self.recursive_variables(expr, result)
+        except Exception as e:
+            pass
+        return result
+
     def assignment_variables(self, text):
         result = []
-        parsed_expr = base.parse(text=text, keep_source=True)
-        parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
 
-        # Loop through the first level of the AST
-        for expr in parsed_expr_py:
+        # Solution 1 (Native-Python): Write our own recursive function that in Python that parses the Abstract Syntax Tree of the R cell
+        # This is a very inefficient solution
+        # parsed_expr = base.parse(text=text, keep_source=True)
+        # parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
+        # result = list(self.recursive_variables(parsed_expr_py, set()))
 
-            # Check for a specific type. otherwise continue
-            if not isinstance(expr, rinterface.LangSexpVector):
-                continue
-
-            # check for matches
-            c = str(expr[0])
-            variable = str(expr[1])
-
-            # check if assignment. (TODO) is there a better way to check if it is an assignment?
-            if not ((c == "<-" or c == "=")):
-                continue
-
-            result.append(variable)
+        # Solution 2 (Native-R): Use built-in recursive cases of R (source https://adv-r.hadley.nz/expressions.html). This method is significantly faster.
+        output_r = robjects.r("""find_assign({
+            %s
+        })""" % text)
+        result = re.findall(r'"([^"]*)"', str(output_r))
+        
+        # Return the result
         return result
 
     def __extract_cell_undefined(self, cell_source):

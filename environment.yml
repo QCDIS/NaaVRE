@@ -41,4 +41,7 @@ dependencies:
   - rpy2
   - r-renv
   - r-jsonlite
+  - r-lobstr
+  - r-rlang
+  - r-purrr
   - pip:
