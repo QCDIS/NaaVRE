@@ -246,7 +246,7 @@ class RExtractor:
 
       # Approach 1: Naive Regex. This means that iterator variables are in the following format:
       # for ( <IT_VAR> .....)
-      result = re.findall(r'for\s*\(\s*(\w+)\s+in', cell_source)
+      result = re.findall(r'for\s*\(\s*([a-zA-Z0-9.]+)\s+in', cell_source)
 
       # Approach 2: Parse AST. Much cleaner option as iterator variables can appear in differen syntaxes.
       # TODO 
@@ -263,7 +263,7 @@ class RExtractor:
         vars_r = list(filter(lambda x: x not in function_parameters, vars_r))
 
         # Challenge 2: Built-in Constants
-        built_in_cons = ["T", "F", "pi", "is.numeric"]
+        built_in_cons = ["T", "F", "pi", "is.numeric", "mu", "round"]
         vars_r = list(filter(lambda x: x not in built_in_cons, vars_r))
 
         # Challenge 3: Iterator Variables
