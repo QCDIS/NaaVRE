@@ -1,7 +1,6 @@
 import os
 import re
 import tempfile
-import pandas as pd
 
 import rpy2.rinterface as rinterface
 import rpy2.robjects as robjects
@@ -50,7 +49,11 @@ class RExtractor:
                 tmp_file.flush()
                 renv = rpackages.importr('renv')
                 function_list = renv.dependencies(tmp_file.name)
-                packages = list(pd.DataFrame(function_list).transpose().iloc[:, 1])
+
+                # transpose renv dependencies to readable dependencies
+                transposed_list = list(map(list, zip(*function_list)))
+                packages = [row[1] for row in transposed_list]
+
                 tmp_file.close()
                 os.remove(tmp_file.name)
 
