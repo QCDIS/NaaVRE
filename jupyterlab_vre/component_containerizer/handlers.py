@@ -20,8 +20,8 @@ from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
 from tornado import web
 
-from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.catalog import Catalog
+from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.Rextractor import RExtractor
@@ -283,8 +283,8 @@ class CellsHandler(APIHandler, Catalog):
             build_templates(cell=current_cell, files_info=files_info)
         else:
             self.set_status(400)
-            self.write_error('Kernel: ' + current_cell.kernel +' not supported')
-            logger.error('Kernel: '+current_cell.kernel +' not supported')
+            self.write_error('Kernel: ' + current_cell.kernel + ' not supported')
+            logger.error('Kernel: ' + current_cell.kernel + ' not supported')
             self.flush()
             return
 

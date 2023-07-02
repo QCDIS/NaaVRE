@@ -34,8 +34,10 @@ def create_cell(payload_path=None):
         0] == "#" else "Untitled"
 
     if 'JUPYTERHUB_USER' in os.environ:
-        title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                     '-at-').strip()
+        title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.',
+                                                                                                                   '-').replace(
+            '@',
+            '-at-').strip()
 
     ins = []
     outs = []

@@ -13,7 +13,6 @@ logger.setLevel(logging.DEBUG)
 
 
 class Catalog:
-
     naa_vre_path = os.path.join(str(Path.home()), 'NaaVRE')
 
     if not os.path.exists(naa_vre_path):
@@ -80,7 +79,6 @@ class Catalog:
     @classmethod
     def add_registry_credentials(cls, cred: Repository):
         cls.registry_credentials.insert(cred.__dict__)
-
 
     @classmethod
     def add_repository_credentials(cls, cred: Repository):
