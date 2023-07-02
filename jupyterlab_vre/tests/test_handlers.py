@@ -1,6 +1,5 @@
 import glob
 import json
-import json
 import os
 import shlex
 import shutil
@@ -8,7 +7,6 @@ import subprocess
 import sys
 from pathlib import Path
 from time import sleep
-import re
 from unittest import mock
 
 import requests
@@ -19,8 +17,8 @@ from tornado.web import Application
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
     NotebookSearchHandler, NotebookSearchRatingHandler
 from jupyterlab_vre.component_containerizer.handlers import find_job
-from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.database.catalog import Catalog
+from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.handlers import load_module_names_mapping
 from jupyterlab_vre.notebook_search.handlers import NotebookDownloadHandler
 

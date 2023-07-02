@@ -19,5 +19,3 @@ class TestEnvironmentVariables(TestCase):
         self.assertIsNotNone(os.environ.get('SEARCH_API_ENDPOINT'))
         self.assertIsNotNone(os.environ.get('SEARCH_API_TOKEN'))
         self.assertIsNotNone(os.environ.get('ARGO_URL'))
-
-
