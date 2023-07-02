@@ -67,6 +67,7 @@ class Rcontainerizer:
         inputs = cell.inputs
         types = cell.types
         inputs.append('id')
+        cell.concatenate_all_inputs()
         types['id'] = 'str'
         logger.debug("inputs: " + str(cell.inputs))
         logger.debug("types: " + str(cell.types))

@@ -8,20 +8,11 @@ library(jsonlite)
 option_list = list
 
 option_list = list(
-{% for in_var in cell.inputs|sort %}
+{% for in_var in cell.all_inputs|sort %}
 {% if loop.last %}
 make_option(c("--{{ in_var }}"), action="store", default=NA, type='character', help="my description")
 {% else %}
 make_option(c("--{{ in_var }}"), action="store", default=NA, type='character', help="my description"),
-{% endif %}
-
-{% endfor %}
-
-{% for param in cell.params|sort %}
-{% if loop.last %}
-make_option(c("--{{ param }}"), action="store", default=NA, type='character', help="my description")
-{% else %}
-make_option(c("--{{ param }}"), action="store", default=NA, type='character', help="my description"),
 {% endif %}
 {% endfor %}
 )
