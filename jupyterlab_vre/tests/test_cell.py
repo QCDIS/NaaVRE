@@ -13,9 +13,7 @@ elif os.path.exists('jupyterlab_vre/tests/resources/'):
     base_path = 'jupyterlab_vre/tests/resources/'
 
 
-
 class TestCell(TestCase):
-
     cells_json_path = None
 
     @classmethod
