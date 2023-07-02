@@ -1,131 +1,131 @@
 {
-    "offset": {
-        "x": 0,
-        "y": 0
+  "offset": {
+    "x": 0,
+    "y": 0
+  },
+  "scale": 1,
+  "nodes": {
+    "928eae58-e82d-4a80-906a-1323ede80357": {
+      "id": "928eae58-e82d-4a80-906a-1323ede80357",
+      "position": {
+        "x": 510,
+        "y": 149
+      },
+      "orientation": 0,
+      "type": "input-output",
+      "ports": {
+        "numbers": {
+          "properties": {
+            "color": "#592d86"
+          },
+          "id": "numbers",
+          "type": "right",
+          "position": {
+            "x": 216.5,
+            "y": 74.5
+          }
+        }
+      },
+      "properties": {
+        "title": "input-dev-user-name-at-domain-com",
+        "vars": [
+          {
+            "name": "numbers",
+            "direction": "output",
+            "type": "datatype",
+            "color": "#592d86"
+          }
+        ],
+        "params": [],
+        "inputs": [],
+        "outputs": [
+          "numbers"
+        ],
+        "og_node_id": "0927ec0",
+        "deps": []
+      },
+      "size": {
+        "width": 250,
+        "height": 150
+      }
     },
-    "scale": 1,
-    "nodes": {
-        "928eae58-e82d-4a80-906a-1323ede80357": {
-            "id": "928eae58-e82d-4a80-906a-1323ede80357",
-            "position": {
-                "x": 510,
-                "y": 149
-            },
-            "orientation": 0,
-            "type": "input-output",
-            "ports": {
-                "numbers": {
-                    "properties": {
-                        "color": "#592d86"
-                    },
-                    "id": "numbers",
-                    "type": "right",
-                    "position": {
-                        "x": 216.5,
-                        "y": 74.5
-                    }
-                }
-            },
-            "properties": {
-                "title": "input-dev-user-name-at-domain-com",
-                "vars": [
-                    {
-                        "name": "numbers",
-                        "direction": "output",
-                        "type": "datatype",
-                        "color": "#592d86"
-                    }
-                ],
-                "params": [],
-                "inputs": [],
-                "outputs": [
-                    "numbers"
-                ],
-                "og_node_id": "0927ec0",
-                "deps": []
-            },
-            "size": {
-                "width": 250,
-                "height": 150
-            }
+    "3eb47f47-3fdb-4f08-9207-d7b2843e801d": {
+      "id": "3eb47f47-3fdb-4f08-9207-d7b2843e801d",
+      "position": {
+        "x": 908,
+        "y": 135
+      },
+      "orientation": 0,
+      "type": "input-output",
+      "ports": {
+        "numbers": {
+          "properties": {
+            "color": "#592d86"
+          },
+          "id": "numbers",
+          "type": "left",
+          "position": {
+            "x": 31.5,
+            "y": 74.5
+          }
         },
-        "3eb47f47-3fdb-4f08-9207-d7b2843e801d": {
-            "id": "3eb47f47-3fdb-4f08-9207-d7b2843e801d",
-            "position": {
-                "x": 908,
-                "y": 135
-            },
-            "orientation": 0,
-            "type": "input-output",
-            "ports": {
-                "numbers": {
-                    "properties": {
-                        "color": "#592d86"
-                    },
-                    "id": "numbers",
-                    "type": "left",
-                    "position": {
-                        "x": 31.5,
-                        "y": 74.5
-                    }
-                },
-                "average": {
-                    "properties": {
-                        "color": "#e0c96c"
-                    },
-                    "id": "average",
-                    "type": "right",
-                    "position": {
-                        "x": 219,
-                        "y": 74.5
-                    }
-                }
-            },
-            "properties": {
-                "title": "csddfv-dev-user-name-at-domain-com",
-                "vars": [
-                    {
-                        "name": "numbers",
-                        "direction": "input",
-                        "type": "datatype",
-                        "color": "#592d86"
-                    },
-                    {
-                        "name": "average",
-                        "direction": "output",
-                        "type": "datatype",
-                        "color": "#e0c96c"
-                    }
-                ],
-                "params": [],
-                "inputs": [
-                    "numbers"
-                ],
-                "outputs": [
-                    "average"
-                ],
-                "og_node_id": "6998a68",
-                "deps": []
-            },
-            "size": {
-                "width": 250,
-                "height": 150
-            }
+        "average": {
+          "properties": {
+            "color": "#e0c96c"
+          },
+          "id": "average",
+          "type": "right",
+          "position": {
+            "x": 219,
+            "y": 74.5
+          }
         }
-    },
-    "links": {
-        "6f1908a4-6149-4f28-a2ab-507e3b25fae0": {
-            "id": "6f1908a4-6149-4f28-a2ab-507e3b25fae0",
-            "from": {
-                "nodeId": "928eae58-e82d-4a80-906a-1323ede80357",
-                "portId": "numbers"
-            },
-            "to": {
-                "nodeId": "3eb47f47-3fdb-4f08-9207-d7b2843e801d",
-                "portId": "numbers"
-            }
-        }
-    },
-    "selected": {},
-    "hovered": {}
+      },
+      "properties": {
+        "title": "csddfv-dev-user-name-at-domain-com",
+        "vars": [
+          {
+            "name": "numbers",
+            "direction": "input",
+            "type": "datatype",
+            "color": "#592d86"
+          },
+          {
+            "name": "average",
+            "direction": "output",
+            "type": "datatype",
+            "color": "#e0c96c"
+          }
+        ],
+        "params": [],
+        "inputs": [
+          "numbers"
+        ],
+        "outputs": [
+          "average"
+        ],
+        "og_node_id": "6998a68",
+        "deps": []
+      },
+      "size": {
+        "width": 250,
+        "height": 150
+      }
+    }
+  },
+  "links": {
+    "6f1908a4-6149-4f28-a2ab-507e3b25fae0": {
+      "id": "6f1908a4-6149-4f28-a2ab-507e3b25fae0",
+      "from": {
+        "nodeId": "928eae58-e82d-4a80-906a-1323ede80357",
+        "portId": "numbers"
+      },
+      "to": {
+        "nodeId": "3eb47f47-3fdb-4f08-9207-d7b2843e801d",
+        "portId": "numbers"
+      }
+    }
+  },
+  "selected": {},
+  "hovered": {}
 }
