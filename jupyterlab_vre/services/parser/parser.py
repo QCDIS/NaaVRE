@@ -77,7 +77,6 @@ class WorkflowParser:
             if 'id' not in from_node:
                 raise Exception('Error while parsing link: ' + link['from'] + ' from node has no id')
 
-
             from_special_node = (from_node['type'] == 'merger' or from_node['type'] == 'splitter')
 
             task_name = f'{from_node["type"]}-{from_node["id"][:7]}' if from_special_node else \

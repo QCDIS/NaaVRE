@@ -24,7 +24,7 @@ class RExtractor:
         self.sources = [nbcell.source for nbcell in notebook.cells if
                         nbcell.cell_type == 'code' and len(nbcell.source) > 0]
 
-        self.imports = set()  #self.__extract_imports(self.sources)
+        self.imports = set()  # self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
         self.global_params = self.__extract_params(self.sources)
         self.undefined = set()
@@ -49,7 +49,7 @@ class RExtractor:
                 tmp_file.flush()
                 renv = rpackages.importr('renv')
                 function_list = renv.dependencies(tmp_file.name)
-                packages = [] #list(pd.DataFrame(function_list).transpose().iloc[:, 1])
+                packages = []  # list(pd.DataFrame(function_list).transpose().iloc[:, 1])
                 tmp_file.close()
                 os.remove(tmp_file.name)
 
@@ -141,7 +141,7 @@ class RExtractor:
     def __extract_cell_names(self, cell_source):
         names = set()
         parsed_r = robjects.r['parse'](text=cell_source)
-        vars_r = robjects.r['all.vars'](parsed_r) 
+        vars_r = robjects.r['all.vars'](parsed_r)
 
         # challenge 1: filter out stuff like libraries. Because when using "library(cool)", it recognies cool as a variable,
         #              but not in the case of "library('cool')". this is sort of solved now but does not cover all cases
