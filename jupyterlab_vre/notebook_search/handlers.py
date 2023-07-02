@@ -15,8 +15,9 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 if 'JUPYTERHUB_USER' in os.environ:
-    client_id = 'NaaVRE_' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                     '-at-').strip()
+    client_id = 'NaaVRE_' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace(
+        '.', '-').replace('@',
+                          '-at-').strip()
 
 
 ################################################################################

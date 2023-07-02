@@ -2,36 +2,36 @@
   "namespace": "argo",
   "serverDryRun": false,
   "workflow": {
-      "metadata": {
-        "generateName": "hello-world-",
-        "namespace": "argo",
-        "labels": {
-          "workflows.argoproj.io/completed": "false"
-         }
-      },
-     "spec": {
-       "templates": [
-        {
-         "name": "whalesay",
-         "arguments": {},
-         "inputs": {},
-         "outputs": {},
-         "metadata": {},
-         "container": {
-          "name": "",
-          "image": "docker/whalesay:latest",
-          "command": [
-            "cowsay"
-          ],
-          "args": [
-            "hello world"
-          ],
-          "resources": {}
-        }
+    "metadata": {
+      "generateName": "hello-world-",
+      "namespace": "argo",
+      "labels": {
+        "workflows.argoproj.io/completed": "false"
       }
-    ],
-    "entrypoint": "whalesay",
-    "arguments": {}
+    },
+    "spec": {
+      "templates": [
+        {
+          "name": "whalesay",
+          "arguments": {},
+          "inputs": {},
+          "outputs": {},
+          "metadata": {},
+          "container": {
+            "name": "",
+            "image": "docker/whalesay:latest",
+            "command": [
+              "cowsay"
+            ],
+            "args": [
+              "hello world"
+            ],
+            "resources": {}
+          }
+        }
+      ],
+      "entrypoint": "whalesay",
+      "arguments": {}
+    }
   }
-}
 }
