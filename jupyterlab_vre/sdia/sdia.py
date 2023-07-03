@@ -13,10 +13,10 @@ class SDIA:
 
             return requests.get(
                 endpoint,
-                auth=HTTPBasicAuth(username,password),
+                auth=HTTPBasicAuth(username, password),
                 verify=False
             )
-        
+
         except Exception as ex:
             return ex
 

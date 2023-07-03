@@ -1,6 +1,5 @@
 import os
 from unittest import TestCase
-from pathlib import Path
 
 from jupyterlab_vre.database.catalog import Catalog
 
