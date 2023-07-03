@@ -57,7 +57,7 @@
         "uuid": "^9.0.0"
     },
     "devDependencies": {
-        "@types/node": "^18.15.1",
+        "@types/node": "^20.3.3",
         "@types/react-window": "^1.8.5",
         "rimraf": "^5.0.0",
         "typescript": "~5.0.2"
