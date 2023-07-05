@@ -8,11 +8,14 @@ import nbformat as nb
 from notebook.base.handlers import APIHandler
 from tornado import web
 
+from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
-from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
+from jupyterlab_vre.services.extractor.Rextractor import RExtractor
 from jupyterlab_vre.services.extractor.extractor import Extractor
 
+
+# TODO: we might have to do something similar here where we have to determine the kernel and based on that get the extractor
 
 class NotebookExtractorHandler(APIHandler, Catalog):
 
@@ -26,9 +29,16 @@ class NotebookExtractorHandler(APIHandler, Catalog):
     async def post(self, *args, **kwargs):
 
         payload = self.get_json_body()
-        logging.getLogger(__name__).debug('NotebookExtractorHandler. payload: ' + str(payload))
+        logging.getLogger(__name__).debug('NotebookExtractorHandler. payload: ' + json.dumps(payload, indent=4))
+        print('----------------------------------------------')
+        print('NotebookExtractorHandler. payload: ' + json.dumps(payload, indent=4))
+        print('----------------------------------------------')
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-        extractor = Extractor(notebook)
+        kernel = payload['kernel']
+        if kernel == "IRkernel":
+            extractor = RExtractor(notebook)
+        else:
+            extractor = Extractor(notebook)
         source = ''
         params = set()
         confs = set()
@@ -44,12 +54,14 @@ class NotebookExtractorHandler(APIHandler, Catalog):
 
             if not title:
                 title = cell_source.partition('\n')[0]
-                title = 'notebook-' + title.replace('#', '').replace('_', '-').replace('(', '-').replace(')','-').\
+                title = 'notebook-' + title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-'). \
                     replace('.', '-').strip() if title[0] == '#' \
                     else 'Untitled'
                 if 'JUPYTERHUB_USER' in os.environ:
-                    title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                     '-at-').strip()
+                    title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')',
+                                                                                                             '-').replace(
+                        '.', '-').replace('@',
+                                          '-at-').strip()
         dependencies = extractor.infer_cell_dependencies(source, confs)
 
         node_id = str(uuid.uuid4())[:7]

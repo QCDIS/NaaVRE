@@ -5,6 +5,8 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { green } from '@mui/material/colors';
 import * as React from 'react';
 import { theme } from './Theme';
+import { NotebookPanel } from '@jupyterlab/notebook';
+
 
 const CatalogBody = styled('div')({
     padding: '20px',
@@ -13,7 +15,9 @@ const CatalogBody = styled('div')({
     flexDirection: 'column',
 })
 
-interface AddCellDialogProps { }
+interface AddCellDialogProps {
+    notebook: NotebookPanel
+}
 
 interface IState {
     loading: boolean
@@ -33,9 +37,14 @@ export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
 
     createCell = async () => {
         try {
+            const sessionContext = this.props.notebook.context.sessionContext;
+            const kernelObject = sessionContext?.session?.kernel; // https://jupyterlab.readthedocs.io/en/stable/api/interfaces/services.kernel.ikernelconnection-1.html#serversettings
+            const kernel = (await kernelObject.info).implementation;
 
             await requestAPI<any>('containerizer/addcell', {
-                body: JSON.stringify({}),
+                body: JSON.stringify({
+                    kernel
+                }),
                 method: 'POST'
             });
 

@@ -7,10 +7,11 @@ import requests
 from notebook.base.handlers import APIHandler
 from tornado import web
 
-from jupyterlab_vre.database.database import Catalog
+from jupyterlab_vre.database.catalog import Catalog
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
 
 def load_module_names_mapping():
     module_mapping_url = os.getenv('MODULE_MAPPING_URL')

@@ -1,6 +1,8 @@
-import json
+import glob
 import json
 import os
+import shlex
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -15,8 +17,8 @@ from tornado.web import Application
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
     NotebookSearchHandler, NotebookSearchRatingHandler
 from jupyterlab_vre.component_containerizer.handlers import find_job
+from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
-from jupyterlab_vre.database.database import Catalog
 from jupyterlab_vre.handlers import load_module_names_mapping
 from jupyterlab_vre.notebook_search.handlers import NotebookDownloadHandler
 
@@ -26,6 +28,22 @@ elif os.path.exists('jupyterlab_vre/tests/resources/'):
     base_path = 'jupyterlab_vre/tests/resources/'
 
 cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
+
+
+def delete_text(file_path, text_to_delete):
+    # Read the file
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    # Remove the text from each line
+    updated_lines = []
+    for line in lines:
+        updated_line = line.replace(text_to_delete, '')
+        updated_lines.append(updated_line)
+
+    # Write the updated lines to the file
+    with open(file_path, 'w') as file:
+        file.writelines(updated_lines)
 
 
 def delete_all_cells():
@@ -71,43 +89,43 @@ class HandlersAPITest(AsyncHTTPTestCase):
     def test_export_workflow_handler(self):
         with mock.patch.object(ExportWorkflowHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
-            workflow_path = os.path.join(base_path, 'workflows/get_files.json')
-            # with open(workflow_path, 'r') as read_file:
-            #     payload = json.load(read_file)
+            workflow_path = os.path.join(base_path, 'workflows', 'NaaVRE')
+            workflow_files = os.listdir(workflow_path)
+            # We cannot have a test for this because it requires cells to be created in the database first
+            # for workflow_file in workflow_files:
+            #     workflow_file_path = os.path.join(workflow_path, workflow_file)
+            #     with open(workflow_file_path, 'r') as read_file:
+            #         payload = json.load(read_file)
+            #     read_file.close()
             # response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
-            # response.
+            # self.assertEqual(response.code, 200)
 
     def test_execute_workflow_handler(self):
+        workflow_path = os.path.join(base_path, 'workflows', 'NaaVRE')
+        workflow_files = os.listdir(workflow_path)
         with mock.patch.object(ExecuteWorkflowHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
-            workflow_path = os.path.join(base_path, 'workflows/simple_workflow.json')
-            with open(workflow_path, 'r') as read_file:
+        for workflow_file in workflow_files:
+            workflow_file_path = os.path.join(workflow_path, workflow_file)
+            with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
             json_response = json.loads(response.body.decode('utf-8'))
+            self.assertIsNotNone(json_response)
 
     def test_load_module_names_mapping(self):
         load_module_names_mapping()
-
-    def test_extractor_handler_MULTIPLY(self):
-        with mock.patch.object(ExportWorkflowHandler, 'get_secure_cookie') as m:
-            m.return_value = 'cookie'
-            workflow_path = os.path.join(base_path, 'notebooks/MULTIPLY_framework_2.json')
-            # with open(workflow_path, 'r') as read_file:
-            #     payload = json.load(read_file)
-            # response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
 
     def test_search_handler(self):
         with mock.patch.object(NotebookSearchHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
             payload = {'keyword': 'explosion'}
-            # response = self.fetch('/notebooksearch', method='POST', body=json.dumps(payload))
-            # json_response = json.loads(response.body.decode('utf-8'))
-            # self.assertIsNotNone(json_response)
-
+            response = self.fetch('/notebooksearch', method='POST', body=json.dumps(payload))
+            json_response = json.loads(response.body.decode('utf-8'))
+            self.assertIsNotNone(json_response)
 
     def test_search_rating_handler(self):
-        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+        with mock.patch.object(NotebookSearchRatingHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
             payload = {"keyword": "math",
                        "notebook": {"docid": "D1089", "name": "student-performance-in-exams", "source": "Kaggle",
@@ -138,25 +156,42 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 test_cell = Cell(cell['title'], cell['task_name'], cell['original_source'], cell['inputs'],
                                  cell['outputs'],
                                  cell['params'], cell['confs'], cell['dependencies'], cell['container_source'],
-                                 cell['chart_obj'], cell['node_id'])
+                                 cell['chart_obj'], cell['node_id'], cell['kernel'])
                 test_cell.types = cell['types']
                 test_cell.base_image = cell['base_image']
                 Catalog.editor_buffer = test_cell
                 response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
                 self.assertEqual(200, response.code)
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
-                cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
+                if test_cell.kernel == 'python3':
+                    cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
+                    if 'example_inputs' in cell:
+                        exec_args = [sys.executable, cell_path] + cell['example_inputs']
+                    else:
+                        exec_args = [sys.executable, cell_path]
 
-                cell_exec = subprocess.Popen([sys.executable, cell_path, '--id', '0', '--split_laz_files', '[file]'],
-                                             stdout=subprocess.PIPE)
-                print('---------------------------------------------------')
-                text = cell_exec.communicate()[0]
-                print(text)
-                print("stdout:", cell_exec.stdout)
-                print("stderr:", cell_exec.stderr)
-                print("returncode:", cell_exec.returncode)
-                print('---------------------------------------------------')
-                self.assertEqual(0, cell_exec.returncode, text)
+                    cell_exec = subprocess.Popen(exec_args,
+                                                 stdout=subprocess.PIPE)
+                    print('---------------------------------------------------')
+                    text = cell_exec.communicate()[0]
+                    print(text)
+                    print("stdout:", cell_exec.stdout)
+                    print("stderr:", cell_exec.stderr)
+                    print("return code:", cell_exec.returncode)
+                    print('---------------------------------------------------')
+                    self.assertEqual(0, cell_exec.returncode, text)
+                elif test_cell.kernel == 'IRkernel':
+                    cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.R')
+                    run_local_cell_path = os.path.join(cells_path, test_cell.task_name, 'run_local.R')
+                    shutil.copy(cell_path, run_local_cell_path)
+                    delete_text(run_local_cell_path, 'setwd(\'/app\')')
+                    example_inputs = ''
+                    if 'example_inputs' in cell:
+                        example_inputs = ' '.join(cell['example_inputs'])
+                    command = 'Rscript ' + run_local_cell_path + ' ' + example_inputs
+                    result = subprocess.run(shlex.split(command), capture_output=True, text=True)
+                    self.assertEqual(0, result.returncode, result.stderr)
+
                 cat_repositories = Catalog.get_repositories()
                 repo_token = cat_repositories[0]['token']
                 owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
@@ -184,11 +219,30 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertEqual('completed', job['status'], 'Job not completed')
                 self.assertEqual('success', job['conclusion'], 'Job not successful')
 
-    def test_argo_api(self):
-        argo_workflow_path = os.path.join(base_path, 'workflows/argo_workflow2.json')
-        self.submit_workflow(argo_workflow_path)
+    def test_extractor_handler(self):
+        with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
+            m.return_value = 'cookie'
+            notebooks_json_path = os.path.join(base_path, 'notebooks')
+            notebooks_files = glob.glob(os.path.join(notebooks_json_path, "*.json"))
+            for notebook_file in notebooks_files:
+                with open(notebook_file, 'r') as file:
+                    notebook = json.load(file)
+                file.close()
+                response = self.fetch('/extractorhandler', method='POST', body=json.dumps(notebook))
+                self.assertEqual(response.code, 200)
+                # Get Json response
+                json_response = json.loads(response.body.decode('utf-8'))
+                self.assertIsNotNone(json_response)
+                cell = notebook['notebook']['cells'][notebook['cell_index']]
 
-    def submit_workflow(self,argo_workflow_path):
+    def test_argo_api(self):
+        argo_workflow_path = os.path.join(base_path, 'workflows', 'argo')
+        argo_workflow_files = os.listdir(argo_workflow_path)
+        for argo_workflow_file in argo_workflow_files:
+            argo_workflow_file_path = os.path.join(argo_workflow_path, argo_workflow_file)
+            self.submit_workflow(argo_workflow_file_path)
+
+    def submit_workflow(self, argo_workflow_path):
         ago_ns = 'argo'
         self.assertIsNotNone(os.getenv('ARGO_URL'), 'ARGO_URL not set')
         ARGO_API_URL = os.getenv('ARGO_URL') + '/api/v1/workflows/' + ago_ns

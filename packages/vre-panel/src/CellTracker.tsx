@@ -39,21 +39,13 @@ const DefaultState: IState = {
 type SaveState = 'started' | 'completed' | 'failed';
 
 const baseImages = [
-
     { label: "miniconda3", id: "qcdis/miniconda3" },
     { label: "Laserfarm", id: "qcdis/miniconda3-pdal" },
     { label: "vol2bird", id: "qcdis/python-vol2bird" },
     { label: "distributed-learning", id: "qcdis/miniconda3-distributed-learning" },
-    { label: "MULTIPLY", id: "qcdis/miniconda3-multiply" }
+    { label: "MULTIPLY", id: "qcdis/miniconda3-multiply" },
+    { label: "Jupyter R Notebook", id: "jupyter/r-notebook:70178b8e48d7"}
 ]
-
-const AddCellDialogOptions: Partial<Dialog.IOptions<any>> = {
-    title: '',
-    body: ReactWidget.create(
-        <AddCellDialog />
-    ) as Dialog.IBodyWidget<any>,
-    buttons: []
-};
 
 export class CellTracker extends React.Component<IProps, IState> {
 
@@ -66,13 +58,24 @@ export class CellTracker extends React.Component<IProps, IState> {
     }
 
     handleCreateCell = async () => {
+        const AddCellDialogOptions: Partial<Dialog.IOptions<any>> = {
+            title: '',
+            body: ReactWidget.create(
+                <AddCellDialog notebook={this.props.notebook}/>
+            ) as Dialog.IBodyWidget<any>,
+            buttons: []
+        };
         showDialog(AddCellDialogOptions)
     }
 
     allTypesSelected = () => {
+        console.log('allTypesSelected' )
+        for (let key in this.state.typeSelections) {
+            console.log(key + ": " + this.state.typeSelections[key]);
+          }
 
+        console.log('Object.values(this.state.typeSelections).length: '+Object.values(this.state.typeSelections).length)
         if (Object.values(this.state.typeSelections).length > 0) {
-
             return (
                 Object.values(this.state.typeSelections).reduce(
                     (prev, curr) => {
@@ -97,7 +100,7 @@ export class CellTracker extends React.Component<IProps, IState> {
 
         let currTypeSelections = this.state.typeSelections
         currTypeSelections[port] = true
-
+        console.log('currTypeSelections: '+currTypeSelections)
         this.setState({
             typeSelections: currTypeSelections
         })
@@ -111,15 +114,17 @@ export class CellTracker extends React.Component<IProps, IState> {
             }),
             method: 'POST'
         });
-        
         this.setState({ baseImageSelected: true });
     };
 
     exctractor = async (notebookModel: INotebookModel, save = false) => {
         // try {
+            const kernel = await this.getKernel()
+
             const extractedCell = await requestAPI<any>('containerizer/extract', {
                 body: JSON.stringify({
                     save: save,
+                    kernel,
                     cell_index: this.state.currentCellIndex,
                     notebook: notebookModel.toJSON()
                 }),
@@ -140,7 +145,11 @@ export class CellTracker extends React.Component<IProps, IState> {
             this.state.currentCell.params.forEach((el: string) => {
                 typeSelections[el] = false
             })
-    
+            console.log('containerizer/extract typeSelections: '+typeSelections)  
+
+            for (let key in typeSelections) {
+                console.log(key + ": " + typeSelections[key]);
+            }
             this.setState({ typeSelections: typeSelections })
     
             this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
@@ -195,8 +204,14 @@ export class CellTracker extends React.Component<IProps, IState> {
     }
 
     renderDepName(dep: any): string {
-
         return dep['module'] + " • " + dep['name'] ? dep['module'] != "" : dep['name'];
+    }
+
+    async getKernel(){
+        const sessionContext = this.props.notebook.context.sessionContext;
+        const kernelObject = sessionContext?.session?.kernel; // https://jupyterlab.readthedocs.io/en/stable/api/interfaces/services.kernel.ikernelconnection-1.html#serversettings
+        const kernel = (await kernelObject.info).implementation;
+        return kernel
     }
 
     render() {

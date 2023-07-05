@@ -1,9 +1,11 @@
 import logging
 import os
 from pathlib import Path
-from jupyterlab_vre.repositories.repository import Repository
+
 from tinydb import TinyDB, where
+
 from jupyterlab_vre.database.cell import Cell
+from jupyterlab_vre.repositories.repository import Repository
 from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 
 logger = logging.getLogger(__name__)
@@ -11,7 +13,6 @@ logger.setLevel(logging.DEBUG)
 
 
 class Catalog:
-
     naa_vre_path = os.path.join(str(Path.home()), 'NaaVRE')
 
     if not os.path.exists(naa_vre_path):
@@ -78,7 +79,6 @@ class Catalog:
     @classmethod
     def add_registry_credentials(cls, cred: Repository):
         cls.registry_credentials.insert(cred.__dict__)
-
 
     @classmethod
     def add_repository_credentials(cls, cred: Repository):

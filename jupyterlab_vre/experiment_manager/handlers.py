@@ -1,14 +1,14 @@
 import json
-import yaml
 import logging
 import os
 
+import requests
+import yaml
 from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
-import requests
 from tornado import web
 
-from jupyterlab_vre.database.database import Catalog
+from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.services.parser.parser import WorkflowParser
 
 logger = logging.getLogger(__name__)
@@ -83,10 +83,7 @@ class ExecuteWorkflowHandler(APIHandler):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-        print('-----------------ExecuteWorkflowHandler---------------------')
         payload = self.get_json_body()
-        print(json.dumps(payload, indent=4))
-        print('-------------------------------------------------------------')
         chart = payload['chart']
         params = payload['params']
 

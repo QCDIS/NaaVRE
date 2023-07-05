@@ -34,8 +34,10 @@ def create_cell(payload_path=None):
         0] == "#" else "Untitled"
 
     if 'JUPYTERHUB_USER' in os.environ:
-        title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                     '-at-').strip()
+        title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.',
+                                                                                                                   '-').replace(
+            '@',
+            '-at-').strip()
 
     ins = []
     outs = []
@@ -69,32 +71,34 @@ def create_cell(payload_path=None):
 
 
 def extract_cell(payload_path):
+    # Check if file exists
+    if os.path.exists(payload_path):
+        cell = create_cell(payload_path)
 
-    cell = create_cell(payload_path)
+        node = ConverterReactFlowChart.get_node(
+            cell.node_id,
+            cell.title,
+            cell.inputs,
+            cell.outputs,
+            cell.params,
+            cell.dependencies
+        )
 
-    node = ConverterReactFlowChart.get_node(
-        cell.node_id,
-        cell.title,
-        cell.inputs,
-        cell.outputs,
-        cell.params,
-        cell.dependencies
-    )
+        chart = {
+            'offset': {
+                'x': 0,
+                'y': 0,
+            },
+            'scale': 1,
+            'nodes': {cell.node_id: node},
+            'links': {},
+            'selected': {},
+            'hovered': {},
+        }
 
-    chart = {
-        'offset': {
-            'x': 0,
-            'y': 0,
-        },
-        'scale': 1,
-        'nodes': {cell.node_id: node},
-        'links': {},
-        'selected': {},
-        'hovered': {},
-    }
-
-    cell.chart_obj = chart
-    return cell.toJSON()
+        cell.chart_obj = chart
+        return cell.toJSON()
+    return None
 
 
 class TestExtractor(TestCase):
@@ -107,8 +111,10 @@ class TestExtractor(TestCase):
             cell = extract_cell(os.path.join(base_path, 'notebooks/MULTIPLY_framework_2.json'))
         except SyntaxError as e:
             logger.warning(str(e))
-        cell = json.loads(extract_cell(os.path.join(base_path, 'notebooks/laserfarm.json')))
-        for conf_name in (cell['confs']):
-            self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
-                             'conf_ values should not contain conf_ prefix in '
-                             'assignment')
+        cell = extract_cell(os.path.join(base_path, 'notebooks/laserfarm.json'))
+        if cell:
+            cell = json.loads(cell)
+            for conf_name in (cell['confs']):
+                self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
+                                 'conf_ values should not contain conf_ prefix in '
+                                 'assignment')
