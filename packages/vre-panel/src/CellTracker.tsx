@@ -225,8 +225,8 @@ export class CellTracker extends React.Component<IProps, IState> {
                         <div>
                             {this.state.currentCell.inputs.length > 0 ? (
                                 <div>
-                                    <p className={'lw-panel-preview'}>Inputs</p>
-                                    <TableContainer component={Paper} className={'lw-panel-table'}>
+                                    <p className={'lw-panel-preview-inputs'}>Inputs</p>
+                                    <TableContainer component={Paper} className={'lw-panel-table-inputs'}>
                                         <Table aria-label="simple table">
                                             <TableBody>
                                                 {this.state.currentCell.inputs.map((input: string) => (
