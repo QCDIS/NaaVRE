@@ -6,10 +6,96 @@ import rpy2.rinterface as rinterface
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
 from rpy2.robjects.packages import importr
+import re
+
+# Create an R environment
+r_env = robjects.globalenv
+
+# This R code is used to obtain all assignment variables (source https://adv-r.hadley.nz/expressions.html)
+r_env["result"] = robjects.r("""
+library(rlang)
+library(lobstr)
+library(purrr)
+
+expr_type <- function(x) {
+  if (rlang::is_syntactic_literal(x)) {
+    "constant"
+  } else if (is.symbol(x)) {
+    "symbol"
+  } else if (is.call(x)) {
+    "call"
+  } else if (is.pairlist(x)) {
+    "pairlist"
+  } else {
+    typeof(x)
+  }
+}
+
+switch_expr <- function(x, ...) {
+  switch(expr_type(x),
+    ...,
+    stop("Don't know how to handle type ", typeof(x), call. = FALSE)
+  )
+}
+
+recurse_call <- function(x) {
+  switch_expr(x,
+    # Base cases
+    symbol = ,
+    constant = ,
+
+    # Recursive cases
+    call = ,
+    pairlist =
+  )
+}
+
+logical_abbr_rec <- function(x) {
+  switch_expr(x,
+    constant = FALSE,
+    symbol = as_string(x) %in% c("F", "T")
+  )
+}
+
+logical_abbr <- function(x) {
+  logical_abbr_rec(enexpr(x))
+}
+
+find_assign_rec <- function(x) {
+  switch_expr(x,
+    constant = ,
+    symbol = character()
+  )
+}
+find_assign <- function(x) unique(find_assign_rec(enexpr(x)))
+
+flat_map_chr <- function(.x, .f, ...) {
+  purrr::flatten_chr(purrr::map(.x, .f, ...))
+}
+
+find_assign_rec <- function(x) {
+  switch_expr(x,
+    # Base cases
+    constant = ,
+    symbol = character(),
+
+    # Recursive cases
+    pairlist = flat_map_chr(as.list(x), find_assign_rec),
+    call = {
+      if (is_call(x, "<-") || is_call(x, "=")) { # TODO: also added is_call(x, "=") here
+        if (typeof(x[[2]]) == "symbol"){ # TODO: added the type check here
+            as_string(x[[2]])
+        }
+      } else {
+        flat_map_chr(as.list(x), find_assign_rec)
+      }
+    }
+  )
+}
+""")
 
 # Load the base R package for parsing and evaluation
 base = importr('base')
-
 
 # TODO: create an interface such that it can be easily extended to other kernels
 
@@ -24,7 +110,7 @@ class RExtractor:
         self.sources = [nbcell.source for nbcell in notebook.cells if
                         nbcell.cell_type == 'code' and len(nbcell.source) > 0]
 
-        self.imports = set()  #self.__extract_imports(self.sources)
+        self.imports = set() # self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
         self.global_params = self.__extract_params(self.sources)
         self.undefined = set()
@@ -49,7 +135,11 @@ class RExtractor:
                 tmp_file.flush()
                 renv = rpackages.importr('renv')
                 function_list = renv.dependencies(tmp_file.name)
-                packages = [] #list(pd.DataFrame(function_list).transpose().iloc[:, 1])
+
+                # transpose renv dependencies to readable dependencies
+                transposed_list = list(map(list, zip(*function_list)))
+                packages = [row[1] for row in transposed_list]
+
                 tmp_file.close()
                 os.remove(tmp_file.name)
 
@@ -138,41 +228,96 @@ class RExtractor:
 
         return dependencies
 
+    def get_function_parameters(self, cell_source):
+      result = []
+
+      # Approach 1: Naive Regex
+      functions = re.findall(r'function\s*\((.*?)\)', cell_source)
+      for params in functions:
+          result.extend(re.findall(r'\b\w+\b', params))
+
+      # Approach 2: AST based
+      # TODO
+
+      return list(set(result))
+
+    def get_iterator_variables(self, cell_source):
+      result = []
+
+      # Approach 1: Naive Regex. This means that iterator variables are in the following format:
+      # for ( <IT_VAR> .....)
+      result = re.findall(r'for\s*\(\s*([a-zA-Z0-9.]+)\s+in', cell_source)
+
+      # Approach 2: Parse AST. Much cleaner option as iterator variables can appear in differen syntaxes.
+      # TODO 
+
+      return result
+
     def __extract_cell_names(self, cell_source):
         names = set()
         parsed_r = robjects.r['parse'](text=cell_source)
         vars_r = robjects.r['all.vars'](parsed_r) 
 
-        # challenge 1: filter out stuff like libraries. Because when using "library(cool)", it recognies cool as a variable,
-        #              but not in the case of "library('cool')". this is sort of solved now but does not cover all cases
-        # challenge 2 (TODO): in the example script 'state' and 'n' are recognized as variables. 
-        #              this should be solved as we do not want this. # TODO: look at CodeDepends and the function 'getVariables(sc)', this might solve this
-        for avar in vars_r:
-            if avar not in self.imports:
-                names.add(avar)
-        return set(names)
+        # Challenge 1: Function Parameters
+        function_parameters = self.get_function_parameters(cell_source)
+        vars_r = list(filter(lambda x: x not in function_parameters, vars_r))
+
+        # Challenge 2: Built-in Constants
+        built_in_cons = ["T", "F", "pi", "is.numeric", "mu", "round"]
+        vars_r = list(filter(lambda x: x not in built_in_cons, vars_r))
+
+        # Challenge 3: Iterator Variables
+        iterator_variables = self.get_iterator_variables(cell_source)
+        vars_r = list(filter(lambda x: x not in iterator_variables, vars_r))
+
+        # Challenge 4: Apply built-in functions
+        # MANUALLY SOLVED
+
+        # Challenge 5: Libraries
+        vars_r = list(filter(lambda x: x not in self.imports, vars_r))
+
+        # Challenge 6: Variable-based data access
+        # MANUALLY SOLVED
+
+        return set(vars_r)
+
+    # This is a very inefficient approach to obtain all assignment variables (Solution 1)
+    def recursive_variables(self, my_expr, result):
+        if isinstance(my_expr, rinterface.LangSexpVector):
+            # check if there are enough data values. for an assignment there must be three namely VARIABLE SYMBOL VALUE. e.g. a = 3
+            if len(my_expr) >= 3:
+
+                # check for matches
+                c = str(my_expr[0])
+                variable = my_expr[1]
+
+                # Check if assignment. 
+                if (c == "<-" or c == "="):
+                    if isinstance(my_expr[1], rinterface.SexpSymbol):
+                        result.add(str(variable))    
+        try:
+            for expr in my_expr:
+                result = self.recursive_variables(expr, result)
+        except Exception as e:
+            pass
+        return result
 
     def assignment_variables(self, text):
         result = []
-        parsed_expr = base.parse(text=text, keep_source=True)
-        parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
 
-        # Loop through the first level of the AST
-        for expr in parsed_expr_py:
+        # Solution 1 (Native-Python): Write our own recursive function that in Python that parses the Abstract Syntax Tree of the R cell
+        # This is a very inefficient solution
+        # parsed_expr = base.parse(text=text, keep_source=True)
+        # parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
+        # result = list(self.recursive_variables(parsed_expr_py, set()))
 
-            # Check for a specific type. otherwise continue
-            if not isinstance(expr, rinterface.LangSexpVector):
-                continue
-
-            # check for matches
-            c = str(expr[0])
-            variable = str(expr[1])
-
-            # check if assignment. (TODO) is there a better way to check if it is an assignment?
-            if not ((c == "<-" or c == "=")):
-                continue
-
-            result.append(variable)
+        # Solution 2 (Native-R): Use built-in recursive cases of R (source https://adv-r.hadley.nz/expressions.html). This method is significantly faster.
+        output_r = robjects.r("""find_assign({
+            %s
+        })""" % text)
+        result = re.findall(r'"([^"]*)"', str(output_r))
+        
+        # Return the result
         return result
 
     def __extract_cell_undefined(self, cell_source):

@@ -33,7 +33,6 @@ logger.addHandler(handler)
 
 
 class Rcontainerizer:
-
     @staticmethod
     def get_files_info(cell=None, image_repo=None, cells_path=None):
         if not os.path.exists(cells_path):
