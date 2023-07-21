@@ -42,4 +42,5 @@ dependencies:
   - r-lobstr
   - r-rlang
   - r-purrr
+  - jupyter-collaboration
   - pip:
