@@ -267,7 +267,7 @@ make install-backend && make build-frontend && make install-ui && make link-ui
 
 Build the extension  and start a jupyterlab instance:
 ```shell
-source export_VARS && jupyter lab build && cp -r ~/workspace/NaaVRE/docker/repo_utils/ /tmp/ && ~/workspace/NaaVRE/docker/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*'
+source export_VARS && jupyter lab build && cp -r ~/workspace/NaaVRE/docker/repo_utils/ /tmp/ && ~/workspace/NaaVRE/docker/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative
 ```
 
 Build wheel file for release:
@@ -306,5 +306,5 @@ conda activate jupyterlab
 ## Docker 
 
 ```commandline
-docker run -it -p 8888:8888 --env-file ~/Downloads/notbooks/docker_VARS qcdis/n-a-a-vre-laserfarm /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*'"
+docker run -it -p 8888:8888 --env-file ~/Downloads/notbooks/docker_VARS qcdis/n-a-a-vre-laserfarm /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative"
 ```
