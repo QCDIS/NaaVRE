@@ -37,12 +37,11 @@ dependencies:
   - pip
   - r
   - r-irkernel
-##  - pandas
   - rpy2
   - r-renv
   - r-jsonlite
-  - r-lobstr
-  - r-rlang
-  - r-purrr
+#  - r-lobstr
+#  - r-rlang
+#  - r-purrr
   - jupyter-collaboration
   - pip:
