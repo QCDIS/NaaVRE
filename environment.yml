@@ -22,10 +22,8 @@ dependencies:
   - colorhash
   - pyflakes
   - jupyter-videochat
-  - jupyterlab-github
+  - jupyterlab-git
   - nbgitpuller
-  - jupyterlab-lsp
-  - python-lsp-server[all]
   - nb_conda_kernels
   - rclone
   - jupyter-archive
