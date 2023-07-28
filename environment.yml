@@ -21,6 +21,7 @@ dependencies:
   - colorhash
   - pyflakes
   - jupyter-videochat
+  - jupyterlab-git
   - nbgitpuller
   - nb_conda_kernels
   - rclone
@@ -29,6 +30,7 @@ dependencies:
   - unzip
   - wget
   - git
+  - jupyterlab-github
   - pathlib2
   - pip
   - r
