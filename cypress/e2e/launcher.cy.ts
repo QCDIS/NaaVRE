@@ -66,7 +66,7 @@ describe('JupyterLab', () => {
   cy.get('@codeCell2').type('{enter}');
   cy.get('@codeCell2').type('for elem in my_list:\n');
 //   cy.get('@codeCell2').type('{enter}');
-  cy.get('@codeCell2').type('\n\tb_list.append(elem * 2)\n\n');
+  cy.get('@codeCell2').type('\nb_list.append(elem * 2)\n\n');
 
 //   Verify that the content is added to the code cell
   cy.get('@codeCell2').contains('# Process a list').should('be.visible');
