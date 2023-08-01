@@ -90,9 +90,19 @@ describe('JupyterLab', () => {
   //Click on codeCell1
   cy.get('@codeCell1').click();
 
- // get <table class="MuiTable-root-58" aria-label="simple table"><tbody class="MuiTableBody-root-60"><tr class="MuiTableRow-root-61"><th class="MuiTableCell-root-65 MuiTableCell-body-67" role="cell" scope="row"><p style="font-size: 1em;">my_list</p></th><th class="MuiTableCell-root-65 MuiTableCell-body-67" role="cell" scope="row"><div class="MuiFormControl-root-77 MuiFormControl-fullWidth-80"><div class="MuiInputBase-root-102 MuiInput-root-91 MuiInput-underline-94 MuiInputBase-formControl-103 MuiInput-formControl-92"><div class="MuiSelect-root-81 MuiSelect-select-82 MuiSelect-selectMenu-85 MuiInputBase-input-110 MuiInput-input-98" tabindex="0" role="button" aria-haspopup="listbox" aria-labelledby="io-types-select-label 077d7c8-my_list-select" id="077d7c8-my_list-select">String</div><input aria-hidden="true" tabindex="-1" class="MuiSelect-nativeInput-90" value="str"><svg class="MuiSvgIcon-root-117 MuiSelect-icon-86" focusable="false" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5z"></path></svg></div></div></th></tr></tbody></table></div>
- cy.get('.MuiTable-root-58').find('tr').eq(0).find('th').eq(1).find('div').find('div').find('div').find('div').find('div').find('div').click();
+  // open input type selection menu for my_list
+  cy.get('.lw-panel-preview + [class^="MuiPaper-root"] [role="button"]').click()
+  // select List
+  cy.get('[data-value="list"]').click()
 
+  // open base image
+  cy.get('.lw-panel-preview + .MuiAutocomplete-root button').click()
+  cy.get('.MuiAutocomplete-listbox [data-option-index="0"]').click()
+
+  // create image
+  cy.contains('Create').click()
+
+  cy.get('.cell-submit-text').contains('The cell has been successfully created!').should('be.visible')
 
   });
 })
