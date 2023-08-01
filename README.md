@@ -313,5 +313,5 @@ docker run -it -p 8888:8888 --env-file ~/Downloads/notbooks/docker_VARS qcdis/n-
 ## Cypress  
 
 ```commandline
-docker run -it -v $PWD:/e2e -w /e2e cypress/included:12.9.0 
+docker run -it -v $PWD:/e2e -w /e2e cypress/included:12.17.2
 ```
