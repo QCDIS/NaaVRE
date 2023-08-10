@@ -298,7 +298,7 @@ export PATH="/usr/local/anaconda3/bin:$PATH"
 Next, sett up the Anaconda environment:
     
 ```shell    
-conda env update --file environment.yaml
+conda env update --file environment.yml
 ```
 
 
