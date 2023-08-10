@@ -298,8 +298,7 @@ export PATH="/usr/local/anaconda3/bin:$PATH"
 Next, sett up the Anaconda environment:
     
 ```shell    
-conda create -n jupyterlab  python=3.9 
-conda activate jupyterlab
+conda env update --file environment.yaml
 ```
 
 
