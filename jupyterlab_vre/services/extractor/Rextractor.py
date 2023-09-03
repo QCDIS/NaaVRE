@@ -92,7 +92,7 @@ find_assign_rec <- function(x) {
     }
   )
 }
-""") 
+""")
 
 # Load the base R package for parsing and evaluation
 base = importr('base')
@@ -110,7 +110,7 @@ class RExtractor:
         self.sources = [nbcell.source for nbcell in notebook.cells if
                         nbcell.cell_type == 'code' and len(nbcell.source) > 0]
 
-        self.imports = self.__extract_imports(self.sources)
+        self.imports = set() # self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
         self.global_params = self.__extract_params(self.sources)
         self.undefined = set()
