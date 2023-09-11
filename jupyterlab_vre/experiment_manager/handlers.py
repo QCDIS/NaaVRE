@@ -175,7 +175,7 @@ class ExecuteWorkflowHandler(APIHandler):
                 f"{api_endpoint}/api/workflows/submit/",
                 data=json.dumps(req_body),
                 headers={
-                    'Authorization': f"Bearer {accessToken}",
+                    'Authorization': f"Token {accessToken}",
                     'Content-Type': 'application/json'
                 }
             )
