@@ -163,6 +163,14 @@ class ExecuteWorkflowHandler(APIHandler):
             }
         }
         try:
+            accessToken = os.environ['NAAVRE_API_TOKEN']
+            if not accessToken:
+                self.set_status(400)
+                self.write('VRE_API_TOKEN is not set!')
+                self.write_error('NAAVRE_API_TOKEN is not set!')
+                self.flush()
+                return
+            logger.info('Workflow submission request: ' + str(json.dumps(req_body)))
             resp = requests.post(
                 f"{api_endpoint}/api/workflows/submit/",
                 data=json.dumps(req_body),
