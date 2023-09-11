@@ -267,7 +267,7 @@ make install-backend && make build-frontend && make install-ui && make link-ui
 
 Build the extension  and start a jupyterlab instance:
 ```shell
-source export_VARS && jupyter lab build && cp -r ~/workspace/NaaVRE/docker/repo_utils/ /tmp/ && ~/workspace/NaaVRE/docker/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*'
+source export_VARS && jupyter lab build && cp -r ~/workspace/NaaVRE/docker/repo_utils/ /tmp/ && ~/workspace/NaaVRE/docker/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative
 ```
 
 Build wheel file for release:
@@ -298,13 +298,100 @@ export PATH="/usr/local/anaconda3/bin:$PATH"
 Next, sett up the Anaconda environment:
     
 ```shell    
-conda create -n jupyterlab  python=3.9 
-conda activate jupyterlab
+conda env update --file environment.yml
 ```
 
 
 ## Docker 
 
 ```commandline
-docker run -it -p 8888:8888 --env-file ~/Downloads/notbooks/docker_VARS qcdis/n-a-a-vre-laserfarm /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*'"
+docker run -it -p 8888:8888 --env-file ~/Downloads/notbooks/docker_VARS qcdis/n-a-a-vre-laserfarm /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative"
+```
+
+
+# Argo Workflows
+
+## Generate Token
+
+```shell
+kubectl apply -f - <<EOF
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: vre-api
+  namespace: argo
+rules:
+  - verbs:
+      - get
+      - watch
+      - patch
+    apiGroups:
+      - ''
+    resources:
+      - pods
+  - verbs:
+      - get
+      - watch
+    apiGroups:
+      - ''
+    resources:
+      - pods/log
+  - verbs:
+      - create
+    apiGroups:
+      - ''
+    resources:
+      - pods/exec
+  - verbs:
+      - list
+      - watch
+      - create
+      - get
+      - update
+      - delete
+    apiGroups:
+      - argoproj.io
+    resources:
+      - workflowtasksets
+      - workflowartifactgctasks
+      - workflowtemplates
+      - workflows
+  - verbs:
+      - patch
+    apiGroups:
+      - argoproj.io
+    resources:
+      - workflowtasksets/status
+      - workflowartifactgctasks/status
+      - workflows/status
+EOF
+```
+
+```shell
+kubectl create sa vre-api -n argo
+```
+
+```shell
+kubectl create rolebinding vre-api --role=vre-api --serviceaccount=argo:vre-api -n argo
+```
+
+```shell
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: argo
+  name: vre-api.service-account-token
+  annotations:
+    kubernetes.io/service-account.name: vre-api
+type: kubernetes.io/service-account-token
+EOF
+```
+
+```shell
+ARGO_TOKEN="Bearer $(kubectl get secret vre-api.service-account-token -n argo -o=jsonpath='{.data.token}' | base64 --decode)"
+```
+
+```shell
+echo -n $ARGO_TOKEN | base64 -w 0
 ```

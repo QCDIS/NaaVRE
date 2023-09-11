@@ -245,14 +245,14 @@ class HandlersAPITest(AsyncHTTPTestCase):
     def submit_workflow(self, argo_workflow_path):
         ago_ns = 'argo'
         self.assertIsNotNone(os.getenv('ARGO_URL'), 'ARGO_URL not set')
-        ARGO_API_URL = os.getenv('ARGO_URL') + '/api/v1/workflows/' + ago_ns
+        argo_api_url = os.getenv('ARGO_URL') + '/api/v1/workflows/' + ago_ns
         with open(argo_workflow_path, 'r') as read_file:
             workflow = json.load(read_file)
         token = os.getenv('ARGO_API_TOKEN')
         self.assertIsNotNone(token, 'ARGO_API_TOKEN not set')
 
         resp_submit = requests.post(
-            ARGO_API_URL,
+            argo_api_url,
             json=workflow,
             headers={
                 'Authorization': token
@@ -263,7 +263,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
         resp_submit_data = resp_submit.json()
         self.assertIsNotNone(resp_submit_data['metadata']['name'], 'No workflow name returned')
         resp_detail = requests.get(
-            f"{ARGO_API_URL}/{resp_submit_data['metadata']['name']}",
+            f"{argo_api_url}/{resp_submit_data['metadata']['name']}",
             json=workflow,
             headers={
                 'Authorization': token
