@@ -47,6 +47,8 @@ env:
 jobs:
   build-linux:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
     steps:
       - name: Check secrets
         run: |
