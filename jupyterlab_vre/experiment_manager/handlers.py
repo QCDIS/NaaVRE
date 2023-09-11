@@ -167,7 +167,7 @@ class ExecuteWorkflowHandler(APIHandler):
                 f"{api_endpoint}/api/workflows/submit/",
                 data=json.dumps(req_body),
                 headers={
-                    'Authorization': f"Token {naavre_api_token}",
+                    'Authorization': f"Bearer {accessToken}",
                     'Content-Type': 'application/json'
                 }
             )
@@ -175,7 +175,6 @@ class ExecuteWorkflowHandler(APIHandler):
         except Exception as e:
             logger.error('Workflow submission failed: ' + str(e))
             logger.error('api_endpoint: ' + str(api_endpoint))
-            logger.error('naavre_api_token: ' + str(naavre_api_token))
             self.set_status(400)
             self.write('Workflow submission failed: ' + str(e))
             self.write_error('Workflow submission failed: ' + str(e))
