@@ -287,7 +287,6 @@ ImportError: No module named pathlib
 make: *** [build-backend] Error 1
 ```
 
-
 Removed Anaconda entirely from the machine (MacOS), and do a full reinstall as follows:
 
 ```shell
