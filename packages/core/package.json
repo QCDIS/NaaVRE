@@ -32,7 +32,7 @@
         "watch": "tsc -w"
     },
     "dependencies": {
-        "@jupyterlab/coreutils": "~5.5.3",
+        "@jupyterlab/coreutils": "~6.0.5",
         "@jupyterlab/services": "^7.0.5"
     },
     "devDependencies": {
