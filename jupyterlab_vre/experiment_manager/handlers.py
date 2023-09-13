@@ -162,12 +162,21 @@ class ExecuteWorkflowHandler(APIHandler):
                 "workflow": workflow_doc
             }
         }
+
         try:
+            accessToken = os.environ['NAAVRE_API_TOKEN']
+            if not accessToken:
+                self.set_status(400)
+                self.write('VRE_API_TOKEN is not set!')
+                self.write_error('NAAVRE_API_TOKEN is not set!')
+                self.flush()
+                return
+            logger.info('Workflow submission request: ' + str(json.dumps(req_body)))
             resp = requests.post(
                 f"{api_endpoint}/api/workflows/submit/",
                 data=json.dumps(req_body),
                 headers={
-                    'Authorization': f"Token {naavre_api_token}",
+                    'Authorization': f"Token {accessToken}",
                     'Content-Type': 'application/json'
                 }
             )
@@ -175,7 +184,6 @@ class ExecuteWorkflowHandler(APIHandler):
         except Exception as e:
             logger.error('Workflow submission failed: ' + str(e))
             logger.error('api_endpoint: ' + str(api_endpoint))
-            logger.error('naavre_api_token: ' + str(naavre_api_token))
             self.set_status(400)
             self.write('Workflow submission failed: ' + str(e))
             self.write_error('Workflow submission failed: ' + str(e))
