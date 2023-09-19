@@ -14,7 +14,7 @@ FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e
 
 USER root
 
-RUN apt-get update --allow-releaseinfo-change && apt-get -y install fuse
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install fuse #libhdf5-dev libproj-dev gsl-bin libgsl-dev libcurl4-openssl-dev libssl-dev libgdal-dev
 
 COPY --from=vol2bird /venv /venv
 
@@ -53,5 +53,10 @@ RUN jupyter nbextension enable --py widgetsnbextension
 
 
 RUN jupyter lab build --debug;
+
+RUN Rscript -e 'install.packages("bioRad",repos = "http://cran.us.r-project.org")'
+COPY test_bioRad.R test_bioRad.R
+RUN Rscript test_bioRad.R
+RUN rm test_bioRad.R
 
 cmd ["/usr/local/bin/start-jupyter-venv.sh"]
