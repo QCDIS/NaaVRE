@@ -55,8 +55,9 @@ RUN jupyter nbextension enable --py widgetsnbextension
 RUN jupyter lab build --debug;
 
 RUN Rscript -e 'install.packages("bioRad",repos = "http://cran.us.r-project.org")'
-COPY test_bioRad.R test_bioRad.R
+COPY test_bioRad.R .
+COPY NLHRW_vp_20200215T2355_6356_v0-3-20.h5 .
 RUN Rscript test_bioRad.R
-RUN rm test_bioRad.R
+RUN rm test_bioRad.R NLHRW_vp_20200215T2355_6356_v0-3-20.h5
 
 cmd ["/usr/local/bin/start-jupyter-venv.sh"]

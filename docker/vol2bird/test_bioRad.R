@@ -1,5 +1,3 @@
 library('bioRad')
-pvol <- bioRad:::read_pvolfile("work/data/rbcgen_test/input/pvol/NLHRW_pvol_20200215T2355_6356.h5")
-vp <- bioRad:::read_vpfiles("work/data/rbcgen_test/input/pvol/vp/NLHRW_vp_20200215T2355_6356_v0-3-20.h5")
-integrated_ppi <- bioRad:::integrate_to_ppi(pvol)
+vp <- bioRad:::read_vpfiles("NLHRW_vp_20200215T2355_6356_v0-3-20.h5")
 plot(vp)
