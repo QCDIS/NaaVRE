@@ -92,23 +92,23 @@ jobs:
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-#  call-test-deploy:
-#    strategy:
-#      matrix:
-#        environment_names: [ "test-vars" ]
-#    needs: [call-build-container-vanilla,call-build-container-pytorch,call-build-container-vol2bird,call-build-container-multiply,call-build-container-laserfarm]
-#    uses: QCDIS/NaaVRE/.github/workflows/test-deploy-k8s.yaml@main
-#    with:
-#      wheel_artifact_name: jupyterlab_vre
-#      docker_folder: vanilla
-#      tag: n-a-a-vre
-#      push: true
-#    secrets:
-#      api_endpoint:  ${{ secrets.API_ENDPOINT }}
-#      cell_github: ${{ secrets.CELL_GITHUB }}
-#      cell_github_token:   ${{ secrets.CELL_GITHUB_TOKEN }}
-#      module_mapping_url:  ${{ secrets.MODULE_MAPPING_URL }}
-#      naavre_api_token:  ${{ secrets.NAAVRE_API_TOKEN }}
-#      registry_url:  ${{ secrets.REGISTRY_URL }}
-#      search_api_endpoint:  ${{ secrets.SEARCH_API_ENDPOINT }}
-#      search_api_token:  ${{ secrets.SEARCH_API_TOKEN }}
+  call-test-deploy:
+    strategy:
+      matrix:
+        environment_names: [ "test-vars" ]
+    needs: [call-build-container-vanilla,call-build-container-pytorch,call-build-container-vol2bird,call-build-container-multiply,call-build-container-laserfarm]
+    uses: QCDIS/NaaVRE/.github/workflows/test-deploy-k8s.yaml@main
+    with:
+      wheel_artifact_name: jupyterlab_vre
+      docker_folder: vanilla
+      tag: n-a-a-vre
+      push: true
+    secrets:
+      api_endpoint:  ${{ secrets.API_ENDPOINT }}
+      cell_github: ${{ secrets.CELL_GITHUB }}
+      cell_github_token:   ${{ secrets.CELL_GITHUB_TOKEN }}
+      module_mapping_url:  ${{ secrets.MODULE_MAPPING_URL }}
+      naavre_api_token:  ${{ secrets.NAAVRE_API_TOKEN }}
+      registry_url:  ${{ secrets.REGISTRY_URL }}
+      search_api_endpoint:  ${{ secrets.SEARCH_API_ENDPOINT }}
+      search_api_token:  ${{ secrets.SEARCH_API_TOKEN }}
