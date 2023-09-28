@@ -1,5 +1,4 @@
-[![make](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml)
-[![make release](https://github.com/QCDIS/NaaVRE/actions/workflows/make-relese.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/make-relese.yml)
+
 # Getting started with NaaVRE
 
 This is a quick start guide to use the NaaVRE.
@@ -7,7 +6,7 @@ This is a quick start guide to use the NaaVRE.
 https://user-images.githubusercontent.com/9680609/175041369-3af397d9-8b2c-40fa-a639-d643a9d15abf.mp4
 
 
-## Log in to NaaVRE
+## Login to NaaVRE
 
 Go to one of the deployed NaaVREs
 Click on 'Sign in'
