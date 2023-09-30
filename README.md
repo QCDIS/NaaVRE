@@ -191,7 +191,6 @@ spec:
             --param_remote_path_root "{{workflow.parameters.param_remote_path_root}}"
             --id "947f5fa";
 ```
-
 Download that file on your own machine. 
 
 ## Execute the workflow
