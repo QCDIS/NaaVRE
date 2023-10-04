@@ -42,13 +42,6 @@ RUN source /venv/bin/activate
 RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
-COPY --chown=$NB_USER:users --chmod=700 docker/start-jupyter.sh /usr/local/bin/start-jupyter.sh
-COPY --chown=$NB_USER:users --chmod=700 docker/start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
-COPY --chown=$NB_USER:users --chmod=700 docker/start-jupyter-venv-dev.sh /usr/local/bin/start-jupyter-venv-dev.sh
-COPY --chown=$NB_USER:users --chmod=700 docker/init_script.sh /tmp
-COPY --chown=$NB_USER:users docker/repo_utils /tmp/repo_utils
-COPY --chown=$NB_USER:users docker/vanilla/.condarc /tmp/.condarc
-
 # Install jupyterlab_vre without dependency resolution; they were installed at the env step
 COPY --from=builder --chown=$NB_USER:users /build/dist/jupyterlab_vre-0.1.0-py3-none-any.whl .
 RUN pip install --no-deps ./jupyterlab_vre-0.1.0-py3-none-any.whl
@@ -59,5 +52,12 @@ RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
 
 RUN jupyter lab build --debug
+
+COPY --chown=$NB_USER:users --chmod=700 docker/start-jupyter.sh /usr/local/bin/start-jupyter.sh
+COPY --chown=$NB_USER:users --chmod=700 docker/start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
+COPY --chown=$NB_USER:users --chmod=700 docker/start-jupyter-venv-dev.sh /usr/local/bin/start-jupyter-venv-dev.sh
+COPY --chown=$NB_USER:users --chmod=700 docker/init_script.sh /tmp
+COPY --chown=$NB_USER:users docker/repo_utils /tmp/repo_utils
+COPY --chown=$NB_USER:users docker/vanilla/.condarc /tmp/.condarc
 
 CMD ["/usr/local/bin/start-jupyter-venv-dev.sh"]
