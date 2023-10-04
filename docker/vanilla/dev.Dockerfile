@@ -44,6 +44,7 @@ SHELL ["/bin/bash", "--login", "-c"]
 
 COPY --chown=$NB_USER:users --chmod=700 docker/start-jupyter.sh /usr/local/bin/start-jupyter.sh
 COPY --chown=$NB_USER:users --chmod=700 docker/start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
+COPY --chown=$NB_USER:users --chmod=700 docker/start-jupyter-venv-dev.sh /usr/local/bin/start-jupyter-venv-dev.sh
 COPY --chown=$NB_USER:users --chmod=700 docker/init_script.sh /tmp
 COPY --chown=$NB_USER:users docker/repo_utils /tmp/repo_utils
 COPY --chown=$NB_USER:users docker/vanilla/.condarc /tmp/.condarc
@@ -59,4 +60,4 @@ RUN jupyter serverextension enable --py jupyterlab_github --user
 
 RUN jupyter lab build --debug
 
-CMD ["/usr/local/bin/start-jupyter-venv.sh"]
+CMD ["/usr/local/bin/start-jupyter-venv-dev.sh"]
