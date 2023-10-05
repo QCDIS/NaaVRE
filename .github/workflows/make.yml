@@ -23,12 +23,12 @@ jobs:
       argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
   call-build-wheel:
     needs: call-pytest
-    uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@main
+    uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@816-when-building-the-container-we-in-one-of-the-builds-we-get-systemioioexception-no-space-left-on-device
     with:
       upload: true
   call-build-container-laserfarm:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@816-when-building-the-container-we-in-one-of-the-builds-we-get-systemioioexception-no-space-left-on-device
     with:
       wheel_artifact_name: jupyterlab_vre
       docker_folder: laserfarm-pytorch
@@ -39,22 +39,22 @@ jobs:
       gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-  call-build-container-multiply:
-    needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
-    with:
-      wheel_artifact_name: jupyterlab_vre
-      docker_folder: MULTIPLY
-      tag: n-a-a-vre-multiply
-      push: false
-    secrets:
-      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
-      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
-      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
-      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
+#  call-build-container-multiply:
+#    needs: call-build-wheel
+#    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@816-when-building-the-container-we-in-one-of-the-builds-we-get-systemioioexception-no-space-left-on-device
+#    with:
+#      wheel_artifact_name: jupyterlab_vre
+#      docker_folder: MULTIPLY
+#      tag: n-a-a-vre-multiply
+#      push: false
+#    secrets:
+#      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+#      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+#      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+#      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vol2bird:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@816-when-building-the-container-we-in-one-of-the-builds-we-get-systemioioexception-no-space-left-on-device
     with:
       wheel_artifact_name: jupyterlab_vre
       docker_folder: vol2bird
@@ -65,22 +65,9 @@ jobs:
       gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-  call-build-container-pytorch:
-    needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
-    with:
-      wheel_artifact_name: jupyterlab_vre
-      docker_folder: laserfarm-pytorch
-      tag: n-a-a-vre-pytorch
-      push: false
-    secrets:
-      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
-      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
-      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
-      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vanilla:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@816-when-building-the-container-we-in-one-of-the-builds-we-get-systemioioexception-no-space-left-on-device
     with:
       wheel_artifact_name: jupyterlab_vre
       docker_folder: vanilla
