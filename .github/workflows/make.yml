@@ -65,19 +65,6 @@ jobs:
       gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-  call-build-container-pytorch:
-    needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@816-when-building-the-container-we-in-one-of-the-builds-we-get-systemioioexception-no-space-left-on-device
-    with:
-      wheel_artifact_name: jupyterlab_vre
-      docker_folder: laserfarm-pytorch
-      tag: n-a-a-vre-pytorch
-      push: false
-    secrets:
-      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
-      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
-      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
-      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vanilla:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@816-when-building-the-container-we-in-one-of-the-builds-we-get-systemioioexception-no-space-left-on-device
