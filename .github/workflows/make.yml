@@ -22,7 +22,7 @@ jobs:
 #      argo_url: ${{ secrets.ARGO_URL }}
 #      argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
   call-build-wheel:
-    needs: call-pytest
+#    needs: call-pytest
     uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@main
     with:
       upload: true
