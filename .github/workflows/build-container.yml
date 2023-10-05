@@ -112,8 +112,3 @@ jobs:
           docker push $IMAGE_ID:latest
         fi
 
-
-
-    - name: Docker images clean up
-      run: |
-          docker system prune --all --force
