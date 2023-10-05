@@ -6,21 +6,21 @@ on:
     - cron: '0 4 5,25 * *'
 
 jobs:
-#  call-pytest:
-#    uses: QCDIS/NaaVRE/.github/workflows/python-package-conda.yml@main
-#    secrets:
-#      jupyterhub_user: ${{ secrets.JUPYTERHUB_USER }}
-#      vlab_slug: ${{ secrets.VLAB_SLUG }}
-#      cell_github: ${{ secrets.CELL_GITHUB }}
-#      cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
-#      api_endpoint: ${{ secrets.API_ENDPOINT }}
-#      module_mapping_url: ${{ secrets.MODULE_MAPPING_URL }}
-#      search_api_endpoint: ${{ secrets.SEARCH_API_ENDPOINT }}
-#      search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
-#      registry_url: ${{ secrets.REGISTRY_URL }}
-#      naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
-#      argo_url: ${{ secrets.ARGO_URL }}
-#      argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
+  call-pytest:
+    uses: QCDIS/NaaVRE/.github/workflows/python-package-conda.yml@main
+    secrets:
+      jupyterhub_user: ${{ secrets.JUPYTERHUB_USER }}
+      vlab_slug: ${{ secrets.VLAB_SLUG }}
+      cell_github: ${{ secrets.CELL_GITHUB }}
+      cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
+      api_endpoint: ${{ secrets.API_ENDPOINT }}
+      module_mapping_url: ${{ secrets.MODULE_MAPPING_URL }}
+      search_api_endpoint: ${{ secrets.SEARCH_API_ENDPOINT }}
+      search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
+      registry_url: ${{ secrets.REGISTRY_URL }}
+      naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
+      argo_url: ${{ secrets.ARGO_URL }}
+      argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
   call-build-wheel:
 #    needs: call-pytest
     uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@816-when-building-the-container-we-in-one-of-the-builds-we-get-systemioioexception-no-space-left-on-device
