@@ -35,6 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
     - name: Download artifact
       uses: actions/download-artifact@v3
       with:
@@ -55,18 +56,12 @@ jobs:
           if test -f "docker/$DOCKER_FOLDER/environment.yaml"; then yq 'del(.channels[] | select(. == "defaults"))' docker/$DOCKER_FOLDER/environment.yaml -i; fi
           yq 'del(.channels[] | select(. == "defaults"))' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i
 
-    - name: Get free disk space
-      run: |
-          df -h
-
-
 
     - name: Free Up GitHub Actions Ubuntu Runner Disk Space
       uses: free-disk-space@main
       with:
         # This might remove tools that are actually needed, if set to "true" but frees about 6 GB
         tool-cache: false
-
         # All of these default to true, but feel free to set to "false" if necessary for your workflow
         android: true
         dotnet: true
