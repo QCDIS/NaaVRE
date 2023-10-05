@@ -75,7 +75,7 @@ jobs:
 
     - name: Login to gitlab Registry
       if: ${{ inputs.push }}
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         registry: "registry.gitlab.com/qcd1/registry"
         username: ${{ secrets.gitlab_username }}
@@ -100,7 +100,7 @@ jobs:
 
     - name: Login to github Registry
       if: ${{ inputs.push }}
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         registry: "https://index.docker.io/v1/"
         username: ${{ secrets.docker_username }}
