@@ -28,7 +28,7 @@ jobs:
       upload: true
   call-build-container-laserfarm:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@816-when-building-the-container-we-in-one-of-the-builds-we-get-systemioioexception-no-space-left-on-device
     with:
       wheel_artifact_name: jupyterlab_vre
       docker_folder: laserfarm-pytorch
@@ -41,7 +41,7 @@ jobs:
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-multiply:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@816-when-building-the-container-we-in-one-of-the-builds-we-get-systemioioexception-no-space-left-on-device
     with:
       wheel_artifact_name: jupyterlab_vre
       docker_folder: MULTIPLY
@@ -54,7 +54,7 @@ jobs:
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vol2bird:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@816-when-building-the-container-we-in-one-of-the-builds-we-get-systemioioexception-no-space-left-on-device
     with:
       wheel_artifact_name: jupyterlab_vre
       docker_folder: vol2bird
@@ -67,7 +67,7 @@ jobs:
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-pytorch:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@816-when-building-the-container-we-in-one-of-the-builds-we-get-systemioioexception-no-space-left-on-device
     with:
       wheel_artifact_name: jupyterlab_vre
       docker_folder: laserfarm-pytorch
@@ -80,7 +80,7 @@ jobs:
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vanilla:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@816-when-building-the-container-we-in-one-of-the-builds-we-get-systemioioexception-no-space-left-on-device
     with:
       wheel_artifact_name: jupyterlab_vre
       docker_folder: vanilla
