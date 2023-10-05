@@ -156,4 +156,4 @@ jobs:
 
     - name: Docker images clean up
       run: |
-          docker system prune --all
+          docker system prune --all --force
