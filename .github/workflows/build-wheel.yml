@@ -11,7 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
@@ -25,3 +25,9 @@ jobs:
         with:
           name: jupyterlab_vre
           path: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
+      - name: Delete Conda envirmonet
+        shell: bash -el {0}
+        run: |
+          conda remove --name jupyterlab --all --yes
+
+
