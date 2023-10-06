@@ -27,6 +27,7 @@ setup_args = dict(
     data_files=[('etc/jupyter/jupyter_server_config.d', glob(jupyter_config_path)),
                 ('share/jupyter/lab/extensions', glob(frontend_packages_path))],
     install_requires=[
+
     ],
     zip_safe=False,
     include_package_data=True,
