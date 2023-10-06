@@ -164,21 +164,23 @@ class ExecuteWorkflowHandler(APIHandler):
         }
 
         try:
-            accessToken = os.environ['NAAVRE_API_TOKEN']
-            if not accessToken:
+            access_token = os.environ['NAAVRE_API_TOKEN']
+            if not access_token:
                 self.set_status(400)
                 self.write('VRE_API_TOKEN is not set!')
                 self.write_error('NAAVRE_API_TOKEN is not set!')
                 self.flush()
                 return
+            vre_api_verify_ssl = os.getenv('VRE_API_VERIFY_SSL', 'true')
             logger.info('Workflow submission request: ' + str(json.dumps(req_body)))
             resp = requests.post(
                 f"{api_endpoint}/api/workflows/submit/",
                 data=json.dumps(req_body),
                 headers={
-                    'Authorization': f"Token {accessToken}",
+                    'Authorization': f"Token {access_token}",
                     'Content-Type': 'application/json'
-                }
+                },
+                verify=vre_api_verify_ssl
             )
             logger.info('Workflow submission response: ' + str(resp.content))
         except Exception as e:
