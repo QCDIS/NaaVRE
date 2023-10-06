@@ -34,14 +34,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Download artifact
       uses: actions/download-artifact@v3
       with:
         name: ${{ inputs.wheel_artifact_name }}
         path: docker/${{ inputs.docker_folder }}
-    - uses: mikefarah/yq@v4.35.1
+    - uses: mikefarah/yq@v4.35.2
 
     - name: add whl and start files
       run: |
@@ -75,7 +75,7 @@ jobs:
 
     - name: Login to gitlab Registry
       if: ${{ inputs.push }}
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         registry: "registry.gitlab.com/qcd1/registry"
         username: ${{ secrets.gitlab_username }}
@@ -100,7 +100,7 @@ jobs:
 
     - name: Login to github Registry
       if: ${{ inputs.push }}
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         registry: "https://index.docker.io/v1/"
         username: ${{ secrets.docker_username }}
