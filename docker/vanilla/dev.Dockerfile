@@ -14,8 +14,11 @@ RUN conda-pack -n venv -o /tmp/env.tar && \
     rm /tmp/env.tar
 RUN /venv/bin/conda-unpack
 
-FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e as builder
+
+FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e as jupyter-base
 USER root
+
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install fuse
 
 COPY --from=env --chown=$NB_USER:users /venv/ /venv/
 ENV PATH=/venv/bin:$PATH
@@ -23,24 +26,22 @@ ENV PATH=/home/jovyan/.local/bin:$PATH
 RUN source /venv/bin/activate
 RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
+
+USER $NB_USER
+
+
+FROM jupyter-base as builder
+USER root
+
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install make
 
 WORKDIR /build
 
 COPY . .
 RUN make release
 
-FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e AS runtime
-USER root
 
-RUN apt-get update --allow-releaseinfo-change && apt-get -y install fuse
-
-COPY --from=env --chown=$NB_USER:users /venv/ /venv/
-
-ENV PATH=/venv/bin:$PATH
-ENV PATH=/home/jovyan/.local/bin:$PATH
-RUN source /venv/bin/activate
-RUN echo "source /venv/bin/activate" >> ~/.bashrc
-SHELL ["/bin/bash", "--login", "-c"]
+FROM jupyter-base AS runtime
 
 # Install jupyterlab_vre without dependency resolution; they were installed at the env step
 COPY --from=builder --chown=$NB_USER:users /build/dist/jupyterlab_vre-0.1.0-py3-none-any.whl .
