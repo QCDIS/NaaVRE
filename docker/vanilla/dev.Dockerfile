@@ -14,20 +14,20 @@ RUN conda-pack -n venv -o /tmp/env.tar && \
     rm /tmp/env.tar
 RUN /venv/bin/conda-unpack
 
-FROM condaforge/mambaforge:23.1.0-2 as builder
+FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e as builder
+USER root
 
-COPY --from=env /venv/ /venv/
+COPY --from=env --chown=$NB_USER:users /venv/ /venv/
+ENV PATH=/venv/bin:$PATH
+ENV PATH=/home/jovyan/.local/bin:$PATH
+RUN source /venv/bin/activate
+RUN echo "source /venv/bin/activate" >> ~/.bashrc
+SHELL ["/bin/bash", "--login", "-c"]
 
 WORKDIR /build
 
-COPY Makefile .
-COPY setup.py .
-COPY README.md .
-COPY package.json .
-COPY jupyter-config/ ./jupyter-config/
-COPY jupyterlab_vre/ ./jupyterlab_vre/
-RUN python setup.py bdist_wheel sdist
-
+COPY . .
+RUN make release
 
 FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e AS runtime
 USER root
