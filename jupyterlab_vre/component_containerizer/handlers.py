@@ -332,12 +332,36 @@ class CellsHandler(APIHandler, Catalog):
             try:
                 update_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
                                           files_info=files_info)
-            except UnknownObjectException as ex:
+            except Exception as ex:
+                if isinstance(ex, UnknownObjectException):
+                    create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
+                                              files_info=files_info)
+                else:
+                    self.set_status(400)
+                    self.set_status(400)
+                    if hasattr(ex, 'message'):
+                        error_message = 'Error creating cell in repository: ' + str(ex) + ' ' + ex.message
+                    else:
+                        error_message = 'Error creating cell in repository: ' + str(ex)
+                    self.write(error_message)
+                    logger.error(error_message)
+                    self.flush()
+
+        elif commit.totalCount <= 0:
+            try:
                 create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
                                           files_info=files_info)
-        elif commit.totalCount <= 0:
-            create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
-                                      files_info=files_info)
+            except Exception as ex:
+                self.set_status(400)
+                self.set_status(400)
+                if hasattr(ex, 'message'):
+                    error_message = 'Error creating cell in repository: ' + str(ex) + ' ' + ex.message
+                else:
+                    error_message = 'Error creating cell in repository: ' + str(ex)
+                self.write(error_message)
+                logger.error(error_message)
+                self.flush()
+
         wf_id = str(uuid.uuid4())
         resp = dispatch_github_workflow(
             owner,
@@ -366,11 +390,14 @@ def create_cell_in_repository(task_name=None, repository=None, files_info=None):
         f_path = f_info['path']
         with open(f_path, 'rb') as f:
             content = f.read()
-            repository.create_file(
-                path=task_name + '/' + f_name,
-                message=task_name + ' creation',
-                content=content,
-            )
+            try:
+                repository.create_file(
+                    path=task_name + '/' + f_name,
+                    message=task_name + ' creation',
+                    content=content,
+                )
+            except Exception as ex:
+                raise Exception('Error creating file: ' + str(ex))
 
 
 def update_cell_in_repository(task_name=None, repository=None, files_info=None):

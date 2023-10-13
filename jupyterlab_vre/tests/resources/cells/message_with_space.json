@@ -1,0 +1,69 @@
+{
+    "all_inputs": [
+        "msg"
+    ],
+    "base_image": "qcdis/miniconda3",
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "47f643f": {
+                "id": "47f643f",
+                "ports": {
+                    "msg": {
+                        "id": "msg",
+                        "properties": {
+                            "color": "#7bd279"
+                        },
+                        "type": "left"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [],
+                    "inputs": [
+                        "msg"
+                    ],
+                    "og_node_id": "47f643f",
+                    "outputs": [],
+                    "params": [],
+                    "title": "Print Message-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#7bd279",
+                            "direction": "input",
+                            "name": "msg",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {},
+    "container_source": "",
+    "dependencies": [],
+    "inputs": [
+        "msg"
+    ],
+    "kernel": "ipython",
+    "node_id": "47f643f",
+    "original_source": "print(msg)",
+    "outputs": [],
+    "params": [],
+    "task_name": "print-message-dev-user-name-at-domain-com",
+    "title": "Print Message-dev-user-name-at-domain-com",
+    "types": {
+        "msg": "str"
+    }
+}

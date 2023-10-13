@@ -16,11 +16,15 @@ from tornado.web import Application
 
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
     NotebookSearchHandler, NotebookSearchRatingHandler
-from jupyterlab_vre.component_containerizer.handlers import find_job
+from jupyterlab_vre.component_containerizer.handlers import get_files_info as python_get_files_info
+from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
+
+from jupyterlab_vre.component_containerizer.handlers import find_job, get_files_info, create_cell_in_repository
 from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.handlers import load_module_names_mapping
 from jupyterlab_vre.notebook_search.handlers import NotebookDownloadHandler
+from jupyterlab_vre.services.containerizer import Rcontainerizer
 
 if os.path.exists('resources'):
     base_path = 'resources'
@@ -271,3 +275,39 @@ class HandlersAPITest(AsyncHTTPTestCase):
         )
         self.assertEqual(200, resp_detail.status_code, resp_detail.text)
         resp_detail_data = resp_detail.json()
+
+    def test_create_cell_in_repository(self):
+        cat_repositories = Catalog.get_repositories()
+        gh_token = Github(cat_repositories[0]['token'])
+        url_repos = cat_repositories[0]['url']
+        owner = url_repos.split('https://github.com/')[1].split('/')[0]
+        repository_name = url_repos.split('https://github.com/')[1].split('/')[1]
+        gh_repository = gh_token.get_repo(owner + '/' + repository_name)
+        registry_credentials = Catalog.get_registry_credentials()
+        registry_url = registry_credentials[0]['url']
+        image_repo = registry_url.split(
+            'https://hub.docker.com/u/')[1]
+        cells_json_path = os.path.join(base_path, 'cells')
+        cells_files = os.listdir(cells_json_path)
+        for cell_file in cells_files:
+            cell_path = os.path.join(cells_json_path, cell_file)
+            with open(cell_path, 'r') as file:
+                cell = json.load(file)
+            file.close()
+            test_cell = Cell(cell['title'], cell['task_name'], cell['original_source'], cell['inputs'],
+                             cell['outputs'],
+                             cell['params'], cell['confs'], cell['dependencies'], cell['container_source'],
+                             cell['chart_obj'], cell['node_id'], cell['kernel'])
+            test_cell.types = cell['types']
+            test_cell.base_image = cell['base_image']
+            Catalog.editor_buffer = test_cell
+
+            if test_cell.kernel == "IRkernel":
+                files_info = Rcontainerizer.get_files_info(cell=test_cell, image_repo=image_repo,
+                                                           cells_path=cells_path)
+                Rcontainerizer.build_templates(cell=test_cell, files_info=files_info)
+            elif 'python' in test_cell.kernel.lower():
+                files_info = python_get_files_info(cell=test_cell, image_repo=image_repo)
+
+            create_cell_in_repository(task_name=test_cell.task_name, repository=gh_repository,
+                                      files_info=files_info)
