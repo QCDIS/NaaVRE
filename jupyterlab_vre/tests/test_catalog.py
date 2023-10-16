@@ -47,4 +47,6 @@ class TestCatalog(TestCase):
         owner = url_repos.split('https://github.com/')[1].split('/')[0]
         self.assertIsNotNone(owner)
         repository_name = url_repos.split('https://github.com/')[1].split('/')[1]
+        if '.git' in repository_name:
+            repository_name = repository_name.split('.git')[0]
         self.assertIsNotNone(repository_name)
