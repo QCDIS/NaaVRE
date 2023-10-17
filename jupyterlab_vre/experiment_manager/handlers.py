@@ -179,13 +179,14 @@ class ExecuteWorkflowHandler(APIHandler):
                 headers={
                     'Authorization': f"Token {access_token}",
                     'Content-Type': 'application/json'
-                },
-                verify=vre_api_verify_ssl
+                }
+                # verify=vre_api_verify_ssl
             )
             logger.info('Workflow submission response: ' + str(resp.content))
         except Exception as e:
             logger.error('Workflow submission failed: ' + str(e))
             logger.error('api_endpoint: ' + str(api_endpoint))
+            logger.error('vre_api_verify_ssl: ' + str(vre_api_verify_ssl))
             self.set_status(400)
             self.write('Workflow submission failed: ' + str(e))
             self.write_error('Workflow submission failed: ' + str(e))
