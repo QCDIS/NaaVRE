@@ -1,0 +1,224 @@
+{
+  "chart": {
+    "offset": {
+      "x": 0,
+      "y": 0
+    },
+    "scale": 1,
+    "nodes": {
+      "22821622-d05d-4a50-b473-68e8cb3b02e5": {
+        "id": "22821622-d05d-4a50-b473-68e8cb3b02e5",
+        "position": {
+          "x": 840.5499877929688,
+          "y": 214
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "msg": {
+            "id": "msg",
+            "properties": {
+              "color": "#7bd279"
+            },
+            "type": "left",
+            "position": {
+              "x": 15.5,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "deps": [],
+          "inputs": [
+            "msg"
+          ],
+          "og_node_id": "0fd753d",
+          "outputs": [],
+          "params": [],
+          "title": "Print Message1-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "color": "#7bd279",
+              "direction": "input",
+              "name": "msg",
+              "type": "datatype"
+            }
+          ]
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "8c16bbb7-f660-495d-acd0-abbe3cba1ee6": {
+        "id": "8c16bbb7-f660-495d-acd0-abbe3cba1ee6",
+        "position": {
+          "x": 944.5499877929688,
+          "y": 485
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "msg": {
+            "properties": {
+              "color": "#7bd279"
+            },
+            "id": "msg",
+            "type": "left",
+            "position": {
+              "x": 15.5,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "loop-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "msg",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#7bd279"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "msg"
+          ],
+          "outputs": [],
+          "og_node_id": "965239d",
+          "deps": []
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "49959c2b-be9a-44c9-a85f-e6937f0f5bf0": {
+        "id": "49959c2b-be9a-44c9-a85f-e6937f0f5bf0",
+        "position": {
+          "x": 250.54998779296875,
+          "y": 192
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "msg": {
+            "properties": {
+              "color": "#7bd279"
+            },
+            "id": "msg",
+            "type": "right",
+            "position": {
+              "x": 232.5,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "Message1-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "msg",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#7bd279"
+            }
+          ],
+          "params": [],
+          "inputs": [],
+          "outputs": [
+            "msg"
+          ],
+          "og_node_id": "0f0d5f2",
+          "deps": []
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "aab149b9-cbad-432d-a14e-df9a8d11f91f": {
+        "id": "aab149b9-cbad-432d-a14e-df9a8d11f91f",
+        "position": {
+          "x": 621.5499877929688,
+          "y": 468
+        },
+        "orientation": 0,
+        "type": "splitter",
+        "ports": {
+          "splitter_source": {
+            "id": "splitter_source",
+            "type": "left",
+            "properties": {
+              "special_node": 1,
+              "color": "#000000"
+            },
+            "position": {
+              "x": 0.5,
+              "y": 49.5
+            }
+          },
+          "splitter_target": {
+            "id": "splitter_target",
+            "type": "right",
+            "properties": {
+              "special_node": 1,
+              "color": "#000000"
+            },
+            "position": {
+              "x": 197.5,
+              "y": 49.5
+            }
+          }
+        },
+        "properties": {
+          "title": "Splitter",
+          "scalingFactor": 1
+        },
+        "size": {
+          "width": 200,
+          "height": 100
+        }
+      }
+    },
+    "links": {
+      "930f515e-df70-4c2b-8013-1a01aded16ad": {
+        "id": "930f515e-df70-4c2b-8013-1a01aded16ad",
+        "from": {
+          "nodeId": "aab149b9-cbad-432d-a14e-df9a8d11f91f",
+          "portId": "splitter_target"
+        },
+        "to": {
+          "nodeId": "8c16bbb7-f660-495d-acd0-abbe3cba1ee6",
+          "portId": "msg"
+        }
+      },
+      "17eb6fc1-9e86-4d78-a9e2-af27c7004a0a": {
+        "id": "17eb6fc1-9e86-4d78-a9e2-af27c7004a0a",
+        "from": {
+          "nodeId": "49959c2b-be9a-44c9-a85f-e6937f0f5bf0",
+          "portId": "msg"
+        },
+        "to": {
+          "nodeId": "aab149b9-cbad-432d-a14e-df9a8d11f91f",
+          "portId": "splitter_source"
+        }
+      },
+      "37ab73dd-d573-4630-8da8-04ba9e4613aa": {
+        "id": "37ab73dd-d573-4630-8da8-04ba9e4613aa",
+        "from": {
+          "nodeId": "49959c2b-be9a-44c9-a85f-e6937f0f5bf0",
+          "portId": "msg"
+        },
+        "to": {
+          "nodeId": "22821622-d05d-4a50-b473-68e8cb3b02e5",
+          "portId": "msg"
+        }
+      }
+    },
+    "selected": {},
+    "hovered": {}
+  },
+  "params": {}
+}

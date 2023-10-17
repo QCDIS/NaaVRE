@@ -84,6 +84,7 @@ class ExecuteWorkflowHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
+        print('Workflow execution payload: ' + json.dumps(payload))
         chart = payload['chart']
         params = payload['params']
 
@@ -173,6 +174,9 @@ class ExecuteWorkflowHandler(APIHandler):
                 return
             vre_api_verify_ssl = os.getenv('VRE_API_VERIFY_SSL', 'true')
             logger.info('Workflow submission request: ' + str(json.dumps(req_body)))
+            print('Workflow submission request: ' + str(json.dumps(req_body)))
+            session = requests.Session()
+            session.verify = vre_api_verify_ssl
             resp = requests.post(
                 f"{api_endpoint}/api/workflows/submit/",
                 data=json.dumps(req_body),
@@ -180,7 +184,6 @@ class ExecuteWorkflowHandler(APIHandler):
                     'Authorization': f"Token {access_token}",
                     'Content-Type': 'application/json'
                 }
-                # verify=vre_api_verify_ssl
             )
             logger.info('Workflow submission response: ' + str(resp.content))
         except Exception as e:

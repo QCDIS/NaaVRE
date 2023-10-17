@@ -112,6 +112,11 @@ class HandlersAPITest(AsyncHTTPTestCase):
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
             json_response = json.loads(response.body.decode('utf-8'))
             self.assertIsNotNone(json_response)
+            self.assertEqual(response.code, 200)
+            self.assertTrue('argo_id' in json_response)
+            self.assertTrue('created' in json_response)
+            self.assertTrue('status' in json_response)
+            self.assertTrue('argo_url' in json_response)
 
     def test_load_module_names_mapping(self):
         load_module_names_mapping()
