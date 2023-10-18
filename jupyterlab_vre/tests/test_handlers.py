@@ -68,6 +68,20 @@ def get_gh_repository():
     return gh.get_repo(owner + '/' + repository_name)
 
 
+def create_cell_and_add_to_cat(cell_path=None):
+    with open(cell_path, 'r') as file:
+        cell = json.load(file)
+    file.close()
+    test_cell = Cell(cell['title'], cell['task_name'], cell['original_source'], cell['inputs'],
+                     cell['outputs'],
+                     cell['params'], cell['confs'], cell['dependencies'], cell['container_source'],
+                     cell['chart_obj'], cell['node_id'], cell['kernel'])
+    test_cell.types = cell['types']
+    test_cell.base_image = cell['base_image']
+    Catalog.editor_buffer = test_cell
+    return test_cell, cell
+
+
 class HandlersAPITest(AsyncHTTPTestCase):
 
     def get_app(self):
@@ -109,6 +123,14 @@ class HandlersAPITest(AsyncHTTPTestCase):
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
+            cells_json_path = os.path.join(base_path, 'cells')
+            cells_files = os.listdir(cells_json_path)
+            for cell_file in cells_files:
+                cell_path = os.path.join(cells_json_path, cell_file)
+                test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
             json_response = json.loads(response.body.decode('utf-8'))
             self.assertIsNotNone(json_response)
@@ -155,17 +177,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cells_files = os.listdir(cells_json_path)
             for cell_file in cells_files:
                 cell_path = os.path.join(cells_json_path, cell_file)
-                with open(cell_path, 'r') as file:
-                    cell = json.load(file)
-                file.close()
-                test_cell = Cell(cell['title'], cell['task_name'], cell['original_source'], cell['inputs'],
-                                 cell['outputs'],
-                                 cell['params'], cell['confs'], cell['dependencies'], cell['container_source'],
-                                 cell['chart_obj'], cell['node_id'], cell['kernel'])
-                test_cell.types = cell['types']
-                test_cell.base_image = cell['base_image']
-                Catalog.editor_buffer = test_cell
-                response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
+                test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
                 self.assertEqual(200, response.code)
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
                 if test_cell.kernel == 'python3':
@@ -239,3 +252,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 json_response = json.loads(response.body.decode('utf-8'))
                 self.assertIsNotNone(json_response)
                 cell = notebook['notebook']['cells'][notebook['cell_index']]
+
+    def call_cell_handler(self):
+        response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
+        return response
