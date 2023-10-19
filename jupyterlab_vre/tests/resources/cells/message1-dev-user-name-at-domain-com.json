@@ -1,0 +1,67 @@
+{
+  "title": "Message1-dev-user-name-at-domain-com",
+  "task_name": "message1-dev-user-name-at-domain-com",
+  "original_source": "\nmsg = \"Hello world!\"",
+  "inputs": [],
+  "outputs": [
+    "msg"
+  ],
+  "params": [],
+  "confs": {},
+  "all_inputs": [],
+  "types": {
+    "msg": "str"
+  },
+  "dependencies": [],
+  "chart_obj": {
+    "hovered": {},
+    "links": {},
+    "nodes": {
+      "d5c3107": {
+        "id": "d5c3107",
+        "ports": {
+          "msg": {
+            "id": "msg",
+            "properties": {
+              "color": "#7bd279"
+            },
+            "type": "right"
+          }
+        },
+        "position": {
+          "x": 35,
+          "y": 15
+        },
+        "properties": {
+          "deps": [],
+          "inputs": [],
+          "og_node_id": "d5c3107",
+          "outputs": [
+            "msg"
+          ],
+          "params": [],
+          "title": "Message1-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "color": "#7bd279",
+              "direction": "output",
+              "name": "msg",
+              "type": "datatype"
+            }
+          ]
+        },
+        "type": "input-output"
+      }
+    },
+    "offset": {
+      "x": 0,
+      "y": 0
+    },
+    "scale": 1,
+    "selected": {}
+  },
+  "node_id": "d5c3107",
+  "container_source": "",
+  "kernel": "ipython",
+  "base_image": "qcdis/miniconda3"
+}
