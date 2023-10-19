@@ -68,6 +68,20 @@ def get_gh_repository():
     return gh.get_repo(owner + '/' + repository_name)
 
 
+def create_cell_and_add_to_cat(cell_path=None):
+    with open(cell_path, 'r') as file:
+        cell = json.load(file)
+    file.close()
+    test_cell = Cell(cell['title'], cell['task_name'], cell['original_source'], cell['inputs'],
+                     cell['outputs'],
+                     cell['params'], cell['confs'], cell['dependencies'], cell['container_source'],
+                     cell['chart_obj'], cell['node_id'], cell['kernel'])
+    test_cell.types = cell['types']
+    test_cell.base_image = cell['base_image']
+    Catalog.editor_buffer = test_cell
+    return test_cell, cell
+
+
 class HandlersAPITest(AsyncHTTPTestCase):
 
     def get_app(self):
@@ -100,6 +114,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             # response = self.fetch('/exportworkflowhandler', method='POST', body=json.dumps(payload))
             # self.assertEqual(response.code, 200)
 
+
     def test_execute_workflow_handler(self):
         workflow_path = os.path.join(base_path, 'workflows', 'NaaVRE')
         workflow_files = os.listdir(workflow_path)
@@ -109,9 +124,22 @@ class HandlersAPITest(AsyncHTTPTestCase):
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
+            cells_json_path = os.path.join(base_path, 'cells')
+            cells_files = os.listdir(cells_json_path)
+            for cell_file in cells_files:
+                cell_path = os.path.join(cells_json_path, cell_file)
+                test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
             json_response = json.loads(response.body.decode('utf-8'))
             self.assertIsNotNone(json_response)
+            self.assertEqual(response.code, 200)
+            self.assertTrue('argo_id' in json_response)
+            self.assertTrue('created' in json_response)
+            self.assertTrue('status' in json_response)
+            self.assertTrue('argo_url' in json_response)
 
     def test_load_module_names_mapping(self):
         load_module_names_mapping()
@@ -150,17 +178,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cells_files = os.listdir(cells_json_path)
             for cell_file in cells_files:
                 cell_path = os.path.join(cells_json_path, cell_file)
-                with open(cell_path, 'r') as file:
-                    cell = json.load(file)
-                file.close()
-                test_cell = Cell(cell['title'], cell['task_name'], cell['original_source'], cell['inputs'],
-                                 cell['outputs'],
-                                 cell['params'], cell['confs'], cell['dependencies'], cell['container_source'],
-                                 cell['chart_obj'], cell['node_id'], cell['kernel'])
-                test_cell.types = cell['types']
-                test_cell.base_image = cell['base_image']
-                Catalog.editor_buffer = test_cell
-                response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
+                test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
                 self.assertEqual(200, response.code)
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
                 if test_cell.kernel == 'python3':
@@ -235,39 +254,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertIsNotNone(json_response)
                 cell = notebook['notebook']['cells'][notebook['cell_index']]
 
-    def test_argo_api(self):
-        argo_workflow_path = os.path.join(base_path, 'workflows', 'argo')
-        argo_workflow_files = os.listdir(argo_workflow_path)
-        for argo_workflow_file in argo_workflow_files:
-            argo_workflow_file_path = os.path.join(argo_workflow_path, argo_workflow_file)
-            self.submit_workflow(argo_workflow_file_path)
-
-    def submit_workflow(self, argo_workflow_path):
-        ago_ns = 'argo'
-        self.assertIsNotNone(os.getenv('ARGO_URL'), 'ARGO_URL not set')
-        ARGO_API_URL = os.getenv('ARGO_URL') + '/api/v1/workflows/' + ago_ns
-        with open(argo_workflow_path, 'r') as read_file:
-            workflow = json.load(read_file)
-        token = os.getenv('ARGO_API_TOKEN')
-        self.assertIsNotNone(token, 'ARGO_API_TOKEN not set')
-
-        resp_submit = requests.post(
-            ARGO_API_URL,
-            json=workflow,
-            headers={
-                'Authorization': token
-            }
-        )
-        self.assertEqual(200, resp_submit.status_code, resp_submit.text)
-
-        resp_submit_data = resp_submit.json()
-        self.assertIsNotNone(resp_submit_data['metadata']['name'], 'No workflow name returned')
-        resp_detail = requests.get(
-            f"{ARGO_API_URL}/{resp_submit_data['metadata']['name']}",
-            json=workflow,
-            headers={
-                'Authorization': token
-            }
-        )
-        self.assertEqual(200, resp_detail.status_code, resp_detail.text)
-        resp_detail_data = resp_detail.json()
+    def call_cell_handler(self):
+        response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
+        return response

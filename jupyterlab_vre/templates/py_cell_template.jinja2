@@ -12,7 +12,7 @@ arg_parser.add_argument('--id', action='store', type=str, required=True, dest='i
 {% for in_var in cell.inputs|sort %}
 
 {% if types[in_var] == list  or types[in_var] == 'list' %}
-arg_parser.add_argument('--{{ in_var }}', action='store', type=str, required='True', dest='{{ in_var }}')
+arg_parser.add_argument('--{{ in_var }}', action='store', type=str, required=True, dest='{{ in_var }}')
 {% else %}
 arg_parser.add_argument('--{{ in_var }}', action='store', type={{ types[in_var] }}, required='True', dest='{{ in_var }}')
 {% endif %}

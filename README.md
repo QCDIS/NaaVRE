@@ -1,5 +1,5 @@
+[![make release](https://github.com/QCDIS/NaaVRE/actions/workflows/make-release.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/make-release.yml)
 [![make](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml)
-[![make release](https://github.com/QCDIS/NaaVRE/actions/workflows/make-relese.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/make-relese.yml)
 # Getting started with NaaVRE
 
 This is a quick start guide to use the NaaVRE.
@@ -7,7 +7,7 @@ This is a quick start guide to use the NaaVRE.
 https://user-images.githubusercontent.com/9680609/175041369-3af397d9-8b2c-40fa-a639-d643a9d15abf.mp4
 
 
-## Log in to NaaVRE
+## Login to NaaVRE
 
 Go to one of the deployed NaaVREs
 Click on 'Sign in'
@@ -191,7 +191,6 @@ spec:
             --param_remote_path_root "{{workflow.parameters.param_remote_path_root}}"
             --id "947f5fa";
 ```
-
 Download that file on your own machine. 
 
 ## Execute the workflow
@@ -267,7 +266,7 @@ make install-backend && make build-frontend && make install-ui && make link-ui
 
 Build the extension  and start a jupyterlab instance:
 ```shell
-source export_VARS && jupyter lab build && cp -r ~/workspace/NaaVRE/docker/repo_utils/ /tmp/ && ~/workspace/NaaVRE/docker/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*'
+source export_VARS && jupyter lab build && cp -r ~/workspace/NaaVRE/docker/repo_utils/ /tmp/ && ~/workspace/NaaVRE/docker/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative
 ```
 
 Build wheel file for release:
@@ -287,7 +286,6 @@ ImportError: No module named pathlib
 make: *** [build-backend] Error 1
 ```
 
-
 Removed Anaconda entirely from the machine (MacOS), and do a full reinstall as follows:
 
 ```shell
@@ -298,15 +296,102 @@ export PATH="/usr/local/anaconda3/bin:$PATH"
 Next, sett up the Anaconda environment:
     
 ```shell    
-conda create -n jupyterlab  python=3.9 
-conda activate jupyterlab
+conda env update --file environment.yml
 ```
 
 
 ## Docker 
 
 ```commandline
-docker run -it -p 8888:8888 --env-file ~/Downloads/notbooks/docker_VARS qcdis/n-a-a-vre-laserfarm /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*'"
+docker run -it -p 8888:8888 --env-file ~/Downloads/notbooks/docker_VARS qcdis/n-a-a-vre-laserfarm /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative"
+```
+
+
+# Argo Workflows
+
+## Generate Token
+
+```shell
+kubectl apply -f - <<EOF
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: vre-api
+  namespace: argo
+rules:
+  - verbs:
+      - get
+      - watch
+      - patch
+    apiGroups:
+      - ''
+    resources:
+      - pods
+  - verbs:
+      - get
+      - watch
+    apiGroups:
+      - ''
+    resources:
+      - pods/log
+  - verbs:
+      - create
+    apiGroups:
+      - ''
+    resources:
+      - pods/exec
+  - verbs:
+      - list
+      - watch
+      - create
+      - get
+      - update
+      - delete
+    apiGroups:
+      - argoproj.io
+    resources:
+      - workflowtasksets
+      - workflowartifactgctasks
+      - workflowtemplates
+      - workflows
+  - verbs:
+      - patch
+    apiGroups:
+      - argoproj.io
+    resources:
+      - workflowtasksets/status
+      - workflowartifactgctasks/status
+      - workflows/status
+EOF
+```
+
+```shell
+kubectl create sa vre-api -n argo
+```
+
+```shell
+kubectl create rolebinding vre-api --role=vre-api --serviceaccount=argo:vre-api -n argo
+```
+
+```shell
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: argo
+  name: vre-api.service-account-token
+  annotations:
+    kubernetes.io/service-account.name: vre-api
+type: kubernetes.io/service-account-token
+EOF
+```
+
+```shell
+ARGO_TOKEN="Bearer $(kubectl get secret vre-api.service-account-token -n argo -o=jsonpath='{.data.token}' | base64 --decode)"
+```
+
+```shell
+echo -n $ARGO_TOKEN | base64 -w 0
 ```
 
 

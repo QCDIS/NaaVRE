@@ -42,7 +42,7 @@ jobs:
         paths:
           - "docker/test-values/test_values1.yaml"
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: add VARS
         run: |
@@ -52,17 +52,16 @@ jobs:
             yq ".singleuser.extraEnv.REGISTRY_URL +=\"$REGISTRY_URL\"" docker/test-values/test_values1.yaml -i
             yq ".singleuser.extraEnv.SEARCH_API_ENDPOINT +=\"$SEARCH_API_ENDPOINT\"" docker/test-values/test_values1.yaml -i
             yq ".singleuser.extraEnv.SEARCH_API_TOKEN +=\"$SEARCH_API_TOKEN\"" docker/test-values/test_values1.yaml -i
-#      - uses: balchua/microk8s-actions@v0.3.2
-#        with:
-#          channel: '1.26/stable'
-#      - name: Test ${{ matrix.paths }}
-#        id: k8s
-#        run: |
-##          helm template jupyterhub jupyterhub/jupyterhub -f ${{ matrix.paths }} -n vre
-#          kubectl create ns vre
-##          kubectl apply -f output.yaml -n vre
-#          helm upgrade --install jupyterhub jupyterhub/jupyterhub -f ${{ matrix.paths }} -n vre
-#          sleep 150
-#          kubectl get pods -n vre
-#          kubectl get pods -n vre -o=jsonpath='{.items[*].status.containerStatuses}'  | jq
+
+      - uses: balchua/microk8s-actions@v0.4.2
+        with:
+          channel: '1.26/stable'
+      - name: Test ${{ matrix.paths }}
+        id: k8s
+        run: |
+          kubectl create ns vre
+          helm upgrade --install jupyterhub jupyterhub/jupyterhub -f ${{ matrix.paths }} -n vre
+          sleep 150
+          kubectl get pods -n vre
+          kubectl get pods -n vre -o=jsonpath='{.items[*].status.containerStatuses}'  | jq
 
