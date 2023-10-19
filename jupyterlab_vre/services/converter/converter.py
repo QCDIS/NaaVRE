@@ -1,5 +1,7 @@
 import uuid
+
 from colorhash import ColorHash
+
 
 class ConverterReactFlowChart:
 
@@ -11,19 +13,19 @@ class ConverterReactFlowChart:
         ports = {}
         properties = {}
 
-        node['id']                  = node_id
-        node['type']                = 'input-output'
-        position['x']               = 35
-        position['y']               = 15
-        node['position']            = position
-        properties['title']         = title
-        properties['vars']          = list()
-        properties['params']        = list(params)
-        properties['inputs']        = list(ins)
-        properties['outputs']       = list(outs)
-        properties['og_node_id']    = node_id
-        properties['deps']          = list()
-        node['properties']          = properties
+        node['id'] = node_id
+        node['type'] = 'input-output'
+        position['x'] = 35
+        position['y'] = 15
+        node['position'] = position
+        properties['title'] = title
+        properties['vars'] = list()
+        properties['params'] = list(params)
+        properties['inputs'] = list(ins)
+        properties['outputs'] = list(outs)
+        properties['og_node_id'] = node_id
+        properties['deps'] = list()
+        node['properties'] = properties
 
         for i in ins:
             ports[i] = {}
@@ -31,11 +33,11 @@ class ConverterReactFlowChart:
             ports[i]['id'] = i
             ports[i]['type'] = 'left'
             ports[i]['properties']['color'] = ColorHash(i).hex
-            properties['vars'].append({ 
-                'name'      : i,
-                'direction' : 'input',
-                'type'      : 'datatype',
-                'color'     : ports[i]['properties']['color']
+            properties['vars'].append({
+                'name': i,
+                'direction': 'input',
+                'type': 'datatype',
+                'color': ports[i]['properties']['color']
             })
 
         for o in outs:
@@ -44,11 +46,11 @@ class ConverterReactFlowChart:
             ports[o]['id'] = o
             ports[o]['type'] = 'right'
             ports[o]['properties']['color'] = ColorHash(o).hex
-            properties['vars'].append({ 
-                'name'      : o,
-                'direction' : 'output',
-                'type'      : 'datatype',
-                'color'     : ports[o]['properties']['color']
+            properties['vars'].append({
+                'name': o,
+                'direction': 'output',
+                'type': 'datatype',
+                'color': ports[o]['properties']['color']
             })
 
         node['ports'] = ports
@@ -82,7 +84,6 @@ class ConverterReactFlow:
 
         return nodes
 
-
     @staticmethod
     def get_output_nodes(outs):
         nodes = []
@@ -102,7 +103,6 @@ class ConverterReactFlow:
 
         return nodes
 
-    
     @staticmethod
     def get_default_node(title, uuid):
         d_node = {}
@@ -114,7 +114,6 @@ class ConverterReactFlow:
         d_node['position']['y'] = 100
 
         return d_node
-    
 
     @staticmethod
     def get_edges(d_node_id, ins, outs):
@@ -162,7 +161,6 @@ class ConverterFlume:
 
         color_i = 0
         for port in ports:
-
             p_type = {}
             p_type['type'] = port
             p_type['name'] = port
@@ -174,7 +172,6 @@ class ConverterFlume:
 
         return ports_types
 
-
     @staticmethod
     def get_node(source, ports, ins, outs):
         title = source.partition('\n')[0]
@@ -185,13 +182,10 @@ class ConverterFlume:
         n_type['label'] = title if title[0] == "#" else "Untitled %s" % short_uuid
         n_type['description'] = short_uuid
 
-        ports_in = [ p for p in ports if p['name'] in ins ]
-        ports_out = [ p for p in ports if p['name'] in outs ]
+        ports_in = [p for p in ports if p['name'] in ins]
+        ports_out = [p for p in ports if p['name'] in outs]
 
         n_type['inputs'] = ports_in
         n_type['outputs'] = ports_out
 
         return n_type
-
-
-

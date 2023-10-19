@@ -1,7 +1,7 @@
-from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
-from ._version import __version__ 
 from notebook.utils import url_path_join
 
+from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
+from ._version import __version__
 from .component_containerizer.handlers import ExtractorHandler, TypesHandler, BaseImageHandler, CellsHandler
 from .experiment_manager.handlers import ExportWorkflowHandler, ExecuteWorkflowHandler
 from .handlers import CatalogGetAllHandler
@@ -19,17 +19,19 @@ def _jupyter_server_extension_paths():
 
 
 def load_jupyter_server_extension(lab_app):
-
     host_pattern = '.*$'
 
     lab_app.web_app.add_handlers(host_pattern, [
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebooksearch'), NotebookSearchHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebookdownloadhandler'), NotebookDownloadHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebooksourcehandler'), NotebookSourceHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebookseachhistoryhandler'), NotebookSeachHistoryHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebooksearchrating'), NotebookSearchRatingHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebookseachhistoryhandler'),
+         NotebookSeachHistoryHandler),
+        (
+        url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebooksearchrating'), NotebookSearchRatingHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/extract'), ExtractorHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/nbcontainerizer/extract'), NotebookExtractorHandler),
+        (
+        url_path_join(lab_app.web_app.settings['base_url'], r'/vre/nbcontainerizer/extract'), NotebookExtractorHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/types'), TypesHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/baseimage'), BaseImageHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/addcell'), CellsHandler),
@@ -39,5 +41,5 @@ def load_jupyter_server_extension(lab_app):
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/repositories/?'), RepositoriesHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/registries/?'), RegistriesHandler)
     ])
-    
+
     lab_app.log.info("Registered NaaVRRE extension at URL path /vre")

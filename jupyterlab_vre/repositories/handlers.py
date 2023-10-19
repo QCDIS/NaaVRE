@@ -1,11 +1,9 @@
-
-import copy
 import json
-import uuid
 
-from jupyterlab_vre.database.database import Catalog
 from notebook.base.handlers import APIHandler
 from tornado import web
+
+from jupyterlab_vre.database.catalog import Catalog
 
 
 class RepositoriesHandler(APIHandler, Catalog):

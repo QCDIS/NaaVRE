@@ -1,7 +1,6 @@
 import os
 from unittest import TestCase
-from github import Github
-from jupyterlab_vre.database.database import Catalog
+
 
 # from jupyterlab_vre.storage.catalog import Catalog
 
@@ -20,5 +19,3 @@ class TestEnvironmentVariables(TestCase):
         self.assertIsNotNone(os.environ.get('SEARCH_API_ENDPOINT'))
         self.assertIsNotNone(os.environ.get('SEARCH_API_TOKEN'))
         self.assertIsNotNone(os.environ.get('ARGO_URL'))
-
-

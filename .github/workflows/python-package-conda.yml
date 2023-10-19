@@ -41,11 +41,14 @@ env:
   SEARCH_API_TOKEN: ${{ secrets.search_api_token }}
   ARGO_URL: ${{ secrets.ARGO_URL }}
   ARGO_API_TOKEN: ${{ secrets.ARGO_API_TOKEN }}
+  ASYNC_TEST_TIMEOUT: 30
 
 
 jobs:
   build-linux:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
     steps:
       - name: Check secrets
         run: |
@@ -117,7 +120,7 @@ jobs:
             exit 1
           fi
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
@@ -126,13 +129,16 @@ jobs:
         run: |
           # $CONDA is an environment variable pointing to the root of the miniconda directory
           echo $CONDA/bin >> $GITHUB_PATH
+      - name: Collect Workflow Telemetry
+        uses: runforesight/workflow-telemetry-action@v1
+
       - name: Install dependencies
         run: |
-          conda env update --file environment.yml --name base            
+          conda env update --file environment.yml --name base
 
       - name: Lint with flake8
         run: |
-          conda install flake8
+          conda install flake8 r-optparse
           # stop the build if there are Python syntax errors or undefined names
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide

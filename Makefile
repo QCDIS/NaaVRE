@@ -33,9 +33,27 @@ build-frontend: jlpm-install
 	npx lerna run build --scope @jupyter_vre/vre-menu
 
 
+build-p: jlpm-install
+	npx lerna run build --scope @jupyter_vre/vre-panel
+
+install-p:
+	$(call INSTALL_LAB_EXTENSION,vre-panel)
+
+link-p:
+	$(call LINK_LAB_EXTENSION,vre-panel)
+
+
+build-exp: jlpm-install
+	npx lerna run build --scope @jupyter_vre/experiment-manager
+
+install-exp:
+	$(call INSTALL_LAB_EXTENSION,experiment-manager)
+
+link-exp:
+	$(call LINK_LAB_EXTENSION,experiment-manager)
+
 jlpm-install:
 	jlpm
-
 
 install-ui:
 	$(call INSTALL_LAB_EXTENSION,notebook-search)

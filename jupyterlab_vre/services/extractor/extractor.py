@@ -1,6 +1,7 @@
-import re
-from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
 import ast
+import re
+
+from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
 
 
 class Extractor:
@@ -115,7 +116,7 @@ class Extractor:
 
         if rep._stderr():
             raise SyntaxError("Flakes reported the following error:"
-                               "\n{}".format('\t' + '\t'.join(rep._stderr())))
+                              "\n{}".format('\t' + '\t'.join(rep._stderr())))
         p = r"'(.+?)'"
 
         out = rep._stdout()
@@ -148,12 +149,13 @@ class Extractor:
                 confs_in_assignment[conf_name] = conf
         for conf_name in configurations:
             for confs_in_assignment_name in confs_in_assignment:
-                if conf_name in confs_in_assignment[confs_in_assignment_name] and conf_name not in resolved_configurations:
+                if conf_name in confs_in_assignment[
+                    confs_in_assignment_name] and conf_name not in resolved_configurations:
                     replace_value = configurations[conf_name].split('=')[1]
                     if confs_in_assignment_name in resolved_configurations:
-                        new_value = resolved_configurations[confs_in_assignment_name].replace(conf_name,replace_value)
+                        new_value = resolved_configurations[confs_in_assignment_name].replace(conf_name, replace_value)
                     else:
-                        new_value = confs_in_assignment[confs_in_assignment_name].replace(conf_name,replace_value)
+                        new_value = confs_in_assignment[confs_in_assignment_name].replace(conf_name, replace_value)
                     resolved_configurations[confs_in_assignment_name] = new_value
         configurations.update(resolved_configurations)
         return configurations

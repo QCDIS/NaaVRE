@@ -1,7 +1,6 @@
-from jupyterlab_vre.database.database import Catalog
-from jupyterlab_vre.database.cell import Cell
-from collections import defaultdict
 import logging
+
+from jupyterlab_vre.database.catalog import Catalog
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -77,7 +76,6 @@ class WorkflowParser:
                 raise Exception('Error while parsing link: ' + link['from'] + ' from node has no type')
             if 'id' not in from_node:
                 raise Exception('Error while parsing link: ' + link['from'] + ' from node has no id')
-
 
             from_special_node = (from_node['type'] == 'merger' or from_node['type'] == 'splitter')
 

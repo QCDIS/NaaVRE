@@ -1,14 +1,14 @@
 import json
-import yaml
 import logging
 import os
 
+import requests
+import yaml
 from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
-import requests
 from tornado import web
 
-from jupyterlab_vre.database.database import Catalog
+from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.services.parser.parser import WorkflowParser
 
 logger = logging.getLogger(__name__)
@@ -83,10 +83,8 @@ class ExecuteWorkflowHandler(APIHandler):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-        print('-----------------ExecuteWorkflowHandler---------------------')
         payload = self.get_json_body()
-        print(json.dumps(payload, indent=4))
-        print('-------------------------------------------------------------')
+        print('Workflow execution payload: ' + json.dumps(payload, indent=2))
         chart = payload['chart']
         params = payload['params']
 
@@ -165,18 +163,33 @@ class ExecuteWorkflowHandler(APIHandler):
                 "workflow": workflow_doc
             }
         }
+
         try:
+            access_token = os.environ['NAAVRE_API_TOKEN']
+            if not access_token:
+                self.set_status(400)
+                self.write('VRE_API_TOKEN is not set!')
+                self.write_error('NAAVRE_API_TOKEN is not set!')
+                self.flush()
+                return
+            vre_api_verify_ssl = os.getenv('VRE_API_VERIFY_SSL', 'true')
+            logger.info('Workflow submission request: ' + str(json.dumps(req_body)))
+            print('Workflow submission request: ' + str(json.dumps(req_body)))
+            session = requests.Session()
+            session.verify = vre_api_verify_ssl
             resp = requests.post(
                 f"{api_endpoint}/api/workflows/submit/",
                 data=json.dumps(req_body),
                 headers={
-                    'Authorization': f"Bearer {naavre_api_token}",
+                    'Authorization': f"Token {access_token}",
                     'Content-Type': 'application/json'
                 }
             )
             logger.info('Workflow submission response: ' + str(resp.content))
         except Exception as e:
             logger.error('Workflow submission failed: ' + str(e))
+            logger.error('api_endpoint: ' + str(api_endpoint))
+            logger.error('vre_api_verify_ssl: ' + str(vre_api_verify_ssl))
             self.set_status(400)
             self.write('Workflow submission failed: ' + str(e))
             self.write_error('Workflow submission failed: ' + str(e))
@@ -184,6 +197,7 @@ class ExecuteWorkflowHandler(APIHandler):
             return
         if resp.status_code != 200:
             logger.error('Workflow submission failed: ' + str(resp.content))
+            logger.error('api_endpoint: ' + str(api_endpoint))
             self.set_status(resp.status_code)
             self.write('Workflow submission failed: ' + str(resp.content))
             self.write_error('Workflow submission failed: ' + str(resp.content))

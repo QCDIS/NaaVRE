@@ -1,0 +1,155 @@
+{
+  "save": false,
+  "kernel": "IRkernel",
+  "cell_index": 1,
+  "notebook": {
+    "metadata": {
+      "kernelspec": {
+        "display_name": "R",
+        "language": "R",
+        "name": "ir"
+      },
+      "language_info": {
+        "codemirror_mode": "r",
+        "file_extension": ".r",
+        "mimetype": "text/x-r-source",
+        "name": "R",
+        "pygments_lexer": "r",
+        "version": "4.2.3"
+      }
+    },
+    "nbformat_minor": 5,
+    "nbformat": 4,
+    "cells": [
+      {
+        "cell_type": "markdown",
+        "source": "### DESCRIPTION\nScript to compute demographic and morphological traits such as biovolume (\u00b5m3), surface area (\u00b5m2), surface/volume ratio, density (cells/L), cell carbon content (pg), total biovolume (\u00b5m\u00b3/L), total carbon content (pg/L). \n### INPUT VARIABLES\n- datain: the input file\n- CalcType: the computation type simplified or advanced\n- CompTraits: one or more among biovolume,totalbiovolume,density,surfacearea,surfacevolumeratio,cellcarboncontent,totalcarboncontent\n- CountingStrategy: one among density0,density1,density2,density3 \n\n### OUTPUT \nfile in .csv format, containing the original input data and the new calculated traits",
+        "metadata": {},
+        "id": "prepared-shield"
+      },
+      {
+        "cell_type": "code",
+        "source": "# input parameters\ninstall.packages(\"dplyr\",repos = \"http://cran.us.r-project.org\")\ndplyr = ''\nlibrary(dplyr)\n\n\nparam_datain = 'input/Phytoplankton__Progetto_Strategico_2009_2012_Australia.csv'\n\nparam_CalcType = 'advanced'\n\nparam_biovolume = 1 # if 1 it is calculated, if 0 it is not calculated\nparam_totalbiovolume = 1\nparam_density = 1\nparam_surfacearea = 1\nparam_surfacevolumeratio = 1\nparam_cellcarboncontent = 1\nparam_totalcarboncontent = 1\nparam_CountingStrategy = ''\n\nif (param_density==1) {param_CountingStrategy <- 'density0'}\n\n# read input cvs\ndf.datain=read.csv(param_datain,stringsAsFactors=FALSE,sep = \";\", dec = \".\")\nmeasurementremarks = tolower(df.datain$measurementremarks) # eliminate capital letters\ndf.datain$measurementremarks <- tolower(df.datain$measurementremarks) # eliminate capital letters\nindex = c(1:nrow(df.datain))\ndf.datain$index <- c(1:nrow(df.datain)) # needed to restore rows order later\n\n# read support cvs file\ndf.operator<-read.csv('input/2_FILEinformativo_OPERATORE.csv',stringsAsFactors=FALSE,sep = \";\", dec = \".\") ## load internal database \ndf.operator[df.operator==('no')]<-NA\ndf.operator[df.operator==('see note')]<-NA\n\n# merge dataframes\ndf.merged <- merge(x = df.datain, y = df.operator, by = c(\"scientificname\",\"measurementremarks\"), all.x = TRUE)\n\n# check if mandatory fields are present\ndiameterofsedimentationchamber = 'diameterofsedimentationchamber'\ndiameteroffieldofview = 'diameteroffieldofview'\ntransectcounting = 'transectcounting'\nnumberofcountedfields = 'numberofcountedfields'\nnumberoftransects = 'numberoftransects'\nsettlingvolume = 'settlingvolume'\ndilutionfactor = 'dilutionfactor'\n\nif(!'diameterofsedimentationchamber'%in%names(df.merged))df.merged$diameterofsedimentationchamber=NA\nif(!'diameteroffieldofview'%in%names(df.merged))df.merged$diameteroffieldofview=NA\nif(!'transectcounting'%in%names(df.merged))df.merged$transectcounting=NA\nif(!'numberofcountedfields'%in%names(df.merged))df.merged$numberofcountedfields=df.merged$transectcounting\nif(!'numberoftransects'%in%names(df.merged))df.merged$numberoftransects==df.merged$transectcounting\nif(!'settlingvolume'%in%names(df.merged))df.merged$settlingvolume=NA\nif(!'dilutionfactor'%in%names(df.merged))df.merged$dilutionfactor=1\n\n# save merged dataframe as csv\noutput_dfmerged = 'output/dfmerged.csv'\noutput_dfdatain = 'output/dfdatain.csv'\nwrite.table(df.merged,paste(output_dfmerged,sep=''),row.names=FALSE,sep = \";\",dec = \".\",quote=FALSE)\nwrite.table(df.datain,paste(output_dfdatain,sep=''),row.names=FALSE,sep = \";\",dec = \".\",quote=FALSE) ",
+        "metadata": {
+          "tags": []
+        },
+        "execution_count": 2,
+        "outputs": [
+          {
+            "name": "stderr",
+            "output_type": "stream",
+            "text": "Updating HTML index of packages in '.Library'\n\nMaking 'packages.html' ...\n done\n\n"
+          },
+          {
+            "ename": "ERROR",
+            "evalue": "Error in `$<-.data.frame`(`*tmp*`, measurementremarks, value = character(0)): replacement has 0 rows, data has 6\n",
+            "output_type": "error",
+            "traceback": [
+              "Error in `$<-.data.frame`(`*tmp*`, measurementremarks, value = character(0)): replacement has 0 rows, data has 6\nTraceback:\n",
+              "1. `$<-`(`*tmp*`, measurementremarks, value = character(0))",
+              "2. `$<-.data.frame`(`*tmp*`, measurementremarks, value = character(0))",
+              "3. stop(sprintf(ngettext(N, \"replacement has %d row, data has %d\", \n .     \"replacement has %d rows, data has %d\"), N, nrows), domain = NA)"
+            ]
+          }
+        ],
+        "id": "steady-metabolism"
+      },
+      {
+        "cell_type": "code",
+        "source": "#Calculate \n\ndf.merged=read.csv(output_dfmerged,stringsAsFactors=FALSE,sep = \";\", dec = \".\")\nCalcType=param_CalcType\n\ndf.temp = ''  # Because the Component cannot identify '<-' we need to initialize these variables so they are not showing up as inputs\nmd.form = ''\nmissingdimension = ''\ndf.temp2 = ''\nindex = ''\nformulaformissingdimensionsimplified = '' \nmd = ''\ndf.merged.concat = '' \nmd.formulas = ''\nmissingdimensionsimplified = ''\nformulaformissingdimension = '' \n\nif(CalcType=='advanced'){\n  df.merged.concat <- df.merged[is.na(df.merged$formulaformissingdimension),]\n  md.formulas = ''\n  md.formulas <- unique(df.merged[!is.na(df.merged$formulaformissingdimension),]$formulaformissingdimension)\n  for(md.form in md.formulas){\n    df.temp <- subset(df.merged,formulaformissingdimension==md.form)\n    for(md in unique(df.temp$missingdimension)){\n      df.temp2 <- df.temp[df.temp$missingdimension==md,]\n      df.temp2[[md]] <- round(with(df.temp2,eval(parse(text=md.form))),2)\n      df.merged.concat <- rbind(df.merged.concat,df.temp2)\n    }\n  }\n  df.merged.concat = ''\n  df.merged.concat <- df.merged.concat[order(df.merged.concat$index),]\n  df.merged = ''  \n  df.merged <- df.merged.concat\n} else if(CalcType=='simplified'){\n  formulaformissingdimensionsimplified  = ''\n  df.merged.concat <- df.merged[is.na(df.merged$formulaformissingdimensionsimplified),]\n  md.formulas <- unique(df.merged[!is.na(df.merged$formulaformissingdimensionsimplified),]$formulaformissingdimensionsimplified)\n  for(md.form in md.formulas){\n    df.temp <- subset(df.merged,formulaformissingdimensionsimplified==md.form)\n    for(md in unique(df.temp$missingdimensionsimplified)){\n      df.temp2 = ''  \n      df.temp2 <- df.temp[df.temp$missingdimensionsimplified==md,]\n      df.temp2[[md]] <- round(with(df.temp2,eval(parse(text=md.form))),2)\n      df.merged.concat <- rbind(df.merged.concat,df.temp2)\n    }\n  }\n  df.merged.concat <- df.merged.concat[order(df.merged.concat$index),]\n  df.merged <- df.merged.concat\n}\n    \nwrite.table(df.merged,paste(output_dfmerged,sep=''),row.names=FALSE,sep = \";\",dec = \".\",quote=FALSE)    \n",
+        "metadata": {
+          "tags": []
+        },
+        "execution_count": null,
+        "outputs": [],
+        "id": "reflected-cardiff"
+      },
+      {
+        "cell_type": "code",
+        "source": "df.merged=read.csv('~/Unisalento/Lifewatch/Phyto_VRE/Script_R/Traits_Computation/dfmerged.csv',stringsAsFactors=FALSE,sep = \";\", dec = \".\")\nTraitBiovolume=param_biovolume\nCalcType=param_CalcType\n\nif(TraitBiovolume==1){\n  \n  if(CalcType=='advanced'){\n    df.merged$biovolume <- rep(NA,length=nrow(df.merged))\n    df.merged.concat <- df.merged[is.na(df.merged$formulaforbiovolume),]\n    bv.formulas <- unique(df.merged[!is.na(df.merged$formulaforbiovolume),]$formulaforbiovolume)\n    for(bv.form in bv.formulas){\n      df.temp <- subset(df.merged,formulaforbiovolume==bv.form)\n      df.temp$biovolume <- round(with(df.temp,eval(parse(text=bv.form))),2)\n      df.merged.concat <- rbind(df.merged.concat,df.temp)\n    }\n    df.merged.concat <- df.merged.concat[order(df.merged.concat$index),]\n    df.merged <- df.merged.concat\n    BV_calc = df.merged$biovolume\n  }\n  else if(CalcType=='simplified'){\n    df.merged$biovolume <- rep(NA,length=nrow(df.merged))\n    df.merged.concat <- df.merged[is.na(df.merged$formulaforbiovolumesimplified),]\n    bv.formulas <- unique(df.merged[!is.na(df.merged$formulaforbiovolumesimplified),]$formulaforbiovolumesimplified)\n    for(bv.form in bv.formulas){\n      df.temp <- subset(df.merged,formulaforbiovolumesimplified==bv.form)\n      df.temp$biovolume <- round(with(df.temp,eval(parse(text=bv.form))),2)\n      df.merged.concat <- rbind(df.merged.concat,df.temp)\n    }\n    df.merged.concat <- df.merged.concat[order(df.merged.concat$index),]\n    df.merged <- df.merged.concat\n    BV_calc = df.merged$biovolume\n  }\n} \n\nwrite.table(df.merged,paste('~/Unisalento/Lifewatch/Phyto_VRE/Script_R/Traits_Computation/dfmerged.csv',sep=''),row.names=FALSE,sep = \";\",dec = \".\",quote=FALSE)",
+        "metadata": {},
+        "execution_count": 16,
+        "outputs": [],
+        "id": "induced-trash"
+      },
+      {
+        "cell_type": "code",
+        "source": "df.merged=read.csv('~/Unisalento/Lifewatch/Phyto_VRE/Script_R/Traits_Computation/dfmerged.csv',stringsAsFactors=FALSE,sep = \";\", dec = \".\")\n\nTraitCellcarboncontent=param_cellcarboncontent\nTraitBiovolume=param_biovolume\n\nif(TraitCellcarboncontent==1){\n  \n  df.merged$cellcarboncontent <- rep(NA,length=nrow(df.merged))\n  if(TraitBiovolume==1){\n    df.merged.concat <- df.merged[is.na(df.merged$biovolume),]\n    df.cc <- df.merged[!is.na(df.merged$biovolume),]\n    df.cc1 <- subset(df.cc,biovolume <= 3000)\n    df.cc2 <- subset(df.cc,biovolume > 3000)\n    cc.formulas1 <- unique(df.merged[!is.na(df.merged$formulaforweight1),]$formulaforweight1)\n    for(cc.form in cc.formulas1){\n      df.temp <- subset(df.cc1,formulaforweight1==cc.form)\n      df.temp$cellcarboncontent <- round(with(df.temp,eval(parse(text=tolower(cc.form)))),2)\n      df.merged.concat <- rbind(df.merged.concat,df.temp)\n    }\n    cc.formulas2 <- unique(df.merged[!is.na(df.merged$formulaforweight2),]$formulaforweight2)\n    for(cc.form in cc.formulas2){\n      df.temp <- subset(df.cc2,formulaforweight2==cc.form)\n      df.temp$cellcarboncontent <- round(with(df.temp,eval(parse(text=tolower(cc.form)))),2)\n      df.merged.concat <- rbind(df.merged.concat,df.temp)\n    }\n    df.merged.concat <- df.merged.concat[order(df.merged.concat$index),]\n    df.merged <- df.merged.concat\n    CC_calc = df.merged$cellcarboncontent\n  }\n}\n    \nwrite.table(df.merged,paste('~/Unisalento/Lifewatch/Phyto_VRE/Script_R/Traits_Computation/dfmerged.csv',sep=''),row.names=FALSE,sep = \";\",dec = \".\",quote=FALSE) ",
+        "metadata": {},
+        "execution_count": 17,
+        "outputs": [],
+        "id": "peripheral-contest"
+      },
+      {
+        "cell_type": "code",
+        "source": "df.merged=read.csv('~/Unisalento/Lifewatch/Phyto_VRE/Script_R/Traits_Computation/dfmerged.csv',stringsAsFactors=FALSE,sep = \";\", dec = \".\")\n\nTraitDensity=param_density\nCountingStrategy=param_CountingStrategy\n\nif(TraitDensity==1){\n  df.merged$density <- rep(NA,length=nrow(df.merged))\n  # default method to calculate the density\n  if(CountingStrategy=='density0'){  \n    df.merged.concat <- df.merged[(is.na(df.merged$volumeofsedimentationchamber)) & (is.na(df.merged$transectcounting)),]\n    df.temp <- df.merged[!is.na(df.merged$volumeofsedimentationchamber) & !is.na(df.merged$transectcounting),]\n    df.temp1 <- subset(df.temp,volumeofsedimentationchamber <= 5)\n    df.temp1$density <- df.temp1$organismquantity/df.temp1$transectcounting*1000/0.001979\n    df.merged.concat <- rbind(df.merged.concat,df.temp1)\n    df.temp2 <- subset(df.temp,(volumeofsedimentationchamber > 5) & (volumeofsedimentationchamber <= 10))\n    df.temp2$density <- df.temp2$organismquantity/df.temp2$transectcounting*1000/0.00365\n    df.merged.concat <- rbind(df.merged.concat,df.temp2)\n    df.temp3 <- subset(df.temp,(volumeofsedimentationchamber > 10) & (volumeofsedimentationchamber <= 25))\n    df.temp3$density <- df.temp3$organismquantity/df.temp3$transectcounting*1000/0.010555\n    df.merged.concat <- rbind(df.merged.concat,df.temp3)\n    df.temp4 <- subset(df.temp,(volumeofsedimentationchamber > 25) & (volumeofsedimentationchamber <= 50))\n    df.temp4$density <- df.temp4$organismquantity/df.temp4$transectcounting*1000/0.021703\n    df.merged.concat <- rbind(df.merged.concat,df.temp4)\n    df.temp5 <- subset(df.temp,volumeofsedimentationchamber > 50)\n    df.temp5$density <- df.temp5$organismquantity/df.temp5$transectcounting*1000/0.041598\n    df.merged.concat <- rbind(df.merged.concat,df.temp5)\n    df.merged.concat <- df.merged.concat[order(df.merged.concat$index),]\n    df.merged <- df.merged.concat\n    D_calc <- round(df.merged$density,2)\n  }\n  # counts per random field\n  else if(CountingStrategy=='density1'){\n    df.merged$areaofsedimentationchamber <- ((df.merged$diameterofsedimentationchamber/2)^2)*pi\n    df.merged$areaofcountingfield <- ((df.merged$diameteroffieldofview/2)^2)*pi\n    df.merged$density <- round(df.merged$organismquantity*1000*df.merged$areaofsedimentationchamber/df.merged$numberofcountedfields*df.merged$areaofcountingfield*df.merged$settlingvolume,2)\n  }\n  # counts per diameter transects\n  else if(CountingStrategy=='density2'){\n    df.merged$density <- round(((df.merged$organismquantity/df.merged$numberoftransects)*(pi/4)*(df.merged$diameterofsedimentationchamber/df.merged$diameteroffieldofview))*1000/df.merged$settlingvolume,2)\n  }\n  # counting method for whole chamber\n  else if(CountingStrategy=='density3'){\n    df.merged$density <- round((df.merged$organismquantity*1000)/df.merged$settlingvolume,2)\n  }\n  D_calc = df.merged$density/df.merged$dilutionfactor\n}\n      \n    \nwrite.table(df.merged,paste('~/Unisalento/Lifewatch/Phyto_VRE/Script_R/Traits_Computation/dfmerged.csv',sep=''),row.names=FALSE,sep = \";\",dec = \".\",quote=FALSE)\n",
+        "metadata": {},
+        "execution_count": 18,
+        "outputs": [],
+        "id": "cellular-constraint"
+      },
+      {
+        "cell_type": "code",
+        "source": "df.merged=read.csv('~/Unisalento/Lifewatch/Phyto_VRE/Script_R/Traits_Computation/dfmerged.csv',stringsAsFactors=FALSE,sep = \";\", dec = \".\")\n\nTraitTotalbiovolume=param_totalbiovolume\nTraitDensity=param_density\nTraitBiovolume=param_biovolume\n\nif(TraitTotalbiovolume==1){\n  if((TraitDensity==0) & (!'density'%in%names(df.merged))) df.merged$density<-NA\n  if((TraitBiovolume==0) & (!'biovolume'%in%names(df.merged))) df.merged$biovolume<-NA\n  TBV_calc = round(df.merged$density*df.merged$biovolume,2)\n}\n\nwrite.table(df.merged,paste('~/Unisalento/Lifewatch/Phyto_VRE/Script_R/Traits_Computation/dfmerged.csv',sep=''),row.names=FALSE,sep = \";\",dec = \".\",quote=FALSE)\n",
+        "metadata": {},
+        "execution_count": 19,
+        "outputs": [],
+        "id": "intense-muscle"
+      },
+      {
+        "cell_type": "code",
+        "source": "df.merged=read.csv('~/Unisalento/Lifewatch/Phyto_VRE/Script_R/Traits_Computation/dfmerged.csv',stringsAsFactors=FALSE,sep = \";\", dec = \".\")\n\nTraitSurfacearea=param_surfacearea\nCalcType=param_CalcType\n\nif(TraitSurfacearea==1){\n  if(CalcType=='advanced'){\n    df.merged$surfacearea <- rep(NA,length=nrow(df.merged))\n    df.merged.concat <- df.merged[is.na(df.merged$formulaforsurface),]\n    sa.formulas <- unique(df.merged[!is.na(df.merged$formulaforsurface),]$formulaforsurface)\n    for(sa.form in sa.formulas){\n      df.temp <- subset(df.merged,formulaforsurface==sa.form)\n      df.temp$surfacearea <- round(with(df.temp,eval(parse(text=sa.form))),2)\n      df.merged.concat <- rbind(df.merged.concat,df.temp)\n    }\n    df.merged.concat <- df.merged.concat[order(df.merged.concat$index),]\n    df.merged <- df.merged.concat\n    SA_calc <- df.merged$surfacearea\n  }\n  else if(CalcType=='simplified'){\n    df.merged$surfacearea <- rep(NA,length=nrow(df.merged))\n    df.merged.concat <- df.merged[is.na(df.merged$formulaforsurfacesimplified),]\n    sa.formulas <- unique(df.merged[!is.na(df.merged$formulaforsurfacesimplified),]$formulaforsurfacesimplified)\n    for(sa.form in sa.formulas){\n      df.temp <- subset(df.merged,formulaforsurfacesimplified==sa.form)\n      df.temp$surfacearea <- round(with(df.temp,eval(parse(text=sa.form))),2)\n      df.merged.concat <- rbind(df.merged.concat,df.temp)\n    }\n    df.merged.concat <- df.merged.concat[order(df.merged.concat$index),]\n    df.merged <- df.merged.concat\n    SA_calc <- df.merged$surfacearea\n  }\n}\n\nwrite.table(df.merged,paste('~/Unisalento/Lifewatch/Phyto_VRE/Script_R/Traits_Computation/dfmerged.csv',sep=''),row.names=FALSE,sep = \";\",dec = \".\",quote=FALSE)\n",
+        "metadata": {},
+        "execution_count": 20,
+        "outputs": [
+          {
+            "name": "stderr",
+            "output_type": "stream",
+            "text": "Warning message in sqrt((h^2) - (d^2)):\n\"Si \u00e8 prodotto un NaN\"\nWarning message in sqrt((h^2) - (d^2)):\n\"Si \u00e8 prodotto un NaN\"\nWarning message in sqrt(4 * h^2 - ((b + c)^2)):\n\"Si \u00e8 prodotto un NaN\"\nWarning message in sqrt(4 * h^2 - ((b + c)^2)):\n\"Si \u00e8 prodotto un NaN\"\n"
+          }
+        ],
+        "id": "shared-explorer"
+      },
+      {
+        "cell_type": "code",
+        "source": "df.merged=read.csv('~/Unisalento/Lifewatch/Phyto_VRE/Script_R/Traits_Computation/dfmerged.csv',stringsAsFactors=FALSE,sep = \";\", dec = \".\")\n\nTraitSurfacevolumeratio=param_surfacevolumeratio\nTraitSurfacearea=param_surfacearea\nTraitBiovolume=param_biovolume\n\nif(TraitSurfacevolumeratio==1){\n  if((TraitSurfacearea==0) & (!'surfacearea'%in%names(df.merged))) df.merged$surfacearea<-NA\n  if((TraitBiovolume==0) & (!'biovolume'%in%names(df.merged))) df.merged$biovolume<-NA\n  SVR_calc<-round(df.merged$surfacearea/df.merged$biovolume,2)\n}\n\nwrite.table(df.merged,paste('~/Unisalento/Lifewatch/Phyto_VRE/Script_R/Traits_Computation/dfmerged.csv',sep=''),row.names=FALSE,sep = \";\",dec = \".\",quote=FALSE)\n",
+        "metadata": {},
+        "execution_count": 21,
+        "outputs": [],
+        "id": "affected-movement"
+      },
+      {
+        "cell_type": "code",
+        "source": "df.merged=read.csv('~/Unisalento/Lifewatch/Phyto_VRE/Script_R/Traits_Computation/dfmerged.csv',stringsAsFactors=FALSE,sep = \";\", dec = \".\")\n\nTraitTotalcarboncontent=param_totalcarboncontent\nTraitDensity=param_density\nTraitCellcarboncontent=param_cellcarboncontent\n\nif(TraitTotalcarboncontent==1){\n  if((TraitDensity==0) & (!'density'%in%names(df.merged))) df.merged$density<-NA\n  if((TraitCellcarboncontent==0) & (!'cellcarboncontent'%in%names(df.merged))) df.merged$cellcarboncontent<-NA\n  TCC_calc<-round(df.merged$density*df.merged$cellcarboncontent,2)\n}\n\nwrite.table(df.merged,paste('~/Unisalento/Lifewatch/Phyto_VRE/Script_R/Traits_Computation/dfmerged.csv',sep=''),row.names=FALSE,sep = \";\",dec = \".\",quote=FALSE)\n",
+        "metadata": {},
+        "execution_count": 22,
+        "outputs": [],
+        "id": "threaded-english"
+      },
+      {
+        "cell_type": "code",
+        "source": "df.datain=read.csv('~/Unisalento/Lifewatch/Phyto_VRE/Script_R/Traits_Computation/dfdatain.csv',stringsAsFactors=FALSE,sep = \";\", dec = \".\")\n\nBV=TraitBiovolume \nTBV=TraitTotalbiovolume\nD=TraitDensity\nSA=TraitSurfacearea\nSVR=TraitSurfacevolumeratio\nCC=TraitCellcarboncontent\nTCC=TraitTotalcarboncontent\n\nif(BV==1) {\n    BV_column=BV_calc\n    if('biovolume'%in%names(df.datain)) df.datain<-subset(df.datain,select=-biovolume) # drop column if already present\n    df.datain$biovolume <- BV_column # write column with the results at the end of the dataframe\n    }\nif(CC==1) {\n    CC_column=CC_calc\n    if('cellcarboncontent'%in%names(df.datain)) df.datain<-subset(df.datain,select=-cellcarboncontent)\n    df.datain$cellcarboncontent <- CC_column\n    }\nif(D==1) {\n    D_column=D_calc\n    df.datain$density <- D_column\n    }\nif(TBV==1) {\n    TBV_column=TBV_calc\n    df.datain$totalbiovolume <- TBV_column\n    }\nif(SA==1) {\n    SA_column=SA_calc\n    if('surfacearea'%in%names(df.datain)) df.datain<-subset(df.datain,select=-surfacearea)\n    df.datain$surfacearea <- SA_column\n    }\nif(SVR==1) {\n    SVR_column=SVR_calc\n    df.datain$surfacevolumeratio <- SVR_column\n    }\nif(TCC==1) {\n    TCC_column=TCC_calc\n    df.datain$totalcarboncontent <- TCC_column\n    }\n\ndf.datain <- subset(df.datain,select = -index)\n\nwrite.table(df.datain,paste('~/Unisalento/Lifewatch/Phyto_VRE/Script_R/Traits_Computation/Output/TraitsOutput.csv',sep=''),row.names=FALSE,sep = \";\",dec = \".\",quote=FALSE) ",
+        "metadata": {},
+        "execution_count": 23,
+        "outputs": [],
+        "id": "congressional-observation"
+      },
+      {
+        "cell_type": "code",
+        "source": "",
+        "metadata": {},
+        "execution_count": null,
+        "outputs": [],
+        "id": "refined-calibration"
+      },
+      {
+        "cell_type": "code",
+        "source": "",
+        "metadata": {},
+        "execution_count": null,
+        "outputs": [],
+        "id": "closing-seating"
+      }
+    ]
+  }
+}
