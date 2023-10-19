@@ -197,6 +197,7 @@ class ExecuteWorkflowHandler(APIHandler):
             return
         if resp.status_code != 200:
             logger.error('Workflow submission failed: ' + str(resp.content))
+            logger.error('api_endpoint: ' + str(api_endpoint))
             self.set_status(resp.status_code)
             self.write('Workflow submission failed: ' + str(resp.content))
             self.write_error('Workflow submission failed: ' + str(resp.content))
