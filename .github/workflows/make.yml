@@ -39,19 +39,6 @@ jobs:
       gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-#  call-build-container-multiply:
-#    needs: call-build-wheel
-#    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
-#    with:
-#      wheel_artifact_name: jupyterlab_vre
-#      docker_folder: MULTIPLY
-#      tag: n-a-a-vre-multiply
-#      push: false
-#    secrets:
-#      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
-#      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
-#      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
-#      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vol2bird:
     needs: call-build-wheel
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
@@ -84,7 +71,7 @@ jobs:
 #    strategy:
 #      matrix:
 #        environment_names: [ "test-vars" ]
-#    needs: [call-build-container-vanilla,call-build-container-pytorch,call-build-container-vol2bird,call-build-container-multiply,call-build-container-laserfarm]
+#    needs: [call-build-container-vanilla,call-build-container-pytorch,call-build-container-vol2bird,call-build-container-laserfarm]
 #    uses: QCDIS/NaaVRE/.github/workflows/test-deploy-k8s.yaml@main
 #    with:
 #      wheel_artifact_name: jupyterlab_vre
