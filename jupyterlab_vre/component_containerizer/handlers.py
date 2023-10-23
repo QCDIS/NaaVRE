@@ -234,10 +234,17 @@ class CellsHandler(APIHandler, Catalog):
                              ' has not base not image selected')
             self.flush()
             return
-
-        logger.debug('Delete if exists: ' + current_cell.task_name)
-        Catalog.delete_cell_from_task_name(current_cell.task_name)
-        Catalog.add_cell(current_cell)
+        try:
+            logger.debug('Delete if exists: ' + current_cell.task_name)
+            Catalog.delete_cell_from_task_name(current_cell.task_name)
+            Catalog.add_cell(current_cell)
+        except Exception as ex:
+            logger.error('Error adding cell in catalog: ' + str(ex))
+            self.set_status(400)
+            self.write('Error adding cell catalog: ' + str(ex))
+            self.write_error('Error adding cell catalog: ' + str(ex))
+            self.flush()
+            return
 
         if not os.path.exists(cells_path):
             os.mkdir(cells_path)
