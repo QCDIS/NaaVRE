@@ -104,13 +104,20 @@ def extract_cell(payload_path):
 class TestExtractor(TestCase):
 
     def test_extract_cell(self):
-        cell = extract_cell(os.path.join(base_path, 'notebooks/MULTIPLY_framework_cells.json'))
         cell = extract_cell(os.path.join(base_path, 'notebooks/laserfarm_cells.json'))
+        if cell:
+            cell = json.loads(cell)
+            for conf_name in (cell['confs']):
+                self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
+                                 'conf_ values should not contain conf_ prefix in '
+                                 'assignment')
         cell = extract_cell(os.path.join(base_path, 'notebooks/vol2bird_cells.json'))
-        try:
-            cell = extract_cell(os.path.join(base_path, 'notebooks/MULTIPLY_framework_2.json'))
-        except SyntaxError as e:
-            logger.warning(str(e))
+        if cell:
+            cell = json.loads(cell)
+            for conf_name in (cell['confs']):
+                self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
+                                 'conf_ values should not contain conf_ prefix in '
+                                 'assignment')
         cell = extract_cell(os.path.join(base_path, 'notebooks/laserfarm.json'))
         if cell:
             cell = json.loads(cell)

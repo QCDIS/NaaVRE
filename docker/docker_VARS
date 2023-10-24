@@ -8,7 +8,6 @@ SEARCH_API_TOKEN=TOKEN
 CELL_GITHUB=https://github.com/ORG/NAME
 CELL_GITHUB_TOKEN=TOKEN
 REGISTRY_URL=https://hub.docker.com/u/qcdis
-MULTIPLY_CONF_URL=https://github.com/QCDIS/data-access/raw/master/multiply.zip
 ARGO_URL=https://HOST:32443/ess-22-argowf
 ARGO_API_TOKEN="Bearer TOKEN"
 KEYCLOAK_SERVER_URL=https://HOST:32443/auth
