@@ -25,8 +25,8 @@ from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.services.extractor.Rextractor import RExtractor
-from jupyterlab_vre.services.extractor.extractor import Extractor
+from jupyterlab_vre.services.extractor.rextractor import RExtractor
+from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +76,7 @@ class ExtractorHandler(APIHandler, Catalog):
         if kernel == "IRkernel":
             extractor = RExtractor(notebook)
         else:
-            extractor = Extractor(notebook)
+            extractor = PyExtractor(notebook)
 
         # initialize variables
         source = notebook.cells[cell_index].source
@@ -95,11 +95,11 @@ class ExtractorHandler(APIHandler, Catalog):
         confs = []
         dependencies = []
 
-        # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(
+        # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infer_cell_inputs(
         # source)'
         if notebook.cells[cell_index].cell_type == 'code':
-            ins = set(extractor.infere_cell_inputs(source))
-            outs = set(extractor.infere_cell_outputs(source))
+            ins = set(extractor.infer_cell_inputs(source))
+            outs = set(extractor.infer_cell_outputs(source))
 
             confs = extractor.extract_cell_conf_ref(source)
             dependencies = extractor.infer_cell_dependencies(source, confs)
