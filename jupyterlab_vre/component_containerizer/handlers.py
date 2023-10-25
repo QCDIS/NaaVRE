@@ -206,10 +206,18 @@ class CellsHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-        current_cell = Catalog.editor_buffer
-        current_cell.clean_code()
-        current_cell.clean_title()
-        current_cell.clean_task_name()
+        try:
+            current_cell = Catalog.editor_buffer
+            current_cell.clean_code()
+            current_cell.clean_title()
+            current_cell.clean_task_name()
+        except Exception as ex:
+            logger.error('Error setting cell: ' + str(ex))
+            self.set_status(400)
+            self.write('Error setting cell: ' + str(ex))
+            self.write_error('Error setting cell: ' + str(ex))
+            self.flush()
+            return
 
         print('--------------------------------------')
         print('current_cell: ' + current_cell.toJSON())
