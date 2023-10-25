@@ -11,7 +11,7 @@ from tornado import web
 from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.services.extractor.Rextractor import RExtractor
+from jupyterlab_vre.services.extractor.rextractor import RExtractor
 from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
 
 
@@ -43,7 +43,7 @@ class NotebookExtractorHandler(APIHandler, Catalog):
         params = set()
         confs = set()
         ins = set()
-        outs = set(extractor.infere_cell_outputs(notebook.cells[len(notebook.cells) - 1].source))
+        outs = set(extractor.infer_cell_outputs(notebook.cells[len(notebook.cells) - 1].source))
         title = ''
         for cell_source in extractor.sources:
             p = extractor.extract_cell_params(cell_source)
