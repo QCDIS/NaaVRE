@@ -8,7 +8,7 @@ import nbformat as nb
 
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.services.extractor.extractor import Extractor
+from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -25,7 +25,7 @@ def create_cell(payload_path=None):
 
     cell_index = payload['cell_index']
     notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-    extractor = Extractor(notebook)
+    extractor = PyExtractor(notebook)
 
     source = notebook.cells[cell_index].source
     title = source.partition('\n')[0]

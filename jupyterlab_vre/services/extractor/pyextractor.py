@@ -4,7 +4,7 @@ import re
 from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
 
 
-class Extractor:
+class PyExtractor:
     sources: list
     imports: list
     configurations: dict

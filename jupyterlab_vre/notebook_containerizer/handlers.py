@@ -12,7 +12,7 @@ from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.Rextractor import RExtractor
-from jupyterlab_vre.services.extractor.extractor import Extractor
+from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
 
 
 # TODO: we might have to do something similar here where we have to determine the kernel and based on that get the extractor
@@ -38,7 +38,7 @@ class NotebookExtractorHandler(APIHandler, Catalog):
         if kernel == "IRkernel":
             extractor = RExtractor(notebook)
         else:
-            extractor = Extractor(notebook)
+            extractor = PyExtractor(notebook)
         source = ''
         params = set()
         confs = set()

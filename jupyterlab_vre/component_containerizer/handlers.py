@@ -26,7 +26,7 @@ from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.Rextractor import RExtractor
-from jupyterlab_vre.services.extractor.extractor import Extractor
+from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +76,7 @@ class ExtractorHandler(APIHandler, Catalog):
         if kernel == "IRkernel":
             extractor = RExtractor(notebook)
         else:
-            extractor = Extractor(notebook)
+            extractor = PyExtractor(notebook)
 
         # initialize variables
         source = notebook.cells[cell_index].source
