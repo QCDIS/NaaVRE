@@ -2,6 +2,8 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+sh -c /tmp/init_script.sh
+
 source /venv/bin/activate
 set -e
 
