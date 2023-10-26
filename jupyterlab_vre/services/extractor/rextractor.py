@@ -200,12 +200,12 @@ class RExtractor:
                 params.add(variable)
         return params
 
-    def infere_cell_outputs(self, cell_source):
+    def infer_cell_outputs(self, cell_source):
         cell_names = self.__extract_cell_names(cell_source)
         return [name for name in cell_names if name not in self.__extract_cell_undefined(cell_source) \
                 and name not in self.imports and name in self.undefined and name not in self.configurations and name not in self.global_params]
 
-    def infere_cell_inputs(self, cell_source):
+    def infer_cell_inputs(self, cell_source):
         cell_undefined = self.__extract_cell_undefined(cell_source)
         return [und for und in cell_undefined if
                 und not in self.imports and und not in self.configurations and und not in self.global_params]

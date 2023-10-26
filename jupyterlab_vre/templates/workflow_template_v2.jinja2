@@ -6,6 +6,16 @@ metadata:
     vlab_slug: {{ vlab_slug }}
 spec:
     entrypoint: {{ workflow_name }}
+
+    volumeClaimTemplates:
+    - metadata:
+        name: workdir
+      spec:
+        accessModes: [ "ReadWriteMany" ]
+        resources:
+          requests:
+            storage: 1Gi
+
     arguments:
       parameters:
       {% for p, value in global_params.items() %}
@@ -127,6 +137,8 @@ spec:
             {% endfor %}
             --id {{' '}}{{cells[nid]['node_id']}}{{''}}{{";"}}
         {% endif %}
+        volumeMounts:
+        - name: workdir
+          mountPath: /tmp/data
       {% endif %}
     {% endfor %}
-
