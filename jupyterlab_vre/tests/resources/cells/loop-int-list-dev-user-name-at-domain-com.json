@@ -1,0 +1,87 @@
+{
+    "all_inputs": [
+        "list_of_ints"
+    ],
+    "base_image": "qcdis/miniconda3",
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "e8e8be4": {
+                "id": "e8e8be4",
+                "ports": {
+                    "a": {
+                        "id": "a",
+                        "properties": {
+                            "color": "#77862d"
+                        },
+                        "type": "right"
+                    },
+                    "list_of_ints": {
+                        "id": "list_of_ints",
+                        "properties": {
+                            "color": "#5f1f93"
+                        },
+                        "type": "left"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [],
+                    "inputs": [
+                        "list_of_ints"
+                    ],
+                    "og_node_id": "e8e8be4",
+                    "outputs": [
+                        "a"
+                    ],
+                    "params": [],
+                    "title": "loop int list-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#5f1f93",
+                            "direction": "input",
+                            "name": "list_of_ints",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#77862d",
+                            "direction": "output",
+                            "name": "a",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {},
+    "container_source": "",
+    "dependencies": [],
+    "inputs": [
+        "list_of_ints"
+    ],
+    "kernel": "ipython",
+    "node_id": "e8e8be4",
+    "original_source": "\nfor i in list_of_ints:\n    a = i +1\n    print(a)",
+    "outputs": [
+        "a"
+    ],
+    "params": [],
+    "task_name": "loop-int-list-dev-user-name-at-domain-com",
+    "title": "loop int list-dev-user-name-at-domain-com",
+    "types": {
+        "a": "int",
+        "list_of_ints": "list"
+    }
+}
