@@ -1,21 +1,26 @@
 {
-    "all_inputs": [
-        "list_of_paths"
-    ],
+    "all_inputs": [],
     "base_image": "qcdis/miniconda3",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "9f23f86": {
-                "id": "9f23f86",
+            "4b5a018": {
+                "id": "4b5a018",
                 "ports": {
+                    "list_of_ints": {
+                        "id": "list_of_ints",
+                        "properties": {
+                            "color": "#5f1f93"
+                        },
+                        "type": "right"
+                    },
                     "list_of_paths": {
                         "id": "list_of_paths",
                         "properties": {
                             "color": "#79c5d2"
                         },
-                        "type": "left"
+                        "type": "right"
                     }
                 },
                 "position": {
@@ -24,18 +29,25 @@
                 },
                 "properties": {
                     "deps": [],
-                    "inputs": [
-                        "list_of_paths"
+                    "inputs": [],
+                    "og_node_id": "4b5a018",
+                    "outputs": [
+                        "list_of_paths",
+                        "list_of_ints"
                     ],
-                    "og_node_id": "9f23f86",
-                    "outputs": [],
                     "params": [],
-                    "title": "loop list-dev-user-name-at-domain-com",
+                    "title": "input lists-dev-user-name-at-domain-com",
                     "vars": [
                         {
                             "color": "#79c5d2",
-                            "direction": "input",
+                            "direction": "output",
                             "name": "list_of_paths",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#5f1f93",
+                            "direction": "output",
+                            "name": "list_of_ints",
                             "type": "datatype"
                         }
                     ]
@@ -53,17 +65,19 @@
     "confs": {},
     "container_source": "",
     "dependencies": [],
-    "inputs": [
-        "list_of_paths"
-    ],
+    "inputs": [],
     "kernel": "ipython",
-    "node_id": "9f23f86",
-    "original_source": "\nfor l in list_of_paths:\n    print(l)",
-    "outputs": [],
+    "node_id": "4b5a018",
+    "original_source": "\nlist_of_paths = [\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\"]\nlist_of_ints = [1,2,35,6,65]",
+    "outputs": [
+        "list_of_paths",
+        "list_of_ints"
+    ],
     "params": [],
-    "task_name": "loop-list-dev-user-name-at-domain-com",
-    "title": "loop list-dev-user-name-at-domain-com",
+    "task_name": "input-lists-dev-user-name-at-domain-com",
+    "title": "input lists-dev-user-name-at-domain-com",
     "types": {
+        "list_of_ints": "list",
         "list_of_paths": "list"
     }
 }
