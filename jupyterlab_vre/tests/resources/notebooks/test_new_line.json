@@ -1,0 +1,48 @@
+{
+    "save": false,
+    "kernel": "ipython",
+    "cell_index": 1,
+    "notebook": {
+        "metadata": {
+            "language_info": {
+                "name": "python",
+                "version": "3.11.6",
+                "mimetype": "text/x-python",
+                "codemirror_mode": {
+                    "name": "ipython",
+                    "version": 3
+                },
+                "pygments_lexer": "ipython3",
+                "nbconvert_exporter": "python",
+                "file_extension": ".py"
+            },
+            "kernelspec": {
+                "name": "python3",
+                "display_name": "Python 3 (ipykernel)",
+                "language": "python"
+            }
+        },
+        "nbformat_minor": 5,
+        "nbformat": 4,
+        "cells": [
+            {
+                "cell_type": "code",
+                "source": "#Conf_bug\n\nconf_herwijnen = ['radar_volume_full_herwijnen',\n                  1.0,\n                  'https://api.dataplatform.knmi.nl/open-data/v1/datasets/radar_volume_full_herwijnen/versions/1.0/files',\n                 'NL/HRW'] \nconf_denhelder = ['radar_volume_full_denhelder',\n                 2.0,\n                 'https://api.dataplatform.knmi.nl/open-data/v1/datasets/radar_volume_denhelder/versions/2.0/files',\n                 'NL/DHL']\nconf_radars = {'herwijnen' : conf_herwijnen,\n              'denhelder' : conf_denhelder}",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": null,
+                "outputs": [],
+                "id": "1781e699-c90a-43f2-8890-11ac185422bd"
+            },
+            {
+                "cell_type": "code",
+                "source": "#Print_cong\n\nprint(conf_herwijnen)\nprint(conf_denhelder)\nprint(conf_radars)",
+                "metadata": {},
+                "execution_count": null,
+                "outputs": [],
+                "id": "1b887d36-e009-46c0-9bc8-cbf633fb597d"
+            }
+        ]
+    }
+}

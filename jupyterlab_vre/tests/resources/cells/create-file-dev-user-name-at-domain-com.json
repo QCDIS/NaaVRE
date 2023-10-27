@@ -1,0 +1,77 @@
+{
+    "all_inputs": [],
+    "base_image": "qcdis/miniconda3",
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "055d4ab": {
+                "id": "055d4ab",
+                "ports": {
+                    "file_path": {
+                        "id": "file_path",
+                        "properties": {
+                            "color": "#663a78"
+                        },
+                        "type": "right"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [
+                        ""
+                    ],
+                    "inputs": [],
+                    "og_node_id": "055d4ab",
+                    "outputs": [
+                        "file_path"
+                    ],
+                    "params": [],
+                    "title": "Create file-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#663a78",
+                            "direction": "output",
+                            "name": "file_path",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {
+        "conf_data_folder": "conf_data_folder = os.path.join('/tmp','data')"
+    },
+    "container_source": "",
+    "dependencies": [
+        {
+            "asname": null,
+            "module": "",
+            "name": "os"
+        }
+    ],
+    "inputs": [],
+    "kernel": "ipython",
+    "node_id": "055d4ab",
+    "original_source": "conf_data_folder = os.path.join('/tmp','data')\n\nL = [\"a\\n\", \"b\\n\", \"c\\n\"]\nfile_path =  os.path.join(conf_data_folder,'hello.txt')\nfp = open(file_path, 'w')\nfp.writelines(L)\nfp.close()",
+    "outputs": [
+        "file_path"
+    ],
+    "params": [],
+    "task_name": "create-file-dev-user-name-at-domain-com",
+    "title": "Create file-dev-user-name-at-domain-com",
+    "types": {
+        "file_path": "str"
+    }
+}

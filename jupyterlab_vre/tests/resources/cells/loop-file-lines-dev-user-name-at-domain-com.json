@@ -1,0 +1,69 @@
+{
+    "all_inputs": [
+        "lines"
+    ],
+    "base_image": "qcdis/miniconda3",
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "f421e91": {
+                "id": "f421e91",
+                "ports": {
+                    "lines": {
+                        "id": "lines",
+                        "properties": {
+                            "color": "#ac535c"
+                        },
+                        "type": "left"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [],
+                    "inputs": [
+                        "lines"
+                    ],
+                    "og_node_id": "f421e91",
+                    "outputs": [],
+                    "params": [],
+                    "title": "loop file lines-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#ac535c",
+                            "direction": "input",
+                            "name": "lines",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {},
+    "container_source": "",
+    "dependencies": [],
+    "inputs": [
+        "lines"
+    ],
+    "kernel": "ipython",
+    "node_id": "f421e91",
+    "original_source": "\ncount = 0\nfor l in lines:\n    count += 1\n    print(\"Line{}: {}\".format(count, l.strip()))",
+    "outputs": [],
+    "params": [],
+    "task_name": "loop-file-lines-dev-user-name-at-domain-com",
+    "title": "loop file lines-dev-user-name-at-domain-com",
+    "types": {
+        "lines": "list"
+    }
+}
