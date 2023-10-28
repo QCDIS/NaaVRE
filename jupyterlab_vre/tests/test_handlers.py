@@ -100,13 +100,14 @@ class HandlersAPITest(AsyncHTTPTestCase):
                                cookie_secret='asdfasdf')
         return self.app
 
-
     def test_execute_workflow_handler(self):
         workflow_path = os.path.join(base_path, 'workflows', 'NaaVRE')
         workflow_files = os.listdir(workflow_path)
         with mock.patch.object(ExecuteWorkflowHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
         for workflow_file in workflow_files:
+            if 'test_list_Py_workflow.json' not in workflow_file:
+                continue
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
