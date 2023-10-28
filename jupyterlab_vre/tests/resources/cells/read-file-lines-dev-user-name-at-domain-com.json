@@ -1,0 +1,87 @@
+{
+    "all_inputs": [
+        "file_path"
+    ],
+    "base_image": "qcdis/miniconda3",
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "f357bb7": {
+                "id": "f357bb7",
+                "ports": {
+                    "file_path": {
+                        "id": "file_path",
+                        "properties": {
+                            "color": "#663a78"
+                        },
+                        "type": "left"
+                    },
+                    "lines": {
+                        "id": "lines",
+                        "properties": {
+                            "color": "#ac535c"
+                        },
+                        "type": "right"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [],
+                    "inputs": [
+                        "file_path"
+                    ],
+                    "og_node_id": "f357bb7",
+                    "outputs": [
+                        "lines"
+                    ],
+                    "params": [],
+                    "title": "read file lines-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#663a78",
+                            "direction": "input",
+                            "name": "file_path",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#ac535c",
+                            "direction": "output",
+                            "name": "lines",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {},
+    "container_source": "",
+    "dependencies": [],
+    "inputs": [
+        "file_path"
+    ],
+    "kernel": "ipython",
+    "node_id": "f357bb7",
+    "original_source": "\nf = open(file_path, 'r')\nlines = f.readlines()\nf.close()",
+    "outputs": [
+        "lines"
+    ],
+    "params": [],
+    "task_name": "read-file-lines-dev-user-name-at-domain-com",
+    "title": "read file lines-dev-user-name-at-domain-com",
+    "types": {
+        "file_path": "str",
+        "lines": "list"
+    }
+}

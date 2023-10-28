@@ -37,5 +37,3 @@ RUN apt update -y && apt upgrade -y && apt install jq -y
 COPY --from=build /venv /venv
 COPY {{ task_name }}.py .
 {% endif %}
-
-
