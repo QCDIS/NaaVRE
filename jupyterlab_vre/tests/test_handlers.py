@@ -106,8 +106,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
         with mock.patch.object(ExecuteWorkflowHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
         for workflow_file in workflow_files:
-            if 'test_list_Py_workflow.json' not in workflow_file:
-                continue
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
@@ -209,18 +207,14 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 sleep(200)
                 job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token, job_id=None)
                 self.assertIsNotNone(job, 'Job not found')
-                done = False
                 counter = 0
                 while counter < 50:
                     counter += 1
-                    print('--------------------------------------------------------')
                     print(job['status'])
                     sleep(60)
-
                     job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token,
                                    job_id=job['id'])
                     if job['status'] == 'completed':
-                        done = True
                         break
                 self.assertEqual('completed', job['status'], 'Job not completed')
                 self.assertEqual('success', job['conclusion'], 'Job not successful')
