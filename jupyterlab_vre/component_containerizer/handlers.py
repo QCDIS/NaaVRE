@@ -392,8 +392,6 @@ def update_cell_in_repository(task_name=None, repository=None, files_info=None):
     for f_type, f_info in files_info.items():
         f_name = f_info['file_name']
         f_path = f_info['path']
-        logger.debug('get_contents: ' + task_name + '/' + f_name)
-        print('get_contents: ' + task_name + '/' + f_name)
         remote_content = repository.get_contents(
             path=task_name + '/' + f_name)
         with open(f_path, 'rb') as f:

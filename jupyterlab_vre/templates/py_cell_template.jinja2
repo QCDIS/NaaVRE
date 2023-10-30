@@ -30,7 +30,7 @@ id = args.id
 {% for in_var in cell.inputs|sort %}
 {% if types[in_var] == list  or types[in_var] == 'list' %}
 import json
-{{ in_var }} = json.loads(args.{{ in_var }}.replace('\'','').replace('[','["').replace(']','"]'))
+{{ in_var }} = json.loads(args.{{ in_var }})
 {% else %}
 {{ in_var }} = args.{{ in_var }}
 {% endif %}
