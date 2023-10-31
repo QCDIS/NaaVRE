@@ -2,6 +2,8 @@
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 
+sh -c /tmp/init_script.sh
+
 source /venv/bin/activate
 set -e
 
@@ -11,4 +13,4 @@ if [[ "${NOTEBOOK_ARGS} $*" != *"--ip="* ]]; then
 fi
 
 # shellcheck disable=SC1091,SC2086
-. /usr/local/bin/start.sh jupyter lab --watch ${NOTEBOOK_ARGS} "$@"
+. /usr/local/bin/start.sh jupyter lab --watch --autoreload ${NOTEBOOK_ARGS} "$@"
