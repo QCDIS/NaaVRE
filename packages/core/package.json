@@ -33,7 +33,7 @@
     },
     "dependencies": {
         "@jupyterlab/coreutils": "~5.5.3",
-        "@jupyterlab/services": "^6.5.3"
+        "@jupyterlab/services": "^7.0.7"
     },
     "devDependencies": {
         "@types/node": "^14.14.37",
