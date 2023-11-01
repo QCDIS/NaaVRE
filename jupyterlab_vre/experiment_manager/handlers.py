@@ -15,6 +15,10 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
+def get_workflow_service_account():
+    return os.environ.get('ARGO_WF_SPEC_SERVICEACCOUNT', 'default')
+
+
 class ExportWorkflowHandler(APIHandler):
 
     @web.authenticated
@@ -72,7 +76,8 @@ class ExportWorkflowHandler(APIHandler):
                 nodes=nodes,
                 global_params=global_params,
                 image_repo=image_repo,
-                workflow_name=workflow_name
+                workflow_name=workflow_name,
+                workflow_service_account=get_workflow_service_account(),
             ).dump('workflow.yaml')
 
         self.flush()
@@ -153,7 +158,8 @@ class ExecuteWorkflowHandler(APIHandler):
             nodes=nodes,
             global_params=params,
             image_repo=image_repo,
-            workflow_name=workflow_name
+            workflow_name=workflow_name,
+            workflow_service_account=get_workflow_service_account(),
         )
         workflow_doc = yaml.safe_load(template)
 
