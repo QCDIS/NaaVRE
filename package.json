@@ -18,7 +18,7 @@
     "@jupyterlab/apputils": "~3.5.3",
     "@jupyterlab/builder": "~4.0.2",
     "@jupyterlab/coreutils": "~5.5.3",
-    "@jupyterlab/launcher": "~3.5.3",
+    "@jupyterlab/launcher": "~4.0.7",
     "@jupyterlab/mainmenu": "~3.5.3",
     "@jupyterlab/notebook": "~3.5.3",
     "@jupyterlab/ui-components": "~4.0.1",
