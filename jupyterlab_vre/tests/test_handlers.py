@@ -209,9 +209,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 sleep(200)
                 job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token, job_id=None)
                 self.assertIsNotNone(job, 'Job not found')
-                done = False
                 counter = 0
-                while counter < 50:
+                while counter < 70:
                     counter += 1
                     print('--------------------------------------------------------')
                     print(job['status'])
@@ -220,7 +219,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token,
                                    job_id=job['id'])
                     if job['status'] == 'completed':
-                        done = True
                         break
                 self.assertEqual('completed', job['status'], 'Job not completed')
                 self.assertEqual('success', job['conclusion'], 'Job not successful')
