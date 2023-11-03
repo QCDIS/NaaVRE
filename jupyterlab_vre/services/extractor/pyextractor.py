@@ -16,7 +16,10 @@ class PyExtractor:
     def __init__(self, notebook):
         self.sources = [nbcell.source for nbcell in notebook.cells if
                         nbcell.cell_type == 'code' and len(nbcell.source) > 0]
-        self.notebook_names = self.__extract_cell_names('\n'.join(self.sources))
+        self.notebook_names = self.__extract_cell_names(
+            '\n'.join(self.sources),
+            infer_types=True,
+            )
         self.imports = self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
         self.global_params = self.__extract_params(self.sources)
@@ -150,14 +153,22 @@ class PyExtractor:
         logging.getLogger(__name__).debug(f'Unmatched type: {type_annotation}')
         return None
 
-    def __extract_cell_names(self, cell_source):
+    def __extract_cell_names(self, cell_source, infer_types=False):
         names = dict()
-        tree = annotate_ast.annotate_source(cell_source, ast, pytype_config.Options.create())
+        if infer_types:
+            tree = annotate_ast.annotate_source(cell_source, ast, pytype_config.Options.create())
+        else:
+            tree = ast.parse(cell_source)
         for module in ast.walk(tree):
             if isinstance(module, (ast.Name,)):
+                var_name = module.id
+                if infer_types:
+                    var_type = self.__convert_type_annotation(module.resolved_annotation)
+                else:
+                    var_type = self.notebook_names[var_name]['type']
                 names[module.id] = {
-                    'name': module.id,
-                    'type': self.__convert_type_annotation(module.resolved_annotation),
+                    'name': var_name,
+                    'type': var_type,
                     }
         return names
 
