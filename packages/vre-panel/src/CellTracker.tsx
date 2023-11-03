@@ -87,6 +87,10 @@ export class CellTracker extends React.Component<IProps, IState> {
         return false;
     };
 
+    getVarType(var_name: string): string | null {
+        return (var_name in this.state.currentCell.types) && this.state.currentCell.types[var_name];
+    }
+
     typesUpdate = async (event: React.ChangeEvent<{ name?: string; value: unknown; }>, port: string) => {
 
         await requestAPI<any>('containerizer/types', {
@@ -100,8 +104,14 @@ export class CellTracker extends React.Component<IProps, IState> {
         let currTypeSelections = this.state.typeSelections
         currTypeSelections[port] = true
         console.log('currTypeSelections: '+currTypeSelections)
+
+        let currCurrentCell = this.state.currentCell
+        currCurrentCell.types[port] = event.target.value ? String(event.target.value) : null
+        console.log('currCurrentCell: '+currCurrentCell)
+
         this.setState({
-            typeSelections: currTypeSelections
+            typeSelections: currTypeSelections,
+            currentCell: currCurrentCell,
         })
     };
 
@@ -134,15 +144,15 @@ export class CellTracker extends React.Component<IProps, IState> {
             let typeSelections: { [type: string]: boolean } = {}
     
             this.state.currentCell.inputs.forEach((el: string) => {
-                typeSelections[el] = false
+                typeSelections[el] = (this.getVarType(el) != null)
             })
     
             this.state.currentCell.outputs.forEach((el: string) => {
-                typeSelections[el] = false
+                typeSelections[el] = (this.getVarType(el) != null)
             })
     
             this.state.currentCell.params.forEach((el: string) => {
-                typeSelections[el] = false
+                typeSelections[el] = (this.getVarType(el) != null)
             })
             console.log('containerizer/extract typeSelections: '+typeSelections)  
 
@@ -239,6 +249,8 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                                     labelId="io-types-select-label"
                                                                     id={this.state.currentCell.node_id + "-" + input + "-select"}
                                                                     label="Type"
+                                                                    value={this.getVarType(input)}
+                                                                    error={this.getVarType(input) == null}
                                                                     onChange={(event) => { this.typesUpdate(event, input) }}
                                                                 >
                                                                     <MenuItem value={'int'}>Integer</MenuItem>
@@ -273,6 +285,8 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                                     labelId="io-types-select-label"
                                                                     id={this.state.currentCell.node_id + "-" + output + "-select"}
                                                                     label="Type"
+                                                                    value={this.getVarType(output)}
+                                                                    error={this.getVarType(output) == null}
                                                                     onChange={(event) => { this.typesUpdate(event, output) }}
                                                                 >
                                                                     <MenuItem value={'int'}>Integer</MenuItem>

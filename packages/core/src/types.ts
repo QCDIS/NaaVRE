@@ -9,6 +9,7 @@ export declare type VRECell = {
     params              : [];
     confs               : {};
     dependencies        : [];
+    types               : { [id: string] : string | null },
     chart_obj           : IChart;
     node_id             : string;
     container_source    : string;

@@ -53,8 +53,8 @@ def create_cell(payload_path=None):
     # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(
     # source)'
     if notebook.cells[cell_index].cell_type == 'code':
-        ins = set(extractor.infer_cell_inputs(source))
-        outs = set(extractor.infer_cell_outputs(source))
+        ins = extractor.infer_cell_inputs(source)
+        outs = extractor.infer_cell_outputs(source)
 
         confs = extractor.extract_cell_conf_ref(source)
         dependencies = extractor.infer_cell_dependencies(source, confs)

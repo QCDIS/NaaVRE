@@ -51,12 +51,20 @@ class Cell:
         self.params = list(params)
         self.confs = confs
         self.all_inputs = list(inputs) + list(params)
-        self.types = dict()
+        self.types = self._derive_types(inputs, outputs)
         self.dependencies = dependencies
         self.chart_obj = chart_obj
         self.node_id = node_id
         self.container_source = container_source
         self.kernel = kernel
+
+    def _derive_types(self, inputs, outputs):
+        types = {}
+        for vars_group in [inputs, outputs]:
+            for var_props in vars_group.values():
+                var_type = var_props['type']
+                types[var_props['name']] = var_type
+        return types
 
     def concatenate_all_inputs(self):
         self.all_inputs = list(self.inputs) + list(self.params)
