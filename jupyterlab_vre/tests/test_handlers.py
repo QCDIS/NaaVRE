@@ -1,3 +1,4 @@
+import datetime
 import glob
 import json
 import os
@@ -52,14 +53,17 @@ def delete_all_cells():
         Catalog.delete_cell_from_title(cell['title'])
 
 
-def get_gh_repository():
-    cat_repositories = Catalog.get_repositories()
-
-    print(cat_repositories)
+def get_github(cat_repositories=None):
+    if cat_repositories is None:
+        cat_repositories = Catalog.get_repositories()
     assert cat_repositories is not None
     assert len(cat_repositories) >= 1
+    return Github(cat_repositories[0]['token'])
 
-    gh = Github(cat_repositories[0]['token'])
+
+def get_gh_repository():
+    cat_repositories = Catalog.get_repositories()
+    gh = get_github(cat_repositories=cat_repositories)
     owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
     repository_name = cat_repositories[0]['url'].split(
         'https://github.com/')[1].split('/')[1]
@@ -82,19 +86,18 @@ def create_cell_and_add_to_cat(cell_path=None):
     return test_cell, cell
 
 
-def get_api_limits():
-    url = "https://api.github.com/rate_limit"
-    headers = {
-        "Accept": "application/vnd.github.v3+json"
-    }
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        data = response.json()
-        return data
-    else:
-        raise Exception("Unable to retrieve rate limit", response.status_code, response.text)
-
+def wait_for_api_resource(github=None):
+    # Wait for API resource
+    while github.get_rate_limit().core.remaining <= 0:
+        print('Github rate limit: ', github.get_rate_limit().core.remaining)
+        reset = github.get_rate_limit().core.reset
+        # Calculate remaining time for reset
+        remaining_time = reset.timestamp() - datetime.datetime.now().timestamp()
+        print('Remaining time for reset: ', divmod(remaining_time, 60))
+        print('API rate exceeded, waiting')
+        remaining_time = reset.timestamp() - datetime.datetime.now().timestamp()
+        print('Sleeping for: ', remaining_time + 1)
+        sleep(remaining_time + 1)
 
 
 class HandlersAPITest(AsyncHTTPTestCase):
@@ -221,8 +224,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 if '.git' in repository_name:
                     repository_name = repository_name.split('.git')[0]
 
-                limits = get_api_limits()
-                print(json.dumps(limits, indent=2))
+                gh = get_github(cat_repositories=cat_repositories)
+                wait_for_api_resource(gh)
                 sleep(200)
                 job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token, job_id=None)
                 self.assertIsNotNone(job, 'Job not found')
@@ -230,11 +233,11 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 while counter < 50:
                     counter += 1
                     print('--------------------------------------------------------')
-                    print(job['status'])
-                    # Wait for 3 minutes for the job to complete to avoid 'API rate limit exceeded for'
-                    sleep(180)
-                    limits = get_api_limits()
-                    print(json.dumps(limits, indent=2))
+                    print('job: ' + job['name'] + ' status: ' + job['status'])
+                    # Wait for 2 minutes for the job to complete to avoid 'API rate limit exceeded for'
+                    sleep(120)
+                    gh = get_github(cat_repositories=cat_repositories)
+                    wait_for_api_resource(gh)
                     job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token,
                                    job_id=job['id'])
                     if job['status'] == 'completed':
