@@ -132,6 +132,14 @@ jobs:
       - name: Collect Workflow Telemetry
         uses: runforesight/workflow-telemetry-action@v1
 
+      - name: Cache Conda environment
+        uses: actions/cache@v2
+        with:
+          path: ${{ runner.workspace }}/miniconda3
+          key: conda-${{ hashFiles('environment.yml') }}
+          restore-keys: conda-
+
+
       - name: Install dependencies
         run: |
           conda env update --file environment.yml --name base
