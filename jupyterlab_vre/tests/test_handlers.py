@@ -82,6 +82,21 @@ def create_cell_and_add_to_cat(cell_path=None):
     return test_cell, cell
 
 
+def get_api_limits():
+    url = "https://api.github.com/rate_limit"
+    headers = {
+        "Accept": "application/vnd.github.v3+json"
+    }
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        data = response.json()
+        return data
+    else:
+        raise Exception("Unable to retrieve rate limit", response.status_code, response.text)
+
+
+
 class HandlersAPITest(AsyncHTTPTestCase):
 
     def get_app(self):
@@ -206,6 +221,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 if '.git' in repository_name:
                     repository_name = repository_name.split('.git')[0]
 
+                limits = get_api_limits()
+                print(json.dumps(limits, indent=2))
                 sleep(200)
                 job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token, job_id=None)
                 self.assertIsNotNone(job, 'Job not found')
@@ -214,7 +231,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     counter += 1
                     print('--------------------------------------------------------')
                     print(job['status'])
-                    sleep(60)
+                    # Wait for 3 minutes for the job to complete to avoid 'API rate limit exceeded for'
+                    sleep(180)
 
                     job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token,
                                    job_id=job['id'])
