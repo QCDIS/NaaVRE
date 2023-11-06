@@ -233,7 +233,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     print(job['status'])
                     # Wait for 3 minutes for the job to complete to avoid 'API rate limit exceeded for'
                     sleep(180)
-
+                    limits = get_api_limits()
+                    print(json.dumps(limits, indent=2))
                     job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token,
                                    job_id=job['id'])
                     if job['status'] == 'completed':
