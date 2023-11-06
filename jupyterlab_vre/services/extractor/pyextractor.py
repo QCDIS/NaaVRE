@@ -1,6 +1,7 @@
 import ast
 import logging
 import re
+from functools import lru_cache
 
 from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
 from pytype.tools.annotate_ast import annotate_ast
@@ -120,6 +121,12 @@ class PyExtractor:
 
         return dependencies
 
+    @staticmethod
+    @lru_cache
+    def __get_annotated_ast(cell_source):
+        return annotate_ast.annotate_source(
+            cell_source, ast, pytype_config.Options.create())
+
     def __convert_type_annotation(self, type_annotation: str|None)-> (str|None):
         """ Convert type annotation to the ones supported for cell interfaces
 
@@ -159,7 +166,7 @@ class PyExtractor:
     def __extract_cell_names(self, cell_source, infer_types=False):
         names = dict()
         if infer_types:
-            tree = annotate_ast.annotate_source(cell_source, ast, pytype_config.Options.create())
+            tree = self.__get_annotated_ast(cell_source)
         else:
             tree = ast.parse(cell_source)
         for module in ast.walk(tree):
