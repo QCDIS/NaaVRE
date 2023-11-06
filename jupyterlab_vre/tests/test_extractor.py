@@ -72,6 +72,11 @@ def create_cell(payload_path=None):
         dependencies=dependencies,
         container_source=""
     )
+    if notebook.cells[cell_index].cell_type == 'code':
+        cell.integrate_configuration()
+        params = list(extractor.extract_cell_params(cell.original_source))
+        cell.params = params
+
     return cell
 
 
