@@ -101,19 +101,19 @@ base = importr('base')
 
 class RExtractor:
     sources: list
-    imports: set
+    imports: dict
     configurations: dict
-    global_params: set
-    undefined: set
+    global_params: dict
+    undefined: dict
 
     def __init__(self, notebook):
         self.sources = [nbcell.source for nbcell in notebook.cells if
                         nbcell.cell_type == 'code' and len(nbcell.source) > 0]
 
-        self.imports = set() # self.__extract_imports(self.sources)
+        self.imports = dict()  # self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
         self.global_params = self.__extract_params(self.sources)
-        self.undefined = set()
+        self.undefined = dict()
         for source in self.sources:
             self.undefined.update(self.__extract_cell_undefined(source))
 
@@ -179,7 +179,7 @@ class RExtractor:
         return configurations
 
     def __extract_params(self, sources):  # check source https://adv-r.hadley.nz/expressions.html)
-        params = set()
+        params = {}
         for s in sources:
 
             '''Approach 1: Naive way
@@ -197,7 +197,10 @@ class RExtractor:
                 # the prefix should be 'param'
                 if not (variable.split("_")[0] == "param"):
                     continue
-                params.add(variable)
+                params[variable] = {
+                    'name': variable,
+                    'type': None,
+                    }
         return params
 
     def infer_cell_outputs(self, cell_source):
@@ -361,7 +364,7 @@ class RExtractor:
 
     def extract_cell_params(self, cell_source):
         cell_unds = self.__extract_cell_undefined(cell_source)
-        return self.global_params.intersection(cell_unds)
+        return {k: cell_unds[k] for k in cell_unds.keys() & self.global_params.keys()}
 
     def extract_cell_conf_ref(self, cell_source):
         confs = {}

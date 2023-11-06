@@ -8,10 +8,10 @@ from pytype import config as pytype_config
 
 class PyExtractor:
     sources: list
-    imports: list
+    imports: dict
     configurations: dict
-    global_params: set
-    undefined: set
+    global_params: dict
+    undefined: dict
 
     def __init__(self, notebook):
         self.sources = [nbcell.source for nbcell in notebook.cells if
@@ -23,7 +23,7 @@ class PyExtractor:
         self.imports = self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
         self.global_params = self.__extract_params(self.sources)
-        self.undefined = set()
+        self.undefined = dict()
         for source in self.sources:
             self.undefined.update(self.__extract_cell_undefined(source))
 
@@ -62,7 +62,7 @@ class PyExtractor:
         return self.__resolve_configurations(configurations)
 
     def __extract_params(self, sources):
-        params = set()
+        params = dict()
         for s in sources:
             tree = ast.parse(s)
             for node in ast.walk(tree):
@@ -70,7 +70,10 @@ class PyExtractor:
                     name = node.targets[0].id
                     prefix = name.split('_')[0]
                     if prefix == 'param':
-                        params.add(name)
+                        params[name] = {
+                            'name': name,
+                            'type': self.notebook_names[name]['type'],
+                            }
         return params
 
     def infer_cell_outputs(self, cell_source):
@@ -200,7 +203,7 @@ class PyExtractor:
 
     def extract_cell_params(self, cell_source):
         cell_unds = self.__extract_cell_undefined(cell_source)
-        return self.global_params.intersection(cell_unds)
+        return {k: cell_unds[k] for k in cell_unds.keys() & self.global_params.keys()}
 
     def extract_cell_conf_ref(self, cell_source):
         confs = {}

@@ -91,7 +91,7 @@ class ExtractorHandler(APIHandler, Catalog):
 
         ins = {}
         outs = {}
-        params = []
+        params = {}
         confs = []
         dependencies = []
 
@@ -120,8 +120,8 @@ class ExtractorHandler(APIHandler, Catalog):
         )
         if notebook.cells[cell_index].cell_type == 'code':
             cell.integrate_configuration()
-            params = list(extractor.extract_cell_params(cell.original_source))
-            cell.params = params
+            params = extractor.extract_cell_params(cell.original_source)
+            cell.add_params(params)
 
         node = ConverterReactFlowChart.get_node(
             node_id,

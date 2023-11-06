@@ -44,9 +44,9 @@ def create_cell(payload_path=None):
             '@',
             '-at-').strip()
 
-    ins = []
-    outs = []
-    params = []
+    ins = {}
+    outs = {}
+    params = {}
     confs = []
     dependencies = []
 
@@ -74,8 +74,8 @@ def create_cell(payload_path=None):
     )
     if notebook.cells[cell_index].cell_type == 'code':
         cell.integrate_configuration()
-        params = list(extractor.extract_cell_params(cell.original_source))
-        cell.params = params
+        params = extractor.extract_cell_params(cell.original_source)
+        cell.add_params(params)
 
     return cell
 

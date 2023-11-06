@@ -325,6 +325,8 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                                     labelId="param-types-select-label"
                                                                     id={this.state.currentCell.node_id + "-" + param + "-select"}
                                                                     label="Type"
+                                                                    value={this.getVarType(param)}
+                                                                    error={this.getVarType(param) == null}
                                                                     onChange={(event) => { this.typesUpdate(event, param) }}
                                                                 >
                                                                     <MenuItem value={'int'}>Integer</MenuItem>
