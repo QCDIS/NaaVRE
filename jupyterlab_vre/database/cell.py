@@ -73,13 +73,19 @@ class Cell:
         return names
 
     def add_inputs(self, inputs):
-        self.inputs = self._extract_types(inputs)
+        if isinstance(inputs, dict):
+            inputs = self._extract_types(inputs)
+        self.inputs = inputs
 
     def add_outputs(self, outputs):
-        self.outputs = self._extract_types(outputs)
+        if isinstance(outputs, dict):
+            outputs = self._extract_types(outputs)
+        self.outputs = outputs
 
     def add_params(self, params):
-        self.params = self._extract_types(params)
+        if isinstance(params, dict):
+            params = self._extract_types(params)
+        self.params = params
 
     def concatenate_all_inputs(self):
         self.all_inputs = list(self.inputs) + list(self.params)
