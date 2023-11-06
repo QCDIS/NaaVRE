@@ -230,9 +230,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token, job_id=None)
                 self.assertIsNotNone(job, 'Job not found')
                 counter = 0
-                while counter < 50:
+                while 'completed' not in job['status'] or counter < 50:
                     counter += 1
-                    print('--------------------------------------------------------')
                     print('job: ' + job['name'] + ' status: ' + job['status'])
                     # Wait for 2 minutes for the job to complete to avoid 'API rate limit exceeded for'
                     sleep(120)
