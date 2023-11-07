@@ -129,17 +129,23 @@ jobs:
             miniforge-version: latest
             activate-environment: test-jupyterlab
             use-mamba: true
+            environment-file: test-environment.yml
 
+      - name: Set cache date
+        run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
 
-      - name: Cache Conda environment
-        id: cache-conda-env
-        uses: actions/cache@v2
+      - uses: actions/cache@v2
         with:
-          path: ${{ runner.workspace }}/miniconda3
-          key: conda-${{ hashFiles('test-environment.yml') }}
-          restore-keys: conda-
+          path: ${{ matrix.prefix }}
+          key: ${{ matrix.label }}-conda-${{ hashFiles('test-environment.yml') }}-${{ env.DATE }}-${{ env.CACHE_NUMBER }}
+        id: cache
+
+      - name: Update environment
+        run: mamba env update -n my-env -f test-environment.yml
+        if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Lint with flake8
+        shell: bash -l {0}
         run: |
           # stop the build if there are Python syntax errors or undefined names
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
