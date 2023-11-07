@@ -9,7 +9,6 @@ from pathlib import Path
 from time import sleep
 from unittest import mock
 
-import requests
 from github import Github
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
