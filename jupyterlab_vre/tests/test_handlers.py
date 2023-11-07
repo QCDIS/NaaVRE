@@ -1,3 +1,4 @@
+import datetime
 import glob
 import json
 import os
@@ -52,14 +53,17 @@ def delete_all_cells():
         Catalog.delete_cell_from_title(cell['title'])
 
 
-def get_gh_repository():
-    cat_repositories = Catalog.get_repositories()
-
-    print(cat_repositories)
+def get_github(cat_repositories=None):
+    if cat_repositories is None:
+        cat_repositories = Catalog.get_repositories()
     assert cat_repositories is not None
     assert len(cat_repositories) >= 1
+    return Github(cat_repositories[0]['token'])
 
-    gh = Github(cat_repositories[0]['token'])
+
+def get_gh_repository():
+    cat_repositories = Catalog.get_repositories()
+    gh = get_github(cat_repositories=cat_repositories)
     owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
     repository_name = cat_repositories[0]['url'].split(
         'https://github.com/')[1].split('/')[1]
@@ -80,6 +84,20 @@ def create_cell_and_add_to_cat(cell_path=None):
     test_cell.base_image = cell['base_image']
     Catalog.editor_buffer = test_cell
     return test_cell, cell
+
+
+def wait_for_api_resource(github=None):
+    # Wait for API resource
+    while github.get_rate_limit().core.remaining <= 0:
+        print('Github rate limit: ', github.get_rate_limit().core.remaining)
+        reset = github.get_rate_limit().core.reset
+        # Calculate remaining time for reset
+        remaining_time = reset.timestamp() - datetime.datetime.now().timestamp()
+        print('Remaining time for reset: ', divmod(remaining_time, 60))
+        print('API rate exceeded, waiting')
+        remaining_time = reset.timestamp() - datetime.datetime.now().timestamp()
+        print('Sleeping for: ', remaining_time + 1)
+        sleep(remaining_time + 1)
 
 
 class HandlersAPITest(AsyncHTTPTestCase):
@@ -206,21 +224,22 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 if '.git' in repository_name:
                     repository_name = repository_name.split('.git')[0]
 
+                gh = get_github(cat_repositories=cat_repositories)
+                wait_for_api_resource(gh)
                 sleep(200)
                 job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token, job_id=None)
                 self.assertIsNotNone(job, 'Job not found')
-                done = False
                 counter = 0
-                while counter < 50:
+                while 'completed' not in job['status'] or counter < 50:
                     counter += 1
-                    print('--------------------------------------------------------')
-                    print(job['status'])
-                    sleep(60)
-
+                    print('job: ' + job['name'] + ' status: ' + job['status'])
+                    # Wait for 2 minutes for the job to complete to avoid 'API rate limit exceeded for'
+                    sleep(120)
+                    gh = get_github(cat_repositories=cat_repositories)
+                    wait_for_api_resource(gh)
                     job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token,
                                    job_id=job['id'])
                     if job['status'] == 'completed':
-                        done = True
                         break
                 self.assertEqual('completed', job['status'], 'Job not completed')
                 self.assertEqual('success', job['conclusion'], 'Job not successful')
