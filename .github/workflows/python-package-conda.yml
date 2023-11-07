@@ -141,12 +141,14 @@ jobs:
 
 
       - name: Install dependencies
+        if: steps.cache-conda-env.outputs.cache-hit != 'true'
         run: |
           conda env update --file environment.yml --name base
+          conda install pytest
+          conda install flake8 r-optparse
 
       - name: Lint with flake8
         run: |
-          conda install flake8 r-optparse
           # stop the build if there are Python syntax errors or undefined names
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
@@ -155,6 +157,5 @@ jobs:
       - name: Test with pytest
         run: |
           python docker/repo_utils/conf_vl_repos.py  --force=True
-          conda install pytest
           pip install --upgrade build
           pytest --ignore=docker --ignore=cypress
