@@ -1,0 +1,7 @@
+name: test-jupyterlab
+channels:
+  - conda-forge
+dependencies:
+  - pytest
+  - flake8
+  - r-optparse
