@@ -143,7 +143,6 @@ jobs:
       - name: Install dependencies
         if: steps.cache-conda-env.outputs.cache-hit != 'true'
         run: |
-          conda install -c conda-forge conda-pack conda-merge
           conda-merge environment.yml test-environment.yml > merged-environment.yml
           conda env update --file merged-environment.yml --name base
 
