@@ -52,6 +52,8 @@ jobs:
           cp -r docker/repo_utils docker/$DOCKER_FOLDER/repo_utils
           cp environment.yml docker/$DOCKER_FOLDER/
           mv docker/$DOCKER_FOLDER/environment.yml docker/$DOCKER_FOLDER/naa-vre-environment.yaml
+          echo '' >> docker/$DOCKER_FOLDER/naa-vre-environment.yaml
+          echo '  - pip:' >> docker/$DOCKER_FOLDER/naa-vre-environment.yaml
           yq '.dependencies[-1].pip += ["/home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl"]' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i
           if test -f "docker/$DOCKER_FOLDER/environment.yaml"; then yq 'del(.channels[] | select(. == "defaults"))' docker/$DOCKER_FOLDER/environment.yaml -i; fi
           yq 'del(.channels[] | select(. == "defaults"))' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i

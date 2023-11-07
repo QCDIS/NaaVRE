@@ -43,4 +43,3 @@ dependencies:
   - r-purrr
   - r-optparse
   - jupyter-collaboration
-  - pip:
