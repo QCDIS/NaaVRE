@@ -136,15 +136,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ runner.workspace }}/miniconda3
-          key: conda-${{ hashFiles('merged-environment.yml') }}
+          key: conda-${{ hashFiles('test-environment.yml') }}
           restore-keys: conda-
-
-
-      - name: Install dependencies
-        if: steps.cache-conda-env.outputs.cache-hit != 'true'
-        run: |
-          conda-merge environment.yml test-environment.yml > merged-environment.yml
-          conda env update --file merged-environment.yml --name base
 
       - name: Lint with flake8
         run: |
