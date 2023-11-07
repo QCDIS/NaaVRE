@@ -10,7 +10,6 @@ import uuid
 from builtins import Exception
 from pathlib import Path
 
-
 import autopep8
 import distro
 import nbformat as nb
@@ -25,8 +24,8 @@ from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.services.extractor.rextractor import RExtractor
 from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
+from jupyterlab_vre.services.extractor.rextractor import RExtractor
 
 logger = logging.getLogger(__name__)
 
