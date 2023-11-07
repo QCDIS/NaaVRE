@@ -121,23 +121,22 @@ jobs:
           fi
 
       - uses: actions/checkout@v4
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v4
+
+      - name: Setup Mambaforge
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          python-version: '3.10'
-      - name: Add conda to system path
-        run: |
-          # $CONDA is an environment variable pointing to the root of the miniconda directory
-          echo $CONDA/bin >> $GITHUB_PATH
-      - name: Collect Workflow Telemetry
-        uses: runforesight/workflow-telemetry-action@v1
+            miniforge-variant: Mambaforge
+            miniforge-version: latest
+            activate-environment: test-jupyterlab
+            use-mamba: true
+
 
       - name: Cache Conda environment
         id: cache-conda-env
         uses: actions/cache@v2
         with:
           path: ${{ runner.workspace }}/miniconda3
-          key: conda-${{ hashFiles('environment.yml') }}
+          key: conda-${{ hashFiles('merged-environment.yml') }}
           restore-keys: conda-
 
 
