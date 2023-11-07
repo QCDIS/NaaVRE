@@ -385,7 +385,11 @@ export class CellTracker extends React.Component<IProps, IState> {
                         <div>
                             {this.state.loading ? (
                                 <div>
-                                    <p className={'lw-panel-preview'}>Analyzing cell</p>
+                                    <p className={'lw-panel-preview'}>
+                                        <span>Analyzing notebook</span>
+                                        <br/>
+                                        <span style={{color: '#aaaaaa'}}>This can take up to a minute</span>
+                                    </p>
                                     <Box className={'lw-panel-table'} sx={{width: '100%'}}>
                                         <LinearProgress/>
                                     </Box>
