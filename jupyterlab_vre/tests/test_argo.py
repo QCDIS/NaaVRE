@@ -9,7 +9,6 @@ if os.path.exists('resources'):
 elif os.path.exists('jupyterlab_vre/tests/resources/'):
     base_path = 'jupyterlab_vre/tests/resources/'
 
-
 class ArgoTest(TestCase):
 
     def test_argo_api(self):
