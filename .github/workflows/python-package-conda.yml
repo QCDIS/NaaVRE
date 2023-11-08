@@ -141,8 +141,8 @@ jobs:
 
       - uses: actions/cache@v2
         with:
-          path: ${{ matrix.prefix }}
-          key: ${{ matrix.label }}-conda-${{ hashFiles('test-environment.yml') }}-${{ env.DATE }}-${{ env.CACHE_NUMBER }}
+          path: ${{ env.CONDA }}/envs
+          key: conda-${{ hashFiles('test-environment.yml') }}
         id: cache
 
       - name: Update environment
