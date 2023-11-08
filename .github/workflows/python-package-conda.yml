@@ -132,7 +132,6 @@ jobs:
             conda-environment-${{ runner.os }}-
 
       - uses: conda-incubator/setup-miniconda@v2
-        if: steps.cache-conda.outputs.cache-hit != 'true'
         with:
           auto-update-conda: true
           python-version: 3.9
