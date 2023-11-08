@@ -6,7 +6,7 @@ on:
 
 jobs:
   call-pytest:
-    uses: QCDIS/NaaVRE/.github/workflows/python-package-conda.yml@main
+    uses: ./.github/workflows/python-package-conda.yml
     secrets:
       jupyterhub_user: ${{ secrets.JUPYTERHUB_USER }}
       vlab_slug: ${{ secrets.VLAB_SLUG }}
@@ -22,17 +22,17 @@ jobs:
       argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
   call-build-wheel:
     needs: call-pytest
-    uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@main
+    uses: ./.github/workflows/build-wheel.yml
     with:
       upload: true
   call-save-in-relese:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/save-wheel-in-release.yml@main
+    uses: ./.github/workflows/save-wheel-in-release.yml
     with:
       wheel_artifact_name: jupyterlab_vre
   call-build-container-laserfarm:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
+    uses: ./.github/workflows/build-container.yml
     with:
       wheel_artifact_name: jupyterlab_vre
       docker_folder: laserfarm-pytorch
@@ -45,7 +45,7 @@ jobs:
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vol2bird:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
+    uses: ./.github/workflows/build-container.yml
     with:
       wheel_artifact_name: jupyterlab_vre
       docker_folder: vol2bird
@@ -58,7 +58,7 @@ jobs:
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vanilla:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
+    uses: ./.github/workflows/build-container.yml
     with:
       wheel_artifact_name: jupyterlab_vre
       docker_folder: vanilla
