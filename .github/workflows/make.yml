@@ -23,22 +23,22 @@ jobs:
       argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
   call-build-wheel:
     needs: call-pytest
-    uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@main
+    uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@896-conda-environment-on-test-runners
     with:
       upload: true
-#  call-build-container-laserfarm:
-#    needs: call-build-wheel
-#    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
-#    with:
-#      wheel_artifact_name: jupyterlab_vre
-#      docker_folder: laserfarm-pytorch
-#      tag: n-a-a-vre-laserfarm
-#      push: false
-#    secrets:
-#      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
-#      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
-#      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
-#      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
+  call-build-container-laserfarm:
+    needs: call-build-wheel
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@896-conda-environment-on-test-runners
+    with:
+      wheel_artifact_name: jupyterlab_vre
+      docker_folder: laserfarm-pytorch
+      tag: n-a-a-vre-laserfarm
+      push: false
+    secrets:
+      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
 #  call-build-container-vol2bird:
 #    needs: call-build-wheel
 #    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@main
