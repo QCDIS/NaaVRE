@@ -129,6 +129,7 @@ jobs:
           path: ${{ env.CONDA }}/envs
           environment-file: test-environment.yml
           activate-environment: test-jupyterlab
+          use-mamba: true
 
       - name: Cache Conda environment
         uses: actions/cache@v2
@@ -137,7 +138,6 @@ jobs:
           key: conda-environment-${{ runner.os }}-${{ hashFiles('test-environment.yml') }}
           restore-keys: |
             conda-environment-${{ runner.os }}-
-
 
       - name: Update environment
         if: steps.cache-conda.outputs.cache-hit != 'true'
@@ -152,7 +152,6 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-
 
       - name: pytest
         shell: bash -l {0}
