@@ -127,6 +127,7 @@ jobs:
           auto-update-conda: true
           python-version: 3.9
           path: ${{ env.CONDA }}/envs
+          environment-file: test-environment.yml
       - name: Conda info
         shell: bash -el {0}
         run: conda info
