@@ -68,7 +68,7 @@ jobs:
       with:
         context: docker/${{ inputs.docker_folder }}
         push: false
-        tags: $TAG:latest
+        tags: ${{ inputs.tag }}:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
