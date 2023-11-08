@@ -134,11 +134,20 @@ jobs:
         run: |
           conda list
 
-#      - uses: actions/cache@v2
-#        with:
-#          path: ${{ env.CONDA }}/envs
-#          key: conda-${{ hashFiles('test-environment.yml') }}
-#        id: cache
+      - name: Cache Conda env
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.CONDA }}/envs
+          key:
+            ${{hashFiles('test-environment.yml') }}-${{ env.CACHE_NUMBER}}
+        env:
+          CACHE_NUMBER: 0
+        id: cache
+
+      - name: Update environment
+        run:
+          conda env update -n test-jupyterlab -f test-environment.yml
+        if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Lint with flake8
         shell: bash -l {0}
