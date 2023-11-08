@@ -132,35 +132,19 @@ jobs:
             conda-environment-${{ runner.os }}-
 
       - uses: conda-incubator/setup-miniconda@v2
+        if: steps.cache-conda.outputs.cache-hit != 'true'
         with:
           auto-update-conda: true
           python-version: 3.9
           path: ${{ env.CONDA }}/envs
           environment-file: test-environment.yml
           activate-environment: test-jupyterlab
-
-      - name: Cache Conda env
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.CONDA }}/envs
-          key:
-            ${{hashFiles('test-environment.yml') }}-${{ env.CACHE_NUMBER}}
-        env:
-          CACHE_NUMBER: 0
-        id: cache
+          use-only-tar-bz2: true
 
       - name: Update environment
         if: steps.cache-conda.outputs.cache-hit != 'true'
         run:
           conda env update -n test-jupyterlab -f test-environment.yml
-
-      - name: Conda info
-        shell: bash -el {0}
-        run: |
-          conda env list
-          conda info --envs
-          conda list
-          conda activate test-jupyterlab
 
       - name: Lint with flake8
         shell: bash -l {0}
