@@ -157,8 +157,8 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-#      - name: Test with pytest
-#        run: |
-#          python docker/repo_utils/conf_vl_repos.py  --force=True
-#          pip install --upgrade build
-#          pytest --ignore=docker --ignore=cypress
+      - name: Test with pytest
+        run: |
+          python docker/repo_utils/conf_vl_repos.py  --force=True
+          pip install --upgrade build
+          pytest --ignore=docker --ignore=cypress
