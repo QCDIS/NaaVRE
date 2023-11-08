@@ -138,6 +138,7 @@ jobs:
           key: conda-environment-${{ runner.os }}-${{ hashFiles('test-environment.yml') }}
           restore-keys: |
             conda-environment-${{ runner.os }}-
+        id: cache-conda
 
       - name: Update environment
         if: steps.cache-conda.outputs.cache-hit != 'true'
