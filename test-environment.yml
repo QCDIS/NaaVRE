@@ -2,10 +2,6 @@ name: test-jupyterlab
 channels:
   - conda-forge
 dependencies:
-name: jupyterlab
-channels:
-  - conda-forge
-dependencies:
   - jupyterhub
   - nbformat
   - widgetsnbextension
