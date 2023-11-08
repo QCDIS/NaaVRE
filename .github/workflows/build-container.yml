@@ -68,7 +68,7 @@ jobs:
       with:
         context: docker/$DOCKER_FOLDER
         push: false
-        tags: user/app:latest
+        tags: $TAG:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -96,7 +96,7 @@ jobs:
         VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
         echo IMAGE_ID=$IMAGE_ID
         echo VERSION=$VERSION
-        docker tag $TAG $IMAGE_ID:$VERSION
+        docker tag $TAG:latest $IMAGE_ID:$VERSION
         if [ "${{ secrets.gitlab_password }}" != '' ]; then
           docker push $IMAGE_ID:$VERSION
           docker tag $TAG $IMAGE_ID:latest
