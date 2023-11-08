@@ -139,10 +139,10 @@ jobs:
           environment-file: test-environment.yml
           activate-environment: test-jupyterlab
 
-      - name: Conda info
-        shell: bash -el {0}
-        run: |
-          conda list
+#      - name: Conda info
+#        shell: bash -el {0}
+#        run: |
+#          conda list
 
       - name: Cache Conda env
         uses: actions/cache@v2
@@ -162,6 +162,7 @@ jobs:
       - name: Lint with flake8
         shell: bash -l {0}
         run: |
+          conda activate test-jupyterlab
           # stop the build if there are Python syntax errors or undefined names
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
@@ -169,6 +170,7 @@ jobs:
 
       - name: Test with pytest
         run: |
+          conda activate test-jupyterlab
           python docker/repo_utils/conf_vl_repos.py  --force=True
           pip install --upgrade build
           pytest --ignore=docker --ignore=cypress
