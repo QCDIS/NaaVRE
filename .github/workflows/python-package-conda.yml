@@ -138,7 +138,6 @@ jobs:
           path: ${{ env.CONDA }}/envs
           environment-file: test-environment.yml
           activate-environment: test-jupyterlab
-          use-only-tar-bz2: true
 
       - name: Update environment
         if: steps.cache-conda.outputs.cache-hit != 'true'
