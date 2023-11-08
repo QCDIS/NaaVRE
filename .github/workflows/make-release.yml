@@ -5,8 +5,23 @@ on:
       - '*'
 
 jobs:
+  choose-runner:
+    runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.choose-runner.outputs.runner }}
+    steps:
+      - id: choose-runner
+        uses: QCDIS/chose-action-runner@v1
+        with:
+          preferred-runner: naavre
+          fallback-runner: ubuntu-latest
+          github-token: ${{ secrets.RUNNER_ACCESS_TOKEN }}
+
   call-pytest:
+    needs: [choose-runner]
     uses: ./.github/workflows/python-package-conda.yml
+    with:
+      runs-on: ${{ needs.choose-runner.outputs.runner }}
     secrets:
       jupyterhub_user: ${{ secrets.JUPYTERHUB_USER }}
       vlab_slug: ${{ secrets.VLAB_SLUG }}
@@ -21,19 +36,22 @@ jobs:
       argo_url: ${{ secrets.ARGO_URL }}
       argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
   call-build-wheel:
-    needs: call-pytest
+    needs: [choose-runner, call-pytest]
     uses: ./.github/workflows/build-wheel.yml
     with:
+      runs-on: ${{ needs.choose-runner.outputs.runner }}
       upload: true
   call-save-in-relese:
-    needs: call-build-wheel
+    needs: [choose-runner, call-build-wheel]
     uses: ./.github/workflows/save-wheel-in-release.yml
     with:
+      runs-on: ${{ needs.choose-runner.outputs.runner }}
       wheel_artifact_name: jupyterlab_vre
   call-build-container-laserfarm:
-    needs: call-build-wheel
+    needs: [choose-runner, call-build-wheel]
     uses: ./.github/workflows/build-container.yml
     with:
+      runs-on: ${{ needs.choose-runner.outputs.runner }}
       wheel_artifact_name: jupyterlab_vre
       docker_folder: laserfarm-pytorch
       tag: n-a-a-vre-laserfarm
@@ -44,9 +62,10 @@ jobs:
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vol2bird:
-    needs: call-build-wheel
+    needs: [choose-runner, call-build-wheel]
     uses: ./.github/workflows/build-container.yml
     with:
+      runs-on: ${{ needs.choose-runner.outputs.runner }}
       wheel_artifact_name: jupyterlab_vre
       docker_folder: vol2bird
       tag: n-a-a-vre-vol2bird
@@ -57,9 +76,10 @@ jobs:
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vanilla:
-    needs: call-build-wheel
+    needs: [choose-runner, call-build-wheel]
     uses: ./.github/workflows/build-container.yml
     with:
+      runs-on: ${{ needs.choose-runner.outputs.runner }}
       wheel_artifact_name: jupyterlab_vre
       docker_folder: vanilla
       tag: n-a-a-vre
