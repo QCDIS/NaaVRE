@@ -129,7 +129,8 @@ jobs:
           environment-file: test-environment.yml
           python-version: 3.9
           auto-activate-base: true
-      - run: |
+          use-mamba: true
+        run: |
           conda info
           conda list
 
