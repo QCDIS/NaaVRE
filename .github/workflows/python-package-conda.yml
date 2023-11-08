@@ -122,15 +122,6 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Cache Conda environment
-        if: steps.cache-conda.outputs.cache-hit != 'true'
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.CONDA }}/envs
-          key: conda-environment-${{ runner.os }}-${{ hashFiles('test-environment.yml') }}
-          restore-keys: |
-            conda-environment-${{ runner.os }}-
-
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
@@ -138,6 +129,15 @@ jobs:
           path: ${{ env.CONDA }}/envs
           environment-file: test-environment.yml
           activate-environment: test-jupyterlab
+
+      - name: Cache Conda environment
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.CONDA }}/envs
+          key: conda-environment-${{ runner.os }}-${{ hashFiles('test-environment.yml') }}
+          restore-keys: |
+            conda-environment-${{ runner.os }}-
+
 
       - name: Update environment
         if: steps.cache-conda.outputs.cache-hit != 'true'
