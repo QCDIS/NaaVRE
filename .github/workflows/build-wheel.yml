@@ -12,11 +12,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
+          python-version: 3.9
+          path: ${{ env.CONDA }}/envs
           environment-file: environment.yml
-          
+          activate-environment: jupyterlab
+          use-mamba: true
+
+      - name: Cache Conda environment
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.CONDA }}/envs
+          key: conda-environment-${{ runner.os }}-${{ hashFiles('environment.yml') }}
+          restore-keys: |
+            conda-environment-${{ runner.os }}-
+
+
       - name: make release
         shell: bash -el {0}
         run: make release
@@ -25,9 +39,3 @@ jobs:
         with:
           name: jupyterlab_vre
           path: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
-      - name: Delete Conda envirmonet
-        shell: bash -el {0}
-        run: |
-          conda remove --name jupyterlab --all --yes
-
-
