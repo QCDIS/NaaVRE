@@ -5,6 +5,7 @@ on:
     inputs:
       runs-on:
         default: ubuntu-latest
+        type: string
       upload:
         required: true
         type: boolean

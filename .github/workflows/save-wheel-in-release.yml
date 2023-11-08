@@ -5,6 +5,7 @@ on:
     inputs:
       runs-on:
         default: ubuntu-latest
+        type: string
       wheel_artifact_name:
         required: true
         type: string
