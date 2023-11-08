@@ -139,11 +139,6 @@ jobs:
           environment-file: test-environment.yml
           activate-environment: test-jupyterlab
 
-#      - name: Conda info
-#        shell: bash -el {0}
-#        run: |
-#          conda list
-
       - name: Cache Conda env
         uses: actions/cache@v2
         with:
@@ -158,6 +153,14 @@ jobs:
         if: steps.cache-conda.outputs.cache-hit != 'true'
         run:
           conda env update -n test-jupyterlab -f test-environment.yml
+
+      - name: Conda info
+        shell: bash -el {0}
+        run: |
+          conda env list
+          conda info --envs
+          conda list
+          conda activate test-jupyterlab
 
       - name: Lint with flake8
         shell: bash -l {0}
