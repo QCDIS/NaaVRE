@@ -126,28 +126,18 @@ jobs:
         with:
           auto-update-conda: true
           python-version: 3.9
-          path: ${{ env.CONDA }}/envs
           environment-file: test-environment.yml
-          activate-environment: test-jupyterlab
+          auto-activate-base: true
+          activate-environment: ""
       - name: Conda info
         shell: bash -el {0}
-        run: conda info
-      - name: Conda list
-        shell: pwsh
-        run: conda list
 
-      - name: Set cache date
-        run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+#      - uses: actions/cache@v2
+#        with:
+#          path: ${{ env.CONDA }}/envs
+#          key: conda-${{ hashFiles('test-environment.yml') }}
+#        id: cache
 
-      - uses: actions/cache@v2
-        with:
-          path: ${{ env.CONDA }}/envs
-          key: conda-${{ hashFiles('test-environment.yml') }}
-        id: cache
-
-      - name: Update environment
-        run: mamba env update -n my-env -f test-environment.yml
-        if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Lint with flake8
         shell: bash -l {0}
