@@ -3,6 +3,8 @@ name: save wheel file
 on:
   workflow_call:
     inputs:
+      runs-on:
+        default: ubuntu-latest
       wheel_artifact_name:
         required: true
         type: string
@@ -10,7 +12,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
     steps:
     - uses: actions/checkout@v4
     - name: Download artifcat

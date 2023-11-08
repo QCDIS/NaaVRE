@@ -2,6 +2,9 @@ name: Python Package using Conda
 
 on:
   workflow_call:
+    inputs:
+      runs-on:
+        default: ubuntu-latest
     secrets:
       jupyterhub_user:
         required: true
@@ -46,7 +49,7 @@ env:
 
 jobs:
   build-linux:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
     strategy:
       fail-fast: true
     steps:

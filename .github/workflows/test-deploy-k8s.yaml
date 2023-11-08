@@ -3,6 +3,8 @@ name: test-deploy-k8s
 on:
   workflow_call:
     inputs:
+      runs-on:
+        default: ubuntu-latest
       environment_name:
         required: true
     secrets:
@@ -35,7 +37,7 @@ env:
 
 jobs:
   test-n-deploy:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
     environment: ${{ inputs.environment_name }}
     strategy:
       matrix:
