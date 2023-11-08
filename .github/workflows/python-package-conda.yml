@@ -126,18 +126,19 @@ jobs:
         with:
           auto-update-conda: true
           python-version: 3.9
+          path: ${{ env.CONDA }}/envs
           environment-file: test-environment.yml
-          auto-activate-base: true
-          activate-environment: ""
+          activate-environment: test-jupyterlab
       - name: Conda info
         shell: bash -el {0}
+        run: |
+          conda list
 
 #      - uses: actions/cache@v2
 #        with:
 #          path: ${{ env.CONDA }}/envs
 #          key: conda-${{ hashFiles('test-environment.yml') }}
 #        id: cache
-
 
       - name: Lint with flake8
         shell: bash -l {0}
