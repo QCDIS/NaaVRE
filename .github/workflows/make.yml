@@ -1,10 +1,8 @@
 name: make
 on:
   pull_request_target:
-  push:
   release:
-    types:
-      - created
+  push:
   schedule:
     - cron: '0 4 5,25 * *'
 
