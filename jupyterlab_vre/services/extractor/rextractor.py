@@ -100,19 +100,19 @@ base = importr('base')
 
 class RExtractor:
     sources: list
-    imports: set
+    imports: dict
     configurations: dict
-    global_params: set
-    undefined: set
+    global_params: dict
+    undefined: dict
 
     def __init__(self, notebook):
         self.sources = [nbcell.source for nbcell in notebook.cells if
                         nbcell.cell_type == 'code' and len(nbcell.source) > 0]
 
-        self.imports = set() # self.__extract_imports(self.sources)
+        self.imports = dict()  # self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
         self.global_params = self.__extract_params(self.sources)
-        self.undefined = set()
+        self.undefined = dict()
         for source in self.sources:
             self.undefined.update(self.__extract_cell_undefined(source))
 
@@ -178,7 +178,7 @@ class RExtractor:
         return configurations
 
     def __extract_params(self, sources):  # check source https://adv-r.hadley.nz/expressions.html)
-        params = set()
+        params = {}
         for s in sources:
 
             '''Approach 1: Naive way
@@ -196,18 +196,33 @@ class RExtractor:
                 # the prefix should be 'param'
                 if not (variable.split("_")[0] == "param"):
                     continue
-                params.add(variable)
+                params[variable] = {
+                    'name': variable,
+                    'type': None,
+                    }
         return params
 
     def infer_cell_outputs(self, cell_source):
         cell_names = self.__extract_cell_names(cell_source)
-        return [name for name in cell_names if name not in self.__extract_cell_undefined(cell_source) \
-                and name not in self.imports and name in self.undefined and name not in self.configurations and name not in self.global_params]
+        return {
+            name: properties
+            for name, properties in cell_names.items()
+            if name not in self.__extract_cell_undefined(cell_source)
+            and name not in self.imports
+            and name in self.undefined
+            and name not in self.configurations
+            and name not in self.global_params
+            }
 
     def infer_cell_inputs(self, cell_source):
         cell_undefined = self.__extract_cell_undefined(cell_source)
-        return [und for und in cell_undefined if
-                und not in self.imports and und not in self.configurations and und not in self.global_params]
+        return {
+            und: properties
+            for und, properties in cell_undefined.items()
+            if und not in self.imports
+            and und not in self.configurations
+            and und not in self.global_params
+            }
 
     def infer_cell_dependencies(self, cell_source, confs):
         # TODO: check this code, you have removed logic. 
@@ -253,7 +268,6 @@ class RExtractor:
       return result
 
     def __extract_cell_names(self, cell_source):
-        names = set()
         parsed_r = robjects.r['parse'](text=cell_source)
         vars_r = robjects.r['all.vars'](parsed_r) 
 
@@ -278,7 +292,15 @@ class RExtractor:
         # Challenge 6: Variable-based data access
         # MANUALLY SOLVED
 
-        return set(vars_r)
+        vars_r = {
+            name: {
+                'name': name,
+                'type': None,
+                }
+            for name in vars_r
+            }
+
+        return vars_r
 
     # This is a very inefficient approach to obtain all assignment variables (Solution 1)
     def recursive_variables(self, my_expr, result):
@@ -320,22 +342,28 @@ class RExtractor:
         return result
 
     def __extract_cell_undefined(self, cell_source):
-        undef_vars = set()
-
-        # Approach 1: get all vars and substract the ones with the approach as in 
+        # Approach 1: get all vars and substract the ones with the approach as in
         cell_names = self.__extract_cell_names(cell_source)
         assignment_variables = self.assignment_variables(cell_source)
-        undef_vars = cell_names.difference(set(assignment_variables))
+        undef_vars = set(cell_names).difference(set(assignment_variables))
 
         # Approach 2: (TODO) dynamic analysis approach. this is complex for R as functions 
         # as they are not scoped (which is the case in python). As such, we might have to include
         # all the libraries to make sure that those functions work
 
+        undef_vars = {
+            name: {
+                'name': name,
+                'type': None,
+                }
+            for name in undef_vars
+            }
+
         return undef_vars
 
     def extract_cell_params(self, cell_source):
         cell_unds = self.__extract_cell_undefined(cell_source)
-        return self.global_params.intersection(cell_unds)
+        return {k: cell_unds[k] for k in cell_unds.keys() & self.global_params.keys()}
 
     def extract_cell_conf_ref(self, cell_source):
         confs = {}
