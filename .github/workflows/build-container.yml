@@ -67,6 +67,9 @@ jobs:
         username: ${{ secrets.docker_username }}
         password: ${{ secrets.docker_password }}
 
+    - id: get_version
+      uses: battila7/get-version-action@v2
+    - run: echo ${{ steps.get_version.outputs.version }}
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -76,7 +79,7 @@ jobs:
       with:
         context: docker/${{ inputs.docker_folder }}
         push: ${{ inputs.push }}
-        tags: qcdis/${{ inputs.tag | replace('refs/tags/', '') }}:${{ github.ref }}
+        tags: qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }}
         cache-from: type=gha
         cache-to: type=gha,mode=min
 
