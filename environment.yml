@@ -43,3 +43,6 @@ dependencies:
   - r-purrr
   - r-optparse
   - jupyter-collaboration
+  - pytest
+  - flake8
+  - r-optparse
