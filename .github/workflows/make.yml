@@ -2,8 +2,6 @@ name: make
 on:
   pull_request_target:
   push:
-    tags:
-    - '*'
   schedule:
     - cron: '0 4 5,25 * *'
 
