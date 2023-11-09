@@ -63,14 +63,14 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Build and push
+    - name: Build docker
       uses: docker/build-push-action@v5
       with:
         context: docker/${{ inputs.docker_folder }}
         push: false
         tags: ${{ inputs.tag }}:latest
         cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-to: type=gha,mode=min
 
 #    - name: Build docker
 #      run: |

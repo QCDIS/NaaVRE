@@ -1,0 +1,16 @@
+name: Monthly Cache Cleanup
+
+on:
+  schedule:
+    - cron: '0 0 1 * *' # Runs at midnight on the first day of every month
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: prantlf/delete-cache-action@v2
+      with:
+        key: conda-environment-${{ runner.os }}-${{ hashFiles('environment.yml') }}

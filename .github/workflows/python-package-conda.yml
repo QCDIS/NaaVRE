@@ -125,6 +125,8 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           auto-update-conda: true
+          miniforge-version: latest
+          miniforge-variant: Mambaforge
           python-version: 3.9
           path: ${{ env.CONDA }}/envs
           environment-file: environment.yml
@@ -143,7 +145,7 @@ jobs:
       - name: Update environment
         if: steps.cache-conda.outputs.cache-hit != 'true'
         run:
-          conda env update -n jupyterlab -f environment.yml
+          mamba env update -n jupyterlab -f environment.yml
 
       - name: Lint with flake8
         shell: bash -l {0}
