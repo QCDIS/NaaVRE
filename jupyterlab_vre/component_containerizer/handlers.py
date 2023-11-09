@@ -66,9 +66,7 @@ class ExtractorHandler(APIHandler, Catalog):
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
         logging.getLogger(__name__).debug('ExtractorHandler. payload: ' + json.dumps(payload, indent=4))
-        print('------------------------------------------------------------')
         print('ExtractorHandler. payload: ' + json.dumps(payload, indent=4))
-        print('------------------------------------------------------------')
         kernel = payload['kernel']
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
