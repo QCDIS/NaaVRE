@@ -127,7 +127,7 @@ class PyExtractor:
         return annotate_ast.annotate_source(
             cell_source, ast, pytype_config.Options.create())
 
-    def __convert_type_annotation(self, type_annotation: str|None)-> (str|None):
+    def __convert_type_annotation(self, type_annotation):
         """ Convert type annotation to the ones supported for cell interfaces
 
         :param type_annotation: type annotation obtained by e.g. pytype
