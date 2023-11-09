@@ -7,7 +7,7 @@ on:
 
 jobs:
   call-pytest:
-    uses: QCDIS/NaaVRE/.github/workflows/python-package-conda.yml896-conda-environment-on-test-runners
+    uses: QCDIS/NaaVRE/.github/workflows/python-package-conda.yml@896-conda-environment-on-test-runners
     secrets:
       jupyterhub_user: ${{ secrets.JUPYTERHUB_USER }}
       vlab_slug: ${{ secrets.VLAB_SLUG }}
@@ -23,12 +23,12 @@ jobs:
       argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
   call-build-wheel:
     needs: call-pytest
-    uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml896-conda-environment-on-test-runners
+    uses: QCDIS/NaaVRE/.github/workflows/build-wheel.yml@896-conda-environment-on-test-runners
     with:
       upload: true
   call-build-container-laserfarm:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml896-conda-environment-on-test-runners
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@896-conda-environment-on-test-runners
     with:
       wheel_artifact_name: jupyterlab_vre
       docker_folder: laserfarm-pytorch
@@ -41,7 +41,7 @@ jobs:
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vol2bird:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml896-conda-environment-on-test-runners
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@896-conda-environment-on-test-runners
     with:
       wheel_artifact_name: jupyterlab_vre
       docker_folder: vol2bird
@@ -54,7 +54,7 @@ jobs:
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vanilla:
     needs: call-build-wheel
-    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml896-conda-environment-on-test-runners
+    uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@896-conda-environment-on-test-runners
     with:
       wheel_artifact_name: jupyterlab_vre
       docker_folder: vanilla
