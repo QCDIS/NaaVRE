@@ -79,7 +79,7 @@ jobs:
       with:
         context: docker/${{ inputs.docker_folder }}
         push: ${{ inputs.push }}
-        tags: qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }}
+        tags: qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }},qcdis/${{ inputs.tag }}:latest
         cache-from: type=gha
         cache-to: type=gha,mode=min
 
