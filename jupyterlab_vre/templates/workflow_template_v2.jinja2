@@ -7,6 +7,8 @@ metadata:
 spec:
     entrypoint: {{ workflow_name }}
 
+    serviceAccountName: {{ workflow_service_account }}
+
     volumeClaimTemplates:
     - metadata:
         name: workdir
