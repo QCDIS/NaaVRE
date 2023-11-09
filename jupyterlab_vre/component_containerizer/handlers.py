@@ -219,6 +219,7 @@ class CellsHandler(APIHandler, Catalog):
             return
 
         logger.debug('current_cell: ' + current_cell.toJSON())
+        print('current_cell: ' + current_cell.toJSON())
 
         all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
         for parm_name in all_vars:
