@@ -43,5 +43,5 @@ dependencies:
   - r-purrr
   - r-optparse
   - jupyter-collaboration
+  - pytype>=2023.09.11
   - pip:
-      - pytype~=2023.10.31

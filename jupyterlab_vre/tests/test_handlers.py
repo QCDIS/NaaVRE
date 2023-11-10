@@ -89,6 +89,7 @@ def create_cell_and_add_to_cat(cell_path=None):
 def wait_for_api_resource(github=None):
     # Wait for API resource
     while github.get_rate_limit().core.remaining <= 0:
+        print('-------------------------wait_for_api_resource-------------------------')
         print('Github rate limit: ', github.get_rate_limit().core.remaining)
         reset = github.get_rate_limit().core.reset
         # Calculate remaining time for reset
