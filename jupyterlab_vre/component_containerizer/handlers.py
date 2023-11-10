@@ -89,17 +89,17 @@ class ExtractorHandler(APIHandler, Catalog):
                 '.', '-').replace('@',
                                   '-at-').strip()
 
-        ins = []
-        outs = []
-        params = []
+        ins = {}
+        outs = {}
+        params = {}
         confs = []
         dependencies = []
 
         # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infer_cell_inputs(
         # source)'
         if notebook.cells[cell_index].cell_type == 'code':
-            ins = set(extractor.infer_cell_inputs(source))
-            outs = set(extractor.infer_cell_outputs(source))
+            ins = extractor.infer_cell_inputs(source)
+            outs = extractor.infer_cell_outputs(source)
 
             confs = extractor.extract_cell_conf_ref(source)
             dependencies = extractor.infer_cell_dependencies(source, confs)
@@ -120,14 +120,14 @@ class ExtractorHandler(APIHandler, Catalog):
         )
         if notebook.cells[cell_index].cell_type == 'code':
             cell.integrate_configuration()
-            params = list(extractor.extract_cell_params(cell.original_source))
-            cell.params = params
+            params = extractor.extract_cell_params(cell.original_source)
+            cell.add_params(params)
 
         node = ConverterReactFlowChart.get_node(
             node_id,
             title,
-            ins,
-            outs,
+            set(ins),
+            set(outs),
             params,
             dependencies
         )
@@ -219,9 +219,7 @@ class CellsHandler(APIHandler, Catalog):
             self.flush()
             return
 
-        print('--------------------------------------')
-        print('current_cell: ' + current_cell.toJSON())
-        print('--------------------------------------')
+        logger.debug('current_cell: ' + current_cell.toJSON())
 
         all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
         for parm_name in all_vars:

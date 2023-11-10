@@ -46,17 +46,46 @@ class Cell:
         self.task_name = task_name.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
                                                                                                                    '-at-').strip()
         self.original_source = original_source
-        self.inputs = list(inputs)
-        self.outputs = list(outputs)
-        self.params = list(params)
+        self.types = dict()
+        self.add_inputs(inputs)
+        self.add_outputs(outputs)
+        self.add_params(params)
         self.confs = confs
         self.all_inputs = list(inputs) + list(params)
-        self.types = dict()
-        self.dependencies = dependencies
+        self.dependencies = list(sorted(dependencies, key=lambda x: x['name']))
         self.chart_obj = chart_obj
         self.node_id = node_id
         self.container_source = container_source
         self.kernel = kernel
+
+    def _extract_types(self, vars_dict):
+        """ Extract types to self.types and return list of var names
+
+        :param vars_dict: {'var1': {'name: 'var1', 'type': 'str'}, 'var2': ...}
+        :return: ['var1', 'var2', ...]
+        """
+        names = []
+        for var_props in vars_dict.values():
+            var_type = var_props['type']
+            var_name = var_props['name']
+            self.types[var_name] = var_type
+            names.append(var_name)
+        return names
+
+    def add_inputs(self, inputs):
+        if isinstance(inputs, dict):
+            inputs = self._extract_types(inputs)
+        self.inputs = inputs
+
+    def add_outputs(self, outputs):
+        if isinstance(outputs, dict):
+            outputs = self._extract_types(outputs)
+        self.outputs = outputs
+
+    def add_params(self, params):
+        if isinstance(params, dict):
+            params = self._extract_types(params)
+        self.params = params
 
     def concatenate_all_inputs(self):
         self.all_inputs = list(self.inputs) + list(self.params)
