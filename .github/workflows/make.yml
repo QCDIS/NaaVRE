@@ -1,8 +1,11 @@
 name: make
 on:
-  pull_request_target:
   release:
   push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
   schedule:
     - cron: '0 4 5,25 * *'
 
