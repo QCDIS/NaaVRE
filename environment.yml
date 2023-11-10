@@ -46,3 +46,5 @@ dependencies:
   - pytest
   - flake8
   - r-optparse
+  - pip:
+      - pytype~=2023.10.31
