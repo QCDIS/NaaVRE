@@ -44,4 +44,3 @@ dependencies:
   - r-optparse
   - jupyter-collaboration
   - pip:
-      - pytype~=2023.10.31
