@@ -88,17 +88,17 @@ class ExtractorHandler(APIHandler, Catalog):
                 '.', '-').replace('@',
                                   '-at-').strip()
 
-        ins = {}
-        outs = {}
-        params = {}
+        ins = []
+        outs = []
+        params = []
         confs = []
         dependencies = []
 
         # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infer_cell_inputs(
         # source)'
         if notebook.cells[cell_index].cell_type == 'code':
-            ins = extractor.infer_cell_inputs(source)
-            outs = extractor.infer_cell_outputs(source)
+            ins = set(extractor.infer_cell_inputs(source))
+            outs = set(extractor.infer_cell_outputs(source))
 
             confs = extractor.extract_cell_conf_ref(source)
             dependencies = extractor.infer_cell_dependencies(source, confs)
@@ -119,14 +119,14 @@ class ExtractorHandler(APIHandler, Catalog):
         )
         if notebook.cells[cell_index].cell_type == 'code':
             cell.integrate_configuration()
-            params = extractor.extract_cell_params(cell.original_source)
-            cell.add_params(params)
+            params = list(extractor.extract_cell_params(cell.original_source))
+            cell.params = params
 
         node = ConverterReactFlowChart.get_node(
             node_id,
             title,
-            set(ins),
-            set(outs),
+            ins,
+            outs,
             params,
             dependencies
         )
