@@ -1,4 +1,4 @@
-name: Python Package using Conda
+name: Build wheel
 
 on:
   workflow_call:
@@ -163,3 +163,13 @@ jobs:
           python docker/repo_utils/conf_vl_repos.py  --force=True
           pip install --upgrade build
           pytest --ignore=docker --ignore=cypress
+
+      - name: make release
+        shell: bash -el {0}
+        run: make release
+
+      - name: 'Upload wheel artifact'
+        uses: actions/upload-artifact@v3
+        with:
+          name: jupyterlab_vre
+          path: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
