@@ -26,7 +26,7 @@ jobs:
       argo_url: ${{ secrets.ARGO_URL }}
       argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
   call-build-container-laserfarm:
-    needs: call-build-wheel
+    needs: call-pytest
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@896-conda-environment-on-test-runners
     with:
       wheel_artifact_name: jupyterlab_vre
@@ -39,7 +39,7 @@ jobs:
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vol2bird:
-    needs: call-build-wheel
+    needs: call-pytest
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@896-conda-environment-on-test-runners
     with:
       wheel_artifact_name: jupyterlab_vre
@@ -52,7 +52,7 @@ jobs:
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vanilla:
-    needs: call-build-wheel
+    needs: call-pytest
     uses: QCDIS/NaaVRE/.github/workflows/build-container.yml@896-conda-environment-on-test-runners
     with:
       wheel_artifact_name: jupyterlab_vre
