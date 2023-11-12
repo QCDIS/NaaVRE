@@ -14,3 +14,4 @@ fi
 
 # shellcheck disable=SC1091,SC2086
 . /usr/local/bin/start.sh jupyter lab --watch --autoreload ${NOTEBOOK_ARGS} "$@"
+
