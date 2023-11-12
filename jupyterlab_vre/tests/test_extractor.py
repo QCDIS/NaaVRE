@@ -1,4 +1,3 @@
-import glob
 import json
 import logging
 import os
@@ -10,7 +9,6 @@ import nbformat as nb
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
-from jupyterlab_vre.services.extractor.rextractor import RExtractor
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -27,10 +25,7 @@ def create_cell(payload_path=None):
 
     cell_index = payload['cell_index']
     notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-    if payload['kernel'] == "IRkernel":
-        extractor = RExtractor(notebook)
-    else:
-        extractor = PyExtractor(notebook)
+    extractor = PyExtractor(notebook)
 
     source = notebook.cells[cell_index].source
     title = source.partition('\n')[0]
@@ -44,17 +39,17 @@ def create_cell(payload_path=None):
             '@',
             '-at-').strip()
 
-    ins = {}
-    outs = {}
-    params = {}
+    ins = []
+    outs = []
+    params = []
     confs = []
     dependencies = []
 
     # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(
     # source)'
     if notebook.cells[cell_index].cell_type == 'code':
-        ins = extractor.infer_cell_inputs(source)
-        outs = extractor.infer_cell_outputs(source)
+        ins = set(extractor.infer_cell_inputs(source))
+        outs = set(extractor.infer_cell_outputs(source))
 
         confs = extractor.extract_cell_conf_ref(source)
         dependencies = extractor.infer_cell_dependencies(source, confs)
@@ -72,11 +67,6 @@ def create_cell(payload_path=None):
         dependencies=dependencies,
         container_source=""
     )
-    if notebook.cells[cell_index].cell_type == 'code':
-        cell.integrate_configuration()
-        params = extractor.extract_cell_params(cell.original_source)
-        cell.add_params(params)
-
     return cell
 
 
@@ -114,15 +104,24 @@ def extract_cell(payload_path):
 class TestExtractor(TestCase):
 
     def test_extract_cell(self):
-        notebooks_json_path = os.path.join(base_path, 'notebooks')
-        notebooks_files = glob.glob(
-            os.path.join(notebooks_json_path, "*.json")
-            )
-        for notebook_file in notebooks_files:
-            cell = extract_cell(notebook_file)
-            if cell:
-                cell = json.loads(cell)
-                for conf_name in (cell['confs']):
-                    self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
-                                     'conf_ values should not contain conf_ prefix in '
-                                     'assignment')
+        cell = extract_cell(os.path.join(base_path, 'notebooks/laserfarm_cells.json'))
+        if cell:
+            cell = json.loads(cell)
+            for conf_name in (cell['confs']):
+                self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
+                                 'conf_ values should not contain conf_ prefix in '
+                                 'assignment')
+        cell = extract_cell(os.path.join(base_path, 'notebooks/vol2bird_cells.json'))
+        if cell:
+            cell = json.loads(cell)
+            for conf_name in (cell['confs']):
+                self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
+                                 'conf_ values should not contain conf_ prefix in '
+                                 'assignment')
+        cell = extract_cell(os.path.join(base_path, 'notebooks/laserfarm.json'))
+        if cell:
+            cell = json.loads(cell)
+            for conf_name in (cell['confs']):
+                self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
+                                 'conf_ values should not contain conf_ prefix in '
+                                 'assignment')

@@ -105,6 +105,7 @@ jobs:
         registry: "https://index.docker.io/v1/"
         username: ${{ secrets.docker_username }}
         password: ${{ secrets.docker_password }}
+
     - name: Push image to container Registry
       if: ${{ inputs.push }}
       run: |
