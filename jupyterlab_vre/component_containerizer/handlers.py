@@ -10,7 +10,6 @@ import uuid
 from builtins import Exception
 from pathlib import Path
 
-
 import autopep8
 import distro
 import nbformat as nb
@@ -25,8 +24,8 @@ from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.services.extractor.Rextractor import RExtractor
-from jupyterlab_vre.services.extractor.extractor import Extractor
+from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
+from jupyterlab_vre.services.extractor.rextractor import RExtractor
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +75,7 @@ class ExtractorHandler(APIHandler, Catalog):
         if kernel == "IRkernel":
             extractor = RExtractor(notebook)
         else:
-            extractor = Extractor(notebook)
+            extractor = PyExtractor(notebook)
 
         # initialize variables
         source = notebook.cells[cell_index].source
@@ -95,11 +94,11 @@ class ExtractorHandler(APIHandler, Catalog):
         confs = []
         dependencies = []
 
-        # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(
+        # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infer_cell_inputs(
         # source)'
         if notebook.cells[cell_index].cell_type == 'code':
-            ins = set(extractor.infere_cell_inputs(source))
-            outs = set(extractor.infere_cell_outputs(source))
+            ins = set(extractor.infer_cell_inputs(source))
+            outs = set(extractor.infer_cell_outputs(source))
 
             confs = extractor.extract_cell_conf_ref(source)
             dependencies = extractor.infer_cell_dependencies(source, confs)
@@ -206,14 +205,21 @@ class CellsHandler(APIHandler, Catalog):
 
     @web.authenticated
     async def post(self, *args, **kwargs):
-        current_cell = Catalog.editor_buffer
-        current_cell.clean_code()
-        current_cell.clean_title()
-        current_cell.clean_task_name()
+        try:
+            current_cell = Catalog.editor_buffer
+            current_cell.clean_code()
+            current_cell.clean_title()
+            current_cell.clean_task_name()
+        except Exception as ex:
+            logger.error('Error setting cell: ' + str(ex))
+            self.set_status(400)
+            self.write('Error setting cell: ' + str(ex))
+            self.write_error('Error setting cell: ' + str(ex))
+            self.flush()
+            return
 
-        print('--------------------------------------')
+        logger.debug('current_cell: ' + current_cell.toJSON())
         print('current_cell: ' + current_cell.toJSON())
-        print('--------------------------------------')
 
         all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
         for parm_name in all_vars:
@@ -234,10 +240,17 @@ class CellsHandler(APIHandler, Catalog):
                              ' has not base not image selected')
             self.flush()
             return
-
-        logger.debug('Delete if exists: ' + current_cell.task_name)
-        Catalog.delete_cell_from_task_name(current_cell.task_name)
-        Catalog.add_cell(current_cell)
+        try:
+            logger.debug('Delete if exists: ' + current_cell.task_name)
+            Catalog.delete_cell_from_task_name(current_cell.task_name)
+            Catalog.add_cell(current_cell)
+        except Exception as ex:
+            logger.error('Error adding cell in catalog: ' + str(ex))
+            self.set_status(400)
+            self.write('Error adding cell catalog: ' + str(ex))
+            self.write_error('Error adding cell catalog: ' + str(ex))
+            self.flush()
+            return
 
         if not os.path.exists(cells_path):
             os.mkdir(cells_path)
@@ -377,8 +390,6 @@ def update_cell_in_repository(task_name=None, repository=None, files_info=None):
     for f_type, f_info in files_info.items():
         f_name = f_info['file_name']
         f_path = f_info['path']
-        logger.debug('get_contents: ' + task_name + '/' + f_name)
-        print('get_contents: ' + task_name + '/' + f_name)
         remote_content = repository.get_contents(
             path=task_name + '/' + f_name)
         with open(f_path, 'rb') as f:
