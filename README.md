@@ -1,4 +1,3 @@
-[![make release](https://github.com/QCDIS/NaaVRE/actions/workflows/make-release.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/make-release.yml)
 [![make](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml)
 
 
