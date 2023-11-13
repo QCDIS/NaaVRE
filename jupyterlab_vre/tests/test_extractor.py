@@ -8,7 +8,7 @@ import nbformat as nb
 
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.services.extractor.extractor import Extractor
+from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -26,7 +26,7 @@ def create_cell(payload_path=None):
 
     cell_index = payload['cell_index']
     notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-    extractor = Extractor(notebook)
+    extractor = PyExtractor(notebook)
 
     source = notebook.cells[cell_index].source
     title = source.partition('\n')[0]
@@ -49,8 +49,8 @@ def create_cell(payload_path=None):
     # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(
     # source)'
     if notebook.cells[cell_index].cell_type == 'code':
-        ins = set(extractor.infere_cell_inputs(source))
-        outs = set(extractor.infere_cell_outputs(source))
+        ins = set(extractor.infer_cell_inputs(source))
+        outs = set(extractor.infer_cell_outputs(source))
 
         confs = extractor.extract_cell_conf_ref(source)
         dependencies = extractor.infer_cell_dependencies(source, confs)
@@ -105,13 +105,20 @@ def extract_cell(payload_path):
 class TestExtractor(TestCase):
 
     def test_extract_cell(self):
-        cell = extract_cell(os.path.join(base_path, 'notebooks/MULTIPLY_framework_cells.json'))
         cell = extract_cell(os.path.join(base_path, 'notebooks/laserfarm_cells.json'))
+        if cell:
+            cell = json.loads(cell)
+            for conf_name in (cell['confs']):
+                self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
+                                 'conf_ values should not contain conf_ prefix in '
+                                 'assignment')
         cell = extract_cell(os.path.join(base_path, 'notebooks/vol2bird_cells.json'))
-        try:
-            cell = extract_cell(os.path.join(base_path, 'notebooks/MULTIPLY_framework_2.json'))
-        except SyntaxError as e:
-            logger.warning(str(e))
+        if cell:
+            cell = json.loads(cell)
+            for conf_name in (cell['confs']):
+                self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
+                                 'conf_ values should not contain conf_ prefix in '
+                                 'assignment')
         cell = extract_cell(os.path.join(base_path, 'notebooks/laserfarm.json'))
         if cell:
             cell = json.loads(cell)

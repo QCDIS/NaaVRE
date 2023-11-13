@@ -1,4 +1,4 @@
-name: Python Package using Conda
+name: Build wheel
 
 on:
   workflow_call:
@@ -121,33 +121,56 @@ jobs:
           fi
 
       - uses: actions/checkout@v4
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-      - name: Add conda to system path
-        run: |
-          # $CONDA is an environment variable pointing to the root of the miniconda directory
-          echo $CONDA/bin >> $GITHUB_PATH
-      - name: Collect Workflow Telemetry
-        uses: runforesight/workflow-telemetry-action@v1
 
-      - name: Install dependencies
-        run: |
-          conda env update --file environment.yml --name base
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          miniforge-version: latest
+          miniforge-variant: Mambaforge
+          python-version: 3.9
+          path: ${{ env.CONDA }}/envs
+          environment-file: environment.yml
+          activate-environment: jupyterlab
+          use-mamba: true
+
+      - name: Cache Conda environment
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.CONDA }}/envs
+          key: conda-environment-${{ runner.os }}-${{ hashFiles('environment.yml') }}
+          restore-keys: |
+            conda-environment-${{ runner.os }}-
+        id: cache-conda
+
+      - name: Update environment
+        if: steps.cache-conda.outputs.cache-hit != 'true'
+        run:
+          mamba env update -n jupyterlab -f environment.yml
 
       - name: Lint with flake8
+        shell: bash -l {0}
         run: |
-          conda install flake8 r-optparse
+          conda activate jupyterlab
           # stop the build if there are Python syntax errors or undefined names
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-      - name: Test with pytest
+      - name: pytest
+        shell: bash -l {0}
         run: |
+          conda activate jupyterlab
           python docker/repo_utils/conf_vl_repos.py  --force=True
-          conda install pytest
           pip install --upgrade build
           pytest --ignore=docker --ignore=cypress
-          
+
+
+      - name: make release
+        shell: bash -el {0}
+        run: make release
+
+      - name: 'Upload wheel artifact'
+        uses: actions/upload-artifact@v3
+        with:
+          name: jupyterlab_vre
+          path: dist/jupyterlab_vre-0.1.0-py3-none-any.whl

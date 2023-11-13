@@ -4,7 +4,7 @@ import re
 from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
 
 
-class Extractor:
+class PyExtractor:
     sources: list
     imports: list
     configurations: dict
@@ -14,7 +14,6 @@ class Extractor:
     def __init__(self, notebook):
         self.sources = [nbcell.source for nbcell in notebook.cells if
                         nbcell.cell_type == 'code' and len(nbcell.source) > 0]
-
         self.imports = self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
         self.global_params = self.__extract_params(self.sources)
@@ -50,7 +49,10 @@ class Extractor:
                         name = node.targets[0].id
                         prefix = name.split('_')[0]
                         if prefix == 'conf' and name not in configurations:
-                            configurations[name] = lines[node.lineno - 1]
+                            conf_line = ''
+                            for line in lines[node.lineno - 1:node.end_lineno]:
+                                conf_line += line.strip()
+                            configurations[name] = conf_line
         return self.__resolve_configurations(configurations)
 
     def __extract_params(self, sources):
@@ -65,12 +67,12 @@ class Extractor:
                         params.add(name)
         return params
 
-    def infere_cell_outputs(self, cell_source):
+    def infer_cell_outputs(self, cell_source):
         cell_names = self.__extract_cell_names(cell_source)
         return [name for name in cell_names if name not in self.__extract_cell_undefined(cell_source) \
                 and name not in self.imports and name in self.undefined and name not in self.configurations and name not in self.global_params]
 
-    def infere_cell_inputs(self, cell_source):
+    def infer_cell_inputs(self, cell_source):
         cell_undefined = self.__extract_cell_undefined(cell_source)
         return [und for und in cell_undefined if
                 und not in self.imports and und not in self.configurations and und not in self.global_params]

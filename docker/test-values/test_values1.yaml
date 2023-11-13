@@ -78,7 +78,6 @@
                       SEARCH_API_TOKEN:
                       VLAB_SLUG:
                       API_ENDPOINT:
-                      MULTIPLY_CONF_URL:
                       CELL_GITHUB:
                       CELL_GITHUB_TOKEN:
                       REGISTRY_URL:
@@ -92,9 +91,4 @@
                       description: "Rclone enabled VL"
                       kubespawner_override:
                         image: qcdis/n-a-a-vre-laserfarm
-                        pullPolicy: Always
-                    - display_name: "multiply VL"
-                      description: "multiply VL"
-                      kubespawner_override:
-                        image: qcdis/n-a-a-vre-multiply
                         pullPolicy: Always
