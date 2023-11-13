@@ -10,7 +10,6 @@ from pathlib import Path
 from time import sleep
 from unittest import mock
 
-import requests
 from github import Github
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
@@ -117,34 +116,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
                                 ],
                                cookie_secret='asdfasdf')
         return self.app
-
-    def test_execute_workflow_handler(self):
-        workflow_path = os.path.join(base_path, 'workflows', 'NaaVRE')
-        workflow_files = os.listdir(workflow_path)
-        with mock.patch.object(ExecuteWorkflowHandler, 'get_secure_cookie') as m:
-            m.return_value = 'cookie'
-        for workflow_file in workflow_files:
-            if 'test_list_Py_workflow.json' not in workflow_file:
-                continue
-            workflow_file_path = os.path.join(workflow_path, workflow_file)
-            with open(workflow_file_path, 'r') as read_file:
-                payload = json.load(read_file)
-            cells_json_path = os.path.join(base_path, 'cells')
-            cells_files = os.listdir(cells_json_path)
-            for cell_file in cells_files:
-                cell_path = os.path.join(cells_json_path, cell_file)
-                test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
-                response = self.call_cell_handler()
-                self.assertEqual(200, response.code)
-
-            response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
-            json_response = json.loads(response.body.decode('utf-8'))
-            self.assertIsNotNone(json_response)
-            self.assertEqual(response.code, 200)
-            self.assertTrue('argo_id' in json_response)
-            self.assertTrue('created' in json_response)
-            self.assertTrue('status' in json_response)
-            self.assertTrue('argo_url' in json_response)
 
     def test_load_module_names_mapping(self):
         load_module_names_mapping()
@@ -259,6 +230,34 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 json_response = json.loads(response.body.decode('utf-8'))
                 self.assertIsNotNone(json_response)
                 cell = notebook['notebook']['cells'][notebook['cell_index']]
+
+    def test_execute_workflow_handler(self):
+        workflow_path = os.path.join(base_path, 'workflows', 'NaaVRE')
+        workflow_files = os.listdir(workflow_path)
+        with mock.patch.object(ExecuteWorkflowHandler, 'get_secure_cookie') as m:
+            m.return_value = 'cookie'
+        for workflow_file in workflow_files:
+            if 'test_list_Py_workflow.json' not in workflow_file:
+                continue
+            workflow_file_path = os.path.join(workflow_path, workflow_file)
+            with open(workflow_file_path, 'r') as read_file:
+                payload = json.load(read_file)
+            cells_json_path = os.path.join(base_path, 'cells')
+            cells_files = os.listdir(cells_json_path)
+            for cell_file in cells_files:
+                cell_path = os.path.join(cells_json_path, cell_file)
+                test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+
+            response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
+            json_response = json.loads(response.body.decode('utf-8'))
+            self.assertIsNotNone(json_response)
+            self.assertEqual(response.code, 200)
+            self.assertTrue('argo_id' in json_response)
+            self.assertTrue('created' in json_response)
+            self.assertTrue('status' in json_response)
+            self.assertTrue('argo_url' in json_response)
 
     def call_cell_handler(self):
         response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
