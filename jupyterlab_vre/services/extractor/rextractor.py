@@ -6,7 +6,6 @@ import rpy2.rinterface as rinterface
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
 from rpy2.robjects.packages import importr
-import re
 
 # Create an R environment
 r_env = robjects.globalenv
