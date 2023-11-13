@@ -215,6 +215,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertEqual('completed', job['status'], 'Job not completed')
                 self.assertEqual('success', job['conclusion'], 'Job not successful')
 
+
     def test_extractor_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
