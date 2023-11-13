@@ -43,4 +43,7 @@ dependencies:
   - r-purrr
   - r-optparse
   - jupyter-collaboration
-  - pip:
+  - pytest
+  - flake8
+  - r-optparse
+  - pytype>=2023.09.11
