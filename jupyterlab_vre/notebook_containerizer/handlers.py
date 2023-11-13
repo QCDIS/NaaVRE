@@ -11,8 +11,8 @@ from tornado import web
 from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.services.extractor.rextractor import RExtractor
 from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
+from jupyterlab_vre.services.extractor.rextractor import RExtractor
 
 
 # TODO: we might have to do something similar here where we have to determine the kernel and based on that get the extractor

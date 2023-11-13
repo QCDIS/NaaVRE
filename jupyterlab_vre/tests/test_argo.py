@@ -1,8 +1,8 @@
 import json
 import os
+from unittest import TestCase
 
 import requests
-from unittest import TestCase
 
 if os.path.exists('resources'):
     base_path = 'resources'

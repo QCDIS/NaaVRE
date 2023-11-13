@@ -10,7 +10,6 @@ import uuid
 from builtins import Exception
 from pathlib import Path
 
-
 import autopep8
 import distro
 import nbformat as nb
@@ -25,8 +24,8 @@ from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.services.extractor.rextractor import RExtractor
 from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
+from jupyterlab_vre.services.extractor.rextractor import RExtractor
 
 logger = logging.getLogger(__name__)
 
@@ -219,9 +218,8 @@ class CellsHandler(APIHandler, Catalog):
             self.flush()
             return
 
-        print('--------------------------------------')
+        logger.debug('current_cell: ' + current_cell.toJSON())
         print('current_cell: ' + current_cell.toJSON())
-        print('--------------------------------------')
 
         all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
         for parm_name in all_vars:
