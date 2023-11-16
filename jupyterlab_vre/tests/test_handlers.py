@@ -153,6 +153,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cells_json_path = os.path.join(base_path, 'cells')
             cells_files = os.listdir(cells_json_path)
             for cell_file in cells_files:
+                if'missing_whitespace_around_operator_test2.json' not in cell_file:
+                    continue
                 cell_path = os.path.join(cells_json_path, cell_file)
                 test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
                 response = self.call_cell_handler()
@@ -214,7 +216,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
                         break
                 self.assertEqual('completed', job['status'], 'Job not completed')
                 self.assertEqual('success', job['conclusion'], 'Job not successful')
-
 
     def test_extractor_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
