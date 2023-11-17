@@ -15,7 +15,7 @@ RUN conda-pack -n venv -o /tmp/env.tar && \
 RUN /venv/bin/conda-unpack
 
 
-FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e as jupyter-base
+FROM jupyterhub/k8s-singleuser-sample:3.1.0 as jupyter-base
 USER root
 
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install fuse

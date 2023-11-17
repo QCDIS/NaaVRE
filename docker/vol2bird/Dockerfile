@@ -10,7 +10,7 @@ RUN conda-pack -n venv -o /tmp/env.tar && \
     rm /tmp/env.tar
 RUN /venv/bin/conda-unpack
 
-FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e
+FROM jupyterhub/k8s-singleuser-sample:3.1.0
 
 USER root
 
