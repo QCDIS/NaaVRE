@@ -172,12 +172,6 @@ jobs:
           mkdir -p helm_config/vrepaas
           wget https://raw.githubusercontent.com/QCDIS/NaaVRE-dev-environment/main/helm_config/vrepaas/values.yaml -P helm_config/vrepaas
 
-      - name: Setup Ingress DNS
-        shell: bash -l {0}
-        run: |
-          MINIKUBE_IP=`minikube ip`
-          echo "$MINIKUBE_IP
-
       - name: Start minikube
         uses: medyagh/setup-minikube@v0.0.14
         with:
@@ -189,6 +183,11 @@ jobs:
           helm version
           kubectl get pods -A
 
+      - name: Setup Ingress DNS
+        shell: bash -l {0}
+        run: |
+          minikube ip
+          echo "$MINIKUBE_IP
 
 
 #      - name: pytest
