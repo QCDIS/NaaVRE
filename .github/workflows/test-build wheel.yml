@@ -157,14 +157,37 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
 
-      - uses: actions/checkout@v4
-        with:
-          name: QCDIS/NaaVRE-dev-environment
+      - name: Download helm and k8s files
+        shell: bash -l {0}
+        run: |
+          # Get argo
+          mkdir -p helm_config/argo
+          wget https://raw.githubusercontent.com/QCDIS/NaaVRE-dev-environment/main/helm_config/argo/argo-sso-secret.yaml -P helm_config/argo
+          wget https://raw.githubusercontent.com/QCDIS/NaaVRE-dev-environment/main/helm_config/argo/auth-vre-api.yaml -P helm_config/argo
+          wget https://raw.githubusercontent.com/QCDIS/NaaVRE-dev-environment/main/helm_config/argo/values.yaml -P helm_config/argo
+          # Get keycloak
+          mkdir -p helm_config/keycloak
+          wget https://raw.githubusercontent.com/QCDIS/NaaVRE-dev-environment/main/helm_config/keycloak/keycloak-sso-secret.yaml -P helm_config/keycloak
+          # Get vrepaas
+          mkdir -p helm_config/vrepaas
+          wget https://raw.githubusercontent.com/QCDIS/NaaVRE-dev-environment/main/helm_config/vrepaas/values.yaml -P helm_config/vrepaas
+
+      - name: Setup Ingress DNS
+        shell: bash -l {0}
+        run: |
+          MINIKUBE_IP=`minikube ip`
+          echo "$MINIKUBE_IP
 
       - name: Start minikube
         uses: medyagh/setup-minikube@v0.0.14
+        with:
+          addons: ingress, ingress-dns
+
       - name: Try the cluster!
-        run: kubectl get pods -A
+        shell: bash -l {0}
+        run: |
+          helm version
+          kubectl get pods -A
 
 
 
