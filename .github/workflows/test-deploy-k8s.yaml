@@ -44,24 +44,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: add VARS
-        run: |
-            yq ".singleuser.extraEnv.CELL_GITHUB +=\"$CELL_GITHUB\"" docker/test-values/test_values1.yaml -i
-            yq ".singleuser.extraEnv.CELL_GITHUB_TOKEN +=\"$CELL_GITHUB_TOKEN\"" docker/test-values/test_values1.yaml -i
-            yq ".singleuser.extraEnv.MODULE_MAPPING_URL +=\"$MODULE_MAPPING_URL\"" docker/test-values/test_values1.yaml -i
-            yq ".singleuser.extraEnv.REGISTRY_URL +=\"$REGISTRY_URL\"" docker/test-values/test_values1.yaml -i
-            yq ".singleuser.extraEnv.SEARCH_API_ENDPOINT +=\"$SEARCH_API_ENDPOINT\"" docker/test-values/test_values1.yaml -i
-            yq ".singleuser.extraEnv.SEARCH_API_TOKEN +=\"$SEARCH_API_TOKEN\"" docker/test-values/test_values1.yaml -i
-
-      - uses: balchua/microk8s-actions@v0.4.2
+      - uses: actions/checkout@v4
         with:
-          channel: '1.26/stable'
-      - name: Test ${{ matrix.paths }}
-        id: k8s
-        run: |
-          kubectl create ns vre
-          helm upgrade --install jupyterhub jupyterhub/jupyterhub -f ${{ matrix.paths }} -n vre
-          sleep 150
-          kubectl get pods -n vre
-          kubectl get pods -n vre -o=jsonpath='{.items[*].status.containerStatuses}'  | jq
+          name: QCDIS/NaaVRE-dev-environment
+
+#      - name: add VARS
+#        run: |
+#            yq ".singleuser.extraEnv.CELL_GITHUB +=\"$CELL_GITHUB\"" docker/test-values/test_values1.yaml -i
+#            yq ".singleuser.extraEnv.CELL_GITHUB_TOKEN +=\"$CELL_GITHUB_TOKEN\"" docker/test-values/test_values1.yaml -i
+#            yq ".singleuser.extraEnv.MODULE_MAPPING_URL +=\"$MODULE_MAPPING_URL\"" docker/test-values/test_values1.yaml -i
+#            yq ".singleuser.extraEnv.REGISTRY_URL +=\"$REGISTRY_URL\"" docker/test-values/test_values1.yaml -i
+#            yq ".singleuser.extraEnv.SEARCH_API_ENDPOINT +=\"$SEARCH_API_ENDPOINT\"" docker/test-values/test_values1.yaml -i
+#            yq ".singleuser.extraEnv.SEARCH_API_TOKEN +=\"$SEARCH_API_TOKEN\"" docker/test-values/test_values1.yaml -i
+#      - uses: balchua/microk8s-actions@v0.4.2
+#        with:
+#          channel: '1.26/stable'
+#      - name: Test ${{ matrix.paths }}
+#        id: k8s
+#        run: |
+#          helm upgrade --install jupyterhub jupyterhub/jupyterhub -f ${{ matrix.paths }} -n vre
+#          sleep 150
+#          kubectl get pods -n vre
+#          kubectl get pods -n vre -o=jsonpath='{.items[*].status.containerStatuses}'  | jq
 

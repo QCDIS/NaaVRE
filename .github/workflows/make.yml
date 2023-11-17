@@ -25,42 +25,42 @@ jobs:
       naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
       argo_url: ${{ secrets.ARGO_URL }}
       argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
-  call-build-container-laserfarm:
-    needs: call-pytest
-    uses: ./.github/workflows/build-container.yml
-    with:
-      wheel_artifact_name: jupyterlab_vre
-      docker_folder: laserfarm-pytorch
-      tag: n-a-a-vre-laserfarm
-      push: ${{ github.event_name == 'release' }}
-    secrets:
-      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
-      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
-      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
-      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-  call-build-container-vol2bird:
-    needs: call-pytest
-    uses: ./.github/workflows/build-container.yml
-    with:
-      wheel_artifact_name: jupyterlab_vre
-      docker_folder: vol2bird
-      tag: n-a-a-vre-vol2bird
-      push: ${{ github.event_name == 'release' }}
-    secrets:
-      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
-      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
-      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
-      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-  call-build-container-vanilla:
-    needs: call-pytest
-    uses: ./.github/workflows/build-container.yml
-    with:
-      wheel_artifact_name: jupyterlab_vre
-      docker_folder: vanilla
-      tag: n-a-a-vre
-      push: ${{ github.event_name == 'release' }}
-    secrets:
-      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
-      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
-      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
-      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
+#  call-build-container-laserfarm:
+#    needs: call-pytest
+#    uses: ./.github/workflows/build-container.yml
+#    with:
+#      wheel_artifact_name: jupyterlab_vre
+#      docker_folder: laserfarm-pytorch
+#      tag: n-a-a-vre-laserfarm
+#      push: ${{ github.event_name == 'release' }}
+#    secrets:
+#      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+#      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+#      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+#      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
+#  call-build-container-vol2bird:
+#    needs: call-pytest
+#    uses: ./.github/workflows/build-container.yml
+#    with:
+#      wheel_artifact_name: jupyterlab_vre
+#      docker_folder: vol2bird
+#      tag: n-a-a-vre-vol2bird
+#      push: ${{ github.event_name == 'release' }}
+#    secrets:
+#      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+#      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+#      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+#      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
+#  call-build-container-vanilla:
+#    needs: call-pytest
+#    uses: ./.github/workflows/build-container.yml
+#    with:
+#      wheel_artifact_name: jupyterlab_vre
+#      docker_folder: vanilla
+#      tag: n-a-a-vre
+#      push: ${{ github.event_name == 'release' }}
+#    secrets:
+#      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+#      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+#      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+#      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
