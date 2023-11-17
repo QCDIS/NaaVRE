@@ -187,7 +187,8 @@ jobs:
         shell: bash -l {0}
         run: |
           minikube ip
-          echo "$MINIKUBE_IP
+          echo "$MINIKUBE_IP"
+          head /etc/resolv.conf
 
 
 #      - name: pytest
