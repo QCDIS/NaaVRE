@@ -167,7 +167,7 @@ jobs:
           wget https://raw.githubusercontent.com/QCDIS/NaaVRE-dev-environment/main/helm_config/argo/values.yaml -P helm_config/argo
           # Get keycloak
           mkdir -p helm_config/keycloak
-          wget https://raw.githubusercontent.com/QCDIS/NaaVRE-dev-environment/main/helm_config/keycloak/keycloak-sso-secret.yaml -P helm_config/keycloak
+          wget https://raw.githubusercontent.com/QCDIS/NaaVRE-dev-environment/main/helm_config/keycloak/values.yaml -P helm_config/keycloak
           # Get vrepaas
           mkdir -p helm_config/vrepaas
           wget https://raw.githubusercontent.com/QCDIS/NaaVRE-dev-environment/main/helm_config/vrepaas/values.yaml -P helm_config/vrepaas
