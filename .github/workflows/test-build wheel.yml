@@ -175,7 +175,7 @@ jobs:
       - name: Start minikube
         uses: medyagh/setup-minikube@v0.0.14
         with:
-          addons: ingress, ingress-dns
+          addons: ingress-dns, ingress
 
       - name: Try the cluster!
         shell: bash -l {0}
@@ -200,9 +200,10 @@ jobs:
         run: |
           kubectl apply -f helm_config/argo/argo-sso-secret.yaml
           kubectl apply -f helm_config/argo/auth-vre-api.yaml
+          kubectl get secrets
           helm repo add argo https://argoproj.github.io/argo-helm
           helm repo update
-          helm install argo-workflows argo/argo-workflows -f helm_config/argo/values.yaml
+#          helm install argo-workflows argo/argo-workflows -f helm_config/argo/values.yaml
 #          kubectl get all
 
 
