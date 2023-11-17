@@ -189,12 +189,12 @@ jobs:
           minikube ip
           echo "$MINIKUBE_IP"
           sudo mkdir /etc/systemd/resolved.conf.d
-          tee /etc/systemd/resolved.conf.d/minikube.conf << EOF
+          sudo tee /etc/systemd/resolved.conf.d/minikube.conf << EOF
           [Resolve]
           DNS=$(minikube ip)
           Domains=~test
           EOF
-          systemctl restart systemd-resolved
+          sudo systemctl restart systemd-resolved
 
       - name: Deploy argo
         shell: bash -l {0}
