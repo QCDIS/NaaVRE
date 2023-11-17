@@ -188,7 +188,23 @@ jobs:
         run: |
           minikube ip
           echo "$MINIKUBE_IP"
-          head /etc/resolv.conf
+          mkdir /etc/systemd/resolved.conf.d
+          tee /etc/systemd/resolved.conf.d/minikube.conf << EOF
+          [Resolve]
+          DNS=$(minikube ip)
+          Domains=~test
+          EOF
+          systemctl restart systemd-resolved
+
+      - name: Deploy argo
+        shell: bash -l {0}
+        run: |
+          kubectl apply -f helm_config/argo/argo-sso-secret.yaml
+          kubectl apply -f helm_config/argo/auth-vre-api.yaml
+          helm repo add argo https://argoproj.github.io/argo-helm
+          helm repo update
+          helm install argo-workflows argo/argo-workflows -f helm_config/argo/values.yaml
+          kubectl get all
 
 
 #      - name: pytest
