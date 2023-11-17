@@ -188,7 +188,7 @@ jobs:
         run: |
           minikube ip
           echo "$MINIKUBE_IP"
-          mkdir /etc/systemd/resolved.conf.d
+          sudo mkdir /etc/systemd/resolved.conf.d
           tee /etc/systemd/resolved.conf.d/minikube.conf << EOF
           [Resolve]
           DNS=$(minikube ip)
