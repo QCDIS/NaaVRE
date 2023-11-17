@@ -47,6 +47,5 @@ dependencies:
   - flake8
   - r-optparse
   - webdavclient3
-  - pandas
   - pip:
     - pytype~=2023.10.31

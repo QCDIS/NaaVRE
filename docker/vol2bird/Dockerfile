@@ -51,7 +51,6 @@ RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
 RUN jupyter nbextension enable --py widgetsnbextension
 
-
 RUN jupyter lab build --debug;
 
 cmd ["/usr/local/bin/start-jupyter-venv.sh"]
