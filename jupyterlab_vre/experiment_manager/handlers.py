@@ -192,7 +192,6 @@ class ExecuteWorkflowHandler(APIHandler):
                 }
             )
             logger.info('Workflow submission response: ' + str(resp.content))
-            print('Workflow submission response: ' + str(resp.content))
         except Exception as e:
             logger.error('Workflow submission failed: ' + str(e))
             logger.error('api_endpoint: ' + str(api_endpoint))
