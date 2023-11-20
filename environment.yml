@@ -48,5 +48,6 @@ dependencies:
   - r-optparse
   - webdavclient3
   - pandas
+  - zeromq
   - pip:
     - pytype~=2023.10.31
