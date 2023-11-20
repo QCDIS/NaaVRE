@@ -1,17 +1,20 @@
-FROM qcdis/python-vol2birds:v1.1 AS vol2bird
+FROM qcdis/python-vol2birds:v2.0 AS vol2bird
 
-RUN conda install -c conda-forge conda-pack conda-merge mamba
+RUN conda install -c conda-forge conda-pack conda-merge
+COPY environment.yaml .
 COPY naa-vre-environment.yaml .
+RUN conda-merge environment.yaml naa-vre-environment.yaml > merged-environment.yaml
 
 ADD ./jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
-RUN mamba env update --name venv -f naa-vre-environment.yaml
+
+RUN mamba env update --name venv -f merged-environment.yaml
+
 RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
     rm /tmp/env.tar
 RUN /venv/bin/conda-unpack
 
-FROM jupyterhub/k8s-singleuser-sample:3.1.0
-
+FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e AS runtime
 USER root
 
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install fuse
@@ -33,7 +36,7 @@ SHELL ["/bin/bash", "--login", "-c"]
 
 ADD ./start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD ./start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
-COPY ./repo_utils /tmp/repo_utils
+COPY repo_utils /tmp/repo_utils
 
 COPY .condarc /tmp/.condarc
 
@@ -49,9 +52,13 @@ USER $NB_USER
 RUN jupyter serverextension enable --py jupyterlab_vre --user
 RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
-RUN jupyter nbextension enable --py widgetsnbextension
 
 
 RUN jupyter lab build --debug;
+
+RUN wget https://raw.githubusercontent.com/QCDIS/python-vol2birds/main/test_vol2bird.sh
+RUN bash test_vol2bird.sh
+RUN rm test_vol2bird.sh
+RUN rm version
 
 cmd ["/usr/local/bin/start-jupyter-venv.sh"]
