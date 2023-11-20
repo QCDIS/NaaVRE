@@ -23,7 +23,7 @@ dependencies:
   - jupyter-videochat
   - jupyterlab-git
   - nbgitpuller
-  - nb_conda_kernels
+  - nb_conda_kernels>=2.3.1
   - rclone
   - jupyter-archive
   - zip
@@ -46,8 +46,7 @@ dependencies:
   - pytest
   - flake8
   - r-optparse
-  - webdavclient3
-  - pandas
-  - zeromq
+#  - webdavclient3
+#  - pandas
   - pip:
     - pytype~=2023.10.31
