@@ -33,7 +33,6 @@ dependencies:
   - sentinelhub
   - setuptools
   - shapely
-  - webdavclient3
   - wradlib
   - pip:
       - git+https://github.com/QCDIS/Laserfarm.git
