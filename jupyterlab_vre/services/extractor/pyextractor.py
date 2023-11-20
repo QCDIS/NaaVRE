@@ -7,6 +7,7 @@ from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
 from pytype.tools.annotate_ast import annotate_ast
 from pytype import config as pytype_config
 
+
 class PyExtractor:
     sources: list
     imports: dict
@@ -15,12 +16,13 @@ class PyExtractor:
     undefined: dict
 
     def __init__(self, notebook):
+        # If cell_type is code and not starting with '!'
         self.sources = [nbcell.source for nbcell in notebook.cells if
-                        nbcell.cell_type == 'code' and len(nbcell.source) > 0]
+                        nbcell.cell_type == 'code' and len(nbcell.source) > 0 and nbcell.source[0] != '!']
         self.notebook_names = self.__extract_cell_names(
             '\n'.join(self.sources),
             infer_types=True,
-            )
+        )
         self.imports = self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
         self.global_params = self.__extract_params(self.sources)
@@ -74,7 +76,7 @@ class PyExtractor:
                         params[name] = {
                             'name': name,
                             'type': self.notebook_names[name]['type'],
-                            }
+                        }
         return params
 
     def infer_cell_outputs(self, cell_source):
@@ -83,11 +85,11 @@ class PyExtractor:
             name: properties
             for name, properties in cell_names.items()
             if name not in self.__extract_cell_undefined(cell_source)
-            and name not in self.imports
-            and name in self.undefined
-            and name not in self.configurations
-            and name not in self.global_params
-            }
+               and name not in self.imports
+               and name in self.undefined
+               and name not in self.configurations
+               and name not in self.global_params
+        }
 
     def infer_cell_inputs(self, cell_source):
         cell_undefined = self.__extract_cell_undefined(cell_source)
@@ -95,9 +97,9 @@ class PyExtractor:
             und: properties
             for und, properties in cell_undefined.items()
             if und not in self.imports
-            and und not in self.configurations
-            and und not in self.global_params
-            }
+               and und not in self.configurations
+               and und not in self.global_params
+        }
 
     def infer_cell_dependencies(self, cell_source, confs):
         dependencies = []
@@ -139,22 +141,22 @@ class PyExtractor:
         patterns = {
             'int': [
                 re.compile(r'^int$'),
-                ],
+            ],
             'float': [
                 re.compile(r'^float$'),
-                ],
+            ],
             'str': [
                 re.compile(r'^str$'),
-                ],
+            ],
             'list': [
                 re.compile(r'^List\['),
-                ],
+            ],
             None: [
                 re.compile(r'^Any$'),
                 re.compile(r'^Dict'),
                 re.compile(r'^Callable'),
-                ]
-            }
+            ]
+        }
         for type_name, regs in patterns.items():
             for reg in regs:
                 if reg.match(type_annotation):
@@ -179,7 +181,7 @@ class PyExtractor:
                 names[module.id] = {
                     'name': var_name,
                     'type': var_type,
-                    }
+                }
         return names
 
     def __extract_cell_undefined(self, cell_source):
@@ -205,7 +207,7 @@ class PyExtractor:
             undef_vars[var_name] = {
                 'name': var_name,
                 'type': self.notebook_names[var_name]['type'],
-                }
+            }
         return undef_vars
 
     def extract_cell_params(self, cell_source):
