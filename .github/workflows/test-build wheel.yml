@@ -134,7 +134,7 @@ jobs:
           use-mamba: true
 
       - name: Cache Conda environment
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.CONDA }}/envs
           key: conda-environment-${{ runner.os }}-${{ hashFiles('environment.yml') }}
@@ -142,10 +142,10 @@ jobs:
             conda-environment-${{ runner.os }}-
         id: cache-conda
 
-      - name: Update environment
-        if: steps.cache-conda.outputs.cache-hit != 'true'
-        run:
-          mamba env update -n jupyterlab -f environment.yml
+#      - name: Update environment
+#        if: steps.cache-conda.outputs.cache-hit != 'true'
+#        run:
+#          mamba env update -n jupyterlab -f environment.yml
 
       - name: Lint with flake8
         shell: bash -l {0}
