@@ -1,4 +1,4 @@
-FROM qcdis/python-vol2birds:v2.0 AS vol2bird
+FROM qcdis/python-vol2birds:v2.1 AS vol2bird
 
 RUN conda install -c conda-forge conda-pack conda-merge
 COPY environment.yaml .
@@ -23,6 +23,10 @@ COPY --from=vol2bird /venv /venv
 
 COPY --from=vol2bird /opt/radar/ /opt/radar/
 COPY --from=vol2bird /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
+
+# set the paths to installed libraries and executables
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/radar/lib:/opt/radar/rave/lib:/opt/radar/rsl/lib:/opt/radar/vol2bird/lib:/usr/lib/x86_64-linux-gnu
+ENV PATH=${PATH}:/opt/radar/vol2bird/bin:/opt/radar/rsl/bin
 
 # set the paths to installed libraries and executables
 ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/radar/lib:/opt/radar/rave/lib:/opt/radar/rsl/lib:/opt/radar/vol2bird/lib:/usr/lib/x86_64-linux-gnu
@@ -59,6 +63,5 @@ RUN jupyter lab build --debug;
 RUN wget https://raw.githubusercontent.com/QCDIS/python-vol2birds/main/test_vol2bird.sh
 RUN bash test_vol2bird.sh
 RUN rm test_vol2bird.sh
-RUN rm version
-
+RUN rm version KNMI_vol_h5_to_ODIM_h5_out
 cmd ["/usr/local/bin/start-jupyter-venv.sh"]
