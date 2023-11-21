@@ -28,15 +28,16 @@ COPY --from=vol2bird /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
 ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/radar/lib:/opt/radar/rave/lib:/opt/radar/rsl/lib:/opt/radar/vol2bird/lib:/usr/lib/x86_64-linux-gnu
 ENV PATH=${PATH}:/opt/radar/vol2bird/bin:/opt/radar/rsl/bin
 
-# set the paths to installed libraries and executables
-ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/radar/lib:/opt/radar/rave/lib:/opt/radar/rsl/lib:/opt/radar/vol2bird/lib:/usr/lib/x86_64-linux-gnu
-ENV PATH=${PATH}:/opt/radar/vol2bird/bin:/opt/radar/rsl/bin
-
 ENV PATH=/venv/bin:$PATH
 ENV PATH=/home/jovyan/.local/bin:$PATH
 RUN source /venv/bin/activate
 RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
+
+RUN wget https://raw.githubusercontent.com/QCDIS/python-vol2birds/main/test_vol2bird.sh
+RUN bash test_vol2bird.sh
+RUN rm test_vol2bird.sh
+RUN rm version KNMI_vol_h5_to_ODIM_h5_out
 
 ADD ./start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD ./start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
@@ -60,8 +61,5 @@ RUN jupyter serverextension enable --py jupyterlab_github --user
 
 RUN jupyter lab build --debug;
 
-RUN wget https://raw.githubusercontent.com/QCDIS/python-vol2birds/main/test_vol2bird.sh
-RUN bash test_vol2bird.sh
-RUN rm test_vol2bird.sh
-RUN rm version KNMI_vol_h5_to_ODIM_h5_out
+
 cmd ["/usr/local/bin/start-jupyter-venv.sh"]
