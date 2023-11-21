@@ -1,4 +1,4 @@
-FROM qcdis/python-vol2birds:v2.0 AS vol2bird
+FROM qcdis/python-vol2birds:v2.1 AS vol2bird
 
 RUN conda install -c conda-forge conda-pack conda-merge
 COPY environment.yaml .
@@ -34,6 +34,11 @@ RUN source /venv/bin/activate
 RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
+RUN wget https://raw.githubusercontent.com/QCDIS/python-vol2birds/main/test_vol2bird.sh
+RUN bash test_vol2bird.sh
+RUN rm test_vol2bird.sh
+RUN rm version KNMI_vol_h5_to_ODIM_h5_out
+
 ADD ./start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD ./start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh
 COPY repo_utils /tmp/repo_utils
@@ -56,9 +61,5 @@ RUN jupyter serverextension enable --py jupyterlab_github --user
 
 RUN jupyter lab build --debug;
 
-RUN wget https://raw.githubusercontent.com/QCDIS/python-vol2birds/main/test_vol2bird.sh
-RUN bash test_vol2bird.sh
-RUN rm test_vol2bird.sh
-RUN rm version
 
 cmd ["/usr/local/bin/start-jupyter-venv.sh"]
