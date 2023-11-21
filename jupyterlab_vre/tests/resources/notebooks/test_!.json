@@ -1,0 +1,158 @@
+{
+    "save": false,
+    "kernel": "ipython",
+    "cell_index": 1,
+    "notebook": {
+        "metadata": {
+            "kernelspec": {
+                "display_name": "Python [conda env:jupyterlab] *",
+                "language": "python",
+                "name": "conda-env-jupyterlab-py"
+            },
+            "language_info": {
+                "name": "python",
+                "version": "3.10.12",
+                "mimetype": "text/x-python",
+                "codemirror_mode": {
+                    "name": "ipython",
+                    "version": 3
+                },
+                "pygments_lexer": "ipython3",
+                "nbconvert_exporter": "python",
+                "file_extension": ".py"
+            }
+        },
+        "nbformat_minor": 5,
+        "nbformat": 4,
+        "cells": [
+            {
+                "cell_type": "code",
+                "source": "!conda install --yes -c conda-forge pdal python-pdal gdal dask\n!conda activate --yes pdalpy\n!pip install dask distributed laserfarm\n!conda upgrade --yes numpy",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": null,
+                "outputs": [],
+                "id": "af2a436e-6682-40cb-bd4c-fc7aa0a719ba"
+            },
+            {
+                "cell_type": "code",
+                "source": "# conf \nimport os\n\nconf_data_folder = os.path.join('/tmp','data')\n\nconf_feature_name = 'perc_95_normalized_height'\nconf_validate_precision = '0.001'\nconf_tile_mesh_size = '10.'\nconf_filter_type= 'select_equal'\nconf_attribute = 'raw_classification'\nconf_min_x = '-113107.81'\nconf_max_x = '398892.19'\nconf_min_y = '214783.87'\nconf_max_y = '726783.87'\nconf_n_tiles_side = '512'\nconf_apply_filter_value = '1'\nconf_laz_compression_factor = '7'\nconf_max_filesize = '262144000'  # desired max file size (in bytes)\n\n",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": 1,
+                "outputs": [],
+                "id": "bca08f46-0546-47a6-b0eb-d9fa3a5c9265"
+            },
+            {
+                "cell_type": "code",
+                "source": "# Create file \n\nL = [\"a\\n\", \"b\\n\", \"c\\n\"]\nfile_path =  os.path.join(conf_data_folder,'hello.txt')\nfp = open(file_path, 'w')\nfp.writelines(L)\nfp.close()",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": 2,
+                "outputs": [],
+                "id": "00dd23e8-531e-4dd8-90aa-43573c240a48"
+            },
+            {
+                "cell_type": "code",
+                "source": "#read file lines\n\nf = open(file_path, 'r')\nlines = f.readlines()\nf.close()",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": 3,
+                "outputs": [],
+                "id": "452c7037-2686-46bc-90d2-1d681b2b4a72"
+            },
+            {
+                "cell_type": "code",
+                "source": "#loop file lines\n\ncount = 0\n# Strips the newline character\nfor l in lines:\n    count += 1\n    print(\"Line{}: {}\".format(count, l.strip()))",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": 4,
+                "outputs": [
+                    {
+                        "name": "stdout",
+                        "output_type": "stream",
+                        "text": "Line1: a\nLine2: b\nLine3: c\n"
+                    }
+                ],
+                "id": "918da96c-0e5d-4c49-8604-80dbea97f034"
+            },
+            {
+                "cell_type": "code",
+                "source": "# Add1\n\na = count + 1",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": null,
+                "outputs": [],
+                "id": "25bdee30-184c-4fb9-9f60-6cb2bf3830a4"
+            },
+            {
+                "cell_type": "code",
+                "source": "#Anti-pattern  \nsome_list = range(count, a+1)\n\nmsg = '1'\n\n",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": 11,
+                "outputs": [],
+                "id": "c1ee0030-e097-49e9-b67c-69f21a8a6da3"
+            },
+            {
+                "cell_type": "code",
+                "source": "# input lists\n\nlist_of_paths = [\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\"]\nlist_of_ints = [1,2,35,6,65]\nprint(msg)",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": 6,
+                "outputs": [],
+                "id": "7b8027f6-7be6-43a9-958f-2337a0ed0733"
+            },
+            {
+                "cell_type": "code",
+                "source": "#loop list \n\nfor l in list_of_paths:\n    print(l)",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": 6,
+                "outputs": [
+                    {
+                        "name": "stdout",
+                        "output_type": "stream",
+                        "text": "/webdav/LAZ/targets_myname\n/webdav/LAZ/targets_myname\n/webdav/LAZ/targets_myname\n/webdav/LAZ/targets_myname\n/webdav/LAZ/targets_myname\n/webdav/LAZ/targets_myname\n/webdav/LAZ/targets_myname\n/webdav/LAZ/targets_myname\n/webdav/LAZ/targets_myname\n/webdav/LAZ/targets_myname\n"
+                    }
+                ],
+                "id": "ffdc9192-db4e-44f4-8a13-62a450ac3aa1"
+            },
+            {
+                "cell_type": "code",
+                "source": "#loop int list \n\nfor i in list_of_ints:\n    a = i -1\n    print(a)",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": 8,
+                "outputs": [
+                    {
+                        "name": "stdout",
+                        "output_type": "stream",
+                        "text": "2\n3\n36\n7\n66\n"
+                    }
+                ],
+                "id": "2899e58e-2c8b-46f4-a7a5-ed02156371a4"
+            },
+            {
+                "cell_type": "code",
+                "source": "",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": null,
+                "outputs": [],
+                "id": "3ea24b6d-f13c-42d9-a340-42cd0aa7ae4c"
+            }
+        ]
+    }
+}
