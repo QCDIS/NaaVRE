@@ -134,7 +134,7 @@ jobs:
           use-mamba: true
 
       - name: Cache Conda environment
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.CONDA }}/envs
           key: conda-environment-${{ runner.os }}-${{ hashFiles('environment.yml') }}
