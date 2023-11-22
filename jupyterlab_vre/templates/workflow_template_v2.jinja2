@@ -16,7 +16,7 @@ spec:
         accessModes: [ "ReadWriteMany" ]
         resources:
           requests:
-            storage: 1Gi
+            storage: {{ workdir_storage_size }}Gi
 
     arguments:
       parameters:
