@@ -24,8 +24,6 @@ on:
         required: true
       docker_password:
         required: true
-      jupyterhub_user:
-        required: true
       vlab_slug:
         required: true
       cell_github:
@@ -119,7 +117,7 @@ jobs:
                                       -e NAAVRE_API_TOKEN={{ secrets.naavre_api_token }} \
                                       -e ARGO_URL={{ secrets.argo_url }} \
                                       -e ARGO_API_TOKEN={{ secrets.argo_api_token }} \
-                                      -e JUPYTERHUB_USER={{ secrets.jupyterhub_user }} \
+                                      -e JUPYTERHUB_USER=git-test-user \
                                       -e VLAB_SLUG={{ secrets.vlab_slug }} \
                                       qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }} \
                                       /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && \
