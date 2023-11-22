@@ -108,6 +108,7 @@ jobs:
 
     # Start docker container to test JupyterLab
     - name: Start conatiner
+      shell: bash -l {0}
       run: |
           docker run -it -p 8888:8888 -e CELL_GITHUB_TOKEN={{ secrets.cell_github_token }} \
                                       -e CELL_GITHUB={{ secrets.cell_github }} \
@@ -124,14 +125,21 @@ jobs:
                                       qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }} \
                                       /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && \
                                       jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative"
-          sleep 20
-          # Save return code from curl
+          sleep 30
+          # Print docker logs
+          docker logs $(docker ps -q --filter ancestor=qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }} --format="{{.ID}}")
+
+    # Test JupyterLab
+    - name: Test JupyterLab connection to NAAVRE
+      shell: bash -l {0}
+      run: |
           curl -s -o /dev/null -w "%{http_code}" http://localhost:8888
-          # Check if return code is not 200
           if [ $? -ne 200 ]; then
             echo "JupyterLab is not running"
             exit 1
           fi
+
+
 
 
 #    - name: Build docker
