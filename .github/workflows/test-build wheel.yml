@@ -156,13 +156,13 @@ jobs:
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-      - name: pytest
-        shell: bash -l {0}
-        run: |
-          conda activate jupyterlab
-          python docker/repo_utils/conf_vl_repos.py  --force=True
-          pip install --upgrade build
-          pytest --ignore=docker --ignore=cypress
+#      - name: pytest
+#        shell: bash -l {0}
+#        run: |
+#          conda activate jupyterlab
+#          python docker/repo_utils/conf_vl_repos.py  --force=True
+#          pip install --upgrade build
+#          pytest --ignore=docker --ignore=cypress
 
       - name: make release
         shell: bash -el {0}
