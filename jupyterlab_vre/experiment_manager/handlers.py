@@ -19,6 +19,10 @@ def get_workflow_service_account():
     return os.environ.get('ARGO_WF_SPEC_SERVICEACCOUNT', 'default')
 
 
+def get_workdir_storage_size():
+    return os.environ.get('WORKDIR_STORAGE_SIZE', '1Gi')
+
+
 class ExportWorkflowHandler(APIHandler):
 
     @web.authenticated
@@ -78,6 +82,7 @@ class ExportWorkflowHandler(APIHandler):
                 image_repo=image_repo,
                 workflow_name=workflow_name,
                 workflow_service_account=get_workflow_service_account(),
+                workdir_storage_size=get_workdir_storage_size(),
             ).dump('workflow.yaml')
 
         self.flush()
