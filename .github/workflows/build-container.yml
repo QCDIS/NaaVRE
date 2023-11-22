@@ -24,6 +24,30 @@ on:
         required: true
       docker_password:
         required: true
+      jupyterhub_user:
+        required: true
+      vlab_slug:
+        required: true
+      cell_github:
+        required: true
+      cell_github_token:
+        required: true
+      api_endpoint:
+        required: true
+      module_mapping_url:
+        required: true
+      search_api_endpoint:
+        required: true
+      search_api_token:
+        required: true
+      registry_url:
+        required: true
+      naavre_api_token:
+        required: true
+      argo_url:
+        required: true
+      argo_api_token:
+        required: true
 env:
   DOCKER_FOLDER:  ${{ inputs.docker_folder }}
   TAG:  ${{ inputs.tag }}
@@ -81,6 +105,33 @@ jobs:
         tags: qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }},qcdis/${{ inputs.tag }}:latest
         cache-from: type=gha
         cache-to: type=gha,mode=min
+
+    # Start docker container to test JupyterLab
+    - name: Start conatiner
+      run: |
+          docker run -it -p 8888:8888 -e CELL_GITHUB_TOKEN={{ secrets.cell_github_token }} \
+                                      -e CELL_GITHUB={{ secrets.cell_github }} \
+                                      -e API_ENDPOINT={{ secrets.api_endpoint }} \
+                                      -e MODULE_MAPPING_URL={{ secrets.module_mapping_url }} \
+                                      -e SEARCH_API_ENDPOINT={{ secrets.search_api_endpoint }} \
+                                      -e SEARCH_API_TOKEN={{ secrets.search_api_token }} \
+                                      -e REGISTRY_URL={{ secrets.registry_url }} \
+                                      -e NAAVRE_API_TOKEN={{ secrets.naavre_api_token }} \
+                                      -e ARGO_URL={{ secrets.argo_url }} \
+                                      -e ARGO_API_TOKEN={{ secrets.argo_api_token }} \
+                                      -e JUPYTERHUB_USER={{ secrets.jupyterhub_user }} \
+                                      -e VLAB_SLUG={{ secrets.vlab_slug }} \
+                                      qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }} \
+                                      /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && \
+                                      jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative"
+          sleep 20
+          # Save return code from curl
+          curl -s -o /dev/null -w "%{http_code}" http://localhost:8888
+          # Check if return code is not 200
+          if [ $? -ne 200 ]; then
+            echo "JupyterLab is not running"
+            exit 1
+          fi
 
 
 #    - name: Build docker

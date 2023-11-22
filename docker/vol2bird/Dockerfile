@@ -17,7 +17,7 @@ RUN /venv/bin/conda-unpack
 FROM jupyterhub/k8s-singleuser-sample:1.2.0 AS runtime
 USER root
 
-RUN apt-get update --allow-releaseinfo-change && apt-get -y install fuse curl
+RUN apt-get update --allow-releaseinfo-change && apt-get -y install fuse
 
 COPY --from=vol2bird /venv /venv
 
@@ -28,17 +28,17 @@ COPY --from=vol2bird /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
 ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/radar/lib:/opt/radar/rave/lib:/opt/radar/rsl/lib:/opt/radar/vol2bird/lib:/usr/lib/x86_64-linux-gnu
 ENV PATH=${PATH}:/opt/radar/vol2bird/bin:/opt/radar/rsl/bin
 
+# set the paths to installed libraries and executables
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/radar/lib:/opt/radar/rave/lib:/opt/radar/rsl/lib:/opt/radar/vol2bird/lib:/usr/lib/x86_64-linux-gnu
+ENV PATH=${PATH}:/opt/radar/vol2bird/bin:/opt/radar/rsl/bin
+
 ENV PATH=/venv/bin:$PATH
 ENV PATH=/home/jovyan/.local/bin:$PATH
-RUN chmod +x /venv/bin/activate
-#RUN source /venv/bin/activate
-SHELL ["/bin/bash", "-c","/venv/bin/activate"]
+RUN source /venv/bin/activate
 RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
-
-SHELL ["/bin/bash", "-c","wget https://raw.githubusercontent.com/QCDIS/python-vol2birds/main/test_vol2bird.sh"]
-#RUN wget https://raw.githubusercontent.com/QCDIS/python-vol2birds/main/test_vol2bird.sh
+RUN wget https://raw.githubusercontent.com/QCDIS/python-vol2birds/main/test_vol2bird.sh
 RUN bash test_vol2bird.sh
 RUN rm test_vol2bird.sh
 RUN rm version KNMI_vol_h5_to_ODIM_h5_out
@@ -56,7 +56,6 @@ RUN chmod ugo+x /tmp/init_script.sh
 RUN chmod ugo+x /usr/local/bin/start-jupyter.sh
 RUN chmod ugo+x /usr/local/bin/start-jupyter-venv.sh
 RUN chown $NB_USER -R /venv/
-RUN chown -R $NB_USER:$NB_USER /venv/share/
 
 USER $NB_USER
 RUN jupyter serverextension enable --py jupyterlab_vre --user
