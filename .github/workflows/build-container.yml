@@ -24,6 +24,8 @@ on:
         required: true
       docker_password:
         required: true
+      jupyterhub_user:
+        required: true
       vlab_slug:
         required: true
       cell_github:
