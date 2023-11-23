@@ -110,7 +110,8 @@ jobs:
     - name: Start conatiner
       shell: bash -l {0}
       run: |
-          docker run -d -p 8888:8888 -e CELL_GITHUB_TOKEN={{ secrets.cell_github_token }} \
+          docker images
+          docker run -it -p 8888:8888 -e CELL_GITHUB_TOKEN={{ secrets.cell_github_token }} \
                                       -e CELL_GITHUB={{ secrets.cell_github }} \
                                       -e API_ENDPOINT={{ secrets.api_endpoint }} \
                                       -e MODULE_MAPPING_URL={{ secrets.module_mapping_url }} \
@@ -122,7 +123,7 @@ jobs:
                                       -e ARGO_API_TOKEN={{ secrets.argo_api_token }} \
                                       -e JUPYTERHUB_USER={{ secrets.jupyterhub_user }} \
                                       -e VLAB_SLUG={{ secrets.vlab_slug }} \
-                                      qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }} \
+                                      qcdis/${{ inputs.tag }}:latest \
                                       /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && \
                                       jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative"
 
