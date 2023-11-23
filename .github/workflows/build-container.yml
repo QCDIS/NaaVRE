@@ -160,13 +160,13 @@ jobs:
           echo "JupyterLab is accessible!"
         fi
 
-      - name: Build and push
-        if: ${{ inputs.push }}
-        uses: docker/build-push-action@v5
-        with:
-          context: docker/${{ inputs.docker_folder }}
-          push: true
-          tags: qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }},qcdis/${{ inputs.tag }}:latest
+    - name: Build and push
+      if: ${{ inputs.push }}
+      uses: docker/build-push-action@v5
+      with:
+        context: docker/${{ inputs.docker_folder }}
+        push: true
+        tags: qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }},qcdis/${{ inputs.tag }}:latest
 
 
 #    - name: Build docker
