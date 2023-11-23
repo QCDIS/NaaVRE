@@ -125,17 +125,19 @@ jobs:
                                       qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }} \
                                       /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && \
                                       jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative"
-          sleep 20
+          sleep 30
 
     # Test JupyterLab
-    - name: Test JupyterLab connection to NAAVRE
+    - name: Test JupyterLab connection
       shell: bash -l {0}
       run: |
-          curl -s -o /dev/null -w "%{http_code}" http://localhost:8888
-          if [ $? -ne 200 ]; then
-            echo "JupyterLab is not running"
-            exit 1
-          fi
+        response=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8888/lab)
+        if [ $response -ne 200 ]; then
+          echo "JupyterLab connection failed with status code $response"
+          exit 1
+        else
+          echo "JupyterLab is accessible!"
+        fi
 
 
 
