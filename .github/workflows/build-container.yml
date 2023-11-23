@@ -1,29 +1,8 @@
-name: Build container
+name: Build wheel
 
 on:
   workflow_call:
-    inputs:
-      docker_folder:
-        required: true
-        type: string
-      tag:
-        required: true
-        type: string
-      wheel_artifact_name:
-        required: true
-        type: string
-      push:
-        required: true
-        type: boolean
     secrets:
-      gitlab_username:
-        required: true
-      gitlab_password:
-        required: true
-      docker_username:
-        required: true
-      docker_password:
-        required: true
       jupyterhub_user:
         required: true
       vlab_slug:
@@ -48,60 +27,149 @@ on:
         required: true
       argo_api_token:
         required: true
+
 env:
-  DOCKER_FOLDER:  ${{ inputs.docker_folder }}
-  TAG:  ${{ inputs.tag }}
-  GITLAB_IMAGE_ID: "registry.gitlab.com/qcd1/registry/"
-  DOCKERHUB_IMAGE_ID: "qcdis/"
+  CELL_GITHUB: ${{ secrets.cell_github }}
+  CELL_GITHUB_TOKEN: ${{ secrets.cell_github_token }}
+  REGISTRY_URL: ${{ secrets.registry_url }}
+  NAAVRE_API_TOKEN: ${{ secrets.naavre_api_token }}
+  JUPYTERHUB_USER: ${{ secrets.jupyterhub_user }}
+  API_ENDPOINT: ${{ secrets.api_endpoint }}
+  VLAB_SLUG: ${{ secrets.vlab_slug }}
+  MODULE_MAPPING_URL: ${{ secrets.module_mapping_url }}
+  SEARCH_API_ENDPOINT: ${{ secrets.search_api_endpoint }}
+  SEARCH_API_TOKEN: ${{ secrets.search_api_token }}
+  ARGO_URL: ${{ secrets.ARGO_URL }}
+  ARGO_API_TOKEN: ${{ secrets.ARGO_API_TOKEN }}
+  ASYNC_TEST_TIMEOUT: 30
+
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
     steps:
-    - uses: actions/checkout@v4
+      - name: Check secrets
+        run: |
+          vars_not_set=0
+          concatenated_error_message=""
+          if [ -z "$CELL_GITHUB" ]; then
+            echo "CELL_GITHUB not set"
+            concatenated_error_message="$concatenated_error_message CELL_GITHUB not set"
+            vars_not_set=1
+          fi
+          if [ -z "$CELL_GITHUB_TOKEN" ]; then
+            echo "CELL_GITHUB_TOKEN not set"
+            concatenated_error_message="$concatenated_error_message CELL_GITHUB_TOKEN not set"
+            vars_not_set=1
+          fi
+          if [ -z "$REGISTRY_URL" ]; then
+            echo "REGISTRY_URL not set"
+            concatenated_error_message="$concatenated_error_message REGISTRY_URL not set"
+            vars_not_set=1
+          fi
+          if [ -z "$NAAVRE_API_TOKEN" ]; then
+            echo "NAAVRE_API_TOKEN not set"
+            concatenated_error_message="$concatenated_error_message NAAVRE_API_TOKEN not set"
+            vars_not_set=1
+          fi
+          if [ -z "$JUPYTERHUB_USER" ]; then
+            echo "JUPYTERHUB_USER not set"
+            concatenated_error_message="$concatenated_error_message JUPYTERHUB_USER not set"
+            vars_not_set=1
+          fi
+          if [ -z "$API_ENDPOINT" ]; then
+            echo "API_ENDPOINT not set"
+            concatenated_error_message="$concatenated_error_message API_ENDPOINT not set"
+            vars_not_set=1
+          fi
+          if [ -z "$VLAB_SLUG" ]; then
+            echo "VLAB_SLUG not set"
+            concatenated_error_message="$concatenated_error_message VLAB_SLUG not set"
+            vars_not_set=1
+          fi
+          if [ -z "$MODULE_MAPPING_URL" ]; then
+            echo "MODULE_MAPPING_URL not set"
+            concatenated_error_message="$concatenated_error_message MODULE_MAPPING_URL not set"
+            vars_not_set=1
+          fi
+          if [ -z "$SEARCH_API_ENDPOINT" ]; then
+            echo "SEARCH_API_ENDPOINT not set"
+            concatenated_error_message="$concatenated_error_message SEARCH_API_ENDPOINT not set"
+            vars_not_set=1
+          fi
+          if [ -z "$SEARCH_API_TOKEN" ]; then
+            echo "SEARCH_API_TOKEN not set"
+            concatenated_error_message="$concatenated_error_message SEARCH_API_TOKEN not set"
+            vars_not_set=1
+          fi
+          if [ -z "ARGO_URL" ]; then
+            echo "ARGO_URL not set"
+            concatenated_error_message="$concatenated_error_message ARGO_URL not set"
+            vars_not_set=1
+          fi
+          if [ -z "ARGO_API_TOKEN" ]; then
+            echo "ARGO_API_TOKEN not set"
+            concatenated_error_message="$concatenated_error_message ARGO_API_TOKEN not set"
+            vars_not_set=1
+          fi
+          if [ $vars_not_set -eq 1 ]; then
+            echo "Exiting with error"
+            echo $concatenated_error_message
+            exit 1
+          fi
 
-    - name: Download artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: ${{ inputs.wheel_artifact_name }}
-        path: docker/${{ inputs.docker_folder }}
-    - uses: mikefarah/yq@v4.40.2
+      - uses: actions/checkout@v4
 
-    - name: add whl and start files
-      run: |
-          cp docker/init_script.sh docker/$DOCKER_FOLDER/
-          cp docker/start-jupyter.sh docker/$DOCKER_FOLDER/
-          cp docker/start-jupyter.sh docker/$DOCKER_FOLDER/
-          cp docker/start-jupyter-venv.sh docker/$DOCKER_FOLDER/
-          cp -r docker/repo_utils docker/$DOCKER_FOLDER/repo_utils
-          cp environment.yml docker/$DOCKER_FOLDER/
-          mv docker/$DOCKER_FOLDER/environment.yml docker/$DOCKER_FOLDER/naa-vre-environment.yaml
-          yq '.dependencies[-1].pip' docker/$DOCKER_FOLDER/naa-vre-environment.yaml 2> /dev/null || cat $f | yq '.dependencies += [{"pip": []}]' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i
-          yq '.dependencies[-1].pip += ["/home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl"]' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i
-          if test -f "docker/$DOCKER_FOLDER/environment.yaml"; then yq 'del(.channels[] | select(. == "defaults"))' docker/$DOCKER_FOLDER/environment.yaml -i; fi
-          yq 'del(.channels[] | select(. == "defaults"))' docker/$DOCKER_FOLDER/naa-vre-environment.yaml -i
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          miniforge-version: latest
+          miniforge-variant: Mambaforge
+          python-version: 3.9
+          path: ${{ env.CONDA }}/envs
+          environment-file: environment.yml
+          activate-environment: jupyterlab
+          use-mamba: true
 
+      - name: Cache Conda environment
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CONDA }}/envs
+          key: conda-environment-${{ runner.os }}-${{ hashFiles('environment.yml') }}
+          restore-keys: |
+            conda-environment-${{ runner.os }}-
+        id: cache-conda
 
-    - name: Login to github Registry
-      if: ${{ inputs.push }}
-      uses: docker/login-action@v3
-      with:
-        registry: "https://index.docker.io/v1/"
-        username: ${{ secrets.docker_username }}
-        password: ${{ secrets.docker_password }}
+#      - name: Update environment
+#        if: steps.cache-conda.outputs.cache-hit != 'true'
+#        run:
+#          mamba env update -n jupyterlab -f environment.yml
 
-    - id: get_version
-      uses: battila7/get-version-action@v2
-    - run: echo ${{ steps.get_version.outputs.version }}
+      - name: Lint with flake8
+        shell: bash -l {0}
+        run: |
+          conda activate jupyterlab
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      - name: pytest
+        shell: bash -l {0}
+        run: |
+          conda activate jupyterlab
+          python docker/repo_utils/conf_vl_repos.py  --force=True
+          pip install --upgrade build
+          pytest --ignore=docker --ignore=cypress
 
-    - name: Build docker
-      uses: docker/build-push-action@v5
-      with:
-        context: docker/${{ inputs.docker_folder }}
-        push: {{ inputs.push }}
-        tags: qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }},qcdis/${{ inputs.tag }}:latest,naavre
-        cache-from: type=gha
-        cache-to: type=gha,mode=min
+      - name: make release
+        shell: bash -el {0}
+        run: make release
+
+      - name: 'Upload wheel artifact'
+        uses: actions/upload-artifact@v3
+        with:
+          name: jupyterlab_vre
+          path: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
