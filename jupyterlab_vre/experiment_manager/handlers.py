@@ -20,7 +20,7 @@ def get_workflow_service_account():
 
 
 def get_workdir_storage_size():
-    return os.environ.get('WORKDIR_STORAGE_SIZE', '1Gi')
+    return os.environ.get('WORKDIR_STORAGE_SIZE', '1')
 
 
 class ExportWorkflowHandler(APIHandler):
@@ -165,8 +165,11 @@ class ExecuteWorkflowHandler(APIHandler):
             image_repo=image_repo,
             workflow_name=workflow_name,
             workflow_service_account=get_workflow_service_account(),
+            workdir_storage_size=get_workdir_storage_size(),
         )
         workflow_doc = yaml.safe_load(template)
+
+
 
         req_body = {
             "vlab": vlab_slug,
@@ -188,6 +191,17 @@ class ExecuteWorkflowHandler(APIHandler):
             print('Workflow submission request: ' + str(json.dumps(req_body)))
             session = requests.Session()
             session.verify = vre_api_verify_ssl
+
+            # resp_lint = requests.post(
+            #     f"{api_endpoint}/api/v1/cluster-workflow-templates/lint",
+            #     data=json.dumps(req_body),
+            #     headers={
+            #         'Authorization': f"Token {access_token}",
+            #         'Content-Type': 'application/json'
+            #     }
+            # )
+
+
             resp = requests.post(
                 f"{api_endpoint}/api/workflows/submit/",
                 data=json.dumps(req_body),
