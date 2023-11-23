@@ -101,10 +101,11 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: docker/${{ inputs.docker_folder }}
-        push: ${{ inputs.push }}
-        tags: qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }},qcdis/${{ inputs.tag }}:latest
+        push: false
+        tags: qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }},qcdis/${{ inputs.tag }}:latest,naavre
         cache-from: type=gha
         cache-to: type=gha,mode=min
+        load: true
 
     # Start docker container to test JupyterLab
     - name: Start conatiner
@@ -159,7 +160,13 @@ jobs:
           echo "JupyterLab is accessible!"
         fi
 
-
+      - name: Build and push
+        if: ${{ inputs.push }}
+        uses: docker/build-push-action@v5
+        with:
+          context: docker/${{ inputs.docker_folder }}
+          push: true
+          tags: qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }},qcdis/${{ inputs.tag }}:latest
 
 
 #    - name: Build docker
