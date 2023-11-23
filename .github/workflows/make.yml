@@ -38,18 +38,6 @@ jobs:
       gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      jupyterhub_user: ${{ secrets.JUPYTERHUB_USER }}
-      vlab_slug: ${{ secrets.VLAB_SLUG }}
-      cell_github: ${{ secrets.CELL_GITHUB }}
-      cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
-      api_endpoint: ${{ secrets.API_ENDPOINT }}
-      module_mapping_url: ${{ secrets.MODULE_MAPPING_URL }}
-      search_api_endpoint: ${{ secrets.SEARCH_API_ENDPOINT }}
-      search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
-      registry_url: ${{ secrets.REGISTRY_URL }}
-      naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
-      argo_url: ${{ secrets.ARGO_URL }}
-      argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
   call-build-container-vol2bird:
     needs: call-pytest
     uses: ./.github/workflows/build-container.yml
@@ -63,18 +51,6 @@ jobs:
       gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      jupyterhub_user: ${{ secrets.JUPYTERHUB_USER }}
-      vlab_slug: ${{ secrets.VLAB_SLUG }}
-      cell_github: ${{ secrets.CELL_GITHUB }}
-      cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
-      api_endpoint: ${{ secrets.API_ENDPOINT }}
-      module_mapping_url: ${{ secrets.MODULE_MAPPING_URL }}
-      search_api_endpoint: ${{ secrets.SEARCH_API_ENDPOINT }}
-      search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
-      registry_url: ${{ secrets.REGISTRY_URL }}
-      naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
-      argo_url: ${{ secrets.ARGO_URL }}
-      argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
   call-build-container-vanilla:
     needs: call-pytest
     uses: ./.github/workflows/build-container.yml
@@ -88,15 +64,3 @@ jobs:
       gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      jupyterhub_user: ${{ secrets.JUPYTERHUB_USER }}
-      vlab_slug: ${{ secrets.VLAB_SLUG }}
-      cell_github: ${{ secrets.CELL_GITHUB }}
-      cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
-      api_endpoint: ${{ secrets.API_ENDPOINT }}
-      module_mapping_url: ${{ secrets.MODULE_MAPPING_URL }}
-      search_api_endpoint: ${{ secrets.SEARCH_API_ENDPOINT }}
-      search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
-      registry_url: ${{ secrets.REGISTRY_URL }}
-      naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
-      argo_url: ${{ secrets.ARGO_URL }}
-      argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
