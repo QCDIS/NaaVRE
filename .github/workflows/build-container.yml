@@ -101,113 +101,69 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: docker/${{ inputs.docker_folder }}
-        push: false
+        push: {{ inputs.push }}
         tags: qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }},qcdis/${{ inputs.tag }}:latest,naavre
         cache-from: type=gha
         cache-to: type=gha,mode=min
         load: true
 
-    # Start docker container to test JupyterLab
-    - name: Start conatiner
-      shell: bash -l {0}
-      run: |
-          docker images
-          docker run -it -p 8888:8888 -e CELL_GITHUB_TOKEN={{ secrets.cell_github_token }} \
-                                      -e CELL_GITHUB={{ secrets.cell_github }} \
-                                      -e API_ENDPOINT={{ secrets.api_endpoint }} \
-                                      -e MODULE_MAPPING_URL={{ secrets.module_mapping_url }} \
-                                      -e SEARCH_API_ENDPOINT={{ secrets.search_api_endpoint }} \
-                                      -e SEARCH_API_TOKEN={{ secrets.search_api_token }} \
-                                      -e REGISTRY_URL={{ secrets.registry_url }} \
-                                      -e NAAVRE_API_TOKEN={{ secrets.naavre_api_token }} \
-                                      -e ARGO_URL={{ secrets.argo_url }} \
-                                      -e ARGO_API_TOKEN={{ secrets.argo_api_token }} \
-                                      -e JUPYTERHUB_USER={{ secrets.jupyterhub_user }} \
-                                      -e VLAB_SLUG={{ secrets.vlab_slug }} \
-                                      qcdis/${{ inputs.tag }}:latest \
-                                      /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && \
-                                      jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative"
-
-    # Wait for JupyterLab to start
-    - name: Wait for JupyterLab to start
-      shell: bash -l {0}
-      run: |
-        attempts=0
-        max_attempts=30
-        until [ $attempts -ge $max_attempts ]
-        do
-            response=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8888/lab)
-            if [ $response -eq 200 ]; then
-                echo "JupyterLab is accessible!"
-                break
-            else
-                docker ps -a
-                attempts=$((attempts+1))
-                echo "Waiting for JupyterLab to start... Attempt $attempts"
-                sleep 5
-            fi
-        done
-
-    # Test JupyterLab
-    - name: Test JupyterLab connection
-      shell: bash -l {0}
-      run: |
-        response=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8888/lab)
-        if [ $response -ne 200 ]; then
-          echo "JupyterLab connection failed with status code $response"
-          exit 1
-        else
-          echo "JupyterLab is accessible!"
-        fi
-
-    - name: Build and push
-      if: ${{ inputs.push }}
-      uses: docker/build-push-action@v5
-      with:
-        context: docker/${{ inputs.docker_folder }}
-        push: true
-        tags: qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }},qcdis/${{ inputs.tag }}:latest
-
-
-#    - name: Build docker
+#    # Start docker container to test JupyterLab
+#    - name: Start conatiner
+#      shell: bash -l {0}
 #      run: |
-#          cd docker/$DOCKER_FOLDER && docker build . --file Dockerfile -t $TAG
-
-
-#    - name: Push image to container Registry
-#      if: ${{ inputs.push }}
+#          docker images
+#          docker run -it -p 8888:8888 -e CELL_GITHUB_TOKEN={{ secrets.cell_github_token }} \
+#                                      -e CELL_GITHUB={{ secrets.cell_github }} \
+#                                      -e API_ENDPOINT={{ secrets.api_endpoint }} \
+#                                      -e MODULE_MAPPING_URL={{ secrets.module_mapping_url }} \
+#                                      -e SEARCH_API_ENDPOINT={{ secrets.search_api_endpoint }} \
+#                                      -e SEARCH_API_TOKEN={{ secrets.search_api_token }} \
+#                                      -e REGISTRY_URL={{ secrets.registry_url }} \
+#                                      -e NAAVRE_API_TOKEN={{ secrets.naavre_api_token }} \
+#                                      -e ARGO_URL={{ secrets.argo_url }} \
+#                                      -e ARGO_API_TOKEN={{ secrets.argo_api_token }} \
+#                                      -e JUPYTERHUB_USER={{ secrets.jupyterhub_user }} \
+#                                      -e VLAB_SLUG={{ secrets.vlab_slug }} \
+#                                      qcdis/${{ inputs.tag }}:latest \
+#                                      /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && \
+#                                      jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative"
+#
+#    # Wait for JupyterLab to start
+#    - name: Wait for JupyterLab to start
+#      shell: bash -l {0}
 #      run: |
-#        # Change all uppercase to lowercase
-#        IMAGE_ID=$GITLAB_IMAGE_ID$TAG
-#        IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-#        # Strip git ref prefix from version
-#        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-#        echo IMAGE_ID=$IMAGE_ID
-#        echo VERSION=$VERSION
-#        docker tag $TAG:latest $IMAGE_ID:$VERSION
-#        if [ "${{ secrets.gitlab_password }}" != '' ]; then
-#          docker push $IMAGE_ID:$VERSION
-#          docker tag $TAG $IMAGE_ID:latest
-#          docker push $IMAGE_ID:latest
+#        attempts=0
+#        max_attempts=30
+#        until [ $attempts -ge $max_attempts ]
+#        do
+#            response=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8888/lab)
+#            if [ $response -eq 200 ]; then
+#                echo "JupyterLab is accessible!"
+#                break
+#            else
+#                docker ps -a
+#                attempts=$((attempts+1))
+#                echo "Waiting for JupyterLab to start... Attempt $attempts"
+#                sleep 5
+#            fi
+#        done
+#
+#    # Test JupyterLab
+#    - name: Test JupyterLab connection
+#      shell: bash -l {0}
+#      run: |
+#        response=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8888/lab)
+#        if [ $response -ne 200 ]; then
+#          echo "JupyterLab connection failed with status code $response"
+#          exit 1
+#        else
+#          echo "JupyterLab is accessible!"
 #        fi
 #
-#
-#
-#    - name: Push image to container Registry
+#    - name: Build and push
 #      if: ${{ inputs.push }}
-#      run: |
-#        # Change all uppercase to lowercase
-#        IMAGE_ID=$DOCKERHUB_IMAGE_ID$TAG
-#        IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-#        # Strip git ref prefix from version
-#        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-#        echo IMAGE_ID=$IMAGE_ID
-#        echo VERSION=$VERSION
-#        dokcer images
-#        docker tag $TAG $IMAGE_ID:$VERSION
-#        if [ "${{ secrets.docker_password }}" != '' ]; then
-#          docker push $IMAGE_ID:$VERSION
-#          docker tag $TAG $IMAGE_ID:latest
-#          docker push $IMAGE_ID:latest
-#        fi
-#
+#      uses: docker/build-push-action@v5
+#      with:
+#        context: docker/${{ inputs.docker_folder }}
+#        push: true
+#        tags: qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }},qcdis/${{ inputs.tag }}:latest
