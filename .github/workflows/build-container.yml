@@ -110,7 +110,7 @@ jobs:
     - name: Start conatiner
       shell: bash -l {0}
       run: |
-          docker run -it -p 8888:8888 -e CELL_GITHUB_TOKEN={{ secrets.cell_github_token }} \
+          docker run -d -p 8888:8888 -e CELL_GITHUB_TOKEN={{ secrets.cell_github_token }} \
                                       -e CELL_GITHUB={{ secrets.cell_github }} \
                                       -e API_ENDPOINT={{ secrets.api_endpoint }} \
                                       -e MODULE_MAPPING_URL={{ secrets.module_mapping_url }} \
@@ -125,9 +125,7 @@ jobs:
                                       qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }} \
                                       /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && \
                                       jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative"
-          sleep 30
-          # Print docker logs
-          docker logs $(docker ps -q --filter ancestor=qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }} --format="{{.ID}}")
+          sleep 20
 
     # Test JupyterLab
     - name: Test JupyterLab connection to NAAVRE
