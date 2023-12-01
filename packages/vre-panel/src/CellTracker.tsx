@@ -43,7 +43,7 @@ const baseImages = [
     { label: "Laserfarm", id: "qcdis/miniconda3-pdal" },
     { label: "vol2bird", id: "qcdis/python-vol2bird" },
     { label: "distributed-learning", id: "qcdis/miniconda3-distributed-learning" },
-    { label: "Jupyter R Notebook", id: "jupyter/r-notebook:70178b8e48d7"}
+    { label: "Jupyter R Notebook", id: "jupyter/r-notebook"}
 ]
 
 export class CellTracker extends React.Component<IProps, IState> {

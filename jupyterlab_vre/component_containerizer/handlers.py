@@ -163,13 +163,13 @@ class TypesHandler(APIHandler, Catalog):
 
 
 def get_base_image_tag(base_image):
-    if 'qcdis/python-vol2birds' in base_image:
-        return os.getenv('VOL2BIRDS_TAG, :latest')
-    elif 'qcdis/python-vol2bird' in base_image:
-        return os.getenv('VOL2BIRD_TAG, :latest')
+    if 'qcdis/python-vol2bird' in base_image:
+        return os.getenv('VOL2BIRD_BASE_IMAGE_TAG', 'latest')
+    elif 'qcdis/miniconda3-pdal' in base_image:
+        return os.getenv('MINICONDA3_PDAL_BASE_IMAGE_TAG', 'latest')
     elif 'jupyter/r-notebook' in base_image:
-        return os.getenv('R_NOTEBOOK_TAG, :latest')
-    return ':latest'
+        return os.getenv('R_BASE_IMAGE_TAG', 'latest')
+    return 'latest'
 
 
 class BaseImageHandler(APIHandler, Catalog):
@@ -180,7 +180,7 @@ class BaseImageHandler(APIHandler, Catalog):
         payload = self.get_json_body()
         logger.debug('BaseImageHandler. payload: ' + str(payload))
         base_image = payload['image']
-        base_image += get_base_image_tag(base_image)
+        base_image += ':'+get_base_image_tag(base_image)
         cell = Catalog.editor_buffer
         cell.base_image = base_image
 
