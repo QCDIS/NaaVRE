@@ -12,18 +12,8 @@ For more detailed information, please refer to the [documentation](https://githu
 # Development 
 
 
-## Summary 
 
-1. Create conda venv
-2. Install requirements in conda 
-3. Install nodejs dependencies
-4. make build-frontend
-5. make build-frontend && make install-ui && make link-ui
-6. make install-backend 
-7. jupyter lab build
-8. Restart jupyter jupyter lab --debug  
-
-## Create conda venv
+## Create the conda environment
 
 Install Requirements: 
 
@@ -36,34 +26,52 @@ Create and activate conda environment:
 conda env update -f environment.yml
 ```
 
-Clone project:
-```shell
-git clone https://github.com/QCDIS/NaaVRE.git
-```
-
-Create and checkout branch:
-```shell
-cd NaaVRE
-git branch <BRANCH_NAME>
-git checkout <BRANCH_NAME>
-```
+## Build the extension
 
 Go to the project folder and run make :
-
-Build the backend and frontend:
 ```shell
 make install-backend && make build-frontend && make install-ui && make link-ui
 ```
-
 Build the extension  and start a jupyterlab instance:
 ```shell
 source export_VARS && jupyter lab build && cp -r ~/workspace/NaaVRE/docker/repo_utils/ /tmp/ && ~/workspace/NaaVRE/docker/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative
 ```
 
+## Make a release
+
 Build wheel file for release:
 ```shell
 make release
 ```
+
+## Testing
+
+To run existing tests:
+```shell
+python docker/repo_utils/conf_vl_repos.py  --force=True
+pip install --upgrade build
+pytest --ignore=docker --ignore=cypress
+```
+
+
+## Add new test notebooks
+
+In the test_handlers the `test_execute_workflow_handler` tests all workflows in the test/resources/workflows/NaaVRE folder.
+To add a new test workflow first you'll need to created it manually in the NaaVRE UI and then copy it to the test folder.
+
+To do that:
+1. Run make and build the extension and  start a Jupyterlab as described in [Build the extension](#build-the-extension) section. Make sure that you set the environment variables `DEBUG=true`
+2. Open the NaaVRE UI and dockerize the cells that will make up the workflow.
+3. Open the Workflow Manager and construct the workflow. 
+
+After these steps go to `/tmp/workflow_cells/cells` and copy the files from that folder in the `test/resources/cells` folder.
+Do the same for the workflow file in `/tmp/workflow_cells/workflows` and copy it to `test/resources/workflows/NaaVRE`.
+Then run the tests as described in the [Testing](#testing) section. 
+
+This will case all cells in the `test/resources/cells` folder to be dockerized. Next all the workflows in the 
+`test/resources/workflows/NaaVRE` folder will be submitted to the Argo Workflow engine.
+
+
 
 ## Troubleshooting
 
@@ -184,3 +192,6 @@ ARGO_TOKEN="Bearer $(kubectl get secret vre-api.service-account-token -n argo -o
 ```shell
 echo -n $ARGO_TOKEN | base64 -w 0
 ```
+
+
+

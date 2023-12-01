@@ -153,8 +153,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cells_json_path = os.path.join(base_path, 'cells')
             cells_files = os.listdir(cells_json_path)
             for cell_file in cells_files:
-                if'missing_whitespace_around_operator_test2.json' not in cell_file:
-                    continue
                 cell_path = os.path.join(cells_json_path, cell_file)
                 test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
                 response = self.call_cell_handler()
@@ -239,8 +237,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
         with mock.patch.object(ExecuteWorkflowHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
         for workflow_file in workflow_files:
-            if 'test_list_Py_workflow.json' not in workflow_file:
-                continue
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
