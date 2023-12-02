@@ -194,6 +194,13 @@ def find_job(wf_id=None, owner=None, repository_name=None, token=None, job_id=No
     return None
 
 
+def write_cell_to_file(current_cell):
+    Path('/tmp/workflow_cells/cells').mkdir(parents=True, exist_ok=True)
+    with open('/tmp/workflow_cells/cells/'+current_cell.task_name+'.json', 'w') as f:
+        f.write(current_cell.toJSON())
+        f.close()
+
+
 class CellsHandler(APIHandler, Catalog):
     logger = logging.getLogger(__name__)
 
@@ -220,7 +227,6 @@ class CellsHandler(APIHandler, Catalog):
 
         logger.debug('current_cell: ' + current_cell.toJSON())
         print('current_cell: ' + current_cell.toJSON())
-
         all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
         for parm_name in all_vars:
             if parm_name not in current_cell.types:
@@ -251,6 +257,9 @@ class CellsHandler(APIHandler, Catalog):
             self.write_error('Error adding cell catalog: ' + str(ex))
             self.flush()
             return
+
+        if os.getenv('DEBUG'):
+            write_cell_to_file(current_cell)
 
         if not os.path.exists(cells_path):
             os.mkdir(cells_path)
