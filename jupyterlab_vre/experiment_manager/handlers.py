@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from pathlib import Path
 
 import requests
 import yaml
@@ -21,6 +22,15 @@ def get_workflow_service_account():
 
 def get_workdir_storage_size():
     return os.environ.get('WORKDIR_STORAGE_SIZE', '1')
+
+
+def write_workflow_to_file(workflow):
+    Path('/tmp/workflow_cells/workflows').mkdir(parents=True, exist_ok=True)
+    # Generate random file name
+    random_file_name = os.urandom(8).hex()
+    with open('/tmp/workflow_cells/workflows/' + random_file_name + '.json', 'w') as f:
+        f.write(json.dumps(workflow, indent=2))
+        f.close()
 
 
 class ExportWorkflowHandler(APIHandler):
@@ -84,7 +94,6 @@ class ExportWorkflowHandler(APIHandler):
                 workflow_service_account=get_workflow_service_account(),
                 workdir_storage_size=get_workdir_storage_size(),
             ).dump('workflow.yaml')
-
         self.flush()
 
 
@@ -95,6 +104,8 @@ class ExecuteWorkflowHandler(APIHandler):
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
         print('Workflow execution payload: ' + json.dumps(payload, indent=2))
+        if os.getenv('DEBUG'):
+            write_workflow_to_file(payload)
         chart = payload['chart']
         params = payload['params']
 
@@ -169,8 +180,6 @@ class ExecuteWorkflowHandler(APIHandler):
         )
         workflow_doc = yaml.safe_load(template)
 
-
-
         req_body = {
             "vlab": vlab_slug,
             "workflow_payload": {
@@ -187,20 +196,10 @@ class ExecuteWorkflowHandler(APIHandler):
                 self.flush()
                 return
             vre_api_verify_ssl = os.getenv('VRE_API_VERIFY_SSL', 'true')
-            logger.info('Workflow submission request: ' + str(json.dumps(req_body)))
-            print('Workflow submission request: ' + str(json.dumps(req_body)))
+            logger.info('Workflow submission request: ' + str(json.dumps(req_body, indent=2)))
+            print('Workflow submission request: ' + str(json.dumps(req_body, indent=2)))
             session = requests.Session()
             session.verify = vre_api_verify_ssl
-
-            # resp_lint = requests.post(
-            #     f"{api_endpoint}/api/v1/cluster-workflow-templates/lint",
-            #     data=json.dumps(req_body),
-            #     headers={
-            #         'Authorization': f"Token {access_token}",
-            #         'Content-Type': 'application/json'
-            #     }
-            # )
-
 
             resp = requests.post(
                 f"{api_endpoint}/api/workflows/submit/",
