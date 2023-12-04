@@ -92,7 +92,9 @@ export class CellTracker extends React.Component<IProps, IState> {
           name,
           image,
         }));
-        this.setState({ baseImageSelected: false, baseImages: updatedBaseImages });
+        console.log('updatedBaseImages');
+        console.log(updatedBaseImages);
+        this.setState({baseImages: updatedBaseImages });
       } catch (error) {
         console.log(error);
         alert('Error loading base images: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
@@ -121,9 +123,10 @@ export class CellTracker extends React.Component<IProps, IState> {
     };
 
     baseImageUpdate = async (value: any) => {
+        console.log('value: '+value);
         await requestAPI<any>('containerizer/baseimage', {
             body: JSON.stringify({
-                image: value.id
+                image: value
             }),
             method: 'POST'
         });
@@ -373,7 +376,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                     options={this.state.baseImages}
                                     disablePortal
                                     onChange={(_event: any, newValue: any | null) => {
-                                        this.baseImageUpdate(newValue);
+                                        this.baseImageUpdate(newValue.image);
                                     }}
                                     id="combo-box-demo"
                                     sx={{ width: 330, margin: '20px' }}
