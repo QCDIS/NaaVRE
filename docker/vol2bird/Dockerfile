@@ -1,4 +1,4 @@
-FROM qcdis/python-vol2birds:v2.1.1 AS vol2bird
+FROM qcdis/python-vol2bird:v2.1.1 AS vol2bird
 
 RUN conda install -c conda-forge conda-pack conda-merge
 COPY environment.yaml .
