@@ -38,8 +38,6 @@ const DefaultState: IState = {
 }
 
 type SaveState = 'started' | 'completed' | 'failed';
-
-
 export class CellTracker extends React.Component<IProps, IState> {
 
     state = DefaultState;
@@ -80,8 +78,16 @@ export class CellTracker extends React.Component<IProps, IState> {
     }
 
     async loadBaseImages() {
+      console.log('baseImageTagsURL: ' + process.env.BASE_IMAGE_TAGS_URL);
+      let baseImageTagsURL;
+      if (!process.env.BASE_IMAGE_TAGS_URL) {
+        console.log('BASE_IMAGE_TAGS_URL not set, using default');
+        baseImageTagsURL = 'https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/base_image_tags.json'
+      }else{
+        baseImageTagsURL = process.env.BASE_IMAGE_TAGS_URL;
+      }
       try {
-        const response = await fetch('https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/base_image_tags.json');
+        const response = await fetch(baseImageTagsURL);
         if (!response.ok) {
           throw new Error('Failed to fetch base images.');
         }
