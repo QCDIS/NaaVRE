@@ -19,12 +19,12 @@ interface IProps {
 }
 
 interface IState {
-
     loading: boolean
     baseImageSelected: boolean
     currentCellIndex: number
     currentCell: VRECell
     typeSelections: { [type: string]: boolean }
+    baseImages: any[]
 }
 
 const DefaultState: IState = {
@@ -33,18 +33,12 @@ const DefaultState: IState = {
     baseImageSelected: false,
     currentCellIndex: -1,
     currentCell: null,
-    typeSelections: {}
+    typeSelections: {},
+    baseImages: []
 }
 
 type SaveState = 'started' | 'completed' | 'failed';
 
-const baseImages = [
-    { label: "miniconda3", id: "qcdis/miniconda3" },
-    { label: "Laserfarm", id: "qcdis/miniconda3-pdal" },
-    { label: "vol2bird", id: "qcdis/python-vol2bird" },
-    { label: "distributed-learning", id: "qcdis/miniconda3-distributed-learning" },
-    { label: "Jupyter R Notebook", id: "jupyter/r-notebook"}
-]
 
 export class CellTracker extends React.Component<IProps, IState> {
 
@@ -68,12 +62,6 @@ export class CellTracker extends React.Component<IProps, IState> {
     }
 
     allTypesSelected = () => {
-        console.log('allTypesSelected' )
-        for (let key in this.state.typeSelections) {
-            console.log(key + ": " + this.state.typeSelections[key]);
-          }
-
-        console.log('Object.values(this.state.typeSelections).length: '+Object.values(this.state.typeSelections).length)
         if (Object.values(this.state.typeSelections).length > 0) {
             return (
                 Object.values(this.state.typeSelections).reduce(
@@ -91,8 +79,29 @@ export class CellTracker extends React.Component<IProps, IState> {
         return (var_name in this.state.currentCell.types) && this.state.currentCell.types[var_name];
     }
 
-    typesUpdate = async (event: React.ChangeEvent<{ name?: string; value: unknown; }>, port: string) => {
+    async loadBaseImages() {
+      try {
+        const response = await fetch('https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/base_image_tags.json');
+        if (!response.ok) {
+          throw new Error('Failed to fetch base images.');
+        }
+        const baseImagesData = await response.json();
 
+        // Convert object data to an array of objects
+        const updatedBaseImages = Object.entries(baseImagesData).map(([name, image]) => ({
+          name,
+          image,
+        }));
+        this.setState({ baseImageSelected: false, baseImages: updatedBaseImages });
+      } catch (error) {
+        console.log(error);
+        alert('Error loading base images: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+
+      }
+    }
+
+
+    typesUpdate = async (event: React.ChangeEvent<{ name?: string; value: unknown; }>, port: string) => {
         await requestAPI<any>('containerizer/types', {
             body: JSON.stringify({
                 port: port,
@@ -103,12 +112,8 @@ export class CellTracker extends React.Component<IProps, IState> {
 
         let currTypeSelections = this.state.typeSelections
         currTypeSelections[port] = true
-        console.log('currTypeSelections: '+currTypeSelections)
-
         let currCurrentCell = this.state.currentCell
         currCurrentCell.types[port] = event.target.value ? String(event.target.value) : null
-        console.log('currCurrentCell: '+currCurrentCell)
-
         this.setState({
             typeSelections: currTypeSelections,
             currentCell: currCurrentCell,
@@ -116,7 +121,6 @@ export class CellTracker extends React.Component<IProps, IState> {
     };
 
     baseImageUpdate = async (value: any) => {
-
         await requestAPI<any>('containerizer/baseimage', {
             body: JSON.stringify({
                 image: value.id
@@ -128,6 +132,7 @@ export class CellTracker extends React.Component<IProps, IState> {
 
     exctractor = async (notebookModel: INotebookModel, save = false) => {
         this.setState({loading: true})
+        await this.loadBaseImages();
         // try {
             const kernel = await this.getKernel()
 
@@ -140,7 +145,6 @@ export class CellTracker extends React.Component<IProps, IState> {
                 }),
                 method: 'POST'
             });
-            console.log(extractedCell);
             this.setState({
                 currentCell: extractedCell,
                 loading: false,
@@ -158,11 +162,6 @@ export class CellTracker extends React.Component<IProps, IState> {
             this.state.currentCell.params.forEach((el: string) => {
                 typeSelections[el] = (this.getVarType(el) != null)
             })
-            console.log('containerizer/extract typeSelections: '+typeSelections)
-
-            for (let key in typeSelections) {
-                console.log(key + ": " + typeSelections[key]);
-            }
             this.setState({ typeSelections: typeSelections })
 
             this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
@@ -191,7 +190,7 @@ export class CellTracker extends React.Component<IProps, IState> {
         });
     };
 
-    componentDidMount = () => {
+    async componentDidMount() {
         if (this.props.notebook) {
             this.connectAndInitWhenReady(this.props.notebook);
         }
@@ -370,12 +369,13 @@ export class CellTracker extends React.Component<IProps, IState> {
                             <div>
                                 <p className={'lw-panel-preview'}>Base Image</p>
                                 <Autocomplete
+                                    getOptionLabel={(option) => option.name}
+                                    options={this.state.baseImages}
                                     disablePortal
                                     onChange={(_event: any, newValue: any | null) => {
                                         this.baseImageUpdate(newValue);
                                     }}
                                     id="combo-box-demo"
-                                    options={baseImages}
                                     sx={{ width: 330, margin: '20px' }}
                                     renderInput={(params) => <TextField {...params} />}
                                 />

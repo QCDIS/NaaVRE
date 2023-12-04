@@ -162,16 +162,6 @@ class TypesHandler(APIHandler, Catalog):
         cell.types[port] = p_type
 
 
-def get_base_image_tag(base_image):
-    if 'qcdis/python-vol2bird' in base_image:
-        return os.getenv('VOL2BIRD_BASE_IMAGE_TAG', 'latest')
-    elif 'qcdis/miniconda3-pdal' in base_image:
-        return os.getenv('MINICONDA3_PDAL_BASE_IMAGE_TAG', 'latest')
-    elif 'jupyter/r-notebook' in base_image:
-        return os.getenv('R_BASE_IMAGE_TAG', 'latest')
-    return 'latest'
-
-
 class BaseImageHandler(APIHandler, Catalog):
     logger = logging.getLogger(__name__)
 
@@ -179,8 +169,8 @@ class BaseImageHandler(APIHandler, Catalog):
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
         logger.debug('BaseImageHandler. payload: ' + str(payload))
+        print('BaseImageHandler. payload: ' + str(payload))
         base_image = payload['image']
-        base_image += ':'+get_base_image_tag(base_image)
         cell = Catalog.editor_buffer
         cell.base_image = base_image
 
@@ -207,7 +197,7 @@ def find_job(wf_id=None, owner=None, repository_name=None, token=None, job_id=No
 
 def write_cell_to_file(current_cell):
     Path('/tmp/workflow_cells/cells').mkdir(parents=True, exist_ok=True)
-    with open('/tmp/workflow_cells/cells/'+current_cell.task_name+'.json', 'w') as f:
+    with open('/tmp/workflow_cells/cells/' + current_cell.task_name + '.json', 'w') as f:
         f.write(current_cell.toJSON())
         f.close()
 
