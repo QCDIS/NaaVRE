@@ -162,7 +162,7 @@ jobs:
           conda activate jupyterlab
           python docker/repo_utils/conf_vl_repos.py  --force=True
           pip install --upgrade build
-          pytest --ignore=docker --ignore=cypress
+          pytest -s --ignore=docker --ignore=cypress --no-header -v
 
       - name: make release
         shell: bash -el {0}
