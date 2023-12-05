@@ -103,7 +103,6 @@ class ExecuteWorkflowHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        print('Workflow execution payload: ' + json.dumps(payload, indent=2))
         if os.getenv('DEBUG'):
             write_workflow_to_file(payload)
         chart = payload['chart']
@@ -197,7 +196,6 @@ class ExecuteWorkflowHandler(APIHandler):
                 return
             vre_api_verify_ssl = os.getenv('VRE_API_VERIFY_SSL', 'true')
             logger.info('Workflow submission request: ' + str(json.dumps(req_body, indent=2)))
-            print('Workflow submission request: ' + str(json.dumps(req_body, indent=2)))
             session = requests.Session()
             session.verify = vre_api_verify_ssl
 

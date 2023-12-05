@@ -83,5 +83,10 @@
     "types": {
         "a": "int",
         "list_of_ints": "list"
-    }
+    },
+        "example_inputs" : [
+    "--id",
+    "0"
+  ],
+    "skip_exec": true
 }

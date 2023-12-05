@@ -1,17 +1,17 @@
 {
     "all_inputs": [],
-    "base_image": "qcdis/miniconda3",
+    "base_image": "qcdis/python-vol2bird:v2.1.1",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "055d4ab": {
-                "id": "055d4ab",
+            "f255b28": {
+                "id": "f255b28",
                 "ports": {
-                    "file_path": {
-                        "id": "file_path",
+                    "msg": {
+                        "id": "msg",
                         "properties": {
-                            "color": "#663a78"
+                            "color": "#7bd279"
                         },
                         "type": "right"
                     }
@@ -25,17 +25,17 @@
                         ""
                     ],
                     "inputs": [],
-                    "og_node_id": "055d4ab",
+                    "og_node_id": "f255b28",
                     "outputs": [
-                        "file_path"
+                        "msg"
                     ],
                     "params": [],
-                    "title": "Create file-dev-user-name-at-domain-com",
+                    "title": "vol2bird-dev-user-name-at-domain-com",
                     "vars": [
                         {
-                            "color": "#663a78",
+                            "color": "#7bd279",
                             "direction": "output",
-                            "name": "file_path",
+                            "name": "msg",
                             "type": "datatype"
                         }
                     ]
@@ -50,9 +50,7 @@
         "scale": 1,
         "selected": {}
     },
-    "confs": {
-        "conf_data_folder": "conf_data_folder = os.path.join('/tmp','data')"
-    },
+    "confs": {},
     "container_source": "",
     "dependencies": [
         {
@@ -63,22 +61,15 @@
     ],
     "inputs": [],
     "kernel": "ipython",
-    "node_id": "055d4ab",
-    "original_source": "conf_data_folder = os.path.join('/tmp','data')\n\nL = [\"a\\n\", \"b\\n\", \"c\\n\"]\nfile_path =  os.path.join(conf_data_folder,'hello.txt')\nfp = open(file_path, 'w')\nfp.writelines(L)\nfp.close()",
+    "node_id": "f255b28",
+    "original_source": "\ncmd = \"vol2bird --version\"\n\nmsg = os.system(cmd)  # returns the exit code in unix\n",
     "outputs": [
-        "file_path"
+        "msg"
     ],
     "params": [],
-    "task_name": "create-file-dev-user-name-at-domain-com",
-    "title": "Create file-dev-user-name-at-domain-com",
+    "task_name": "vol2bird-dev-user-name-at-domain-com",
+    "title": "vol2bird-dev-user-name-at-domain-com",
     "types": {
-        "file_path": "str"
-    },
-        "example_inputs" : [
-    "--id",
-    "0",
-    "--conf_data_folder",
-    "/tmp/data"
-  ],
-    "skip_exec": true
+        "msg": "int"
+    }
 }
