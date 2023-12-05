@@ -284,7 +284,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertTrue('status' in json_response)
                 self.assertTrue('argo_url' in json_response)
                 self.assertTrue('progress' in json_response)
-                sleep(30)
+                sleep(40)
             self.assertTrue(json_response['status'] == 'Succeeded', json_response)
 
     def call_cell_handler(self):

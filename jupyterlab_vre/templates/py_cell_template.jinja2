@@ -32,6 +32,7 @@ id = args.id
 import json
 {{ in_var }} = json.loads(args.{{ in_var }})
 {% else %}
+{{ in_var }}.replace("'", "")
 {{ in_var }} = args.{{ in_var }}
 {% endif %}
 {% endfor %}

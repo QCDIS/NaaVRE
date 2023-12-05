@@ -25,6 +25,7 @@ opt = parse_args(OptionParser(option_list=option_list))
 {% if types[in_var] == list  or types[in_var] == 'list' %}
 {{ in_var }} = fromJSON(opt${{ in_var }})
 {% else %}
+{{ in_var }} <- gsub("'", "", {{ in_var }})
 {{ in_var }} = opt${{ in_var }}
 {% endif %}
 {% endfor %}
