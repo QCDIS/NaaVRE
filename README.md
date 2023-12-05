@@ -64,12 +64,36 @@ To do that:
 2. Open the NaaVRE UI and dockerize the cells that will make up the workflow.
 3. Open the Workflow Manager and construct the workflow. 
 
-After these steps go to `/tmp/workflow_cells/cells` and copy the files from that folder in the `test/resources/cells` folder.
+After these steps go to `/tmp/workflow_cells/cells` and copy the files from that folder in the `test/resources/cells` 
+folder.
+
+To test the code in the cell you must add a `example_inputs` field to the cell file that will have to match it's input
+parameters . For example:
+```json
+    "example_inputs" : [
+    "--id",
+    "0",
+    "--msg",
+    "Hello World!"
+  ]
+```
+
+If you don't want to run the cell's code you can add a `"skip_exec": true` field to the cell file. For example:
+```json
+    "skip_exec": true,
+```
+
+This is useful if the base installation don't contain the libraries or dependencies required by the cell's code i.e. 
+lasefarm or vol2bird.
+
 Do the same for the workflow file in `/tmp/workflow_cells/workflows` and copy it to `test/resources/workflows/NaaVRE`.
 Then run the tests as described in the [Testing](#testing) section. 
 
 This will case all cells in the `test/resources/cells` folder to be dockerized. Next all the workflows in the 
 `test/resources/workflows/NaaVRE` folder will be submitted to the Argo Workflow engine.
+
+
+
 
 
 

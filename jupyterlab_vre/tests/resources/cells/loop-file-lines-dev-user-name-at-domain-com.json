@@ -2,14 +2,21 @@
     "all_inputs": [
         "lines"
     ],
-    "base_image": "qcdis/miniconda3",
+    "base_image": "qcdis/miniconda3:v0.1",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "f421e91": {
-                "id": "f421e91",
+            "5d9de73": {
+                "id": "5d9de73",
                 "ports": {
+                    "count": {
+                        "id": "count",
+                        "properties": {
+                            "color": "#783d3a"
+                        },
+                        "type": "right"
+                    },
                     "lines": {
                         "id": "lines",
                         "properties": {
@@ -27,8 +34,10 @@
                     "inputs": [
                         "lines"
                     ],
-                    "og_node_id": "f421e91",
-                    "outputs": [],
+                    "og_node_id": "5d9de73",
+                    "outputs": [
+                        "count"
+                    ],
                     "params": [],
                     "title": "loop file lines-dev-user-name-at-domain-com",
                     "vars": [
@@ -36,6 +45,12 @@
                             "color": "#ac535c",
                             "direction": "input",
                             "name": "lines",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#783d3a",
+                            "direction": "output",
+                            "name": "count",
                             "type": "datatype"
                         }
                     ]
@@ -57,13 +72,16 @@
         "lines"
     ],
     "kernel": "ipython",
-    "node_id": "f421e91",
+    "node_id": "5d9de73",
     "original_source": "\ncount = 0\nfor l in lines:\n    count += 1\n    print(\"Line{}: {}\".format(count, l.strip()))",
-    "outputs": [],
+    "outputs": [
+        "count"
+    ],
     "params": [],
     "task_name": "loop-file-lines-dev-user-name-at-domain-com",
     "title": "loop file lines-dev-user-name-at-domain-com",
     "types": {
+        "count": "int",
         "lines": "list"
     }
 }
