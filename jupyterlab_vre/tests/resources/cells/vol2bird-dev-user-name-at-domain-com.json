@@ -1,13 +1,22 @@
 {
-    "all_inputs": [],
+    "all_inputs": [
+        "a"
+    ],
     "base_image": "qcdis/python-vol2bird:v2.1.1",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "f255b28": {
-                "id": "f255b28",
+            "ded63d7": {
+                "id": "ded63d7",
                 "ports": {
+                    "a": {
+                        "id": "a",
+                        "properties": {
+                            "color": "#77862d"
+                        },
+                        "type": "left"
+                    },
                     "msg": {
                         "id": "msg",
                         "properties": {
@@ -24,14 +33,22 @@
                     "deps": [
                         ""
                     ],
-                    "inputs": [],
-                    "og_node_id": "f255b28",
+                    "inputs": [
+                        "a"
+                    ],
+                    "og_node_id": "ded63d7",
                     "outputs": [
                         "msg"
                     ],
                     "params": [],
                     "title": "vol2bird-dev-user-name-at-domain-com",
                     "vars": [
+                        {
+                            "color": "#77862d",
+                            "direction": "input",
+                            "name": "a",
+                            "type": "datatype"
+                        },
                         {
                             "color": "#7bd279",
                             "direction": "output",
@@ -59,10 +76,12 @@
             "name": "os"
         }
     ],
-    "inputs": [],
+    "inputs": [
+        "a"
+    ],
     "kernel": "ipython",
-    "node_id": "f255b28",
-    "original_source": "\ncmd = \"vol2bird --version\"\n\nmsg = os.system(cmd)  # returns the exit code in unix\n",
+    "node_id": "ded63d7",
+    "original_source": "print(a)\ncmd = \"vol2bird --version\"\n\nmsg = os.system(cmd)  # returns the exit code in unix\n",
     "outputs": [
         "msg"
     ],
@@ -70,6 +89,7 @@
     "task_name": "vol2bird-dev-user-name-at-domain-com",
     "title": "vol2bird-dev-user-name-at-domain-com",
     "types": {
+        "a": "int",
         "msg": "int"
     }
 }

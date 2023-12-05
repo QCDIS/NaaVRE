@@ -2,13 +2,13 @@
     "all_inputs": [
         "file_path"
     ],
-    "base_image": "qcdis/miniconda3",
+    "base_image": "qcdis/miniconda3:v0.1",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "f357bb7": {
-                "id": "f357bb7",
+            "4deac70": {
+                "id": "4deac70",
                 "ports": {
                     "file_path": {
                         "id": "file_path",
@@ -30,11 +30,14 @@
                     "y": 15
                 },
                 "properties": {
-                    "deps": [],
+                    "deps": [
+                        "",
+                        "os"
+                    ],
                     "inputs": [
                         "file_path"
                     ],
-                    "og_node_id": "f357bb7",
+                    "og_node_id": "4deac70",
                     "outputs": [
                         "lines"
                     ],
@@ -65,15 +68,38 @@
         "scale": 1,
         "selected": {}
     },
-    "confs": {},
+    "confs": {
+        "conf_data_folder": "conf_data_folder = os.path.join('/tmp','data')"
+    },
     "container_source": "",
-    "dependencies": [],
+    "dependencies": [
+        {
+            "asname": null,
+            "module": "os.path",
+            "name": "isfile"
+        },
+        {
+            "asname": null,
+            "module": "os.path",
+            "name": "join"
+        },
+        {
+            "asname": null,
+            "module": "os",
+            "name": "listdir"
+        },
+        {
+            "asname": null,
+            "module": "",
+            "name": "os"
+        }
+    ],
     "inputs": [
         "file_path"
     ],
     "kernel": "ipython",
-    "node_id": "f357bb7",
-    "original_source": "\nf = open(file_path, 'r')\nlines = f.readlines()\nf.close()",
+    "node_id": "4deac70",
+    "original_source": "conf_data_folder = os.path.join('/tmp','data')\n\nonlyfiles = [f for f in listdir(conf_data_folder) if isfile(join(conf_data_folder, f))]\n\nprint(onlyfiles)\n\nf = open(file_path, 'r')\nlines = f.readlines()\nf.close()",
     "outputs": [
         "lines"
     ],
@@ -83,10 +109,5 @@
     "types": {
         "file_path": "str",
         "lines": "list"
-    },
-    "example_inputs" : [
-    "--id",
-    "0"
-  ],
-"skip_exec": true
+    }
 }

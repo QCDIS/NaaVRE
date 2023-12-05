@@ -72,6 +72,7 @@ def get_gh_repository():
 
 
 def create_cell_and_add_to_cat(cell_path=None):
+    print('Creating cell from: ', cell_path)
     with open(cell_path, 'r') as file:
         cell = json.load(file)
     file.close()
@@ -263,6 +264,31 @@ class HandlersAPITest(AsyncHTTPTestCase):
             self.assertTrue('created' in json_response)
             self.assertTrue('status' in json_response)
             self.assertTrue('argo_url' in json_response)
+            workflow_id = json_response['argo_id']
+            response = self.fetch(f'/executeworkflowhandler?workflow_id={workflow_id}', method='GET')
+            self.assertEqual(response.code, 200, response.body)
+            json_response = json.loads(response.body.decode('utf-8'))
+            self.assertIsNotNone(json_response)
+            self.assertTrue('argo_id' in json_response)
+            self.assertTrue('created' in json_response)
+            self.assertTrue('status' in json_response)
+            self.assertTrue('argo_url' in json_response)
+            self.assertTrue('progress' in json_response)
+            while json_response['status'] == 'Running':
+                response = self.fetch(f'/executeworkflowhandler?workflow_id={workflow_id}', method='GET')
+                self.assertEqual(response.code, 200, response.body)
+                json_response = json.loads(response.body.decode('utf-8'))
+                print(json.dumps(json_response, indent=2))
+                self.assertIsNotNone(json_response)
+                self.assertTrue('argo_id' in json_response)
+                self.assertTrue('created' in json_response)
+                self.assertTrue('status' in json_response)
+                self.assertTrue('argo_url' in json_response)
+                self.assertTrue('progress' in json_response)
+                if json_response['status'] != 'Running':
+                    break
+                sleep(60)
+            self.assertTrue(json_response['status'] == 'Succeeded', json_response)
 
     def call_cell_handler(self):
         response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))

@@ -14,12 +14,12 @@ arg_parser.add_argument('--id', action='store', type=str, required=True, dest='i
 {% if types[in_var] == list  or types[in_var] == 'list' %}
 arg_parser.add_argument('--{{ in_var }}', action='store', type=str, required=True, dest='{{ in_var }}')
 {% else %}
-arg_parser.add_argument('--{{ in_var }}', action='store', type={{ types[in_var] }}, required='True', dest='{{ in_var }}')
+arg_parser.add_argument('--{{ in_var }}', action='store', type={{ types[in_var] }}, required=True, dest='{{ in_var }}')
 {% endif %}
 {% endfor %}
 
 {% for param in cell.params|sort %}
-arg_parser.add_argument('--{{ param }}', action='store', type={{ types[param] }}, required='True', dest='{{ param }}')
+arg_parser.add_argument('--{{ param }}', action='store', type={{ types[param] }}, required=True, dest='{{ param }}')
 {% endfor %}
 
 args = arg_parser.parse_args()
@@ -31,6 +31,8 @@ id = args.id
 {% if types[in_var] == list  or types[in_var] == 'list' %}
 import json
 {{ in_var }} = json.loads(args.{{ in_var }})
+{% elif types[in_var] == str or  types[in_var] == 'str' %}
+{{ in_var }} = args.{{ in_var }}.replace('"','')
 {% else %}
 {{ in_var }} = args.{{ in_var }}
 {% endif %}

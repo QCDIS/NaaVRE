@@ -1,15 +1,15 @@
- {
+{
     "all_inputs": [
-        "a",
-        "b"
+        "count",
+        "a"
     ],
-    "base_image": "qcdis/miniconda3",
+    "base_image": "qcdis/miniconda3:v0.1",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "99e9edb": {
-                "id": "99e9edb",
+            "44dec46": {
+                "id": "44dec46",
                 "ports": {
                     "a": {
                         "id": "a",
@@ -18,12 +18,19 @@
                         },
                         "type": "left"
                     },
-                    "b": {
-                        "id": "b",
+                    "count": {
+                        "id": "count",
                         "properties": {
-                            "color": "#5366ac"
+                            "color": "#783d3a"
                         },
                         "type": "left"
+                    },
+                    "msg": {
+                        "id": "msg",
+                        "properties": {
+                            "color": "#7bd279"
+                        },
+                        "type": "right"
                     }
                 },
                 "position": {
@@ -34,10 +41,12 @@
                     "deps": [],
                     "inputs": [
                         "a",
-                        "b"
+                        "count"
                     ],
-                    "og_node_id": "99e9edb",
-                    "outputs": [],
+                    "og_node_id": "44dec46",
+                    "outputs": [
+                        "msg"
+                    ],
                     "params": [],
                     "title": "Anti-pattern-dev-user-name-at-domain-com",
                     "vars": [
@@ -48,9 +57,15 @@
                             "type": "datatype"
                         },
                         {
-                            "color": "#5366ac",
+                            "color": "#783d3a",
                             "direction": "input",
-                            "name": "b",
+                            "name": "count",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#7bd279",
+                            "direction": "output",
+                            "name": "msg",
                             "type": "datatype"
                         }
                     ]
@@ -69,27 +84,21 @@
     "container_source": "",
     "dependencies": [],
     "inputs": [
-        "a",
-        "b"
+        "count",
+        "a"
     ],
     "kernel": "ipython",
-    "node_id": "99e9edb",
-    "original_source": "some_list = range(a, b+1)",
-    "outputs": [],
+    "node_id": "44dec46",
+    "original_source": "some_list = range(count, a+1)\n\nmsg = '1'",
+    "outputs": [
+        "msg"
+    ],
     "params": [],
     "task_name": "anti-pattern-dev-user-name-at-domain-com",
     "title": "Anti-pattern-dev-user-name-at-domain-com",
     "types": {
         "a": "int",
-        "b": "int"
-    },
-     "example_inputs": [
-    "--id",
-    "0",
-    "--a",
-    1,
-    "--b",
-    10
-  ],
- "skip_exec": true
+        "count": "int",
+        "msg": "str"
+    }
 }

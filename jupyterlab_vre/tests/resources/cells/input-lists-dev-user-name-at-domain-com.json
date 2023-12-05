@@ -1,12 +1,14 @@
 {
-    "all_inputs": [],
-    "base_image": "qcdis/miniconda3",
+    "all_inputs": [
+        "msg"
+    ],
+    "base_image": "qcdis/miniconda3:v0.1",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "4b5a018": {
-                "id": "4b5a018",
+            "3e4f548": {
+                "id": "3e4f548",
                 "ports": {
                     "list_of_ints": {
                         "id": "list_of_ints",
@@ -21,6 +23,13 @@
                             "color": "#79c5d2"
                         },
                         "type": "right"
+                    },
+                    "msg": {
+                        "id": "msg",
+                        "properties": {
+                            "color": "#7bd279"
+                        },
+                        "type": "left"
                     }
                 },
                 "position": {
@@ -29,25 +38,33 @@
                 },
                 "properties": {
                     "deps": [],
-                    "inputs": [],
-                    "og_node_id": "4b5a018",
+                    "inputs": [
+                        "msg"
+                    ],
+                    "og_node_id": "3e4f548",
                     "outputs": [
-                        "list_of_paths",
-                        "list_of_ints"
+                        "list_of_ints",
+                        "list_of_paths"
                     ],
                     "params": [],
                     "title": "input lists-dev-user-name-at-domain-com",
                     "vars": [
                         {
-                            "color": "#79c5d2",
-                            "direction": "output",
-                            "name": "list_of_paths",
+                            "color": "#7bd279",
+                            "direction": "input",
+                            "name": "msg",
                             "type": "datatype"
                         },
                         {
                             "color": "#5f1f93",
                             "direction": "output",
                             "name": "list_of_ints",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#79c5d2",
+                            "direction": "output",
+                            "name": "list_of_paths",
                             "type": "datatype"
                         }
                     ]
@@ -65,10 +82,12 @@
     "confs": {},
     "container_source": "",
     "dependencies": [],
-    "inputs": [],
+    "inputs": [
+        "msg"
+    ],
     "kernel": "ipython",
-    "node_id": "4b5a018",
-    "original_source": "\nlist_of_paths = [\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\"]\nlist_of_ints = [1,2,35,6,65]",
+    "node_id": "3e4f548",
+    "original_source": "\nlist_of_paths = [\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\"]\nlist_of_ints = [1,2,35,6,65]\nprint(msg)",
     "outputs": [
         "list_of_paths",
         "list_of_ints"
@@ -78,10 +97,7 @@
     "title": "input lists-dev-user-name-at-domain-com",
     "types": {
         "list_of_ints": "list",
-        "list_of_paths": "list"
-    },
-        "example_inputs" : [
-    "--id",
-    "0"
-  ]
+        "list_of_paths": "list",
+        "msg": "str"
+    }
 }
