@@ -363,9 +363,9 @@ class CellsHandler(APIHandler, Catalog):
                                       files_info=files_info)
             files_updated = True
         wf_id = str(uuid.uuid4())
-        # Here we force to run the containerization workflow since we can't if the docker image is already built. Also
+        # Here we force to run the containerization workflow since we can't if the docker image is already built. Also,
         # when testing the workflow we need to run it again
-        # files_updated = True
+        files_updated = True
         if files_updated:
             resp = dispatch_github_workflow(
                 owner,
