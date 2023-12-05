@@ -62,5 +62,10 @@
   "title": "Param check-dev-user-name-at-domain-com",
   "types": {
     "diameterofsedimentationchamber": "int"
-  }
+  },
+  "skip_exec": false,
+      "example_inputs" : [
+    "--id",
+    "0"
+  ]
 }

@@ -79,5 +79,9 @@
     "types": {
         "list_of_ints": "list",
         "list_of_paths": "list"
-    }
+    },
+        "example_inputs" : [
+    "--id",
+    "0"
+  ]
 }
