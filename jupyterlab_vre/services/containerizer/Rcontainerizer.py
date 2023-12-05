@@ -90,8 +90,9 @@ class Rcontainerizer:
 
         template_cell.stream(cell=cell, deps=cell.generate_dependencies(), types=cell.types,
                              confs=cell.generate_configuration()).dump(files_info['cell']['path'])
-        template_dockerfile.stream(task_name=cell.task_name, base_image=cell.base_image).dump(
-            files_info['dockerfile']['path'])
+        template_dockerfile.stream(task_name=cell.task_name,
+                                   base_image=cell.base_image).dump(files_info['dockerfile']['path'])
+
         # set_conda_deps, set_pip_deps = map_dependencies(dependencies=cell.dependencies)
         # template_conda = template_env.get_template('conda_env_template.jinja2')
         # template_conda.stream(base_image=cell.base_image, conda_deps=list(set_conda_deps),
