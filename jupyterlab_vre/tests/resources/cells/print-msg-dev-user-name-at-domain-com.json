@@ -7,8 +7,8 @@
         "hovered": {},
         "links": {},
         "nodes": {
-            "0e62f4e": {
-                "id": "0e62f4e",
+            "aa64460": {
+                "id": "aa64460",
                 "ports": {
                     "msg": {
                         "id": "msg",
@@ -27,7 +27,7 @@
                     "inputs": [
                         "msg"
                     ],
-                    "og_node_id": "0e62f4e",
+                    "og_node_id": "aa64460",
                     "outputs": [],
                     "params": [],
                     "title": "Print msg-dev-user-name-at-domain-com",
@@ -57,7 +57,7 @@
         "msg"
     ],
     "kernel": "ipython",
-    "node_id": "0e62f4e",
+    "node_id": "aa64460",
     "original_source": "print('msg:', str(msg))",
     "outputs": [],
     "params": [],

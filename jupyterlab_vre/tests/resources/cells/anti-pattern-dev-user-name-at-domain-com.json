@@ -1,19 +1,27 @@
 {
     "all_inputs": [
+        "count",
         "a"
     ],
-    "base_image": "qcdis/python-vol2bird:v2.1.1",
+    "base_image": "qcdis/miniconda3:v0.1",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "8e1061c": {
-                "id": "8e1061c",
+            "bee8902": {
+                "id": "bee8902",
                 "ports": {
                     "a": {
                         "id": "a",
                         "properties": {
                             "color": "#77862d"
+                        },
+                        "type": "left"
+                    },
+                    "count": {
+                        "id": "count",
+                        "properties": {
+                            "color": "#783d3a"
                         },
                         "type": "left"
                     },
@@ -30,23 +38,28 @@
                     "y": 15
                 },
                 "properties": {
-                    "deps": [
-                        ""
-                    ],
+                    "deps": [],
                     "inputs": [
-                        "a"
+                        "a",
+                        "count"
                     ],
-                    "og_node_id": "8e1061c",
+                    "og_node_id": "bee8902",
                     "outputs": [
                         "msg"
                     ],
                     "params": [],
-                    "title": "vol2bird-dev-user-name-at-domain-com",
+                    "title": "Anti-pattern-dev-user-name-at-domain-com",
                     "vars": [
                         {
                             "color": "#77862d",
                             "direction": "input",
                             "name": "a",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#783d3a",
+                            "direction": "input",
+                            "name": "count",
                             "type": "datatype"
                         },
                         {
@@ -69,27 +82,23 @@
     },
     "confs": {},
     "container_source": "",
-    "dependencies": [
-        {
-            "asname": null,
-            "module": "",
-            "name": "os"
-        }
-    ],
+    "dependencies": [],
     "inputs": [
+        "count",
         "a"
     ],
     "kernel": "ipython",
-    "node_id": "8e1061c",
-    "original_source": "print(a)\ncmd = \"vol2bird --version\"\n\nmsg = os.system(cmd)  # returns the exit code in unix\n",
+    "node_id": "bee8902",
+    "original_source": "some_list = range(count, a+1)\n\nmsg = '1'",
     "outputs": [
         "msg"
     ],
     "params": [],
-    "task_name": "vol2bird-dev-user-name-at-domain-com",
-    "title": "vol2bird-dev-user-name-at-domain-com",
+    "task_name": "anti-pattern-dev-user-name-at-domain-com",
+    "title": "Anti-pattern-dev-user-name-at-domain-com",
     "types": {
         "a": "int",
+        "count": "int",
         "msg": "int"
     }
 }

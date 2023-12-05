@@ -2,13 +2,13 @@
     "all_inputs": [
         "list_of_ints"
     ],
-    "base_image": "qcdis/miniconda3",
+    "base_image": "qcdis/miniconda3:v0.1",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "7899e6e": {
-                "id": "7899e6e",
+            "3974a1f": {
+                "id": "3974a1f",
                 "ports": {
                     "a": {
                         "id": "a",
@@ -34,7 +34,7 @@
                     "inputs": [
                         "list_of_ints"
                     ],
-                    "og_node_id": "7899e6e",
+                    "og_node_id": "3974a1f",
                     "outputs": [
                         "a"
                     ],
@@ -72,8 +72,8 @@
         "list_of_ints"
     ],
     "kernel": "ipython",
-    "node_id": "7899e6e",
-    "original_source": "\nfor i in list_of_ints:\n    a = i +1\n    print(a)",
+    "node_id": "3974a1f",
+    "original_source": "\nfor i in list_of_ints:\n    a = i -1\n    print(a)",
     "outputs": [
         "a"
     ],
@@ -83,10 +83,5 @@
     "types": {
         "a": "int",
         "list_of_ints": "list"
-    },
-        "example_inputs" : [
-    "--id",
-    "0"
-  ],
-    "skip_exec": true
+    }
 }

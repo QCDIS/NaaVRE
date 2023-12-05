@@ -7,8 +7,8 @@
         "hovered": {},
         "links": {},
         "nodes": {
-            "6b2ef45": {
-                "id": "6b2ef45",
+            "0004ca3": {
+                "id": "0004ca3",
                 "ports": {
                     "count": {
                         "id": "count",
@@ -34,7 +34,7 @@
                     "inputs": [
                         "lines"
                     ],
-                    "og_node_id": "6b2ef45",
+                    "og_node_id": "0004ca3",
                     "outputs": [
                         "count"
                     ],
@@ -72,7 +72,7 @@
         "lines"
     ],
     "kernel": "ipython",
-    "node_id": "6b2ef45",
+    "node_id": "0004ca3",
     "original_source": "\ncount = 0\nfor l in lines:\n    count += 1\n    print(\"Line{}: {}\".format(count, l.strip()))",
     "outputs": [
         "count"

@@ -1,13 +1,22 @@
 {
-    "all_inputs": [],
+    "all_inputs": [
+        "a"
+    ],
     "base_image": "qcdis/python-vol2bird:v2.1.1",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "bf52a3a": {
-                "id": "bf52a3a",
+            "edf3d83": {
+                "id": "edf3d83",
                 "ports": {
+                    "a": {
+                        "id": "a",
+                        "properties": {
+                            "color": "#77862d"
+                        },
+                        "type": "left"
+                    },
                     "msg": {
                         "id": "msg",
                         "properties": {
@@ -24,14 +33,22 @@
                     "deps": [
                         ""
                     ],
-                    "inputs": [],
-                    "og_node_id": "bf52a3a",
+                    "inputs": [
+                        "a"
+                    ],
+                    "og_node_id": "edf3d83",
                     "outputs": [
                         "msg"
                     ],
                     "params": [],
                     "title": "KNMI-vol-h5-to-ODIM-h5-dev-user-name-at-domain-com",
                     "vars": [
+                        {
+                            "color": "#77862d",
+                            "direction": "input",
+                            "name": "a",
+                            "type": "datatype"
+                        },
                         {
                             "color": "#7bd279",
                             "direction": "output",
@@ -59,10 +76,12 @@
             "name": "os"
         }
     ],
-    "inputs": [],
+    "inputs": [
+        "a"
+    ],
     "kernel": "ipython",
-    "node_id": "bf52a3a",
-    "original_source": "\ncmd = \"KNMI_vol_h5_to_ODIM_h5 \"\n\nmsg = os.system(cmd)  # returns the exit code in unix",
+    "node_id": "edf3d83",
+    "original_source": "print(a)\ncmd = \"KNMI_vol_h5_to_ODIM_h5 \"\n\nmsg = os.system(cmd)  # returns the exit code in unix",
     "outputs": [
         "msg"
     ],
@@ -70,6 +89,7 @@
     "task_name": "knmi-vol-h5-to-odim-h5-dev-user-name-at-domain-com",
     "title": "KNMI-vol-h5-to-ODIM-h5-dev-user-name-at-domain-com",
     "types": {
+        "a": "int",
         "msg": "int"
     }
 }
