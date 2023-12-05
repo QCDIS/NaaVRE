@@ -7,8 +7,8 @@
         "hovered": {},
         "links": {},
         "nodes": {
-            "edf3d83": {
-                "id": "edf3d83",
+            "e25ec34": {
+                "id": "e25ec34",
                 "ports": {
                     "a": {
                         "id": "a",
@@ -36,7 +36,7 @@
                     "inputs": [
                         "a"
                     ],
-                    "og_node_id": "edf3d83",
+                    "og_node_id": "e25ec34",
                     "outputs": [
                         "msg"
                     ],
@@ -80,7 +80,7 @@
         "a"
     ],
     "kernel": "ipython",
-    "node_id": "edf3d83",
+    "node_id": "e25ec34",
     "original_source": "print(a)\ncmd = \"KNMI_vol_h5_to_ODIM_h5 \"\n\nmsg = os.system(cmd)  # returns the exit code in unix",
     "outputs": [
         "msg"

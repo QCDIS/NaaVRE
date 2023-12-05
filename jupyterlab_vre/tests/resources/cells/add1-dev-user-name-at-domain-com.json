@@ -7,8 +7,8 @@
         "hovered": {},
         "links": {},
         "nodes": {
-            "3b30640": {
-                "id": "3b30640",
+            "49d5dda": {
+                "id": "49d5dda",
                 "ports": {
                     "a": {
                         "id": "a",
@@ -34,7 +34,7 @@
                     "inputs": [
                         "count"
                     ],
-                    "og_node_id": "3b30640",
+                    "og_node_id": "49d5dda",
                     "outputs": [
                         "a"
                     ],
@@ -72,7 +72,7 @@
         "count"
     ],
     "kernel": "ipython",
-    "node_id": "3b30640",
+    "node_id": "49d5dda",
     "original_source": "\na = count + 1",
     "outputs": [
         "a"

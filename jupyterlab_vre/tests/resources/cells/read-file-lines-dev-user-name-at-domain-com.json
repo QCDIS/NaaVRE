@@ -7,8 +7,8 @@
         "hovered": {},
         "links": {},
         "nodes": {
-            "e57a407": {
-                "id": "e57a407",
+            "4deac70": {
+                "id": "4deac70",
                 "ports": {
                     "file_path": {
                         "id": "file_path",
@@ -37,7 +37,7 @@
                     "inputs": [
                         "file_path"
                     ],
-                    "og_node_id": "e57a407",
+                    "og_node_id": "4deac70",
                     "outputs": [
                         "lines"
                     ],
@@ -98,7 +98,7 @@
         "file_path"
     ],
     "kernel": "ipython",
-    "node_id": "e57a407",
+    "node_id": "4deac70",
     "original_source": "conf_data_folder = os.path.join('/tmp','data')\n\nonlyfiles = [f for f in listdir(conf_data_folder) if isfile(join(conf_data_folder, f))]\n\nprint(onlyfiles)\n\nf = open(file_path, 'r')\nlines = f.readlines()\nf.close()",
     "outputs": [
         "lines"

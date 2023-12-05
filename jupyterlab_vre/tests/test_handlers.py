@@ -72,6 +72,7 @@ def get_gh_repository():
 
 
 def create_cell_and_add_to_cat(cell_path=None):
+    print('Creating cell from: ', cell_path)
     with open(cell_path, 'r') as file:
         cell = json.load(file)
     file.close()

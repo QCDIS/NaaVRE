@@ -31,6 +31,8 @@ id = args.id
 {% if types[in_var] == list  or types[in_var] == 'list' %}
 import json
 {{ in_var }} = json.loads(args.{{ in_var }})
+{% elif types[in_var] == str or  types[in_var] == 'str' %}
+{{ in_var }} = args.{{ in_var }}.replace('"','')
 {% else %}
 {{ in_var }} = args.{{ in_var }}
 {% endif %}

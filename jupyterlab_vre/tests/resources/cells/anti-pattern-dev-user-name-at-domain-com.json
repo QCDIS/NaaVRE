@@ -8,8 +8,8 @@
         "hovered": {},
         "links": {},
         "nodes": {
-            "bee8902": {
-                "id": "bee8902",
+            "44dec46": {
+                "id": "44dec46",
                 "ports": {
                     "a": {
                         "id": "a",
@@ -43,7 +43,7 @@
                         "a",
                         "count"
                     ],
-                    "og_node_id": "bee8902",
+                    "og_node_id": "44dec46",
                     "outputs": [
                         "msg"
                     ],
@@ -88,7 +88,7 @@
         "a"
     ],
     "kernel": "ipython",
-    "node_id": "bee8902",
+    "node_id": "44dec46",
     "original_source": "some_list = range(count, a+1)\n\nmsg = '1'",
     "outputs": [
         "msg"
@@ -99,6 +99,6 @@
     "types": {
         "a": "int",
         "count": "int",
-        "msg": "int"
+        "msg": "str"
     }
 }

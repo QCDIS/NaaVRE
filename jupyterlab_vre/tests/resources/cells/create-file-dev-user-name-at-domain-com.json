@@ -5,8 +5,8 @@
         "hovered": {},
         "links": {},
         "nodes": {
-            "65214c8": {
-                "id": "65214c8",
+            "5a918c8": {
+                "id": "5a918c8",
                 "ports": {
                     "file_path": {
                         "id": "file_path",
@@ -26,7 +26,7 @@
                         "os"
                     ],
                     "inputs": [],
-                    "og_node_id": "65214c8",
+                    "og_node_id": "5a918c8",
                     "outputs": [
                         "file_path"
                     ],
@@ -79,7 +79,7 @@
     ],
     "inputs": [],
     "kernel": "ipython",
-    "node_id": "65214c8",
+    "node_id": "5a918c8",
     "original_source": "conf_data_folder = os.path.join('/tmp','data')\n\nL = [\"a\\n\", \"b\\n\", \"c\\n\"]\nfile_path =  os.path.join(conf_data_folder,'hello.txt')\nfp = open(file_path, 'w')\nfp.writelines(L)\nfp.close()\n\nonlyfiles = [f for f in listdir(conf_data_folder) if isfile(join(conf_data_folder, f))]\n\nprint(onlyfiles)",
     "outputs": [
         "file_path"
