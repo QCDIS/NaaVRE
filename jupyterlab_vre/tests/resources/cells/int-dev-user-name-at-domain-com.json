@@ -1,0 +1,67 @@
+{
+    "all_inputs": [],
+    "base_image": "qcdis/miniconda3-pdal:v0.14",
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "81a62e5": {
+                "id": "81a62e5",
+                "ports": {
+                    "a": {
+                        "id": "a",
+                        "properties": {
+                            "color": "#77862d"
+                        },
+                        "type": "right"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [],
+                    "inputs": [],
+                    "og_node_id": "81a62e5",
+                    "outputs": [
+                        "a"
+                    ],
+                    "params": [],
+                    "title": "int-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#77862d",
+                            "direction": "output",
+                            "name": "a",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {},
+    "container_source": "",
+    "dependencies": [],
+    "inputs": [],
+    "kernel": "ipython",
+    "node_id": "81a62e5",
+    "original_source": "\na = 1",
+    "outputs": [
+        "a"
+    ],
+    "params": [],
+    "task_name": "int-dev-user-name-at-domain-com",
+    "title": "int-dev-user-name-at-domain-com",
+    "types": {
+        "a": "int"
+    }
+}

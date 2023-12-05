@@ -1,0 +1,69 @@
+{
+    "all_inputs": [
+        "c"
+    ],
+    "base_image": "qcdis/miniconda3:v0.1",
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "3b9e809": {
+                "id": "3b9e809",
+                "ports": {
+                    "c": {
+                        "id": "c",
+                        "properties": {
+                            "color": "#2dc5d2"
+                        },
+                        "type": "left"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [],
+                    "inputs": [
+                        "c"
+                    ],
+                    "og_node_id": "3b9e809",
+                    "outputs": [],
+                    "params": [],
+                    "title": "process float-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#2dc5d2",
+                            "direction": "input",
+                            "name": "c",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {},
+    "container_source": "",
+    "dependencies": [],
+    "inputs": [
+        "c"
+    ],
+    "kernel": "ipython",
+    "node_id": "3b9e809",
+    "original_source": "\nd = c / 1.0",
+    "outputs": [],
+    "params": [],
+    "task_name": "process-float-dev-user-name-at-domain-com",
+    "title": "process float-dev-user-name-at-domain-com",
+    "types": {
+        "c": "float"
+    }
+}
