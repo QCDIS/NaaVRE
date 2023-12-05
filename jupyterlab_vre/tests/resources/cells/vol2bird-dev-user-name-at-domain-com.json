@@ -5,8 +5,8 @@
         "hovered": {},
         "links": {},
         "nodes": {
-            "f255b28": {
-                "id": "f255b28",
+            "2b291b4": {
+                "id": "2b291b4",
                 "ports": {
                     "msg": {
                         "id": "msg",
@@ -25,7 +25,7 @@
                         ""
                     ],
                     "inputs": [],
-                    "og_node_id": "f255b28",
+                    "og_node_id": "2b291b4",
                     "outputs": [
                         "msg"
                     ],
@@ -61,7 +61,7 @@
     ],
     "inputs": [],
     "kernel": "ipython",
-    "node_id": "f255b28",
+    "node_id": "2b291b4",
     "original_source": "\ncmd = \"vol2bird --version\"\n\nmsg = os.system(cmd)  # returns the exit code in unix\n",
     "outputs": [
         "msg"

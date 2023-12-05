@@ -5,8 +5,8 @@
         "hovered": {},
         "links": {},
         "nodes": {
-            "4f31965": {
-                "id": "4f31965",
+            "bf52a3a": {
+                "id": "bf52a3a",
                 "ports": {
                     "msg": {
                         "id": "msg",
@@ -25,7 +25,7 @@
                         ""
                     ],
                     "inputs": [],
-                    "og_node_id": "4f31965",
+                    "og_node_id": "bf52a3a",
                     "outputs": [
                         "msg"
                     ],
@@ -61,7 +61,7 @@
     ],
     "inputs": [],
     "kernel": "ipython",
-    "node_id": "4f31965",
+    "node_id": "bf52a3a",
     "original_source": "\ncmd = \"KNMI_vol_h5_to_ODIM_h5 \"\n\nmsg = os.system(cmd)  # returns the exit code in unix",
     "outputs": [
         "msg"
