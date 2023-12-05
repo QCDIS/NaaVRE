@@ -1,15 +1,14 @@
- {
+{
     "all_inputs": [
-        "a",
-        "b"
+        "a"
     ],
-    "base_image": "qcdis/miniconda3",
+    "base_image": "qcdis/python-vol2bird:v2.1.1",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "99e9edb": {
-                "id": "99e9edb",
+            "ded63d7": {
+                "id": "ded63d7",
                 "ports": {
                     "a": {
                         "id": "a",
@@ -18,12 +17,12 @@
                         },
                         "type": "left"
                     },
-                    "b": {
-                        "id": "b",
+                    "msg": {
+                        "id": "msg",
                         "properties": {
-                            "color": "#5366ac"
+                            "color": "#7bd279"
                         },
-                        "type": "left"
+                        "type": "right"
                     }
                 },
                 "position": {
@@ -31,15 +30,18 @@
                     "y": 15
                 },
                 "properties": {
-                    "deps": [],
-                    "inputs": [
-                        "a",
-                        "b"
+                    "deps": [
+                        ""
                     ],
-                    "og_node_id": "99e9edb",
-                    "outputs": [],
+                    "inputs": [
+                        "a"
+                    ],
+                    "og_node_id": "ded63d7",
+                    "outputs": [
+                        "msg"
+                    ],
                     "params": [],
-                    "title": "Anti-pattern-dev-user-name-at-domain-com",
+                    "title": "vol2bird-dev-user-name-at-domain-com",
                     "vars": [
                         {
                             "color": "#77862d",
@@ -48,9 +50,9 @@
                             "type": "datatype"
                         },
                         {
-                            "color": "#5366ac",
-                            "direction": "input",
-                            "name": "b",
+                            "color": "#7bd279",
+                            "direction": "output",
+                            "name": "msg",
                             "type": "datatype"
                         }
                     ]
@@ -67,28 +69,27 @@
     },
     "confs": {},
     "container_source": "",
-    "dependencies": [],
+    "dependencies": [
+        {
+            "asname": null,
+            "module": "",
+            "name": "os"
+        }
+    ],
     "inputs": [
-        "a",
-        "b"
+        "a"
     ],
     "kernel": "ipython",
-    "node_id": "99e9edb",
-    "original_source": "some_list = range(a, b+1)",
-    "outputs": [],
+    "node_id": "ded63d7",
+    "original_source": "print(a)\ncmd = \"vol2bird --version\"\n\nmsg = os.system(cmd)  # returns the exit code in unix\n",
+    "outputs": [
+        "msg"
+    ],
     "params": [],
-    "task_name": "anti-pattern-dev-user-name-at-domain-com",
-    "title": "Anti-pattern-dev-user-name-at-domain-com",
+    "task_name": "vol2bird-dev-user-name-at-domain-com",
+    "title": "vol2bird-dev-user-name-at-domain-com",
     "types": {
         "a": "int",
-        "b": "int"
-    },
-     "example_inputs": [
-    "--id",
-    "0",
-    "--a",
-    1,
-    "--b",
-    10
-  ]
+        "msg": "int"
+    }
 }
