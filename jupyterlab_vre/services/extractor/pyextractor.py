@@ -4,8 +4,8 @@ import re
 from functools import lru_cache
 
 from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
-from pytype.tools.annotate_ast import annotate_ast
 from pytype import config as pytype_config
+from pytype.tools.annotate_ast import annotate_ast
 
 
 class PyExtractor:
