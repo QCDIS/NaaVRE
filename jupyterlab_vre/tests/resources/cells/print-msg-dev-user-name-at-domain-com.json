@@ -1,19 +1,19 @@
 {
     "all_inputs": [
-        "lines"
+        "msg"
     ],
-    "base_image": "qcdis/miniconda3",
+    "base_image": "qcdis/miniconda3:v0.1",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "f421e91": {
-                "id": "f421e91",
+            "4f31965": {
+                "id": "4f31965",
                 "ports": {
-                    "lines": {
-                        "id": "lines",
+                    "msg": {
+                        "id": "msg",
                         "properties": {
-                            "color": "#ac535c"
+                            "color": "#7bd279"
                         },
                         "type": "left"
                     }
@@ -25,17 +25,17 @@
                 "properties": {
                     "deps": [],
                     "inputs": [
-                        "lines"
+                        "msg"
                     ],
-                    "og_node_id": "f421e91",
+                    "og_node_id": "4f31965",
                     "outputs": [],
                     "params": [],
-                    "title": "loop file lines-dev-user-name-at-domain-com",
+                    "title": "Print msg-dev-user-name-at-domain-com",
                     "vars": [
                         {
-                            "color": "#ac535c",
+                            "color": "#7bd279",
                             "direction": "input",
-                            "name": "lines",
+                            "name": "msg",
                             "type": "datatype"
                         }
                     ]
@@ -54,22 +54,16 @@
     "container_source": "",
     "dependencies": [],
     "inputs": [
-        "lines"
+        "msg"
     ],
     "kernel": "ipython",
-    "node_id": "f421e91",
-    "original_source": "\ncount = 0\nfor l in lines:\n    count += 1\n    print(\"Line{}: {}\".format(count, l.strip()))",
+    "node_id": "4f31965",
+    "original_source": "print('msg:', str(msg))",
     "outputs": [],
     "params": [],
-    "task_name": "loop-file-lines-dev-user-name-at-domain-com",
-    "title": "loop file lines-dev-user-name-at-domain-com",
+    "task_name": "print-msg-dev-user-name-at-domain-com",
+    "title": "Print msg-dev-user-name-at-domain-com",
     "types": {
-        "lines": "list"
-    },
-        "example_inputs" : [
-    "--id",
-    "0",
-    "--lines",
-    "[\"line1\", \"line2\", \"line3\"]"
-  ]
+        "msg": "int"
+    }
 }

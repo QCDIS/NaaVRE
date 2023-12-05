@@ -1,17 +1,17 @@
 {
     "all_inputs": [],
-    "base_image": "qcdis/miniconda3-pdal",
+    "base_image": "qcdis/python-vol2bird:v2.1.1",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "e342690": {
-                "id": "e342690",
+            "4f31965": {
+                "id": "4f31965",
                 "ports": {
-                    "feature_extraction_input": {
-                        "id": "feature_extraction_input",
+                    "msg": {
+                        "id": "msg",
                         "properties": {
-                            "color": "#1f3e93"
+                            "color": "#7bd279"
                         },
                         "type": "right"
                     }
@@ -21,19 +21,21 @@
                     "y": 15
                 },
                 "properties": {
-                    "deps": [],
+                    "deps": [
+                        ""
+                    ],
                     "inputs": [],
-                    "og_node_id": "e342690",
+                    "og_node_id": "4f31965",
                     "outputs": [
-                        "feature_extraction_input"
+                        "msg"
                     ],
                     "params": [],
-                    "title": "feature-extraction-input-dev-user",
+                    "title": "KNMI-vol-h5-to-ODIM-h5-dev-user-name-at-domain-com",
                     "vars": [
                         {
-                            "color": "#1f3e93",
+                            "color": "#7bd279",
                             "direction": "output",
-                            "name": "feature_extraction_input",
+                            "name": "msg",
                             "type": "datatype"
                         }
                     ]
@@ -48,22 +50,26 @@
         "scale": 1,
         "selected": {}
     },
-    "confs": {
-        "conf_filter_type": "conf_filter_type= 'select_equal'"
-    },
+    "confs": {},
     "container_source": "",
-    "dependencies": [],
+    "dependencies": [
+        {
+            "asname": null,
+            "module": "",
+            "name": "os"
+        }
+    ],
     "inputs": [],
     "kernel": "ipython",
-    "node_id": "e342690",
-    "original_source": "conf_filter_type= 'select_equal'\n\nfeature_extraction_input = {conf_filter_type}\n    \n    ",
+    "node_id": "4f31965",
+    "original_source": "\ncmd = \"KNMI_vol_h5_to_ODIM_h5 \"\n\nmsg = os.system(cmd)  # returns the exit code in unix",
     "outputs": [
-        "feature_extraction_input"
+        "msg"
     ],
     "params": [],
-    "task_name": "feature-extraction-input-dev-user",
-    "title": "feature-extraction-input-dev-user",
+    "task_name": "knmi-vol-h5-to-odim-h5-dev-user-name-at-domain-com",
+    "title": "KNMI-vol-h5-to-ODIM-h5-dev-user-name-at-domain-com",
     "types": {
-        "feature_extraction_input": "str"
+        "msg": "int"
     }
 }

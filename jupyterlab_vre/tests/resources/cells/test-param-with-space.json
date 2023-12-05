@@ -71,5 +71,6 @@
     "0",
     "--msg",
     "Hello World!"
-  ]
+  ],
+    "skip_exec": false
 }

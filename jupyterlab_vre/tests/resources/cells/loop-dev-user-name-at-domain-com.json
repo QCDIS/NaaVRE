@@ -65,5 +65,11 @@
   "node_id": "1f90ce4",
   "container_source": "",
   "kernel": "ipython",
-  "base_image": "qcdis/miniconda3"
+  "base_image": "qcdis/miniconda3",
+  "example_inputs" : [
+    "--id",
+    "0",
+    "--msg",
+    "hello"
+  ]
 }

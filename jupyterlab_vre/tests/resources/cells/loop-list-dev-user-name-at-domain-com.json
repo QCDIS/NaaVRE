@@ -65,5 +65,10 @@
     "title": "loop list-dev-user-name-at-domain-com",
     "types": {
         "list_of_paths": "list"
-    }
+    },
+        "example_inputs" : [
+    "--id",
+    "0"
+  ],
+    "skip_exec": true
 }

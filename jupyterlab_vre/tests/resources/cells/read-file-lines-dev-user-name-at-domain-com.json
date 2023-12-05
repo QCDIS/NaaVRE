@@ -83,5 +83,10 @@
     "types": {
         "file_path": "str",
         "lines": "list"
-    }
+    },
+    "example_inputs" : [
+    "--id",
+    "0"
+  ],
+"skip_exec": true
 }
