@@ -2,13 +2,13 @@
     "all_inputs": [
         "list_of_paths"
     ],
-    "base_image": "qcdis/miniconda3",
+    "base_image": "qcdis/miniconda3:v0.1",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "fd55de1": {
-                "id": "fd55de1",
+            "6ce40db": {
+                "id": "6ce40db",
                 "ports": {
                     "list_of_paths": {
                         "id": "list_of_paths",
@@ -27,7 +27,7 @@
                     "inputs": [
                         "list_of_paths"
                     ],
-                    "og_node_id": "fd55de1",
+                    "og_node_id": "6ce40db",
                     "outputs": [],
                     "params": [],
                     "title": "loop list-dev-user-name-at-domain-com",
@@ -57,7 +57,7 @@
         "list_of_paths"
     ],
     "kernel": "ipython",
-    "node_id": "fd55de1",
+    "node_id": "6ce40db",
     "original_source": "\nfor l in list_of_paths:\n    print(l)",
     "outputs": [],
     "params": [],

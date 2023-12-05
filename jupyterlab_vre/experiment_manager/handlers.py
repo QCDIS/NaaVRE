@@ -2,6 +2,7 @@ import json
 import logging
 import os
 from pathlib import Path
+from time import sleep
 
 import requests
 import yaml
@@ -103,39 +104,14 @@ class ExecuteWorkflowHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        print('Workflow execution payload: ' + json.dumps(payload, indent=2))
         if os.getenv('DEBUG'):
             write_workflow_to_file(payload)
         chart = payload['chart']
         params = payload['params']
+        self.check_environment_variables()
 
         api_endpoint = os.getenv('API_ENDPOINT')
-        if not api_endpoint:
-            logger.error('NaaVRE API endpoint environment variable "API_ENDPOINT" is not set!')
-            self.set_status(400)
-            self.write('NaaVRE API endpoint is not set!')
-            self.write_error('NaaVRE API endpoint environment variable "API_ENDPOINT" is not set!')
-            self.flush()
-            return
-
-        naavre_api_token = os.getenv('NAAVRE_API_TOKEN')
-        if not naavre_api_token:
-            logger.error('NaaVRE API token environment variable "NAAVRE_API_TOKEN" is not set!')
-            self.set_status(400)
-            self.write('NaaVRE API token is not set!')
-            self.write_error('VNaaVRE API token environment variable "NAAVRE_API_TOKEN" is not set!')
-            self.flush()
-            return
-
         vlab_slug = os.getenv('VLAB_SLUG')
-        if not vlab_slug:
-            logger.error('VL name is not set!')
-            self.set_status(400)
-            self.write('VL name is not set!')
-            self.write_error('VL name environment variable "VLAB_SLUG" is not set!')
-            self.flush()
-            return
-
         nodes = chart['nodes']
         links = chart['links']
 
@@ -149,12 +125,6 @@ class ExecuteWorkflowHandler(APIHandler):
             global_params.extend(cell['params'])
 
         registry_credentials = Catalog.get_registry_credentials()
-        if not registry_credentials:
-            self.set_status(400)
-            self.write('Registry credentials are not set!')
-            self.write_error('Registry credentials are not set!')
-            self.flush()
-            return
 
         image_repo = registry_credentials[0]['url'].split(
             'https://hub.docker.com/u/')[1]
@@ -189,15 +159,8 @@ class ExecuteWorkflowHandler(APIHandler):
 
         try:
             access_token = os.environ['NAAVRE_API_TOKEN']
-            if not access_token:
-                self.set_status(400)
-                self.write('VRE_API_TOKEN is not set!')
-                self.write_error('NAAVRE_API_TOKEN is not set!')
-                self.flush()
-                return
             vre_api_verify_ssl = os.getenv('VRE_API_VERIFY_SSL', 'true')
             logger.info('Workflow submission request: ' + str(json.dumps(req_body, indent=2)))
-            print('Workflow submission request: ' + str(json.dumps(req_body, indent=2)))
             session = requests.Session()
             session.verify = vre_api_verify_ssl
 
@@ -229,3 +192,67 @@ class ExecuteWorkflowHandler(APIHandler):
             return
         self.write(resp.json())
         self.flush()
+
+    @web.authenticated
+    async def get(self, *args, **kwargs):
+        workflow_id = self.get_argument('workflow_id', default=None)
+        self.check_environment_variables()
+        api_endpoint = os.getenv('API_ENDPOINT')
+        access_token = os.environ['NAAVRE_API_TOKEN']
+        # This is a bug. If we don't do this, the workflow status is not updated.
+        resp = requests.get(
+            f"{api_endpoint}/api/workflows/",
+            headers={
+                'Authorization': f"Token {access_token}",
+                'Content-Type': 'application/json'
+            }
+        )
+        wf_list = resp.json()
+        for wf in wf_list:
+            if wf['argo_id'] == workflow_id:
+                self.write(wf)
+                self.set_status(resp.status_code)
+                self.flush()
+                return
+        sleep(0.3)
+        resp = requests.get(
+            f"{api_endpoint}/api/workflows/{workflow_id}/",
+            headers={
+                'Authorization': f"Token {access_token}",
+                'Content-Type': 'application/json'
+            }
+        )
+        self.write(resp.json())
+        self.set_status(resp.status_code)
+        self.flush()
+
+    def check_environment_variables(self):
+        if not os.getenv('API_ENDPOINT'):
+            logger.error('NaaVRE API endpoint environment variable "API_ENDPOINT" is not set!')
+            self.set_status(400)
+            self.write('NaaVRE API endpoint is not set!')
+            self.write_error('NaaVRE API endpoint environment variable "API_ENDPOINT" is not set!')
+            self.flush()
+            return
+
+        if not os.getenv('NAAVRE_API_TOKEN'):
+            logger.error('NaaVRE API token environment variable "NAAVRE_API_TOKEN" is not set!')
+            self.set_status(400)
+            self.write('NaaVRE API token is not set!')
+            self.write_error('VNaaVRE API token environment variable "NAAVRE_API_TOKEN" is not set!')
+            self.flush()
+            return
+        if not os.getenv('VLAB_SLUG'):
+            logger.error('VL name is not set!')
+            self.set_status(400)
+            self.write('VL name is not set!')
+            self.write_error('VL name environment variable "VLAB_SLUG" is not set!')
+            self.flush()
+            return
+        if not Catalog.get_registry_credentials():
+            self.set_status(400)
+            self.write('Registry credentials are not set!')
+            self.write_error('Registry credentials are not set!')
+            self.flush()
+            return
+
