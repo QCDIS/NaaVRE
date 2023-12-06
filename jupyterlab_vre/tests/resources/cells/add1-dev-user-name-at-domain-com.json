@@ -87,7 +87,7 @@
     "example_inputs" : [
     "--id",
     "0",
-    "--a",
+    "--count",
     "1"
   ]
 }
