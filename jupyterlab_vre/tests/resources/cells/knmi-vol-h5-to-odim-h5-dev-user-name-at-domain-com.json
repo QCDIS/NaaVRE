@@ -91,5 +91,6 @@
     "types": {
         "a": "int",
         "msg": "int"
-    }
+    },
+    "skip_exec": true
 }

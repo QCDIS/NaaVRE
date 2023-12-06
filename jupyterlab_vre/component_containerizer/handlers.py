@@ -79,7 +79,7 @@ class ExtractorHandler(APIHandler, Catalog):
 
         # initialize variables
         source = notebook.cells[cell_index].source
-        title = source.partition('\n')[0]
+        title = source.partition('\n')[0].strip()
         title = title.replace('#', '').replace('.', '-').replace(
             '_', '-').replace('(', '-').replace(')', '-').strip() if title and title[0] == "#" else "Untitled"
 

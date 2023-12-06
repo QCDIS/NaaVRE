@@ -1,19 +1,19 @@
 {
     "all_inputs": [
-        "msg"
+        "list_of_paths"
     ],
-    "base_image": "qcdis/miniconda3:v0.1",
+    "base_image": "jupyter/r-notebook:70178b8e48d7",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "a74dc70": {
-                "id": "a74dc70",
+            "943e143": {
+                "id": "943e143",
                 "ports": {
-                    "msg": {
-                        "id": "msg",
+                    "list_of_paths": {
+                        "id": "list_of_paths",
                         "properties": {
-                            "color": "#7bd279"
+                            "color": "#79c5d2"
                         },
                         "type": "left"
                     }
@@ -25,17 +25,17 @@
                 "properties": {
                     "deps": [],
                     "inputs": [
-                        "msg"
+                        "list_of_paths"
                     ],
-                    "og_node_id": "a74dc70",
+                    "og_node_id": "943e143",
                     "outputs": [],
                     "params": [],
-                    "title": "Print msg-dev-user-name-at-domain-com",
+                    "title": "loop list R-dev-user-name-at-domain-com",
                     "vars": [
                         {
-                            "color": "#7bd279",
+                            "color": "#79c5d2",
                             "direction": "input",
-                            "name": "msg",
+                            "name": "list_of_paths",
                             "type": "datatype"
                         }
                     ]
@@ -54,22 +54,17 @@
     "container_source": "",
     "dependencies": [],
     "inputs": [
-        "msg"
+        "list_of_paths"
     ],
-    "kernel": "ipython",
-    "node_id": "a74dc70",
-    "original_source": "print('msg:', str(msg))",
+    "kernel": "IRkernel",
+    "node_id": "943e143",
+    "original_source": "\nfor (l in list_of_paths) {\n    print(l)\n}",
     "outputs": [],
     "params": [],
-    "task_name": "print-msg-dev-user-name-at-domain-com",
-    "title": "Print msg-dev-user-name-at-domain-com",
+    "task_name": "loop-list-r-dev-user-name-at-domain-com",
+    "title": "loop list R-dev-user-name-at-domain-com",
     "types": {
-        "msg": "int"
+        "list_of_paths": "list"
     },
-    "example_inputs" : [
-    "--id",
-    "0",
-    "--msg",
-    "1"
-  ]
+    "skip_exec": true
 }

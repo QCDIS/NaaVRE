@@ -41,7 +41,7 @@ class Cell:
             kernel=''
     ) -> None:
 
-        self.title = title.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
+        self.title = title.strip().replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
                                                                                                            '-at-').strip()
         self.task_name = task_name.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
                                                                                                                    '-at-').strip()

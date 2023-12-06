@@ -2,13 +2,13 @@
     "all_inputs": [
         "file_path"
     ],
-    "base_image": "qcdis/miniconda3:v0.1",
+    "base_image": "jupyter/r-notebook:70178b8e48d7",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "4deac70": {
-                "id": "4deac70",
+            "47b2d97": {
+                "id": "47b2d97",
                 "ports": {
                     "file_path": {
                         "id": "file_path",
@@ -30,19 +30,16 @@
                     "y": 15
                 },
                 "properties": {
-                    "deps": [
-                        "",
-                        "os"
-                    ],
+                    "deps": [],
                     "inputs": [
                         "file_path"
                     ],
-                    "og_node_id": "4deac70",
+                    "og_node_id": "47b2d97",
                     "outputs": [
                         "lines"
                     ],
                     "params": [],
-                    "title": "read file lines-dev-user-name-at-domain-com",
+                    "title": "read file lines R-dev-user-name-at-domain-com",
                     "vars": [
                         {
                             "color": "#663a78",
@@ -69,43 +66,22 @@
         "selected": {}
     },
     "confs": {
-        "conf_data_folder": "conf_data_folder = os.path.join('/tmp','data')"
+        "conf_data_folder": "conf_data_folder <- file.path('/tmp', 'data')"
     },
     "container_source": "",
-    "dependencies": [
-        {
-            "asname": null,
-            "module": "os.path",
-            "name": "isfile"
-        },
-        {
-            "asname": null,
-            "module": "os.path",
-            "name": "join"
-        },
-        {
-            "asname": null,
-            "module": "os",
-            "name": "listdir"
-        },
-        {
-            "asname": null,
-            "module": "",
-            "name": "os"
-        }
-    ],
+    "dependencies": [],
     "inputs": [
         "file_path"
     ],
-    "kernel": "ipython",
-    "node_id": "4deac70",
-    "original_source": "conf_data_folder = os.path.join('/tmp','data')\n\nonlyfiles = [f for f in listdir(conf_data_folder) if isfile(join(conf_data_folder, f))]\n\nprint(onlyfiles)\n\nf = open(file_path, 'r')\nlines = f.readlines()\nf.close()",
+    "kernel": "IRkernel",
+    "node_id": "47b2d97",
+    "original_source": "conf_data_folder <- file.path('/tmp', 'data')\n\nonlyfiles <- list.files(conf_data_folder, full.names = TRUE)\n\nprint(onlyfiles)\n\nf <- file(file_path, \"r\")\nlines <- readLines(f)\nclose(f)",
     "outputs": [
         "lines"
     ],
     "params": [],
-    "task_name": "read-file-lines-dev-user-name-at-domain-com",
-    "title": "read file lines-dev-user-name-at-domain-com",
+    "task_name": "read-file-lines-r-dev-user-name-at-domain-com",
+    "title": "read file lines R-dev-user-name-at-domain-com",
     "types": {
         "file_path": "str",
         "lines": "list"
