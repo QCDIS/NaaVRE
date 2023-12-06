@@ -138,6 +138,8 @@ class Catalog:
         res = cls.cells.search(where('node_id') == og_node_id)
         if res:
             return res[0]
+        else:
+            logger.warning('Cell not found for og_node_id: ' + og_node_id)
 
     @classmethod
     def get_repositories(cls) -> list:
