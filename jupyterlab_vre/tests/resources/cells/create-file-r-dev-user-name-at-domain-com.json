@@ -63,5 +63,9 @@
     "title": "Create file R-dev-user-name-at-domain-com",
     "types": {
         "file_path": "str"
-    }
+    },
+        "example_inputs" : [
+    "--id",
+    "0"
+  ]
 }

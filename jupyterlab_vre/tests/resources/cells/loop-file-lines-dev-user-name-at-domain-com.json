@@ -83,5 +83,6 @@
     "types": {
         "count": "int",
         "lines": "list"
-    }
+    },
+    "skip_exec": true
 }

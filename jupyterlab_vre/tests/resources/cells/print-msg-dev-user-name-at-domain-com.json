@@ -65,5 +65,11 @@
     "title": "Print msg-dev-user-name-at-domain-com",
     "types": {
         "msg": "int"
-    }
+    },
+    "example_inputs" : [
+    "--id",
+    "0",
+    "--msg",
+    "1"
+  ]
 }

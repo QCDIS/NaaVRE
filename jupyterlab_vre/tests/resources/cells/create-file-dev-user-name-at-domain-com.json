@@ -89,5 +89,9 @@
     "title": "Create file-dev-user-name-at-domain-com",
     "types": {
         "file_path": "str"
-    }
+    },
+    "example_inputs" : [
+    "--id",
+    "0"
+  ]
 }
