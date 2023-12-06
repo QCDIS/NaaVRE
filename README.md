@@ -80,7 +80,7 @@ parameters . For example:
 
 If you don't want to run the cell's code you can add a `"skip_exec": true` field to the cell file. For example:
 ```json
-    "skip_exec": true,
+    "skip_exec": true
 ```
 
 This is useful if the base installation don't contain the libraries or dependencies required by the cell's code i.e. 

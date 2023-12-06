@@ -1,14 +1,12 @@
 {
-    "all_inputs": [
-        "msg"
-    ],
-    "base_image": "qcdis/miniconda3:v0.1",
+    "all_inputs": [],
+    "base_image": "jupyter/r-notebook:70178b8e48d7",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "3e4f548": {
-                "id": "3e4f548",
+            "3cfdc6f": {
+                "id": "3cfdc6f",
                 "ports": {
                     "list_of_ints": {
                         "id": "list_of_ints",
@@ -23,13 +21,6 @@
                             "color": "#79c5d2"
                         },
                         "type": "right"
-                    },
-                    "msg": {
-                        "id": "msg",
-                        "properties": {
-                            "color": "#7bd279"
-                        },
-                        "type": "left"
                     }
                 },
                 "position": {
@@ -38,23 +29,15 @@
                 },
                 "properties": {
                     "deps": [],
-                    "inputs": [
-                        "msg"
-                    ],
-                    "og_node_id": "3e4f548",
+                    "inputs": [],
+                    "og_node_id": "3cfdc6f",
                     "outputs": [
                         "list_of_ints",
                         "list_of_paths"
                     ],
                     "params": [],
-                    "title": "input lists-dev-user-name-at-domain-com",
+                    "title": "input lists R-dev-user-name-at-domain-com",
                     "vars": [
-                        {
-                            "color": "#7bd279",
-                            "direction": "input",
-                            "name": "msg",
-                            "type": "datatype"
-                        },
                         {
                             "color": "#5f1f93",
                             "direction": "output",
@@ -82,23 +65,19 @@
     "confs": {},
     "container_source": "",
     "dependencies": [],
-    "inputs": [
-        "msg"
-    ],
-    "kernel": "ipython",
-    "node_id": "3e4f548",
-    "original_source": "\nlist_of_paths = [\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\",\"/webdav/LAZ/targets_myname\"]\nlist_of_ints = [1,2,35,6,65]\nprint(msg)",
+    "inputs": [],
+    "kernel": "IRkernel",
+    "node_id": "3cfdc6f",
+    "original_source": "\nlist_of_paths <- c(\n  \"/webdav/LAZ/targets_myname\",\n  \"/webdav/LAZ/targets_myname\",\n  \"/webdav/LAZ/targets_myname\",\n  \"/webdav/LAZ/targets_myname\"\n)\n\nlist_of_ints <- c(1, 2, 35, 6, 65)\n\nprint(list_of_paths)\nprint(list_of_ints)",
     "outputs": [
         "list_of_paths",
         "list_of_ints"
     ],
     "params": [],
-    "task_name": "input-lists-dev-user-name-at-domain-com",
-    "title": "input lists-dev-user-name-at-domain-com",
+    "task_name": "input-lists-r-dev-user-name-at-domain-com",
+    "title": "input lists R-dev-user-name-at-domain-com",
     "types": {
         "list_of_ints": "list",
-        "list_of_paths": "list",
-        "msg": "str"
-    },
-    "skip_exec": true
+        "list_of_paths": "list"
+    }
 }

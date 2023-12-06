@@ -3,20 +3,6 @@ import os
 
 from jinja2 import Environment, PackageLoader
 
-
-# TODO: create an interface for other programming languages
-
-def get_type(value):
-    if value == "str" or value == "list":
-        return "character"
-    elif value == "int":
-        return "integer"
-    elif value == "float":
-        return "numeric"
-    else:
-        raise ValueError("Not a valid type")
-
-
 logger = logging.getLogger(__name__)
 
 handler = logging.StreamHandler()

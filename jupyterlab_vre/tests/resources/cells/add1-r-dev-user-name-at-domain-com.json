@@ -2,21 +2,14 @@
     "all_inputs": [
         "count"
     ],
-    "base_image": "qcdis/miniconda3:v0.1",
+    "base_image": "jupyter/r-notebook:70178b8e48d7",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "49d5dda": {
-                "id": "49d5dda",
+            "d9acfa2": {
+                "id": "d9acfa2",
                 "ports": {
-                    "a": {
-                        "id": "a",
-                        "properties": {
-                            "color": "#77862d"
-                        },
-                        "type": "right"
-                    },
                     "count": {
                         "id": "count",
                         "properties": {
@@ -34,23 +27,15 @@
                     "inputs": [
                         "count"
                     ],
-                    "og_node_id": "49d5dda",
-                    "outputs": [
-                        "a"
-                    ],
+                    "og_node_id": "d9acfa2",
+                    "outputs": [],
                     "params": [],
-                    "title": "Add1-dev-user-name-at-domain-com",
+                    "title": "Add1 R-dev-user-name-at-domain-com",
                     "vars": [
                         {
                             "color": "#783d3a",
                             "direction": "input",
                             "name": "count",
-                            "type": "datatype"
-                        },
-                        {
-                            "color": "#77862d",
-                            "direction": "output",
-                            "name": "a",
                             "type": "datatype"
                         }
                     ]
@@ -71,17 +56,14 @@
     "inputs": [
         "count"
     ],
-    "kernel": "ipython",
-    "node_id": "49d5dda",
+    "kernel": "IRkernel",
+    "node_id": "d9acfa2",
     "original_source": "\na = count + 1",
-    "outputs": [
-        "a"
-    ],
+    "outputs": [],
     "params": [],
-    "task_name": "add1-dev-user-name-at-domain-com",
-    "title": "Add1-dev-user-name-at-domain-com",
+    "task_name": "add1-r-dev-user-name-at-domain-com",
+    "title": "Add1 R-dev-user-name-at-domain-com",
     "types": {
-        "a": "int",
         "count": "int"
     },
     "example_inputs" : [

@@ -160,7 +160,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertEqual(200, response.code)
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
                 files_updated = json.loads(response.body.decode('utf-8'))['files_updated']
-                if 'skip_exec' not in cell or cell['skip_exec']:
+                if 'skip_exec' in cell and cell['skip_exec']:
                     continue
                 if 'python' in test_cell.kernel and 'skip_exec':
                     cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')

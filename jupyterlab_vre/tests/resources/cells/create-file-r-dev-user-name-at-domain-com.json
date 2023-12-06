@@ -1,0 +1,67 @@
+{
+    "all_inputs": [],
+    "base_image": "jupyter/r-notebook:70178b8e48d7",
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "c45fb67": {
+                "id": "c45fb67",
+                "ports": {
+                    "file_path": {
+                        "id": "file_path",
+                        "properties": {
+                            "color": "#663a78"
+                        },
+                        "type": "right"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [],
+                    "inputs": [],
+                    "og_node_id": "c45fb67",
+                    "outputs": [
+                        "file_path"
+                    ],
+                    "params": [],
+                    "title": "Create file R-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#663a78",
+                            "direction": "output",
+                            "name": "file_path",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {},
+    "container_source": "",
+    "dependencies": [],
+    "inputs": [],
+    "kernel": "IRkernel",
+    "node_id": "c45fb67",
+    "original_source": "\nL <- c(\"a\", \"b\", \"c\")\n\nconf_data_folder <- \"/tmp/data\"\nfile_path <- file.path(conf_data_folder, \"hello.txt\")\n\nwriteLines(L, file_path)\n\nonlyfiles <- list.files(conf_data_folder, full.names = TRUE)\n\nprint(onlyfiles)",
+    "outputs": [
+        "file_path"
+    ],
+    "params": [],
+    "task_name": "create-file-r-dev-user-name-at-domain-com",
+    "title": "Create file R-dev-user-name-at-domain-com",
+    "types": {
+        "file_path": "str"
+    }
+}
