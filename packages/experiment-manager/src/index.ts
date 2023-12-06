@@ -39,6 +39,7 @@ const extension: JupyterFrontEndPlugin<void> = {
             const content = new ComposerWidget();
             const widget = new MainAreaWidget<ComposerWidget>({ content });
             widget.title.label = 'Experiment Manager';
+            content.populateToolbar(widget.toolbar)
             app.shell.add(widget, 'main');
           }
       });

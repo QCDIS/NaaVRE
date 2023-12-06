@@ -1,5 +1,16 @@
 import * as React from 'react';
-import { ReactWidget, Dialog, showDialog } from '@jupyterlab/apputils';
+import {
+	ReactWidget,
+	Dialog,
+	Toolbar,
+	ToolbarButton,
+	showDialog
+	} from '@jupyterlab/apputils';
+import {
+	saveIcon,
+	runIcon,
+	fileIcon,
+	} from '@jupyterlab/ui-components'
 import * as actions from "@mrblenny/react-flow-chart/src/container/actions";
 import styled from 'styled-components'
 import { theme } from './Theme';
@@ -13,7 +24,6 @@ import { VRECell, requestAPI } from '@jupyter_vre/core';
 import { CellEditor, Page } from '@jupyter_vre/components';
 import { Workspace } from './Workspace';
 import { Parallelization } from './Parallelization';
-import BasicSpeedDial from './SpeedDial';
 import { ExecuteWorkflowDialog } from './ExecuteWorkflowDialog';
 
 export const CenterContent = styled.div`
@@ -89,24 +99,6 @@ export class Composer extends React.Component<IProps, IState> {
 			});
 		}) as typeof actions
 
-	handleDialSelection = (operation: string) => {
-
-		switch (operation) {
-
-			case "cells-catalogs":
-				showDialog(this.CatalogDialogOptions);
-				break;
-
-			case "export-workflow":
-				this.exportWorkflow();
-				break;
-
-			case "execute-workflow":
-				showDialog(this.ExecuteWorkflowDialogOptions);
-				break;
-		}
-	}
-
 	exportWorkflow = async () => {
 		try {
 			let resp = await requestAPI<any>('expmanager/export', {
@@ -170,9 +162,6 @@ export class Composer extends React.Component<IProps, IState> {
 							(<div></div>)
 						}
 						<Parallelization />
-						<BasicSpeedDial
-							handleDialSelection={this.handleDialSelection}
-						/>
 					</CenterContent>
 				</Page>
 			</ThemeProvider>
@@ -182,14 +171,35 @@ export class Composer extends React.Component<IProps, IState> {
 
 export class ComposerWidget extends ReactWidget {
 
+	composerRef: React.RefObject<Composer>;
+
 	constructor() {
 		super();
 		this.addClass('vre-composer');
+		this.composerRef = React.createRef();
+	}
+
+	populateToolbar(toolbar: Toolbar) {
+		toolbar.addItem('cells-catalog', new ToolbarButton({
+			label: 'Cells catalog',
+			icon: fileIcon,
+			onClick: () => {showDialog(this.composerRef.current.CatalogDialogOptions)},
+		}))
+		toolbar.addItem('export-workflow', new ToolbarButton({
+			label: 'Export workflow',
+			icon: saveIcon,
+			onClick: () => {this.composerRef.current.exportWorkflow()},
+		}))
+		toolbar.addItem('execute-workflow', new ToolbarButton({
+			label: 'Execute workflow',
+			icon: runIcon,
+			onClick: () => showDialog(this.composerRef.current.ExecuteWorkflowDialogOptions),
+		}))
 	}
 
 	render(): JSX.Element {
 		return (
-			<Composer />
+			<Composer ref={this.composerRef}/>
 		);
 	}
 }
