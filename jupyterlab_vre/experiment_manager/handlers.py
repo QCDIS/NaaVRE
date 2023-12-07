@@ -33,6 +33,26 @@ def write_workflow_to_file(workflow):
         f.close()
 
 
+class LoadWorkflowHandler(APIHandler):
+
+    @web.authenticated
+    async def get(self, *args, **kwargs):
+        with open('workflow.wf', 'r') as f:
+            payload = json.load(f)
+        self.write(payload)
+        self.flush()
+
+
+class SaveWorkflowHandler(APIHandler):
+
+    @web.authenticated
+    async def post(self, *args, **kwargs):
+        payload = self.get_json_body()
+        with open('workflow.wf', 'w') as f:
+            json.dump(payload, f)
+        self.flush()
+
+
 class ExportWorkflowHandler(APIHandler):
 
     @web.authenticated

@@ -7,9 +7,11 @@ import {
 	showDialog
 	} from '@jupyterlab/apputils';
 import {
-	saveIcon,
-	runIcon,
+	addIcon,
+	codeIcon,
 	fileIcon,
+	runIcon,
+	saveIcon,
 	} from '@jupyterlab/ui-components'
 import * as actions from "@mrblenny/react-flow-chart/src/container/actions";
 import styled from 'styled-components'
@@ -99,6 +101,35 @@ export class Composer extends React.Component<IProps, IState> {
 			});
 		}) as typeof actions
 
+	loadWorkflow = async () => {
+		try {
+			let resp = await requestAPI<any>('expmanager/load', {
+				method: 'GET'
+			});
+			this.setState({
+				chart: resp
+			})
+		} catch (error) {
+			console.log(error);
+			alert('Error loading the workflow: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+		}
+	}
+
+	saveWorkflow = async () => {
+		try {
+			let resp = await requestAPI<any>('expmanager/save', {
+				body: JSON.stringify({
+					...this.state.chart
+				}),
+				method: 'POST'
+			});
+			console.log(resp);
+		} catch (error) {
+			console.log(error);
+			alert('Error saving the workflow: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+		}
+	}
+
 	exportWorkflow = async () => {
 		try {
 			let resp = await requestAPI<any>('expmanager/export', {
@@ -182,16 +213,31 @@ export class ComposerWidget extends ReactWidget {
 	populateToolbar(toolbar: Toolbar) {
 		toolbar.addItem('cells-catalog', new ToolbarButton({
 			label: 'Cells catalog',
-			icon: fileIcon,
+			tooltip: 'Open the cells catalog',
+			icon: addIcon,
 			onClick: () => {showDialog(this.composerRef.current.CatalogDialogOptions)},
 		}))
-		toolbar.addItem('export-workflow', new ToolbarButton({
-			label: 'Export workflow',
+		toolbar.addItem('load-workflow', new ToolbarButton({
+			label: 'Load',
+			tooltip: 'Load a workflow',
+			icon: fileIcon,
+			onClick: () => {this.composerRef.current.loadWorkflow()},
+		}))
+		toolbar.addItem('save-workflow', new ToolbarButton({
+			label: 'Save',
+			tooltip: 'Save the workflow',
 			icon: saveIcon,
+			onClick: () => {this.composerRef.current.saveWorkflow()},
+		}))
+		toolbar.addItem('export-workflow', new ToolbarButton({
+			label: 'Export',
+			tooltip: 'Export the workflow',
+			icon: codeIcon,
 			onClick: () => {this.composerRef.current.exportWorkflow()},
 		}))
 		toolbar.addItem('execute-workflow', new ToolbarButton({
-			label: 'Execute workflow',
+			label: 'Run',
+			tooltip: 'Run the workflow',
 			icon: runIcon,
 			onClick: () => showDialog(this.composerRef.current.ExecuteWorkflowDialogOptions),
 		}))

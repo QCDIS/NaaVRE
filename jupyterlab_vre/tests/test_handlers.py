@@ -14,8 +14,16 @@ from github import Github
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 
-from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
-    NotebookSearchHandler, NotebookSearchRatingHandler
+from jupyterlab_vre import (
+    ExtractorHandler,
+    TypesHandler,
+    CellsHandler,
+    SaveWorkflowHandler,
+    ExportWorkflowHandler,
+    ExecuteWorkflowHandler,
+    NotebookSearchHandler,
+    NotebookSearchRatingHandler,
+    )
 from jupyterlab_vre.component_containerizer.handlers import find_job
 from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
@@ -108,6 +116,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
         self.app = Application([('/extractorhandler', ExtractorHandler),
                                 ('/typeshandler', TypesHandler),
                                 ('/cellshandler', CellsHandler),
+                                ('/saveworkflowhandler', SaveWorkflowHandler),
                                 ('/exportworkflowhandler', ExportWorkflowHandler),
                                 ('/executeworkflowhandler', ExecuteWorkflowHandler),
                                 ('/notebooksearch', NotebookSearchHandler),
@@ -231,23 +240,37 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertIsNotNone(json_response)
                 cell = notebook['notebook']['cells'][notebook['cell_index']]
 
-    def test_execute_workflow_handler(self):
+    @staticmethod
+    def _iter_workflows():
         workflow_path = os.path.join(base_path, 'workflows', 'NaaVRE')
         workflow_files = os.listdir(workflow_path)
-        with mock.patch.object(ExecuteWorkflowHandler, 'get_secure_cookie') as m:
-            m.return_value = 'cookie'
         for workflow_file in workflow_files:
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
-            cells_json_path = os.path.join(base_path, 'cells')
-            cells_files = os.listdir(cells_json_path)
-            for cell_file in cells_files:
-                cell_path = os.path.join(cells_json_path, cell_file)
-                test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
-                response = self.call_cell_handler()
-                self.assertEqual(200, response.code)
+            yield workflow_file_path, payload
 
+    def _setup_workflows_test(self):
+        cells_json_path = os.path.join(base_path, 'cells')
+        cells_files = os.listdir(cells_json_path)
+        for cell_file in cells_files:
+            cell_path = os.path.join(cells_json_path, cell_file)
+            test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
+            response = self.call_cell_handler()
+            self.assertEqual(200, response.code)
+
+    def test_save_workflow_handler(self):
+        self._setup_workflows_test()
+        for workflow_file_path, payload in self._iter_workflows():
+            response = self.fetch('/saveworkflowhandler', method='POST', body=json.dumps(payload['chart']))
+            self.assertEqual(
+                response.code, 200,
+                f'{workflow_file_path}: {response.body}',
+                )
+
+    def test_execute_workflow_handler(self):
+        self._setup_workflows_test()
+        for workflow_file_path, payload in self._iter_workflows():
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
             self.assertEqual(response.code, 200, response.body)
             json_response = json.loads(response.body.decode('utf-8'))
