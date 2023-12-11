@@ -2,31 +2,21 @@ import * as React from 'react';
 import {
 	ReactWidget,
 	Dialog,
-	Toolbar,
-	ToolbarButton,
-	showDialog
 	} from '@jupyterlab/apputils';
-import {
-	addIcon,
-	codeIcon,
-	fileIcon,
-	runIcon,
-	saveIcon,
-	} from '@jupyterlab/ui-components'
 import * as actions from "@mrblenny/react-flow-chart/src/container/actions";
 import styled from 'styled-components'
-import { theme } from './Theme';
+import { theme } from './components/Theme';
 import { mapValues } from 'lodash';
 import { chartSimple } from './emptyChart';
 import { FlowChart, IChart } from '@mrblenny/react-flow-chart';
 import { ThemeProvider } from '@material-ui/core';
 import { NodeCustom, NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
-import { CatalogDialog } from './CatalogDialog';
+import { CatalogDialog } from './components/CatalogDialog';
 import { VRECell, requestAPI } from '@jupyter_vre/core';
 import { CellEditor, Page } from '@jupyter_vre/components';
-import { Workspace } from './Workspace';
-import { Parallelization } from './Parallelization';
-import { ExecuteWorkflowDialog } from './ExecuteWorkflowDialog';
+import { Workspace } from './components/Workspace';
+import { Parallelization } from './components/Parallelization';
+import { ExecuteWorkflowDialog } from './components/ExecuteWorkflowDialog';
 
 export const CenterContent = styled.div`
   display: flex;
@@ -172,7 +162,7 @@ export class Composer extends React.Component<IProps, IState> {
 		// TODO: Implement chart sanity checks
 	}
 
-	render() {
+	render(): React.ReactElement {
 		return (
 			<ThemeProvider theme={theme} >
 				<Page>
@@ -208,39 +198,6 @@ export class ComposerWidget extends ReactWidget {
 		super();
 		this.addClass('vre-composer');
 		this.composerRef = React.createRef();
-	}
-
-	populateToolbar(toolbar: Toolbar) {
-		toolbar.addItem('cells-catalog', new ToolbarButton({
-			label: 'Cells catalog',
-			tooltip: 'Open the cells catalog',
-			icon: addIcon,
-			onClick: () => {showDialog(this.composerRef.current.CatalogDialogOptions)},
-		}))
-		toolbar.addItem('load-workflow', new ToolbarButton({
-			label: 'Load',
-			tooltip: 'Load a workflow',
-			icon: fileIcon,
-			onClick: () => {this.composerRef.current.loadWorkflow()},
-		}))
-		toolbar.addItem('save-workflow', new ToolbarButton({
-			label: 'Save',
-			tooltip: 'Save the workflow',
-			icon: saveIcon,
-			onClick: () => {this.composerRef.current.saveWorkflow()},
-		}))
-		toolbar.addItem('export-workflow', new ToolbarButton({
-			label: 'Export',
-			tooltip: 'Export the workflow',
-			icon: codeIcon,
-			onClick: () => {this.composerRef.current.exportWorkflow()},
-		}))
-		toolbar.addItem('execute-workflow', new ToolbarButton({
-			label: 'Run',
-			tooltip: 'Run the workflow',
-			icon: runIcon,
-			onClick: () => showDialog(this.composerRef.current.ExecuteWorkflowDialogOptions),
-		}))
 	}
 
 	render(): JSX.Element {
