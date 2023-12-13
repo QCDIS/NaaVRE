@@ -83,9 +83,8 @@ spec:
               path: /tmp/{{ ports[p]['id'] }}.json
         {% endif %}
         {% endfor %}
-      {% if is_special_node %}
-      {% if not is_visualizer %}
-        {% set special_dep = deps_dag[nid][0] %}
+      {% if is_special_node and not is_visualizer %}
+      {% set special_dep = deps_dag[nid][0] %}
       script:
         image: python:alpine3.9
         command: [python]
@@ -109,9 +108,9 @@ spec:
           f_out.write(json.dumps({{special_dep['port_id']}}))
           f_out.close()
           {% endif %}
-           {% endif %}
+          {% endif %}
           {% endfor %}
-          {% else %}
+      {% elif is_visualizer %}
       container:
         image: "adeelaashraf/naavre_visualization:latest"
         imagePullPolicy: Always
@@ -124,7 +123,7 @@ spec:
         {% if cells[nid]['kernel'] == 'ipython' %}
           - source /venv/bin/activate; python {{ cells[nid]['task_name'] }}.py
             {% for d in deps_dag[nid] %}
-            {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' or d['type'] == 'visualizer' %}
+            {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
             {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}
             {% set stdinname_base = stdinname.split('_')[0] %}
             --{{ stdinname_base }} '{{ '{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}' }}'
@@ -136,7 +135,7 @@ spec:
         {% elif cells[nid]['kernel'] == 'IRkernel' %}
           - Rscript /app/{{ cells[nid]['task_name'] }}.R
             {% for d in deps_dag[nid] %}
-            {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' or d['type'] == 'visualizer' %}
+            {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
             {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}
             {% set stdinname_base = stdinname.split('_')[0] %}
             --{{ stdinname_base }} '{{ '{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}' }}'
