@@ -2,13 +2,13 @@
     "all_inputs": [
         "list_of_paths"
     ],
-    "base_image": "qcdis/miniconda3:v0.1",
+    "base_image": "jupyter/r-notebook:70178b8e48d7",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "6ce40db": {
-                "id": "6ce40db",
+            "943e143": {
+                "id": "943e143",
                 "ports": {
                     "list_of_paths": {
                         "id": "list_of_paths",
@@ -27,10 +27,10 @@
                     "inputs": [
                         "list_of_paths"
                     ],
-                    "og_node_id": "6ce40db",
+                    "og_node_id": "943e143",
                     "outputs": [],
                     "params": [],
-                    "title": "loop list-dev-user-name-at-domain-com",
+                    "title": "loop list R-dev-user-name-at-domain-com",
                     "vars": [
                         {
                             "color": "#79c5d2",
@@ -56,13 +56,13 @@
     "inputs": [
         "list_of_paths"
     ],
-    "kernel": "ipython",
-    "node_id": "6ce40db",
-    "original_source": "\nfor l in list_of_paths:\n    print(l)",
+    "kernel": "IRkernel",
+    "node_id": "943e143",
+    "original_source": "\nfor (l in list_of_paths) {\n    print(l)\n}",
     "outputs": [],
     "params": [],
-    "task_name": "loop-list-dev-user-name-at-domain-com",
-    "title": "loop list-dev-user-name-at-domain-com",
+    "task_name": "loop-list-r-dev-user-name-at-domain-com",
+    "title": "loop list R-dev-user-name-at-domain-com",
     "types": {
         "list_of_paths": "list"
     },

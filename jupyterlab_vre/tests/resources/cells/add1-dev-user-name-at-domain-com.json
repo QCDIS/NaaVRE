@@ -1,27 +1,26 @@
- {
+{
     "all_inputs": [
-        "a",
-        "b"
+        "count"
     ],
-    "base_image": "qcdis/miniconda3",
+    "base_image": "qcdis/miniconda3:v0.1",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "99e9edb": {
-                "id": "99e9edb",
+            "49d5dda": {
+                "id": "49d5dda",
                 "ports": {
                     "a": {
                         "id": "a",
                         "properties": {
                             "color": "#77862d"
                         },
-                        "type": "left"
+                        "type": "right"
                     },
-                    "b": {
-                        "id": "b",
+                    "count": {
+                        "id": "count",
                         "properties": {
-                            "color": "#5366ac"
+                            "color": "#783d3a"
                         },
                         "type": "left"
                     }
@@ -33,24 +32,25 @@
                 "properties": {
                     "deps": [],
                     "inputs": [
-                        "a",
-                        "b"
+                        "count"
                     ],
-                    "og_node_id": "99e9edb",
-                    "outputs": [],
+                    "og_node_id": "49d5dda",
+                    "outputs": [
+                        "a"
+                    ],
                     "params": [],
-                    "title": "Anti-pattern-dev-user-name-at-domain-com",
+                    "title": "Add1-dev-user-name-at-domain-com",
                     "vars": [
                         {
-                            "color": "#77862d",
+                            "color": "#783d3a",
                             "direction": "input",
-                            "name": "a",
+                            "name": "count",
                             "type": "datatype"
                         },
                         {
-                            "color": "#5366ac",
-                            "direction": "input",
-                            "name": "b",
+                            "color": "#77862d",
+                            "direction": "output",
+                            "name": "a",
                             "type": "datatype"
                         }
                     ]
@@ -69,26 +69,25 @@
     "container_source": "",
     "dependencies": [],
     "inputs": [
-        "a",
-        "b"
+        "count"
     ],
     "kernel": "ipython",
-    "node_id": "99e9edb",
-    "original_source": "some_list = range(a, b+1)",
-    "outputs": [],
+    "node_id": "49d5dda",
+    "original_source": "\na = count + 1",
+    "outputs": [
+        "a"
+    ],
     "params": [],
-    "task_name": "anti-pattern-dev-user-name-at-domain-com",
-    "title": "Anti-pattern-dev-user-name-at-domain-com",
+    "task_name": "add1-dev-user-name-at-domain-com",
+    "title": "Add1-dev-user-name-at-domain-com",
     "types": {
         "a": "int",
-        "b": "int"
+        "count": "int"
     },
-     "example_inputs": [
+    "example_inputs" : [
     "--id",
     "0",
-    "--a",
-    1,
-    "--b",
-    10
+    "--count",
+    "1"
   ]
 }

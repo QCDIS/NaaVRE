@@ -1,12 +1,12 @@
 {
     "all_inputs": [],
-    "base_image": "qcdis/miniconda3",
+    "base_image": "qcdis/miniconda3:v0.1",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "055d4ab": {
-                "id": "055d4ab",
+            "5a918c8": {
+                "id": "5a918c8",
                 "ports": {
                     "file_path": {
                         "id": "file_path",
@@ -22,10 +22,11 @@
                 },
                 "properties": {
                     "deps": [
-                        ""
+                        "",
+                        "os"
                     ],
                     "inputs": [],
-                    "og_node_id": "055d4ab",
+                    "og_node_id": "5a918c8",
                     "outputs": [
                         "file_path"
                     ],
@@ -57,14 +58,29 @@
     "dependencies": [
         {
             "asname": null,
+            "module": "os.path",
+            "name": "isfile"
+        },
+        {
+            "asname": null,
+            "module": "os.path",
+            "name": "join"
+        },
+        {
+            "asname": null,
+            "module": "os",
+            "name": "listdir"
+        },
+        {
+            "asname": null,
             "module": "",
             "name": "os"
         }
     ],
     "inputs": [],
     "kernel": "ipython",
-    "node_id": "055d4ab",
-    "original_source": "conf_data_folder = os.path.join('/tmp','data')\n\nL = [\"a\\n\", \"b\\n\", \"c\\n\"]\nfile_path =  os.path.join(conf_data_folder,'hello.txt')\nfp = open(file_path, 'w')\nfp.writelines(L)\nfp.close()",
+    "node_id": "5a918c8",
+    "original_source": "conf_data_folder = os.path.join('/tmp','data')\n\nL = [\"a\\n\", \"b\\n\", \"c\\n\"]\nfile_path =  os.path.join(conf_data_folder,'hello.txt')\nfp = open(file_path, 'w')\nfp.writelines(L)\nfp.close()\n\nonlyfiles = [f for f in listdir(conf_data_folder) if isfile(join(conf_data_folder, f))]\n\nprint(onlyfiles)",
     "outputs": [
         "file_path"
     ],
@@ -73,5 +89,9 @@
     "title": "Create file-dev-user-name-at-domain-com",
     "types": {
         "file_path": "str"
-    }
+    },
+    "example_inputs" : [
+    "--id",
+    "0"
+  ]
 }

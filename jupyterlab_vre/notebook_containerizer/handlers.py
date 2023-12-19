@@ -53,7 +53,7 @@ class NotebookExtractorHandler(APIHandler, Catalog):
             source += cell_source + '\n'
 
             if not title:
-                title = cell_source.partition('\n')[0]
+                title = cell_source.partition('\n')[0].strip()
                 title = 'notebook-' + title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-'). \
                     replace('.', '-').strip() if title[0] == '#' \
                     else 'Untitled'

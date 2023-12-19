@@ -79,7 +79,7 @@ class ExtractorHandler(APIHandler, Catalog):
 
         # initialize variables
         source = notebook.cells[cell_index].source
-        title = source.partition('\n')[0]
+        title = source.partition('\n')[0].strip()
         title = title.replace('#', '').replace('.', '-').replace(
             '_', '-').replace('(', '-').replace(')', '-').strip() if title and title[0] == "#" else "Untitled"
 
@@ -169,6 +169,7 @@ class BaseImageHandler(APIHandler, Catalog):
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
         logger.debug('BaseImageHandler. payload: ' + str(payload))
+        print('BaseImageHandler. payload: ' + str(payload))
         base_image = payload['image']
         cell = Catalog.editor_buffer
         cell.base_image = base_image
@@ -196,7 +197,7 @@ def find_job(wf_id=None, owner=None, repository_name=None, token=None, job_id=No
 
 def write_cell_to_file(current_cell):
     Path('/tmp/workflow_cells/cells').mkdir(parents=True, exist_ok=True)
-    with open('/tmp/workflow_cells/cells/'+current_cell.task_name+'.json', 'w') as f:
+    with open('/tmp/workflow_cells/cells/' + current_cell.task_name + '.json', 'w') as f:
         f.write(current_cell.toJSON())
         f.close()
 
@@ -226,7 +227,6 @@ class CellsHandler(APIHandler, Catalog):
             return
 
         logger.debug('current_cell: ' + current_cell.toJSON())
-        print('current_cell: ' + current_cell.toJSON())
         all_vars = current_cell.params + current_cell.inputs + current_cell.outputs
         for parm_name in all_vars:
             if parm_name not in current_cell.types:
@@ -348,37 +348,43 @@ class CellsHandler(APIHandler, Catalog):
             logger.error(error_message)
             self.flush()
             return
-
+        files_updated = False
         commit = gh_repository.get_commits(path=current_cell.task_name)
         if commit.totalCount > 0:
             try:
-                update_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
-                                          files_info=files_info)
+                files_updated = update_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
+                                                          files_info=files_info)
             except UnknownObjectException as ex:
                 create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
                                           files_info=files_info)
+                files_updated = True
         elif commit.totalCount <= 0:
             create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
                                       files_info=files_info)
+            files_updated = True
         wf_id = str(uuid.uuid4())
-        resp = dispatch_github_workflow(
-            owner,
-            repository_name,
-            current_cell.task_name,
-            files_info,
-            repo_token,
-            image_repo,
-            wf_id=wf_id
-        )
-        if resp.status_code != 201 and resp.status_code != 200 and resp.status_code != 204:
-            self.set_status(400)
-            self.write(resp.text)
-            logger.error(resp.text)
-            self.flush()
-            return
-        # job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token)
-        # print(job)
-        self.write(json.dumps({'wf_id': wf_id}))
+        # Here we force to run the containerization workflow since we can't if the docker image is already built. Also,
+        # when testing the workflow we need to run it again
+        files_updated = True
+        if files_updated:
+            resp = dispatch_github_workflow(
+                owner,
+                repository_name,
+                current_cell.task_name,
+                files_info,
+                repo_token,
+                image_repo,
+                wf_id=wf_id
+            )
+            if resp.status_code != 201 and resp.status_code != 200 and resp.status_code != 204:
+                self.set_status(400)
+                self.write(resp.text)
+                logger.error(resp.text)
+                self.flush()
+                return
+            # job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token)
+            # print(job)
+        self.write(json.dumps({'wf_id': wf_id, 'files_updated': files_updated}))
         self.flush()
 
 
@@ -396,6 +402,7 @@ def create_cell_in_repository(task_name=None, repository=None, files_info=None):
 
 
 def update_cell_in_repository(task_name=None, repository=None, files_info=None):
+    files_updated = False
     for f_type, f_info in files_info.items():
         f_name = f_info['file_name']
         f_path = f_info['path']
@@ -407,6 +414,7 @@ def update_cell_in_repository(task_name=None, repository=None, files_info=None):
             remote_hash = remote_content.sha
             logger.debug('local_hash: ' + local_hash + ' remote_hash: ' + remote_hash)
             if remote_hash != local_hash:
+                files_updated = True
                 repository.update_file(
                     path=task_name + '/' + f_name,
                     message=task_name + ' update',
@@ -414,6 +422,7 @@ def update_cell_in_repository(task_name=None, repository=None, files_info=None):
                     sha=remote_content.sha
                 )
         f.close()
+    return files_updated
 
 
 def dispatch_github_workflow(owner, repository_name, task_name, files_info, repository_token, image, wf_id=None):

@@ -1,0 +1,1408 @@
+{
+  "chart": {
+    "offset": {
+      "x": 0,
+      "y": 0
+    },
+    "scale": 1,
+    "nodes": {
+      "e05a69bc-d0a4-4f79-93e2-7c79ba2b04e1": {
+        "id": "e05a69bc-d0a4-4f79-93e2-7c79ba2b04e1",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "file_path": {
+            "properties": {
+              "color": "#663a78"
+            },
+            "id": "file_path",
+            "type": "right",
+            "position": {
+              "x": 217.5,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "Create file-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "file_path",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#663a78"
+            }
+          ],
+          "params": [],
+          "inputs": [],
+          "outputs": [
+            "file_path"
+          ],
+          "og_node_id": "5a918c8",
+          "deps": [
+            "",
+            "os"
+          ]
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "7d1c8e18-880d-4bab-be5c-dd47d5eed5b4": {
+        "id": "7d1c8e18-880d-4bab-be5c-dd47d5eed5b4",
+        "position": {
+          "x": 365.51197725183823,
+          "y": 0
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "file_path": {
+            "properties": {
+              "color": "#663a78"
+            },
+            "id": "file_path",
+            "type": "left",
+            "position": {
+              "x": 30.5,
+              "y": 74.5
+            }
+          },
+          "lines": {
+            "properties": {
+              "color": "#ac535c"
+            },
+            "id": "lines",
+            "type": "right",
+            "position": {
+              "x": 231,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "read file lines-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "file_path",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#663a78"
+            },
+            {
+              "name": "lines",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#ac535c"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "file_path"
+          ],
+          "outputs": [
+            "lines"
+          ],
+          "og_node_id": "4deac70",
+          "deps": [
+            "",
+            "os"
+          ]
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "f847ca0a-1a4d-4e2a-85bd-6ec7be87c3ed": {
+        "id": "f847ca0a-1a4d-4e2a-85bd-6ec7be87c3ed",
+        "position": {
+          "x": 364.20478770935455,
+          "y": 177.11111111111117
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "file_path": {
+            "properties": {
+              "color": "#663a78"
+            },
+            "id": "file_path",
+            "type": "left",
+            "position": {
+              "x": 30.5,
+              "y": 74.5
+            }
+          },
+          "lines": {
+            "properties": {
+              "color": "#ac535c"
+            },
+            "id": "lines",
+            "type": "right",
+            "position": {
+              "x": 231,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "read file lines-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "file_path",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#663a78"
+            },
+            {
+              "name": "lines",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#ac535c"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "file_path"
+          ],
+          "outputs": [
+            "lines"
+          ],
+          "og_node_id": "4deac70",
+          "deps": [
+            "",
+            "os"
+          ]
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "8f44f21c-829c-4abc-881f-377159a2d2b1": {
+        "id": "8f44f21c-829c-4abc-881f-377159a2d2b1",
+        "position": {
+          "x": 697.5381210426875,
+          "y": 17.63398692810455
+        },
+        "orientation": 0,
+        "type": "splitter",
+        "ports": {
+          "splitter_source": {
+            "id": "splitter_source",
+            "type": "left",
+            "properties": {
+              "special_node": 1,
+              "color": "#000000"
+            },
+            "position": {
+              "x": 0.5,
+              "y": 49.5
+            }
+          },
+          "splitter_target": {
+            "id": "splitter_target",
+            "type": "right",
+            "properties": {
+              "special_node": 1,
+              "color": "#000000"
+            },
+            "position": {
+              "x": 197.5,
+              "y": 49.5
+            }
+          }
+        },
+        "properties": {
+          "title": "Splitter",
+          "scalingFactor": 1
+        },
+        "size": {
+          "width": 200,
+          "height": 100
+        }
+      },
+      "1d67688c-536d-48ef-a40f-4b0aaa3f3638": {
+        "id": "1d67688c-536d-48ef-a40f-4b0aaa3f3638",
+        "position": {
+          "x": 1000.8060948988971,
+          "y": 3.254901960784335
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "lines": {
+            "properties": {
+              "color": "#ac535c"
+            },
+            "id": "lines",
+            "type": "left",
+            "position": {
+              "x": 17,
+              "y": 74.5
+            }
+          },
+          "count": {
+            "properties": {
+              "color": "#783d3a"
+            },
+            "id": "count",
+            "type": "right",
+            "position": {
+              "x": 228,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "loop file lines-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "lines",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#ac535c"
+            },
+            {
+              "name": "count",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#783d3a"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "lines"
+          ],
+          "outputs": [
+            "count"
+          ],
+          "og_node_id": "5d9de73",
+          "deps": []
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "473de030-05fc-4f09-9325-11b838bcc140": {
+        "id": "473de030-05fc-4f09-9325-11b838bcc140",
+        "position": {
+          "x": 982.5054413041258,
+          "y": 290.8366013071896
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "lines": {
+            "properties": {
+              "color": "#ac535c"
+            },
+            "id": "lines",
+            "type": "left",
+            "position": {
+              "x": 17,
+              "y": 74.5
+            }
+          },
+          "count": {
+            "properties": {
+              "color": "#783d3a"
+            },
+            "id": "count",
+            "type": "right",
+            "position": {
+              "x": 228,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "loop file lines-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "lines",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#ac535c"
+            },
+            {
+              "name": "count",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#783d3a"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "lines"
+          ],
+          "outputs": [
+            "count"
+          ],
+          "og_node_id": "5d9de73",
+          "deps": []
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "62fe958c-92d6-4be1-bbcc-73bfe88b9e2a": {
+        "id": "62fe958c-92d6-4be1-bbcc-73bfe88b9e2a",
+        "position": {
+          "x": 1349.8257027420339,
+          "y": 177.77777777777786
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "count": {
+            "properties": {
+              "color": "#783d3a"
+            },
+            "id": "count",
+            "type": "left",
+            "position": {
+              "x": 20,
+              "y": 74.5
+            }
+          },
+          "a": {
+            "properties": {
+              "color": "#77862d"
+            },
+            "id": "a",
+            "type": "right",
+            "position": {
+              "x": 243,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "Add1-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "count",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#783d3a"
+            },
+            {
+              "name": "a",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#77862d"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "count"
+          ],
+          "outputs": [
+            "a"
+          ],
+          "og_node_id": "49d5dda",
+          "deps": []
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "57c8b452-35f5-4b7b-b777-e2bee59ef99d": {
+        "id": "57c8b452-35f5-4b7b-b777-e2bee59ef99d",
+        "position": {
+          "x": 1694.9237419577207,
+          "y": 268.61437908496737
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "a": {
+            "properties": {
+              "color": "#77862d"
+            },
+            "id": "a",
+            "type": "left",
+            "position": {
+              "x": 20,
+              "y": 60.5
+            }
+          },
+          "count": {
+            "properties": {
+              "color": "#783d3a"
+            },
+            "id": "count",
+            "type": "left",
+            "position": {
+              "x": 20,
+              "y": 88.5
+            }
+          },
+          "msg": {
+            "properties": {
+              "color": "#7bd279"
+            },
+            "id": "msg",
+            "type": "right",
+            "position": {
+              "x": 232.5,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "Anti-pattern-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "a",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#77862d"
+            },
+            {
+              "name": "count",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#783d3a"
+            },
+            {
+              "name": "msg",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#7bd279"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "a",
+            "count"
+          ],
+          "outputs": [
+            "msg"
+          ],
+          "og_node_id": "44dec46",
+          "deps": []
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "12ae508b-b472-4924-af9a-a3051c7612fa": {
+        "id": "12ae508b-b472-4924-af9a-a3051c7612fa",
+        "position": {
+          "x": 2223.028317121121,
+          "y": 103.90849673202612
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "msg": {
+            "properties": {
+              "color": "#7bd279"
+            },
+            "id": "msg",
+            "type": "left",
+            "position": {
+              "x": 15.5,
+              "y": 74.5
+            }
+          },
+          "list_of_ints": {
+            "properties": {
+              "color": "#5f1f93"
+            },
+            "id": "list_of_ints",
+            "type": "right",
+            "position": {
+              "x": 204,
+              "y": 60.5
+            }
+          },
+          "list_of_paths": {
+            "properties": {
+              "color": "#79c5d2"
+            },
+            "id": "list_of_paths",
+            "type": "right",
+            "position": {
+              "x": 204,
+              "y": 88.5
+            }
+          }
+        },
+        "properties": {
+          "title": "input lists-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "msg",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#7bd279"
+            },
+            {
+              "name": "list_of_ints",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#5f1f93"
+            },
+            {
+              "name": "list_of_paths",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#79c5d2"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "msg"
+          ],
+          "outputs": [
+            "list_of_ints",
+            "list_of_paths"
+          ],
+          "og_node_id": "3e4f548",
+          "deps": []
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "c8cf52ae-446f-402e-8ea5-d26dbf4ff903": {
+        "id": "c8cf52ae-446f-402e-8ea5-d26dbf4ff903",
+        "position": {
+          "x": 2203.420473983864,
+          "y": 302.6013071895425
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "msg": {
+            "properties": {
+              "color": "#7bd279"
+            },
+            "id": "msg",
+            "type": "left",
+            "position": {
+              "x": 15.5,
+              "y": 74.5
+            }
+          },
+          "list_of_ints": {
+            "properties": {
+              "color": "#5f1f93"
+            },
+            "id": "list_of_ints",
+            "type": "right",
+            "position": {
+              "x": 204,
+              "y": 60.5
+            }
+          },
+          "list_of_paths": {
+            "properties": {
+              "color": "#79c5d2"
+            },
+            "id": "list_of_paths",
+            "type": "right",
+            "position": {
+              "x": 204,
+              "y": 88.5
+            }
+          }
+        },
+        "properties": {
+          "title": "input lists-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "msg",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#7bd279"
+            },
+            {
+              "name": "list_of_ints",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#5f1f93"
+            },
+            {
+              "name": "list_of_paths",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#79c5d2"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "msg"
+          ],
+          "outputs": [
+            "list_of_ints",
+            "list_of_paths"
+          ],
+          "og_node_id": "3e4f548",
+          "deps": []
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "c0f6bebc-1529-4901-85d7-42eb1342868e": {
+        "id": "c0f6bebc-1529-4901-85d7-42eb1342868e",
+        "position": {
+          "x": 2617.799558951182,
+          "y": 0
+        },
+        "orientation": 0,
+        "type": "splitter",
+        "ports": {
+          "splitter_source": {
+            "id": "splitter_source",
+            "type": "left",
+            "properties": {
+              "special_node": 1,
+              "color": "#000000"
+            },
+            "position": {
+              "x": 0.5,
+              "y": 49.5
+            }
+          },
+          "splitter_target": {
+            "id": "splitter_target",
+            "type": "right",
+            "properties": {
+              "special_node": 1,
+              "color": "#000000"
+            },
+            "position": {
+              "x": 197.5,
+              "y": 49.5
+            }
+          }
+        },
+        "properties": {
+          "title": "Splitter",
+          "scalingFactor": 1
+        },
+        "size": {
+          "width": 200,
+          "height": 100
+        }
+      },
+      "edd68621-780a-42df-958c-74f0a711b260": {
+        "id": "edd68621-780a-42df-958c-74f0a711b260",
+        "position": {
+          "x": 2634.793023003473,
+          "y": 145.73856209150335
+        },
+        "orientation": 0,
+        "type": "splitter",
+        "ports": {
+          "splitter_source": {
+            "id": "splitter_source",
+            "type": "left",
+            "properties": {
+              "special_node": 1,
+              "color": "#000000"
+            },
+            "position": {
+              "x": 0.5,
+              "y": 49.5
+            }
+          },
+          "splitter_target": {
+            "id": "splitter_target",
+            "type": "right",
+            "properties": {
+              "special_node": 1,
+              "color": "#000000"
+            },
+            "position": {
+              "x": 197.5,
+              "y": 49.5
+            }
+          }
+        },
+        "properties": {
+          "title": "Splitter",
+          "scalingFactor": 1
+        },
+        "size": {
+          "width": 200,
+          "height": 100
+        }
+      },
+      "1a85bb42-8eba-4b46-b691-ac0687985fab": {
+        "id": "1a85bb42-8eba-4b46-b691-ac0687985fab",
+        "position": {
+          "x": 3088.387794245301,
+          "y": 186.2614379084967
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "list_of_paths": {
+            "properties": {
+              "color": "#79c5d2"
+            },
+            "id": "list_of_paths",
+            "type": "left",
+            "position": {
+              "x": 44,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "loop list-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "list_of_paths",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#79c5d2"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "list_of_paths"
+          ],
+          "outputs": [],
+          "og_node_id": "6ce40db",
+          "deps": []
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "8f94be49-2e5a-4b22-bef9-7a2d35b05d76": {
+        "id": "8f94be49-2e5a-4b22-bef9-7a2d35b05d76",
+        "position": {
+          "x": 2881.851846532883,
+          "y": 528.7450980392158
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "list_of_paths": {
+            "properties": {
+              "color": "#79c5d2"
+            },
+            "id": "list_of_paths",
+            "type": "left",
+            "position": {
+              "x": 44,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "loop list-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "list_of_paths",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#79c5d2"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "list_of_paths"
+          ],
+          "outputs": [],
+          "og_node_id": "6ce40db",
+          "deps": []
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "01a6d66f-afb1-47c4-8f94-faace4874409": {
+        "id": "01a6d66f-afb1-47c4-8f94-faace4874409",
+        "position": {
+          "x": 3060.936813853145,
+          "y": 0
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "list_of_ints": {
+            "properties": {
+              "color": "#5f1f93"
+            },
+            "id": "list_of_ints",
+            "type": "left",
+            "position": {
+              "x": 37.5,
+              "y": 74.5
+            }
+          },
+          "a": {
+            "properties": {
+              "color": "#77862d"
+            },
+            "id": "a",
+            "type": "right",
+            "position": {
+              "x": 243,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "loop int list-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "list_of_ints",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#5f1f93"
+            },
+            {
+              "name": "a",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#77862d"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "list_of_ints"
+          ],
+          "outputs": [
+            "a"
+          ],
+          "og_node_id": "e1578ef",
+          "deps": []
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "f5733922-b56b-497e-8066-c96cdb7b2a79": {
+        "id": "f5733922-b56b-497e-8066-c96cdb7b2a79",
+        "position": {
+          "x": 3104.074068755105,
+          "y": 347.0457516339869
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "list_of_ints": {
+            "properties": {
+              "color": "#5f1f93"
+            },
+            "id": "list_of_ints",
+            "type": "left",
+            "position": {
+              "x": 37.5,
+              "y": 74.5
+            }
+          },
+          "a": {
+            "properties": {
+              "color": "#77862d"
+            },
+            "id": "a",
+            "type": "right",
+            "position": {
+              "x": 243,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "loop int list-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "list_of_ints",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#5f1f93"
+            },
+            {
+              "name": "a",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#77862d"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "list_of_ints"
+          ],
+          "outputs": [
+            "a"
+          ],
+          "og_node_id": "e1578ef",
+          "deps": []
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "c64cf08d-2caa-46bb-a199-c8fd25e9d590": {
+        "id": "c64cf08d-2caa-46bb-a199-c8fd25e9d590",
+        "position": {
+          "x": 3744.5969445720984,
+          "y": 345.73856209150324
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "a": {
+            "properties": {
+              "color": "#77862d"
+            },
+            "id": "a",
+            "type": "left",
+            "position": {
+              "x": 5,
+              "y": 74.5
+            }
+          },
+          "msg": {
+            "properties": {
+              "color": "#7bd279"
+            },
+            "id": "msg",
+            "type": "right",
+            "position": {
+              "x": 232.5,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "KNMI-vol-h5-to-ODIM-h5-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "a",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#77862d"
+            },
+            {
+              "name": "msg",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#7bd279"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "a"
+          ],
+          "outputs": [
+            "msg"
+          ],
+          "og_node_id": "e25ec34",
+          "deps": [
+            ""
+          ]
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "223011e6-faff-479b-a859-a3f77db0fbb5": {
+        "id": "223011e6-faff-479b-a859-a3f77db0fbb5",
+        "position": {
+          "x": 3735.4466177747117,
+          "y": 515.6732026143787
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "a": {
+            "properties": {
+              "color": "#77862d"
+            },
+            "id": "a",
+            "type": "left",
+            "position": {
+              "x": 5,
+              "y": 74.5
+            }
+          },
+          "msg": {
+            "properties": {
+              "color": "#7bd279"
+            },
+            "id": "msg",
+            "type": "right",
+            "position": {
+              "x": 232.5,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "vol2bird-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "a",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#77862d"
+            },
+            {
+              "name": "msg",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#7bd279"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "a"
+          ],
+          "outputs": [
+            "msg"
+          ],
+          "og_node_id": "ded63d7",
+          "deps": [
+            ""
+          ]
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "e9e3a59e-923f-4d05-b3b0-2ec79590acc9": {
+        "id": "e9e3a59e-923f-4d05-b3b0-2ec79590acc9",
+        "position": {
+          "x": 4251.78648705576,
+          "y": 340.5098039215685
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "msg": {
+            "properties": {
+              "color": "#7bd279"
+            },
+            "id": "msg",
+            "type": "left",
+            "position": {
+              "x": 15.5,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "Print msg-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "msg",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#7bd279"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "msg"
+          ],
+          "outputs": [],
+          "og_node_id": "a74dc70",
+          "deps": []
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "cd47ca61-ba20-4826-b92f-7ee990822f3a": {
+        "id": "cd47ca61-ba20-4826-b92f-7ee990822f3a",
+        "position": {
+          "x": 4249.172107970791,
+          "y": 539.2026143790852
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "msg": {
+            "properties": {
+              "color": "#7bd279"
+            },
+            "id": "msg",
+            "type": "left",
+            "position": {
+              "x": 15.5,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "Print msg-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "msg",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#7bd279"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "msg"
+          ],
+          "outputs": [],
+          "og_node_id": "a74dc70",
+          "deps": []
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      }
+    },
+    "links": {
+      "a9475401-f066-46ec-893d-84f5ab3d1cf4": {
+        "id": "a9475401-f066-46ec-893d-84f5ab3d1cf4",
+        "from": {
+          "nodeId": "e05a69bc-d0a4-4f79-93e2-7c79ba2b04e1",
+          "portId": "file_path"
+        },
+        "to": {
+          "nodeId": "7d1c8e18-880d-4bab-be5c-dd47d5eed5b4",
+          "portId": "file_path"
+        }
+      },
+      "48a07267-919e-4852-8d08-c83a366b0c85": {
+        "id": "48a07267-919e-4852-8d08-c83a366b0c85",
+        "from": {
+          "nodeId": "e05a69bc-d0a4-4f79-93e2-7c79ba2b04e1",
+          "portId": "file_path"
+        },
+        "to": {
+          "nodeId": "f847ca0a-1a4d-4e2a-85bd-6ec7be87c3ed",
+          "portId": "file_path"
+        }
+      },
+      "43dcc09b-af0e-4738-bcba-faf9f6ae26dc": {
+        "id": "43dcc09b-af0e-4738-bcba-faf9f6ae26dc",
+        "from": {
+          "nodeId": "7d1c8e18-880d-4bab-be5c-dd47d5eed5b4",
+          "portId": "lines"
+        },
+        "to": {
+          "nodeId": "8f44f21c-829c-4abc-881f-377159a2d2b1",
+          "portId": "splitter_source"
+        }
+      },
+      "15096fc3-d464-4566-b9e7-1fd786d087a8": {
+        "id": "15096fc3-d464-4566-b9e7-1fd786d087a8",
+        "from": {
+          "nodeId": "8f44f21c-829c-4abc-881f-377159a2d2b1",
+          "portId": "splitter_target"
+        },
+        "to": {
+          "nodeId": "1d67688c-536d-48ef-a40f-4b0aaa3f3638",
+          "portId": "lines"
+        }
+      },
+      "01c23e09-97cb-4bb4-b965-c40ae9fa9b66": {
+        "id": "01c23e09-97cb-4bb4-b965-c40ae9fa9b66",
+        "from": {
+          "nodeId": "f847ca0a-1a4d-4e2a-85bd-6ec7be87c3ed",
+          "portId": "lines"
+        },
+        "to": {
+          "nodeId": "473de030-05fc-4f09-9325-11b838bcc140",
+          "portId": "lines"
+        }
+      },
+      "03a6f9db-f510-46e5-89d0-3235c2a51a6b": {
+        "id": "03a6f9db-f510-46e5-89d0-3235c2a51a6b",
+        "from": {
+          "nodeId": "473de030-05fc-4f09-9325-11b838bcc140",
+          "portId": "count"
+        },
+        "to": {
+          "nodeId": "62fe958c-92d6-4be1-bbcc-73bfe88b9e2a",
+          "portId": "count"
+        }
+      },
+      "4f74db47-a87d-4eb6-abf6-fd101ee4056c": {
+        "id": "4f74db47-a87d-4eb6-abf6-fd101ee4056c",
+        "from": {
+          "nodeId": "62fe958c-92d6-4be1-bbcc-73bfe88b9e2a",
+          "portId": "a"
+        },
+        "to": {
+          "nodeId": "57c8b452-35f5-4b7b-b777-e2bee59ef99d",
+          "portId": "a"
+        }
+      },
+      "cc20739a-d3a0-4286-a428-23ab1eaf883e": {
+        "id": "cc20739a-d3a0-4286-a428-23ab1eaf883e",
+        "from": {
+          "nodeId": "473de030-05fc-4f09-9325-11b838bcc140",
+          "portId": "count"
+        },
+        "to": {
+          "nodeId": "57c8b452-35f5-4b7b-b777-e2bee59ef99d",
+          "portId": "count"
+        }
+      },
+      "cb0a4d7c-c379-4194-9a8a-14d0adf2744c": {
+        "id": "cb0a4d7c-c379-4194-9a8a-14d0adf2744c",
+        "from": {
+          "nodeId": "57c8b452-35f5-4b7b-b777-e2bee59ef99d",
+          "portId": "msg"
+        },
+        "to": {
+          "nodeId": "12ae508b-b472-4924-af9a-a3051c7612fa",
+          "portId": "msg"
+        }
+      },
+      "1f8b4ec5-977c-4cde-9302-f43b134513e3": {
+        "id": "1f8b4ec5-977c-4cde-9302-f43b134513e3",
+        "from": {
+          "nodeId": "57c8b452-35f5-4b7b-b777-e2bee59ef99d",
+          "portId": "msg"
+        },
+        "to": {
+          "nodeId": "c8cf52ae-446f-402e-8ea5-d26dbf4ff903",
+          "portId": "msg"
+        }
+      },
+      "673af78d-9cc3-4348-83e3-cf9620d1a41d": {
+        "id": "673af78d-9cc3-4348-83e3-cf9620d1a41d",
+        "from": {
+          "nodeId": "12ae508b-b472-4924-af9a-a3051c7612fa",
+          "portId": "list_of_ints"
+        },
+        "to": {
+          "nodeId": "c0f6bebc-1529-4901-85d7-42eb1342868e",
+          "portId": "splitter_source"
+        }
+      },
+      "0508241e-6b83-46d2-be50-64b9e4b48e0a": {
+        "id": "0508241e-6b83-46d2-be50-64b9e4b48e0a",
+        "from": {
+          "nodeId": "12ae508b-b472-4924-af9a-a3051c7612fa",
+          "portId": "list_of_paths"
+        },
+        "to": {
+          "nodeId": "edd68621-780a-42df-958c-74f0a711b260",
+          "portId": "splitter_source"
+        }
+      },
+      "928092bb-0d60-4c46-9aef-0bd524cadc06": {
+        "id": "928092bb-0d60-4c46-9aef-0bd524cadc06",
+        "from": {
+          "nodeId": "c8cf52ae-446f-402e-8ea5-d26dbf4ff903",
+          "portId": "list_of_paths"
+        },
+        "to": {
+          "nodeId": "8f94be49-2e5a-4b22-bef9-7a2d35b05d76",
+          "portId": "list_of_paths"
+        }
+      },
+      "b1b4c25d-114c-4ade-bfaf-5055e8347806": {
+        "id": "b1b4c25d-114c-4ade-bfaf-5055e8347806",
+        "from": {
+          "nodeId": "edd68621-780a-42df-958c-74f0a711b260",
+          "portId": "splitter_target"
+        },
+        "to": {
+          "nodeId": "1a85bb42-8eba-4b46-b691-ac0687985fab",
+          "portId": "list_of_paths"
+        }
+      },
+      "822e43b9-bf44-4dd5-9132-2cd4301e2ce8": {
+        "id": "822e43b9-bf44-4dd5-9132-2cd4301e2ce8",
+        "from": {
+          "nodeId": "c0f6bebc-1529-4901-85d7-42eb1342868e",
+          "portId": "splitter_target"
+        },
+        "to": {
+          "nodeId": "01a6d66f-afb1-47c4-8f94-faace4874409",
+          "portId": "list_of_ints"
+        }
+      },
+      "4e0cbf61-f09e-4864-841f-c675d95daf46": {
+        "id": "4e0cbf61-f09e-4864-841f-c675d95daf46",
+        "from": {
+          "nodeId": "c8cf52ae-446f-402e-8ea5-d26dbf4ff903",
+          "portId": "list_of_ints"
+        },
+        "to": {
+          "nodeId": "f5733922-b56b-497e-8066-c96cdb7b2a79",
+          "portId": "list_of_ints"
+        }
+      },
+      "95a9c637-214c-44d4-8042-c20023e0220d": {
+        "id": "95a9c637-214c-44d4-8042-c20023e0220d",
+        "from": {
+          "nodeId": "f5733922-b56b-497e-8066-c96cdb7b2a79",
+          "portId": "a"
+        },
+        "to": {
+          "nodeId": "c64cf08d-2caa-46bb-a199-c8fd25e9d590",
+          "portId": "a"
+        }
+      },
+      "e72a8541-2a9c-4c88-afa7-0a159ea3fda4": {
+        "id": "e72a8541-2a9c-4c88-afa7-0a159ea3fda4",
+        "from": {
+          "nodeId": "f5733922-b56b-497e-8066-c96cdb7b2a79",
+          "portId": "a"
+        },
+        "to": {
+          "nodeId": "223011e6-faff-479b-a859-a3f77db0fbb5",
+          "portId": "a"
+        }
+      },
+      "94a01312-1a30-41f4-8959-e12a0c01269f": {
+        "id": "94a01312-1a30-41f4-8959-e12a0c01269f",
+        "from": {
+          "nodeId": "c64cf08d-2caa-46bb-a199-c8fd25e9d590",
+          "portId": "msg"
+        },
+        "to": {
+          "nodeId": "e9e3a59e-923f-4d05-b3b0-2ec79590acc9",
+          "portId": "msg"
+        }
+      },
+      "38d3d6f4-d54a-435d-b290-b489c8d2460b": {
+        "id": "38d3d6f4-d54a-435d-b290-b489c8d2460b",
+        "from": {
+          "nodeId": "223011e6-faff-479b-a859-a3f77db0fbb5",
+          "portId": "msg"
+        },
+        "to": {
+          "nodeId": "cd47ca61-ba20-4826-b92f-7ee990822f3a",
+          "portId": "msg"
+        }
+      }
+    },
+    "selected": {},
+    "hovered": {}
+  },
+  "params": {}
+}

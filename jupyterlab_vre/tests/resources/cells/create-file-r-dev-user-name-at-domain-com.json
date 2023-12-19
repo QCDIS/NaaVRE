@@ -1,17 +1,17 @@
 {
     "all_inputs": [],
-    "base_image": "qcdis/miniconda3-pdal",
+    "base_image": "jupyter/r-notebook:70178b8e48d7",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "e342690": {
-                "id": "e342690",
+            "c45fb67": {
+                "id": "c45fb67",
                 "ports": {
-                    "feature_extraction_input": {
-                        "id": "feature_extraction_input",
+                    "file_path": {
+                        "id": "file_path",
                         "properties": {
-                            "color": "#1f3e93"
+                            "color": "#663a78"
                         },
                         "type": "right"
                     }
@@ -23,17 +23,17 @@
                 "properties": {
                     "deps": [],
                     "inputs": [],
-                    "og_node_id": "e342690",
+                    "og_node_id": "c45fb67",
                     "outputs": [
-                        "feature_extraction_input"
+                        "file_path"
                     ],
                     "params": [],
-                    "title": "feature-extraction-input-dev-user",
+                    "title": "Create file R-dev-user-name-at-domain-com",
                     "vars": [
                         {
-                            "color": "#1f3e93",
+                            "color": "#663a78",
                             "direction": "output",
-                            "name": "feature_extraction_input",
+                            "name": "file_path",
                             "type": "datatype"
                         }
                     ]
@@ -48,22 +48,24 @@
         "scale": 1,
         "selected": {}
     },
-    "confs": {
-        "conf_filter_type": "conf_filter_type= 'select_equal'"
-    },
+    "confs": {},
     "container_source": "",
     "dependencies": [],
     "inputs": [],
-    "kernel": "ipython",
-    "node_id": "e342690",
-    "original_source": "conf_filter_type= 'select_equal'\n\nfeature_extraction_input = {conf_filter_type}\n    \n    ",
+    "kernel": "IRkernel",
+    "node_id": "c45fb67",
+    "original_source": "\nL <- c(\"a\", \"b\", \"c\")\n\nconf_data_folder <- \"/tmp/data\"\nfile_path <- file.path(conf_data_folder, \"hello.txt\")\n\nwriteLines(L, file_path)\n\nonlyfiles <- list.files(conf_data_folder, full.names = TRUE)\n\nprint(onlyfiles)",
     "outputs": [
-        "feature_extraction_input"
+        "file_path"
     ],
     "params": [],
-    "task_name": "feature-extraction-input-dev-user",
-    "title": "feature-extraction-input-dev-user",
+    "task_name": "create-file-r-dev-user-name-at-domain-com",
+    "title": "Create file R-dev-user-name-at-domain-com",
     "types": {
-        "feature_extraction_input": "str"
-    }
+        "file_path": "str"
+    },
+        "example_inputs" : [
+    "--id",
+    "0"
+  ]
 }

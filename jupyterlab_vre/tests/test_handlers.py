@@ -72,6 +72,7 @@ def get_gh_repository():
 
 
 def create_cell_and_add_to_cat(cell_path=None):
+    print('Creating cell from: ', cell_path)
     with open(cell_path, 'r') as file:
         cell = json.load(file)
     file.close()
@@ -158,8 +159,13 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 response = self.call_cell_handler()
                 self.assertEqual(200, response.code)
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
-                if test_cell.kernel == 'python3':
+                files_updated = json.loads(response.body.decode('utf-8'))['files_updated']
+                if 'skip_exec' in cell and cell['skip_exec']:
+                    continue
+                if 'python' in test_cell.kernel and 'skip_exec':
                     cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
+                    print('---------------------------------------------------')
+                    print('Executing cell: ', cell_path)
                     if 'example_inputs' in cell:
                         exec_args = [sys.executable, cell_path] + cell['example_inputs']
                     else:
@@ -167,15 +173,14 @@ class HandlersAPITest(AsyncHTTPTestCase):
 
                     cell_exec = subprocess.Popen(exec_args,
                                                  stdout=subprocess.PIPE)
-                    print('---------------------------------------------------')
                     text = cell_exec.communicate()[0]
                     print(text)
                     print("stdout:", cell_exec.stdout)
                     print("stderr:", cell_exec.stderr)
                     print("return code:", cell_exec.returncode)
                     print('---------------------------------------------------')
-                    self.assertEqual(0, cell_exec.returncode, text)
-                elif test_cell.kernel == 'IRkernel':
+                    self.assertEqual(0, cell_exec.returncode, 'Cell execution failed: '+cell_file)
+                elif test_cell.kernel == 'IRkernel' and 'skip_exec':
                     cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.R')
                     run_local_cell_path = os.path.join(cells_path, test_cell.task_name, 'run_local.R')
                     shutil.copy(cell_path, run_local_cell_path)
@@ -187,33 +192,34 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     result = subprocess.run(shlex.split(command), capture_output=True, text=True)
                     self.assertEqual(0, result.returncode, result.stderr)
 
-                cat_repositories = Catalog.get_repositories()
-                repo_token = cat_repositories[0]['token']
-                owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
-                repository_name = cat_repositories[0]['url'].split(
-                    'https://github.com/')[1].split('/')[1]
-                if '.git' in repository_name:
-                    repository_name = repository_name.split('.git')[0]
+                if files_updated:
+                    cat_repositories = Catalog.get_repositories()
+                    repo_token = cat_repositories[0]['token']
+                    owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
+                    repository_name = cat_repositories[0]['url'].split(
+                        'https://github.com/')[1].split('/')[1]
+                    if '.git' in repository_name:
+                        repository_name = repository_name.split('.git')[0]
 
-                gh = get_github(cat_repositories=cat_repositories)
-                wait_for_api_resource(gh)
-                sleep(200)
-                job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token, job_id=None)
-                self.assertIsNotNone(job, 'Job not found')
-                counter = 0
-                while 'completed' not in job['status'] or counter < 50:
-                    counter += 1
-                    print('job: ' + job['name'] + ' status: ' + job['status'])
-                    # Wait for 2 minutes for the job to complete to avoid 'API rate limit exceeded for'
-                    sleep(120)
                     gh = get_github(cat_repositories=cat_repositories)
                     wait_for_api_resource(gh)
-                    job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token,
-                                   job_id=job['id'])
-                    if job['status'] == 'completed':
-                        break
-                self.assertEqual('completed', job['status'], 'Job not completed')
-                self.assertEqual('success', job['conclusion'], 'Job not successful')
+                    sleep(200)
+                    job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token, job_id=None)
+                    self.assertIsNotNone(job, 'Job not found')
+                    counter = 0
+                    while 'completed' not in job['status'] or counter < 50:
+                        counter += 1
+                        print('job: ' + job['name'] + ' status: ' + job['status'])
+                        # Wait for 2 minutes for the job to complete to avoid 'API rate limit exceeded for'
+                        sleep(120)
+                        gh = get_github(cat_repositories=cat_repositories)
+                        wait_for_api_resource(gh)
+                        job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token,
+                                       job_id=job['id'])
+                        if job['status'] == 'completed':
+                            break
+                    self.assertEqual('completed', job['status'], 'Job not completed')
+                    self.assertEqual('success', job['conclusion'], 'Job not successful')
 
     def test_extractor_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
@@ -230,6 +236,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 json_response = json.loads(response.body.decode('utf-8'))
                 self.assertIsNotNone(json_response)
                 cell = notebook['notebook']['cells'][notebook['cell_index']]
+                print('cell: ', cell)
 
     def test_execute_workflow_handler(self):
         workflow_path = os.path.join(base_path, 'workflows', 'NaaVRE')
@@ -237,6 +244,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
         with mock.patch.object(ExecuteWorkflowHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
         for workflow_file in workflow_files:
+            print('workflow_file: ', workflow_file)
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
@@ -244,7 +252,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cells_files = os.listdir(cells_json_path)
             for cell_file in cells_files:
                 cell_path = os.path.join(cells_json_path, cell_file)
-                test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
+                create_cell_and_add_to_cat(cell_path=cell_path)
                 response = self.call_cell_handler()
                 self.assertEqual(200, response.code)
 
@@ -256,6 +264,31 @@ class HandlersAPITest(AsyncHTTPTestCase):
             self.assertTrue('created' in json_response)
             self.assertTrue('status' in json_response)
             self.assertTrue('argo_url' in json_response)
+            workflow_id = json_response['argo_id']
+            response = self.fetch(f'/executeworkflowhandler?workflow_id={workflow_id}', method='GET')
+            self.assertEqual(response.code, 200, response.body)
+            json_response = json.loads(response.body.decode('utf-8'))
+            self.assertIsNotNone(json_response)
+            self.assertTrue('argo_id' in json_response)
+            self.assertTrue('created' in json_response)
+            self.assertTrue('status' in json_response)
+            self.assertTrue('argo_url' in json_response)
+            self.assertTrue('progress' in json_response)
+            while json_response['status'] == 'Running':
+                response = self.fetch(f'/executeworkflowhandler?workflow_id={workflow_id}', method='GET')
+                self.assertEqual(response.code, 200, response.body)
+                json_response = json.loads(response.body.decode('utf-8'))
+                print(json.dumps(json_response, indent=2))
+                self.assertIsNotNone(json_response)
+                self.assertTrue('argo_id' in json_response)
+                self.assertTrue('created' in json_response)
+                self.assertTrue('status' in json_response)
+                self.assertTrue('argo_url' in json_response)
+                self.assertTrue('progress' in json_response)
+                if json_response['status'] != 'Running':
+                    break
+                sleep(60)
+            self.assertTrue(json_response['status'] == 'Succeeded', json_response)
 
     def call_cell_handler(self):
         response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))

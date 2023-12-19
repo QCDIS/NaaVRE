@@ -1,19 +1,19 @@
 {
     "all_inputs": [
-        "list_of_paths"
+        "count"
     ],
-    "base_image": "qcdis/miniconda3:v0.1",
+    "base_image": "jupyter/r-notebook:70178b8e48d7",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "6ce40db": {
-                "id": "6ce40db",
+            "d9acfa2": {
+                "id": "d9acfa2",
                 "ports": {
-                    "list_of_paths": {
-                        "id": "list_of_paths",
+                    "count": {
+                        "id": "count",
                         "properties": {
-                            "color": "#79c5d2"
+                            "color": "#783d3a"
                         },
                         "type": "left"
                     }
@@ -25,17 +25,17 @@
                 "properties": {
                     "deps": [],
                     "inputs": [
-                        "list_of_paths"
+                        "count"
                     ],
-                    "og_node_id": "6ce40db",
+                    "og_node_id": "d9acfa2",
                     "outputs": [],
                     "params": [],
-                    "title": "loop list-dev-user-name-at-domain-com",
+                    "title": "Add1 R-dev-user-name-at-domain-com",
                     "vars": [
                         {
-                            "color": "#79c5d2",
+                            "color": "#783d3a",
                             "direction": "input",
-                            "name": "list_of_paths",
+                            "name": "count",
                             "type": "datatype"
                         }
                     ]
@@ -54,17 +54,22 @@
     "container_source": "",
     "dependencies": [],
     "inputs": [
-        "list_of_paths"
+        "count"
     ],
-    "kernel": "ipython",
-    "node_id": "6ce40db",
-    "original_source": "\nfor l in list_of_paths:\n    print(l)",
+    "kernel": "IRkernel",
+    "node_id": "d9acfa2",
+    "original_source": "\na = count + 1",
     "outputs": [],
     "params": [],
-    "task_name": "loop-list-dev-user-name-at-domain-com",
-    "title": "loop list-dev-user-name-at-domain-com",
+    "task_name": "add1-r-dev-user-name-at-domain-com",
+    "title": "Add1 R-dev-user-name-at-domain-com",
     "types": {
-        "list_of_paths": "list"
+        "count": "int"
     },
-    "skip_exec": true
+    "example_inputs" : [
+    "--id",
+    "0",
+    "--count",
+    "1"
+  ]
 }

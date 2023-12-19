@@ -1,28 +1,28 @@
 {
     "all_inputs": [
-        "list_of_ints"
+        "a"
     ],
-    "base_image": "qcdis/miniconda3:v0.1",
+    "base_image": "qcdis/python-vol2bird:v2.1.1",
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "e1578ef": {
-                "id": "e1578ef",
+            "e25ec34": {
+                "id": "e25ec34",
                 "ports": {
                     "a": {
                         "id": "a",
                         "properties": {
                             "color": "#77862d"
                         },
-                        "type": "right"
-                    },
-                    "list_of_ints": {
-                        "id": "list_of_ints",
-                        "properties": {
-                            "color": "#5f1f93"
-                        },
                         "type": "left"
+                    },
+                    "msg": {
+                        "id": "msg",
+                        "properties": {
+                            "color": "#7bd279"
+                        },
+                        "type": "right"
                     }
                 },
                 "position": {
@@ -30,27 +30,29 @@
                     "y": 15
                 },
                 "properties": {
-                    "deps": [],
-                    "inputs": [
-                        "list_of_ints"
+                    "deps": [
+                        ""
                     ],
-                    "og_node_id": "e1578ef",
-                    "outputs": [
+                    "inputs": [
                         "a"
                     ],
+                    "og_node_id": "e25ec34",
+                    "outputs": [
+                        "msg"
+                    ],
                     "params": [],
-                    "title": "loop int list-dev-user-name-at-domain-com",
+                    "title": "KNMI-vol-h5-to-ODIM-h5-dev-user-name-at-domain-com",
                     "vars": [
                         {
-                            "color": "#5f1f93",
+                            "color": "#77862d",
                             "direction": "input",
-                            "name": "list_of_ints",
+                            "name": "a",
                             "type": "datatype"
                         },
                         {
-                            "color": "#77862d",
+                            "color": "#7bd279",
                             "direction": "output",
-                            "name": "a",
+                            "name": "msg",
                             "type": "datatype"
                         }
                     ]
@@ -67,22 +69,28 @@
     },
     "confs": {},
     "container_source": "",
-    "dependencies": [],
-    "inputs": [
-        "list_of_ints"
+    "dependencies": [
+        {
+            "asname": null,
+            "module": "",
+            "name": "os"
+        }
     ],
-    "kernel": "ipython",
-    "node_id": "e1578ef",
-    "original_source": "\nfor i in list_of_ints:\n    a = i -1\n    print(a)",
-    "outputs": [
+    "inputs": [
         "a"
     ],
+    "kernel": "ipython",
+    "node_id": "e25ec34",
+    "original_source": "print(a)\ncmd = \"KNMI_vol_h5_to_ODIM_h5 \"\n\nmsg = os.system(cmd)  # returns the exit code in unix",
+    "outputs": [
+        "msg"
+    ],
     "params": [],
-    "task_name": "loop-int-list-dev-user-name-at-domain-com",
-    "title": "loop int list-dev-user-name-at-domain-com",
+    "task_name": "knmi-vol-h5-to-odim-h5-dev-user-name-at-domain-com",
+    "title": "KNMI-vol-h5-to-ODIM-h5-dev-user-name-at-domain-com",
     "types": {
         "a": "int",
-        "list_of_ints": "list"
+        "msg": "int"
     },
     "skip_exec": true
 }
