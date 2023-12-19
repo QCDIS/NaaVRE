@@ -7,7 +7,6 @@ import {
 import {
   addIcon,
   codeIcon,
-  fileIcon,
   runIcon,
   saveIcon,
 } from '@jupyterlab/ui-components'
@@ -22,15 +21,6 @@ export namespace ToolbarItems {
       tooltip: 'Open the cells catalog',
       icon: addIcon,
       onClick: () => {showDialog(widget.content.composerRef.current.CatalogDialogOptions)},
-    })
-  }
-
-  export function createLoadButton(widget: WorkflowWidget): Widget {
-    return new ToolbarButton({
-      label: 'Load',
-      tooltip: 'Load a workflow',
-      icon: fileIcon,
-      onClick: () => {widget.content.composerRef.current.loadWorkflow()},
     })
   }
 

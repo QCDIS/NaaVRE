@@ -91,35 +91,6 @@ export class Composer extends React.Component<IProps, IState> {
 			});
 		}) as typeof actions
 
-	loadWorkflow = async () => {
-		try {
-			let resp = await requestAPI<any>('expmanager/load', {
-				method: 'GET'
-			});
-			this.setState({
-				chart: resp
-			})
-		} catch (error) {
-			console.log(error);
-			alert('Error loading the workflow: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
-		}
-	}
-
-	saveWorkflow = async () => {
-		try {
-			let resp = await requestAPI<any>('expmanager/save', {
-				body: JSON.stringify({
-					...this.state.chart
-				}),
-				method: 'POST'
-			});
-			console.log(resp);
-		} catch (error) {
-			console.log(error);
-			alert('Error saving the workflow: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
-		}
-	}
-
 	exportWorkflow = async () => {
 		try {
 			let resp = await requestAPI<any>('expmanager/export', {

@@ -18,7 +18,6 @@ from jupyterlab_vre import (
     ExtractorHandler,
     TypesHandler,
     CellsHandler,
-    SaveWorkflowHandler,
     ExportWorkflowHandler,
     ExecuteWorkflowHandler,
     NotebookSearchHandler,
@@ -116,7 +115,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
         self.app = Application([('/extractorhandler', ExtractorHandler),
                                 ('/typeshandler', TypesHandler),
                                 ('/cellshandler', CellsHandler),
-                                ('/saveworkflowhandler', SaveWorkflowHandler),
                                 ('/exportworkflowhandler', ExportWorkflowHandler),
                                 ('/executeworkflowhandler', ExecuteWorkflowHandler),
                                 ('/notebooksearch', NotebookSearchHandler),
@@ -258,15 +256,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
             test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
             response = self.call_cell_handler()
             self.assertEqual(200, response.code)
-
-    def test_save_workflow_handler(self):
-        self._setup_workflows_test()
-        for workflow_file_path, payload in self._iter_workflows():
-            response = self.fetch('/saveworkflowhandler', method='POST', body=json.dumps(payload['chart']))
-            self.assertEqual(
-                response.code, 200,
-                f'{workflow_file_path}: {response.body}',
-                )
 
     def test_execute_workflow_handler(self):
         self._setup_workflows_test()
