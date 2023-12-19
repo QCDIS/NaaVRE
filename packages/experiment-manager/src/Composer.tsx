@@ -189,20 +189,3 @@ export class Composer extends React.Component<IProps, IState> {
 		)
 	}
 }
-
-export class ComposerWidget extends ReactWidget {
-
-	composerRef: React.RefObject<Composer>;
-
-	constructor() {
-		super();
-		this.addClass('vre-composer');
-		this.composerRef = React.createRef();
-	}
-
-	render(): JSX.Element {
-		return (
-			<Composer ref={this.composerRef}/>
-		);
-	}
-}
