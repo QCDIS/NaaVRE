@@ -1,3 +1,7 @@
+// Derived from https://github.com/jupyterlab/extension-examples/blob/2b9283f611d2471f8ac310704a3c6a896cbc1e07/documents/src/model.ts
+// Copyright 2023 Project Jupyter Contributors; licensed under the BSD 3-Clause License license:
+// https://github.com/jupyterlab/extension-examples/blob/main/LICENSE
+
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 
 import { YDocument, DocumentChange } from '@jupyterlab/shared-models';
@@ -19,17 +23,7 @@ import * as Y from 'yjs';
  * Document structure
  */
 export type SharedObject = {
-  x: number;
-  y: number;
   chart: IChart;
-};
-
-/**
- * Position
- */
-export type Position = {
-  x: number;
-  y: number;
 };
 
 /**
@@ -161,16 +155,6 @@ export class WorkflowModel implements DocumentRegistry.IModel {
   }
 
   /**
-   * Shared object position
-   */
-  get position(): Position {
-    return this.sharedModel.get('position');
-  }
-  set position(v: Position) {
-    this.sharedModel.set('position', v);
-  }
-
-  /**
    * get the signal clientChanged to listen for changes on the clients sharing
    * the same document.
    *
@@ -212,16 +196,6 @@ export class WorkflowModel implements DocumentRegistry.IModel {
   }
 
   /**
-   * Sets the mouse's position of the client
-   *
-   * @param pos Mouse position
-   */
-  setCursor(pos: Position): void {
-    // Adds the position of the mouse from the client to the shared state.
-    this.sharedModel.awareness.setLocalStateField('mouse', pos);
-  }
-
-  /**
    * Should return the data that you need to store in disk as a string.
    * The context will call this method to get the file's content and save it
    * to disk
@@ -229,10 +203,7 @@ export class WorkflowModel implements DocumentRegistry.IModel {
    * @returns The data
    */
   toString(): string {
-    const pos = this.sharedModel.get('position');
     const obj = {
-      x: pos?.x ?? 10,
-      y: pos?.y ?? 10,
       chart: this.sharedModel.get('chart') ?? chartSimple,
     };
     return JSON.stringify(obj, null, 2);
@@ -246,15 +217,12 @@ export class WorkflowModel implements DocumentRegistry.IModel {
    * @param data Serialized data
    */
   fromString(data: string): void {
-    let position = { x: 0, y: 0 }
     let chart: IChart = chartSimple
     if (data) {
       const obj = JSON.parse(data);
-      position = { x: obj.x, y: obj.y }
       chart = obj.chart
     }
     this.sharedModel.transact(() => {
-      this.sharedModel.set('position', position);
       this.sharedModel.set('chart', chart);
     });
   }
@@ -324,7 +292,7 @@ export class WorkflowModel implements DocumentRegistry.IModel {
     sender: Workflow,
     changes: WorkflowChange
   ): void => {
-    if (changes.chartChange || changes.positionChange) {
+    if (changes.chartChange) {
       this.triggerContentChange();
     }
     if (changes.stateChange) {
@@ -368,7 +336,6 @@ export class WorkflowModel implements DocumentRegistry.IModel {
  */
 export type WorkflowChange = {
   chartChange?: IChart;
-  positionChange?: Position;
 } & DocumentChange;
 
 /**
@@ -409,14 +376,9 @@ export class Workflow extends YDocument<WorkflowChange> {
    * @returns The content
    */
   get(key: 'chart'): IChart;
-  get(key: 'position'): Position;
   get(key: string): any {
     const data = this._content.get(key);
     switch (key) {
-      case "position":
-        return data
-          ? JSON.parse(data)
-          : { x: 0, y: 0 }
       case "chart":
         return data
           ? JSON.parse(data)
@@ -433,11 +395,10 @@ export class Workflow extends YDocument<WorkflowChange> {
    * @param value New object.
    */
   set(key: 'chart', value: IChart): void;
-  set(key: 'position', value: PartialJSONObject): void;
   set(key: string, value: IChart | PartialJSONObject): void {
     this._content.set(
       key,
-      ['position', 'chart'].includes(key) ? JSON.stringify(value) : value
+      ['chart'].includes(key) ? JSON.stringify(value) : value
     );
   }
 
@@ -450,12 +411,7 @@ export class Workflow extends YDocument<WorkflowChange> {
     const changes: WorkflowChange = {};
 
     // Checks which object changed and propagates them.
-    if (event.keysChanged.has('position')) {
-      changes.positionChange = JSON.parse(this._content.get('position'));
-    }
-
     if (event.keysChanged.has('chart')) {
-      console.log("@@@@@@@@@ chartChanged")
       changes.chartChange = this._content.get('chart');
     }
 

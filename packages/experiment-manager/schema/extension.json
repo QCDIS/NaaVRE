@@ -4,10 +4,9 @@
   "jupyter.lab.toolbars": {
     "NaaVRE workflow editor": [
       { "name": "cellsCatalog", "rank": 10 },
-      { "name": "loadWorkflow", "rank": 20 },
-      { "name": "saveWorkflow", "rank": 30},
-      { "name": "exportWorkflow", "rank": 40},
-      { "name": "runWorkflow", "rank": 50}
+      { "name": "saveWorkflow", "rank": 20},
+      { "name": "exportWorkflow", "rank": 30},
+      { "name": "runWorkflow", "rank": 40}
     ]
   },
   "jupyter.lab.transform": true,

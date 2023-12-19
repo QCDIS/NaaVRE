@@ -1,4 +1,6 @@
-// Copyright 2023 Project Jupyter Contributors
+// Derived from https://github.com/jupyterlab/extension-examples/blob/2b9283f611d2471f8ac310704a3c6a896cbc1e07/documents/src/widget.tsx
+// Copyright 2023 Project Jupyter Contributors; licensed under the BSD 3-Clause License license:
+// https://github.com/jupyterlab/extension-examples/blob/main/LICENSE
 //
 // Original version has copyright 2018 Wolf Vollprecht and is licensed
 //
@@ -47,24 +49,18 @@ export class WorkflowWidget extends DocumentWidget<
   }
 }
 
-// TODO:
-// - handle chart updates by setting this._model.chart
-// - remove position from everywhere
-// - add metadata?
-
 /**
  * Widget that contains the main view of the DocumentWidget.
  */
 export class ExperimentManagerWidget extends ReactWidget {
 
   composerRef: React.RefObject<Composer>
-  private _clients: Map<string, HTMLElement>;
   private _model: WorkflowModel;
 
   /**
    * Construct a `ExperimentManagerWidget`.
    *
-   * @param context - The documents context.
+   * @param context - The document's context.
    */
   constructor(context: DocumentRegistry.IContext<WorkflowModel>) {
     super();
@@ -72,11 +68,9 @@ export class ExperimentManagerWidget extends ReactWidget {
     this.composerRef = React.createRef();
 
     this._model = context.model;
-    this._clients = new Map<string, HTMLElement>();
 
     context.ready.then((value) => {
       this._model.contentChanged.connect(this._onContentChanged);
-      this._model.clientChanged.connect(this._onClientChanged);
 
       this._onContentChanged();
 
@@ -150,44 +144,6 @@ export class ExperimentManagerWidget extends ReactWidget {
    */
   private _onContentChanged = (): void => {
     this.composerRef.current?.setState({chart: this._model.chart})
-  };
-
-  /**
-   * Callback to listen for changes on the model. This callback listens
-   * to changes on the different clients sharing the document.
-   *
-   * @param sender The DocumentModel that triggers the changes.
-   * @param clients The list of client's states.
-   */
-  private _onClientChanged = (
-    sender: WorkflowModel,
-    clients: Map<number, any>
-  ): void => {
-    clients.forEach((client, key) => {
-      if (this._model.clientId !== key) {
-        const id = key.toString();
-
-        if (client.mouse) {
-          if (this._clients.has(id)) {
-            const elt = this._clients.get(id);
-            elt.style.left = client.mouse.x + 'px';
-            elt.style.top = client.mouse.y + 'px';
-          } else {
-            const el = document.createElement('div');
-            el.className = 'jp-naavrewf-client';
-            el.style.left = client.mouse.x + 'px';
-            el.style.top = client.mouse.y + 'px';
-            el.style.backgroundColor = client.user.color;
-            el.innerText = client.user.name;
-            this._clients.set(id, el);
-            this.node.appendChild(el);
-          }
-        } else if (this._clients.has(id)) {
-          this.node.removeChild(this._clients.get(id));
-          this._clients.delete(id);
-        }
-      }
-    });
   };
 
 }
