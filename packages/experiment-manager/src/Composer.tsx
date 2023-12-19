@@ -1,20 +1,22 @@
 import * as React from 'react';
-import { ReactWidget, Dialog, showDialog } from '@jupyterlab/apputils';
+import {
+	ReactWidget,
+	Dialog,
+	} from '@jupyterlab/apputils';
 import * as actions from "@mrblenny/react-flow-chart/src/container/actions";
 import styled from 'styled-components'
-import { theme } from './Theme';
+import { theme } from './components/Theme';
 import { mapValues } from 'lodash';
 import { chartSimple } from './emptyChart';
 import { FlowChart, IChart } from '@mrblenny/react-flow-chart';
 import { ThemeProvider } from '@material-ui/core';
 import { NodeCustom, NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
-import { CatalogDialog } from './CatalogDialog';
+import { CatalogDialog } from './components/CatalogDialog';
 import { VRECell, requestAPI } from '@jupyter_vre/core';
 import { CellEditor, Page } from '@jupyter_vre/components';
-import { Workspace } from './Workspace';
-import { Parallelization } from './Parallelization';
-import BasicSpeedDial from './SpeedDial';
-import { ExecuteWorkflowDialog } from './ExecuteWorkflowDialog';
+import { Workspace } from './components/Workspace';
+import { Parallelization } from './components/Parallelization';
+import { ExecuteWorkflowDialog } from './components/ExecuteWorkflowDialog';
 
 export const CenterContent = styled.div`
   display: flex;
@@ -89,24 +91,6 @@ export class Composer extends React.Component<IProps, IState> {
 			});
 		}) as typeof actions
 
-	handleDialSelection = (operation: string) => {
-
-		switch (operation) {
-
-			case "cells-catalogs":
-				showDialog(this.CatalogDialogOptions);
-				break;
-
-			case "export-workflow":
-				this.exportWorkflow();
-				break;
-
-			case "execute-workflow":
-				showDialog(this.ExecuteWorkflowDialogOptions);
-				break;
-		}
-	}
-
 	exportWorkflow = async () => {
 		try {
 			let resp = await requestAPI<any>('expmanager/export', {
@@ -149,7 +133,7 @@ export class Composer extends React.Component<IProps, IState> {
 		// TODO: Implement chart sanity checks
 	}
 
-	render() {
+	render(): React.ReactElement {
 		return (
 			<ThemeProvider theme={theme} >
 				<Page>
@@ -170,26 +154,9 @@ export class Composer extends React.Component<IProps, IState> {
 							(<div></div>)
 						}
 						<Parallelization />
-						<BasicSpeedDial
-							handleDialSelection={this.handleDialSelection}
-						/>
 					</CenterContent>
 				</Page>
 			</ThemeProvider>
 		)
-	}
-}
-
-export class ComposerWidget extends ReactWidget {
-
-	constructor() {
-		super();
-		this.addClass('vre-composer');
-	}
-
-	render(): JSX.Element {
-		return (
-			<Composer />
-		);
 	}
 }
