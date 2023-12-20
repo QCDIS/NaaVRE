@@ -1,10 +1,10 @@
 import Box from '@mui/material/Box';
 import * as React from 'react';
-import {VRECell} from '@jupyter_vre/core';
 import {CellInfo} from "./CellInfo";
+import {INode} from "@mrblenny/react-flow-chart";
 
 interface CellEditorProps {
-  cell: VRECell
+  node: INode
 }
 
 export class CellEditor extends React.Component<CellEditorProps> {
@@ -18,8 +18,8 @@ export class CellEditor extends React.Component<CellEditorProps> {
 
   componentDidMount() {
     this.cellInfoRef.current.updateCell(
-      this.props.cell.chart_obj.nodes[this.props.cell.node_id],
-      this.props.cell.types as unknown as [],
+      this.props.node,
+      [],
     )
   }
 
@@ -40,7 +40,7 @@ export class CellEditor extends React.Component<CellEditorProps> {
         top: 20,
         right: 20
       }}>
-        <p className='cell-editor section-header'>{this.props.cell.title}</p>
+        <p className='cell-editor section-header'>{this.props.node.properties.title}</p>
         <div>
           <CellInfo ref={this.cellInfoRef}/>
         </div>
