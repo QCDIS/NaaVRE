@@ -1,4 +1,5 @@
 import { INodeDefaultProps } from '@mrblenny/react-flow-chart';
+import { Tooltip } from '@material-ui/core';
 import styled from 'styled-components';
 import * as React from 'react';
 
@@ -63,9 +64,11 @@ const renderNode = ({ node, children, ...otherProps }: INodeDefaultProps, ref: R
 
     return (
         <NodeContainer ref={ref} {...otherProps} >
-            <NodeTitleContainer>
-                <NodeTitle>{node.properties.title}</NodeTitle>
-            </NodeTitleContainer>
+            <Tooltip title={node.properties.title}>
+                <NodeTitleContainer>
+                    <NodeTitle>{node.properties.title}</NodeTitle>
+                </NodeTitleContainer>
+            </Tooltip>
             <NodeChildrenContainer>
                 {children}
             </NodeChildrenContainer>
