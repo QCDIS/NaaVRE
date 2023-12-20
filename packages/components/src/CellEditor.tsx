@@ -22,11 +22,19 @@ export class CellEditor extends React.Component<CellEditorProps> {
     this.cellInfoRef = React.createRef()
   }
 
-  componentDidMount() {
+  updateCellInfoRef() {
     this.cellInfoRef.current.updateCell(
       this.props.node,
       [],
     )
+  }
+
+  componentDidMount() {
+    this.updateCellInfoRef()
+  }
+
+  componentDidUpdate() {
+    this.updateCellInfoRef()
   }
 
   render() {
