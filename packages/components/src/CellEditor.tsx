@@ -1,10 +1,16 @@
-import Box from '@mui/material/Box';
 import * as React from 'react';
 import {CellInfo} from "./CellInfo";
-import {INode} from "@mrblenny/react-flow-chart";
+import {
+  IConfig,
+  IFlowChartCallbacks,
+  INode,
+} from "@mrblenny/react-flow-chart";
+import {ChartElementEditor} from './ChartElementEditor';
 
 interface CellEditorProps {
-  node: INode
+  callbacks: IFlowChartCallbacks,
+  config: IConfig,
+  node: INode,
 }
 
 export class CellEditor extends React.Component<CellEditorProps> {
@@ -25,26 +31,13 @@ export class CellEditor extends React.Component<CellEditorProps> {
 
   render() {
     return (
-      <Box sx={{
-        borderRadius: '15px',
-        border: 1,
-        borderColor: 'lightgrey',
-        boxShadow: '1px 1px lightgrey',
-        background: 'white',
-        zIndex: 10,
-        height: 500,
-        width: 500,
-        transform: 'translateZ(0px)',
-        flexGrow: 1,
-        position: 'absolute',
-        top: 20,
-        right: 20
-      }}>
-        <p className='cell-editor section-header'>{this.props.node.properties.title}</p>
-        <div>
-          <CellInfo ref={this.cellInfoRef}/>
-        </div>
-      </Box>
+      <ChartElementEditor
+        title={this.props.node.properties.title}
+        callbacks={this.props.callbacks}
+        config={this.props.config}
+      >
+        <CellInfo ref={this.cellInfoRef}/>
+      </ChartElementEditor>
     )
   }
 }

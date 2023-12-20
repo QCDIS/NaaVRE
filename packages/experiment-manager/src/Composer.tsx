@@ -1,157 +1,191 @@
 import * as React from 'react';
-import {
-	ReactWidget,
-	Dialog,
-	} from '@jupyterlab/apputils';
+import {Dialog, ReactWidget,} from '@jupyterlab/apputils';
 import * as actions from "@mrblenny/react-flow-chart/src/container/actions";
 import styled from 'styled-components'
-import { theme } from './components/Theme';
-import { mapValues } from 'lodash';
-import { chartSimple } from './emptyChart';
-import { FlowChart, IChart } from '@mrblenny/react-flow-chart';
-import { ThemeProvider } from '@material-ui/core';
-import { NodeCustom, NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
-import { CatalogDialog } from './components/CatalogDialog';
-import { VRECell, requestAPI } from '@jupyter_vre/core';
-import { CellEditor, Page } from '@jupyter_vre/components';
-import { Workspace } from './components/Workspace';
-import { Parallelization } from './components/Parallelization';
-import { ExecuteWorkflowDialog } from './components/ExecuteWorkflowDialog';
+import {theme} from './components/Theme';
+import {mapValues} from 'lodash';
+import {chartSimple} from './emptyChart';
+import {FlowChart, IChart, IConfig} from '@mrblenny/react-flow-chart';
+import {ThemeProvider} from '@material-ui/core';
+import {NodeCustom, NodeInnerCustom, PortCustom} from '@jupyter_vre/chart-customs';
+import {CatalogDialog} from './components/CatalogDialog';
+import {requestAPI, VRECell} from '@jupyter_vre/core';
+import {CellEditor, Page} from '@jupyter_vre/components';
+import {Workspace} from './components/Workspace';
+import {Parallelization} from './components/Parallelization';
+import {ExecuteWorkflowDialog} from './components/ExecuteWorkflowDialog';
+import {ChartElementEditor} from "@jupyter_vre/components/lib/ChartElementEditor";
 
 export const CenterContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
 `
 
-export interface IProps { }
+export interface IProps {
+}
 
 export interface IState {
-	chart: IChart
+  chart: IChart
 }
 
 export const DefaultState: IState = {
-	chart: chartSimple,
+  chart: chartSimple,
 }
 
 
 export class Composer extends React.Component<IProps, IState> {
 
-	state = DefaultState
+  state = DefaultState
 
-	workspaceRef: React.RefObject<Workspace>;
+  workspaceRef: React.RefObject<Workspace>;
 
-	constructor(props: IProps) {
-		super(props);
-		this.workspaceRef = React.createRef();
-	}
+  constructor(props: IProps) {
+    super(props);
+    this.workspaceRef = React.createRef();
+  }
 
-	handleAddCellToWorkspace = (cell: VRECell) => {
-		this.workspaceRef.current.addElement(cell);
-	}
+  handleAddCellToWorkspace = (cell: VRECell) => {
+    this.workspaceRef.current.addElement(cell);
+  }
 
-	handleIsCellInWorkspace = (cell: VRECell) => {
-		return this.workspaceRef.current.hasElement(cell);
-	}
+  handleIsCellInWorkspace = (cell: VRECell) => {
+    return this.workspaceRef.current.hasElement(cell);
+  }
 
-	getWorkspaceElementFromChartId = (chartId: string): VRECell => {
+  getWorkspaceElementFromChartId = (chartId: string): VRECell => {
 
-		let nodeId = this.state.chart.nodes[chartId].properties['og_node_id'];
-		return this.workspaceRef.current.getElement(nodeId);
-	}
+    let nodeId = this.state.chart.nodes[chartId].properties['og_node_id'];
+    return this.workspaceRef.current.getElement(nodeId);
+  }
 
-	CatalogDialogOptions: Partial<Dialog.IOptions<any>> = {
-		title: '',
-		body: ReactWidget.create(
-			<CatalogDialog
-				addCellAction={this.handleAddCellToWorkspace}
-				isCellInWorkspace={this.handleIsCellInWorkspace}
-			/>
-		) as Dialog.IBodyWidget<any>,
-		buttons: []
-	};
+  CatalogDialogOptions: Partial<Dialog.IOptions<any>> = {
+    title: '',
+    body: ReactWidget.create(
+      <CatalogDialog
+        addCellAction={this.handleAddCellToWorkspace}
+        isCellInWorkspace={this.handleIsCellInWorkspace}
+      />
+    ) as Dialog.IBodyWidget<any>,
+    buttons: []
+  };
 
-	ExecuteWorkflowDialogOptions: Partial<Dialog.IOptions<any>> = {
-		title: '',
-		body: ReactWidget.create(
-			<ExecuteWorkflowDialog
-				chart={this.state.chart}
-			/>
-		) as Dialog.IBodyWidget<any>,
-		buttons: []
-	};
+  ExecuteWorkflowDialogOptions: Partial<Dialog.IOptions<any>> = {
+    title: '',
+    body: ReactWidget.create(
+      <ExecuteWorkflowDialog
+        chart={this.state.chart}
+      />
+    ) as Dialog.IBodyWidget<any>,
+    buttons: []
+  };
 
-	chartStateActions = mapValues(actions, (func: any) =>
-		(...args: any) => {
-			let newChartTransformer = func(...args);
-			let newChart = newChartTransformer(this.state.chart);
-			this.setState({
-				chart: { ...this.state.chart, ...newChart }
-			});
-		}) as typeof actions
+  chartStateActions = mapValues(actions, (func: any) =>
+    (...args: any) => {
+      let newChartTransformer = func(...args);
+      let newChart = newChartTransformer(this.state.chart);
+      this.setState({
+        chart: {...this.state.chart, ...newChart}
+      });
+    }) as typeof actions
 
-	exportWorkflow = async () => {
-		try {
-			let resp = await requestAPI<any>('expmanager/export', {
-				body: JSON.stringify({
-					...this.state.chart
-				}),
-				method: 'POST'
-			});
-			console.log(resp);
-		} catch (error) {
-			console.log(error);
-			alert('Error exporting the workflow: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
-		}
-	}
+  chartConfig: IConfig = {
+    // This is needed because onDeleteKey assumes config.readonly is defined...
+    // https://github.com/MrBlenny/react-flow-chart/blob/0.0.14/src/container/actions.ts#L182
+    readonly: false,
+  }
 
-	getNodeEditor = () => {
-		let node = this.state.chart.nodes[this.state.chart.selected.id];
-		switch (node.type) {
-			case "splitter":
-				return (
-					<div>Splitter</div>
-				);
-			case "merger":
-				return (
-					<div>Merger</div>
-				);
-		}
-		return (
-			<CellEditor node={node} />
-		);
-	}
+  exportWorkflow = async () => {
+    try {
+      let resp = await requestAPI<any>('expmanager/export', {
+        body: JSON.stringify({
+          ...this.state.chart
+        }),
+        method: 'POST'
+      });
+      console.log(resp);
+    } catch (error) {
+      console.log(error);
+      alert('Error exporting the workflow: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+    }
+  }
 
-	componentDidUpdate() {
+  getNodeEditor = () => {
+    let node = this.state.chart.nodes[this.state.chart.selected.id];
+    switch (node.type) {
+      case "splitter":
+        return (
+          <ChartElementEditor
+            title={"Splitter"}
+            callbacks={this.chartStateActions}
+            config={this.chartConfig}
+          >
+          </ChartElementEditor>
+        );
+      case "merger":
+        return (
+          <ChartElementEditor
+            title={"Merger"}
+            callbacks={this.chartStateActions}
+            config={this.chartConfig}
+          >
+          </ChartElementEditor>
+        );
+    }
+    return (
+      <CellEditor
+        callbacks={this.chartStateActions}
+        config={this.chartConfig}
+        node={node}
+      />
+    );
+  }
 
-		// TODO: Implement chart sanity checks
-	}
+  getChartElementEditor = () => {
+    switch (this.state.chart.selected.type) {
+      case "node":
+        return this.getNodeEditor()
+      case "link":
+        return (
+          <ChartElementEditor
+            title={"Link"}
+            callbacks={this.chartStateActions}
+            config={this.chartConfig}
+          >
+          </ChartElementEditor>
+        )
+      default:
+        return (<></>)
+    }
+  }
 
-	render(): React.ReactElement {
-		return (
-			<ThemeProvider theme={theme} >
-				<Page>
-					<CenterContent>
-						<FlowChart
-							chart={this.state.chart}
-							callbacks={this.chartStateActions}
-							Components={{
-								Node: NodeCustom,
-								NodeInner: NodeInnerCustom,
-								Port: PortCustom
-							}}
-						/>
-						<Workspace ref={this.workspaceRef} />
-						{this.state.chart.selected.id && this.state.chart.selected.type == 'node' ? (
-							this.getNodeEditor()
-						) :
-							(<div></div>)
-						}
-						<Parallelization />
-					</CenterContent>
-				</Page>
-			</ThemeProvider>
-		)
-	}
+  componentDidUpdate() {
+
+    // TODO: Implement chart sanity checks
+  }
+
+  render(): React.ReactElement {
+    return (
+      <ThemeProvider theme={theme}>
+        <Page>
+          <CenterContent>
+            <FlowChart
+              chart={this.state.chart}
+              callbacks={this.chartStateActions}
+              config={this.chartConfig}
+              Components={{
+                Node: NodeCustom,
+                NodeInner: NodeInnerCustom,
+                Port: PortCustom
+              }}
+            />
+            <Workspace ref={this.workspaceRef}/>
+            <Parallelization/>
+            {this.state.chart.selected.id && this.getChartElementEditor()}
+          </CenterContent>
+        </Page>
+      </ThemeProvider>
+    )
+  }
 }
