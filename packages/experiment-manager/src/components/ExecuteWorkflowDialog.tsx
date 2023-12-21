@@ -5,7 +5,6 @@ import {IChart} from '@mrblenny/react-flow-chart';
 import {requestAPI} from '@jupyter_vre/core';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import {green} from '@mui/material/colors';
-import Paper from "@mui/material/Paper";
 import TableContainer from "@mui/material/TableContainer";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -27,7 +26,7 @@ export const DefaultState: IState = {
 
 const CatalogBody = styled('div')({
   display: 'flex',
-  overflow: 'hidden',
+  overflow: 'scroll',
   flexDirection: 'column',
 })
 
@@ -135,40 +134,36 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
             ) :
             (
               <div>
-                <Paper sx={{width: "100%", overflow: "hidden"}}>
-                  <TableContainer sx={{maxHeight: 225}}>
-                    <Table stickyHeader aria-label="sticky table">
-                      <TableBody>
-                        {this.state.params.map((param: string) => (
-                          <TableRow hover role="checkbox" tabIndex={-1} key={param}>
-                            <TableCell key={param} align={"right"}>
-                              {param}
-                            </TableCell>
-                            <TableCell component="th" scope="row">
-                              <TextField
-                                id="standard-basic"
-                                label="Standard"
-                                variant="standard"
-                                onChange={(event) => {
-                                  this.handleParamValueUpdate(event, param)
-                                }}
-                              />
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Paper>
-                <div>
-                  <Button variant="contained"
-                          className={'lw-panel-button'}
-                          onClick={this.handleSubmit}
-                          color="primary"
-                          disabled={!this.allParamsFilled()}>
-                    Execute
-                  </Button>
-                </div>
+                <TableContainer >
+                  <Table stickyHeader aria-label="sticky table">
+                    <TableBody>
+                      {this.state.params.map((param: string) => (
+                        <TableRow hover role="checkbox" tabIndex={-1} key={param}>
+                          <TableCell key={param} align={"right"}>
+                            {param}
+                          </TableCell>
+                          <TableCell component="th" scope="row">
+                            <TextField
+                              // id="standard-basic"
+                              // label="Standard"
+                              // variant="standard"
+                              onChange={(event) => {
+                                this.handleParamValueUpdate(event, param)
+                              }}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <Button variant="contained"
+                        className={'lw-panel-button'}
+                        onClick={this.handleSubmit}
+                        color="primary"
+                        disabled={!this.allParamsFilled()}>
+                  Execute
+                </Button>
               </div>
             )
           }
