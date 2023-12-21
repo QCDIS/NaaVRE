@@ -7,6 +7,7 @@ export declare type VRECell = {
     inputs              : [];
     outputs             : [];
     params              : [];
+    param_values        : { [name: string]: string | null };
     confs               : {};
     dependencies        : [];
     types               : { [id: string] : string | null },

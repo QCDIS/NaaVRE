@@ -2,9 +2,10 @@ import {Button, styled, ThemeProvider} from '@material-ui/core';
 import * as React from 'react';
 import {theme} from './Theme';
 import {IChart} from '@mrblenny/react-flow-chart';
-import {requestAPI} from '@jupyter_vre/core';
+import {requestAPI, VRECell} from '@jupyter_vre/core';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import {green} from '@mui/material/colors';
+import AutoModeIcon from '@mui/icons-material/AutoMode';
+import {grey, green} from '@mui/material/colors';
 import TableContainer from "@mui/material/TableContainer";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -13,7 +14,7 @@ import TableCell from "@mui/material/TableCell";
 import TextField from '@mui/material/TextField';
 
 interface IState {
-  params: []
+  params: string[]
   params_values: { [param: string]: any },
   submitted_workflow: any
 }
@@ -38,6 +39,7 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
 
   state = DefaultState
   global_params: string[] = []
+  chart_node_ids: string[] = []
 
   constructor(props: ExecuteWorkflowDialogProps) {
     super(props);
@@ -46,11 +48,9 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
     Object.keys(nodes).forEach((nid) => {
       if (nodes[nid].properties['params']) {
         this.global_params.push(...nodes[nid].properties['params']);
+        this.chart_node_ids.push(nodes[nid].properties['og_node_id']);
       }
     });
-  }
-
-  componentDidMount(): void {
 
     const unique_params = [...new Set(this.global_params)].sort()
     const params_values: { [param: string]: any } = {}
@@ -59,10 +59,27 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
       params_values[param] = null
     });
 
-    this.setState({
-      params: unique_params,
-      params_values: params_values
+    this.state.params = unique_params
+    this.state.params_values = params_values
+
+  }
+
+  getValuesFromCatalog = async () => {
+    const catalog = await requestAPI<any>('catalog/cells/all', {
+      method: 'GET'
     });
+    const params_values = this.state.params_values
+    // Extract param values for cells that are in the current workflow
+    catalog.forEach((catalogItem: VRECell) => {
+      if (Object.keys(this.chart_node_ids.includes(catalogItem.node_id))) {
+        Object.keys(catalogItem.param_values).forEach((paramName) => {
+          params_values[paramName] = catalogItem.param_values[paramName]
+        })
+      }
+    })
+    this.setState({
+      params_values: params_values,
+    })
   }
 
   executeWorkflow = async (values: { [param: string]: any }) => {
@@ -134,6 +151,22 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
             ) :
             (
               <div>
+                <div style={{
+                  textAlign: 'right',
+                  padding: '10px 15px 0 0',
+                }}
+                >
+                  <Button
+                    disabled={false}
+                    onClick={this.getValuesFromCatalog}
+                    size="small"
+                    variant="text"
+                    endIcon={<AutoModeIcon fontSize="inherit" />}
+                    style={{color: grey[900], textTransform: 'none'}}
+                  >
+                    Use catalog values
+                  </Button>
+                </div>
                 <TableContainer >
                   <Table stickyHeader aria-label="sticky table">
                     <TableBody>
@@ -147,6 +180,7 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
                               // id="standard-basic"
                               // label="Standard"
                               // variant="standard"
+                              value={this.state.params_values[param]}
                               onChange={(event) => {
                                 this.handleParamValueUpdate(event, param)
                               }}
