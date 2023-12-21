@@ -1,0 +1,170 @@
+{
+    "all_inputs": [],
+    "base_image": "qcdis/miniconda3:v0.1",
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "94b838b": {
+                "id": "94b838b",
+                "ports": {
+                    "hostname": {
+                        "id": "hostname",
+                        "properties": {
+                            "color": "#2d40d2"
+                        },
+                        "type": "right"
+                    },
+                    "login": {
+                        "id": "login",
+                        "properties": {
+                            "color": "#d279b6"
+                        },
+                        "type": "right"
+                    },
+                    "mode": {
+                        "id": "mode",
+                        "properties": {
+                            "color": "#2daed2"
+                        },
+                        "type": "right"
+                    },
+                    "num_files": {
+                        "id": "num_files",
+                        "properties": {
+                            "color": "#ac53a0"
+                        },
+                        "type": "right"
+                    },
+                    "password": {
+                        "id": "password",
+                        "properties": {
+                            "color": "#8779d2"
+                        },
+                        "type": "right"
+                    },
+                    "remote_path_geotiffs": {
+                        "id": "remote_path_geotiffs",
+                        "properties": {
+                            "color": "#783a6f"
+                        },
+                        "type": "right"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [
+                        ""
+                    ],
+                    "inputs": [],
+                    "og_node_id": "94b838b",
+                    "outputs": [
+                        "remote_path_geotiffs",
+                        "password",
+                        "num_files",
+                        "mode",
+                        "login",
+                        "hostname"
+                    ],
+                    "params": [
+                        "param_hostname",
+                        "param_login",
+                        "param_password"
+                    ],
+                    "title": "vislulization param-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#783a6f",
+                            "direction": "output",
+                            "name": "remote_path_geotiffs",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#8779d2",
+                            "direction": "output",
+                            "name": "password",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#ac53a0",
+                            "direction": "output",
+                            "name": "num_files",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#2daed2",
+                            "direction": "output",
+                            "name": "mode",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#d279b6",
+                            "direction": "output",
+                            "name": "login",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#2d40d2",
+                            "direction": "output",
+                            "name": "hostname",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {
+        "conf_mode": "conf_mode = 'webdav'",
+        "conf_num_files": "conf_num_files = 1",
+        "conf_remote_path_geotiffs": "conf_remote_path_geotiffs = pathlib.Path('/webdav/vl-laserfarm/' +  'spiros.koulouzis@lifewatch.eu' + '/geotiffs')"
+    },
+    "container_source": "",
+    "dependencies": [
+        {
+            "asname": null,
+            "module": "",
+            "name": "pathlib"
+        }
+    ],
+    "inputs": [],
+    "kernel": "ipython",
+    "node_id": "94b838b",
+    "original_source": "conf_remote_path_geotiffs = pathlib.Path('/webdav/vl-laserfarm/' +  'spiros.koulouzis@lifewatch.eu' + '/geotiffs')\nconf_num_files = 1\nconf_mode = 'webdav'\nhostname = param_hostname\nlogin = param_login\npassword = param_password\nremote_path_geotiffs = str(conf_remote_path_geotiffs)\nnum_files = conf_num_files\nmode = conf_mode",
+    "outputs": [
+        "hostname",
+        "login",
+        "password",
+        "remote_path_geotiffs",
+        "num_files",
+        "mode"
+    ],
+    "params": [
+        "param_hostname",
+        "param_login",
+        "param_password"
+    ],
+    "task_name": "vislulization-param-dev-user-name-at-domain-com",
+    "title": "vislulization param-dev-user-name-at-domain-com",
+    "types": {
+        "hostname": "str",
+        "login": "str",
+        "mode": "str",
+        "num_files": "int",
+        "param_hostname": "str",
+        "param_login": "str",
+        "param_password": "str",
+        "password": "str",
+        "remote_path_geotiffs": "str"
+    }
+}

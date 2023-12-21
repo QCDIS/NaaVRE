@@ -39,6 +39,9 @@ class ExportWorkflowHandler(APIHandler):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
+        payload = self.get_json_body()
+        if os.getenv('DEBUG'):
+            write_workflow_to_file(payload)
         nodes = payload['nodes']
         links = payload['links']
 

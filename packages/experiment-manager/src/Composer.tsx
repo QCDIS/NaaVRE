@@ -55,7 +55,6 @@ export class Composer extends React.Component<IProps, IState> {
 	}
 
 	getWorkspaceElementFromChartId = (chartId: string): VRECell => {
-
 		let nodeId = this.state.chart.nodes[chartId].properties['og_node_id'];
 		return this.workspaceRef.current.getElement(nodeId);
 	}

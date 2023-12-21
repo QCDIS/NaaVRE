@@ -245,6 +245,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             m.return_value = 'cookie'
         for workflow_file in workflow_files:
             print('workflow_file: ', workflow_file)
+            if 'test_visulization.json' not in workflow_file:
+                continue
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)

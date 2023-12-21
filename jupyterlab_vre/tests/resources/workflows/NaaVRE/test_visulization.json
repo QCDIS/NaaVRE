@@ -1,0 +1,257 @@
+{
+  "chart": {
+    "offset": {
+      "x": 0,
+      "y": 0
+    },
+    "scale": 1,
+    "nodes": {
+      "09591447-1ba1-4387-b985-d823e4a9e2db": {
+        "id": "09591447-1ba1-4387-b985-d823e4a9e2db",
+        "position": {
+          "x": 467.41668701171875,
+          "y": 291
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "remote_path_geotiffs": {
+            "properties": {
+              "color": "#783a6f"
+            },
+            "id": "remote_path_geotiffs",
+            "type": "right",
+            "position": {
+              "x": 197.5,
+              "y": 14.5
+            }
+          },
+          "password": {
+            "properties": {
+              "color": "#8779d2"
+            },
+            "id": "password",
+            "type": "right",
+            "position": {
+              "x": 197.5,
+              "y": 43.5
+            }
+          },
+          "num_files": {
+            "properties": {
+              "color": "#ac53a0"
+            },
+            "id": "num_files",
+            "type": "right",
+            "position": {
+              "x": 197.5,
+              "y": 71.5
+            }
+          },
+          "mode": {
+            "properties": {
+              "color": "#2daed2"
+            },
+            "id": "mode",
+            "type": "right",
+            "position": {
+              "x": 197.5,
+              "y": 100.5
+            }
+          },
+          "login": {
+            "properties": {
+              "color": "#d279b6"
+            },
+            "id": "login",
+            "type": "right",
+            "position": {
+              "x": 197.5,
+              "y": 128.5
+            }
+          },
+          "hostname": {
+            "properties": {
+              "color": "#2d40d2"
+            },
+            "id": "hostname",
+            "type": "right",
+            "position": {
+              "x": 197.5,
+              "y": 157.5
+            }
+          }
+        },
+        "properties": {
+          "title": "vislulization param-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "remote_path_geotiffs",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#783a6f"
+            },
+            {
+              "name": "password",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#8779d2"
+            },
+            {
+              "name": "num_files",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#ac53a0"
+            },
+            {
+              "name": "mode",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#2daed2"
+            },
+            {
+              "name": "login",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#d279b6"
+            },
+            {
+              "name": "hostname",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#2d40d2"
+            }
+          ],
+          "params": [
+            "param_hostname",
+            "param_login",
+            "param_password"
+          ],
+          "inputs": [],
+          "outputs": [
+            "remote_path_geotiffs",
+            "password",
+            "num_files",
+            "mode",
+            "login",
+            "hostname"
+          ],
+          "og_node_id": "94b838b",
+          "deps": [
+            ""
+          ]
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "28fefce9-d784-495c-b550-29040e22f18d": {
+        "id": "28fefce9-d784-495c-b550-29040e22f18d",
+        "position": {
+          "x": 950.4166870117188,
+          "y": 300
+        },
+        "orientation": 0,
+        "type": "visualizer",
+        "ports": {
+          "visualizer_source": {
+            "id": "visualizer_source",
+            "type": "left",
+            "properties": {
+              "special_node": 1,
+              "color": "#000000"
+            },
+            "position": {
+              "x": 0.5,
+              "y": 49.5
+            }
+          }
+        },
+        "properties": {
+          "title": "Visualizer",
+          "scalingFactor": 1
+        },
+        "size": {
+          "width": 200,
+          "height": 100
+        }
+      }
+    },
+    "links": {
+      "77f8a3e4-ccbc-463a-be9e-07e5eed473e9": {
+        "id": "77f8a3e4-ccbc-463a-be9e-07e5eed473e9",
+        "from": {
+          "nodeId": "09591447-1ba1-4387-b985-d823e4a9e2db",
+          "portId": "remote_path_geotiffs"
+        },
+        "to": {
+          "nodeId": "28fefce9-d784-495c-b550-29040e22f18d",
+          "portId": "visualizer_source"
+        }
+      },
+      "f946d709-ffc0-48dd-9d3c-f9f48a9b80e8": {
+        "id": "f946d709-ffc0-48dd-9d3c-f9f48a9b80e8",
+        "from": {
+          "nodeId": "09591447-1ba1-4387-b985-d823e4a9e2db",
+          "portId": "password"
+        },
+        "to": {
+          "nodeId": "28fefce9-d784-495c-b550-29040e22f18d",
+          "portId": "visualizer_source"
+        }
+      },
+      "5e87a9d8-a784-43e4-887e-da45332fcb3f": {
+        "id": "5e87a9d8-a784-43e4-887e-da45332fcb3f",
+        "from": {
+          "nodeId": "09591447-1ba1-4387-b985-d823e4a9e2db",
+          "portId": "num_files"
+        },
+        "to": {
+          "nodeId": "28fefce9-d784-495c-b550-29040e22f18d",
+          "portId": "visualizer_source"
+        }
+      },
+      "4abf29c1-6244-4e8b-be4f-e4c622abacf8": {
+        "id": "4abf29c1-6244-4e8b-be4f-e4c622abacf8",
+        "from": {
+          "nodeId": "09591447-1ba1-4387-b985-d823e4a9e2db",
+          "portId": "mode"
+        },
+        "to": {
+          "nodeId": "28fefce9-d784-495c-b550-29040e22f18d",
+          "portId": "visualizer_source"
+        }
+      },
+      "6e0f6f64-357d-48fa-9394-aa652d1bd4cb": {
+        "id": "6e0f6f64-357d-48fa-9394-aa652d1bd4cb",
+        "from": {
+          "nodeId": "09591447-1ba1-4387-b985-d823e4a9e2db",
+          "portId": "login"
+        },
+        "to": {
+          "nodeId": "28fefce9-d784-495c-b550-29040e22f18d",
+          "portId": "visualizer_source"
+        }
+      },
+      "e88d93be-6500-4319-b573-af611f36c271": {
+        "id": "e88d93be-6500-4319-b573-af611f36c271",
+        "from": {
+          "nodeId": "09591447-1ba1-4387-b985-d823e4a9e2db",
+          "portId": "hostname"
+        },
+        "to": {
+          "nodeId": "28fefce9-d784-495c-b550-29040e22f18d",
+          "portId": "visualizer_source"
+        }
+      }
+    },
+    "selected": {},
+    "hovered": {}
+  },
+  "params": {
+    "param_hostname": "secret",
+    "param_login": "secret",
+    "param_password": "secret"
+  }
+}

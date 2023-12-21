@@ -112,7 +112,7 @@ spec:
           {% endfor %}
       {% elif is_visualizer %}
       container:
-        image: "adeelaashraf/naavre_visualization:latest"
+        image: "qcdis/geotiff_viewer:v0.1"
         imagePullPolicy: Always
       {% else %}
       container:
