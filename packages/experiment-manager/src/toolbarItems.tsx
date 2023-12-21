@@ -20,7 +20,9 @@ export namespace ToolbarItems {
       label: 'Cells catalog',
       tooltip: 'Open the cells catalog',
       icon: addIcon,
-      onClick: () => {showDialog(widget.content.composerRef.current.CatalogDialogOptions)},
+      onClick: () => showDialog(
+        widget.content.composerRef.current.getCatalogDialogOptions()
+      ),
     })
   }
 
@@ -47,7 +49,9 @@ export namespace ToolbarItems {
       label: 'Run',
       tooltip: 'Run the workflow',
       icon: runIcon,
-      onClick: () => showDialog(widget.content.composerRef.current.ExecuteWorkflowDialogOptions),
+      onClick: () => showDialog(
+        widget.content.composerRef.current.getExecuteWorkflowDialogOptions()
+      ),
     })
   }
 

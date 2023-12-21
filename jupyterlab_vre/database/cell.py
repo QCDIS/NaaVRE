@@ -17,6 +17,7 @@ class Cell:
     inputs: list
     outputs: list
     params: list
+    param_values: dict
     confs: dict
     dependencies: list
     chart_obj: dict
@@ -50,6 +51,7 @@ class Cell:
         self.add_inputs(inputs)
         self.add_outputs(outputs)
         self.add_params(params)
+        self.add_param_values(params)
         self.confs = confs
         self.all_inputs = list(inputs) + list(params)
         self.dependencies = list(sorted(dependencies, key=lambda x: x['name']))
@@ -86,6 +88,13 @@ class Cell:
         if isinstance(params, dict):
             params = self._extract_types(params)
         self.params = params
+
+    def add_param_values(self, params):
+        self.param_values = {}
+        if isinstance(params, dict):
+            for param_props in params.values():
+                if 'value' in param_props:
+                    self.param_values[param_props['name']] = param_props['value']
 
     def concatenate_all_inputs(self):
         self.all_inputs = list(self.inputs) + list(self.params)

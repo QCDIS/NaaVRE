@@ -60,26 +60,30 @@ export class Composer extends React.Component<IProps, IState> {
     return this.workspaceRef.current.getElement(nodeId);
   }
 
-  CatalogDialogOptions: Partial<Dialog.IOptions<any>> = {
-    title: '',
-    body: ReactWidget.create(
-      <CatalogDialog
-        addCellAction={this.handleAddCellToWorkspace}
-        isCellInWorkspace={this.handleIsCellInWorkspace}
-      />
-    ) as Dialog.IBodyWidget<any>,
-    buttons: []
-  };
+  getCatalogDialogOptions = (): Partial<Dialog.IOptions<any>> => {
+    return {
+      title: '',
+      body: ReactWidget.create(
+        <CatalogDialog
+          addCellAction={this.handleAddCellToWorkspace}
+          isCellInWorkspace={this.handleIsCellInWorkspace}
+        />
+      ) as Dialog.IBodyWidget<any>,
+      buttons: []
+    };
+  }
 
-  ExecuteWorkflowDialogOptions: Partial<Dialog.IOptions<any>> = {
-    title: '',
-    body: ReactWidget.create(
-      <ExecuteWorkflowDialog
-        chart={this.state.chart}
-      />
-    ) as Dialog.IBodyWidget<any>,
-    buttons: []
-  };
+  getExecuteWorkflowDialogOptions = (): Partial<Dialog.IOptions<any>> => {
+    return {
+      title: '',
+      body: ReactWidget.create(
+        <ExecuteWorkflowDialog
+          chart={this.state.chart}
+        />
+      ) as Dialog.IBodyWidget<any>,
+      buttons: []
+    };
+  }
 
   chartStateActions = mapValues(actions, (func: any) =>
     (...args: any) => {
