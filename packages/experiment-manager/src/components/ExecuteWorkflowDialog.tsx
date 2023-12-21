@@ -52,7 +52,7 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
 
   componentDidMount(): void {
 
-    const unique_params = [...new Set(this.global_params)]
+    const unique_params = [...new Set(this.global_params)].sort()
     const params_values: { [param: string]: any } = {}
 
     unique_params.forEach((param: string) => {
