@@ -91,9 +91,10 @@ class Cell:
 
     def add_param_values(self, params):
         self.param_values = {}
-        for param_props in params.values():
-            if 'value' in param_props:
-                self.param_values[param_props['name']] = param_props['value']
+        if isinstance(params, dict):
+            for param_props in params.values():
+                if 'value' in param_props:
+                    self.param_values[param_props['name']] = param_props['value']
 
     def concatenate_all_inputs(self):
         self.all_inputs = list(self.inputs) + list(self.params)
