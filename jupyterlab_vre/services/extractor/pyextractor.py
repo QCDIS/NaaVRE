@@ -67,15 +67,24 @@ class PyExtractor:
     def __extract_params(self, sources):
         params = dict()
         for s in sources:
+            lines = s.splitlines()
             tree = ast.parse(s)
             for node in ast.walk(tree):
                 if isinstance(node, ast.Assign) and hasattr(node.targets[0], 'id'):
                     name = node.targets[0].id
                     prefix = name.split('_')[0]
                     if prefix == 'param':
+                        param_line = ''
+                        for line in lines[node.lineno - 1:node.end_lineno]:
+                            param_line += line.strip()
+                        try:
+                            param_value = param_line.split('=')[1].strip(" \"' ")
+                        except IndexError:
+                            param_value = param_line
                         params[name] = {
                             'name': name,
                             'type': self.notebook_names[name]['type'],
+                            'value': param_value,
                         }
         return params
 
@@ -211,8 +220,13 @@ class PyExtractor:
         return undef_vars
 
     def extract_cell_params(self, cell_source):
+        params = {}
         cell_unds = self.__extract_cell_undefined(cell_source)
-        return {k: cell_unds[k] for k in cell_unds.keys() & self.global_params.keys()}
+        param_unds = [und for und in cell_unds if und in self.global_params]
+        for u in param_unds:
+            if u not in params:
+                params[u] = self.global_params[u]
+        return params
 
     def extract_cell_conf_ref(self, cell_source):
         confs = {}

@@ -76,6 +76,7 @@ def create_cell(payload_path=None):
         cell.integrate_configuration()
         params = extractor.extract_cell_params(cell.original_source)
         cell.add_params(params)
+        cell.add_param_values(params)
 
     return cell
 
@@ -126,3 +127,6 @@ class TestExtractor(TestCase):
                     self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
                                      'conf_ values should not contain conf_ prefix in '
                                      'assignment')
+                # All params should have matching values
+                for param_name in cell['params']:
+                    self.assertTrue(param_name in cell['param_values'])
