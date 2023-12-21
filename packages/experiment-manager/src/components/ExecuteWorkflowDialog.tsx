@@ -1,10 +1,10 @@
-import { Button, styled,  ThemeProvider } from '@material-ui/core';
+import {Button, styled, ThemeProvider} from '@material-ui/core';
 import * as React from 'react';
-import { theme } from './Theme';
-import { IChart } from '@mrblenny/react-flow-chart';
-import { requestAPI } from '@jupyter_vre/core';
+import {theme} from './Theme';
+import {IChart} from '@mrblenny/react-flow-chart';
+import {requestAPI} from '@jupyter_vre/core';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import { green } from '@mui/material/colors';
+import {green} from '@mui/material/colors';
 import Paper from "@mui/material/Paper";
 import TableContainer from "@mui/material/TableContainer";
 import Table from "@mui/material/Table";
@@ -14,164 +14,166 @@ import TableCell from "@mui/material/TableCell";
 import TextField from '@mui/material/TextField';
 
 interface IState {
-    params: []
-    params_values: { [param: string]: any },
-    submitted_workflow: any
+  params: []
+  params_values: { [param: string]: any },
+  submitted_workflow: any
 }
 
 export const DefaultState: IState = {
-    params: [],
-    params_values: {},
-    submitted_workflow: null
+  params: [],
+  params_values: {},
+  submitted_workflow: null
 }
 
 const CatalogBody = styled('div')({
-    display: 'flex',
-    overflow: 'hidden',
-    flexDirection: 'column',
+  display: 'flex',
+  overflow: 'hidden',
+  flexDirection: 'column',
 })
 
 interface ExecuteWorkflowDialogProps {
-    chart: IChart
+  chart: IChart
 }
 
 export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialogProps> {
 
-    state = DefaultState
-    global_params: string[] = []
+  state = DefaultState
+  global_params: string[] = []
 
-    constructor(props: ExecuteWorkflowDialogProps) {
-        super(props);
-        const nodes = props.chart.nodes;
+  constructor(props: ExecuteWorkflowDialogProps) {
+    super(props);
+    const nodes = props.chart.nodes;
 
-        Object.keys(nodes).forEach((nid) => {
-            if (nodes[nid].properties['params']) {
-                this.global_params.push(...nodes[nid].properties['params']);
-            }
-        });
+    Object.keys(nodes).forEach((nid) => {
+      if (nodes[nid].properties['params']) {
+        this.global_params.push(...nodes[nid].properties['params']);
+      }
+    });
+  }
+
+  componentDidMount(): void {
+
+    const unique_params = [...new Set(this.global_params)]
+    const params_values: { [param: string]: any } = {}
+
+    unique_params.forEach((param: string) => {
+      params_values[param] = null
+    });
+
+    this.setState({
+      params: unique_params,
+      params_values: params_values
+    });
+  }
+
+  executeWorkflow = async (values: { [param: string]: any }) => {
+
+    const body = JSON.stringify({
+      chart: this.props.chart,
+      params: values
+    })
+
+    try {
+
+      let resp = await requestAPI<any>('expmanager/execute', {
+        body: body,
+        method: 'POST'
+      });
+      this.setState({
+        submitted_workflow: resp
+      })
+      console.log(this.state)
+    } catch (error) {
+      console.log(error);
+      alert('Error exporting the workflow: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
     }
 
-    componentDidMount(): void {
+  }
 
-        const unique_params = [...new Set(this.global_params)]
-        const params_values: { [param: string]: any } = {}
+  handleSubmit = () => {
+    this.executeWorkflow(this.state.params_values)
+  }
 
-        unique_params.forEach((param: string) => {
-            params_values[param] = null
-        });
+  handleParamValueUpdate = (event: React.ChangeEvent<{ name?: string; value: string; }>, param: string) => {
+    const curr_values = this.state.params_values;
+    curr_values[param] = event.target.value;
+    this.setState({
+      params_values: curr_values
+    })
+  };
 
-        this.setState({
-            params: unique_params,
-            params_values: params_values
-        });
+  allParamsFilled = () => {
+
+    var all_filled = true
+
+    if (Object.values(this.state.params_values).length > 0) {
+
+      Object.values(this.state.params_values).forEach((value) => {
+        all_filled = all_filled && value != null
+      });
     }
 
-    executeWorkflow = async (values: { [param: string]: any }) => {
+    return all_filled;
+  };
 
-        const body = JSON.stringify({
-            chart: this.props.chart,
-            params: values
-        })
-
-        try {
-
-            let resp = await requestAPI<any>('expmanager/execute', {
-                body: body,
-                method: 'POST'
-            });
-            this.setState({
-                submitted_workflow: resp
-            })
-            console.log(this.state)
-        } catch (error) {
-            console.log(error);
-            alert('Error exporting the workflow: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
-        }
-
-    }
-
-    handleSubmit = () => {
-        this.executeWorkflow(this.state.params_values)
-    }
-
-    handleParamValueUpdate = (event: React.ChangeEvent<{ name?: string; value: string; }>, param: string) => {
-        const curr_values = this.state.params_values;
-        curr_values[param] = event.target.value;
-        this.setState({
-            params_values: curr_values
-        })
-    };
-
-    allParamsFilled = () => {
-
-        var all_filled = true
-
-        if (Object.values(this.state.params_values).length > 0) {
-
-            Object.values(this.state.params_values).forEach((value) => {
-                all_filled = all_filled && value != null
-            });
-        }
-
-        return all_filled;
-    };
-
-    render(): React.ReactElement {
-        return (
-            <ThemeProvider theme={theme}>
-                <p className='section-header'>Execute Workflow</p>
-                <CatalogBody>
-                    {this.state.submitted_workflow ? (
-                        <div className='wf-submit-box'>
-                            <CheckCircleOutlineIcon
-                                fontSize='large'
-                                sx={{ color: green[500] }}
-                            />
-                            <p className='wf-submit-text'>
-                                Workflow submitted! You can track it <a className='wf-submit-link' target={"_blank"} 
-                                href={this.state.submitted_workflow['argo_url']}>here</a>
-                            </p>
-                        </div>
-                    ) :
-                        (
-                        <div>
-                            <Paper sx={{ width: "100%", overflow: "hidden" }}>
-                            <TableContainer sx={{ maxHeight: 225 }}>
-                            <Table stickyHeader aria-label="sticky table">
-                            <TableBody>
-                                {this.state.params.map((param: string) => (
-                                    <TableRow hover role="checkbox" tabIndex={-1} key={param}>
-                                        <TableCell key={param} align={"right"}>
-                                            {param}
-                                        </TableCell>
-                                        <TableCell component="th" scope="row">
-                                            <TextField
-                                                id="standard-basic"
-                                                label="Standard"
-                                                variant="standard"
-                                                onChange={(event) => { this.handleParamValueUpdate(event, param) }}
-                                            />
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                            </Table>
-                            </TableContainer>
-                            </Paper>
-                            <div>
-                                <Button variant="contained"
-                                        className={'lw-panel-button'}
-                                        onClick={this.handleSubmit}
-                                        color="primary"
-                                        disabled={!this.allParamsFilled()}>
-                                        Execute
-                                </Button>
-                            </div>
-                        </div>
-                        )
-                    }
-                </CatalogBody>
-            </ThemeProvider>
-        )
-    }
+  render(): React.ReactElement {
+    return (
+      <ThemeProvider theme={theme}>
+        <p className='section-header'>Execute Workflow</p>
+        <CatalogBody>
+          {this.state.submitted_workflow ? (
+              <div className='wf-submit-box'>
+                <CheckCircleOutlineIcon
+                  fontSize='large'
+                  sx={{color: green[500]}}
+                />
+                <p className='wf-submit-text'>
+                  Workflow submitted! You can track it <a className='wf-submit-link' target={"_blank"}
+                                                          href={this.state.submitted_workflow['argo_url']}>here</a>
+                </p>
+              </div>
+            ) :
+            (
+              <div>
+                <Paper sx={{width: "100%", overflow: "hidden"}}>
+                  <TableContainer sx={{maxHeight: 225}}>
+                    <Table stickyHeader aria-label="sticky table">
+                      <TableBody>
+                        {this.state.params.map((param: string) => (
+                          <TableRow hover role="checkbox" tabIndex={-1} key={param}>
+                            <TableCell key={param} align={"right"}>
+                              {param}
+                            </TableCell>
+                            <TableCell component="th" scope="row">
+                              <TextField
+                                id="standard-basic"
+                                label="Standard"
+                                variant="standard"
+                                onChange={(event) => {
+                                  this.handleParamValueUpdate(event, param)
+                                }}
+                              />
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Paper>
+                <div>
+                  <Button variant="contained"
+                          className={'lw-panel-button'}
+                          onClick={this.handleSubmit}
+                          color="primary"
+                          disabled={!this.allParamsFilled()}>
+                    Execute
+                  </Button>
+                </div>
+              </div>
+            )
+          }
+        </CatalogBody>
+      </ThemeProvider>
+    )
+  }
 }
