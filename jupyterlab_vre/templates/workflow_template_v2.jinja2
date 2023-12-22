@@ -6,9 +6,7 @@ metadata:
     vlab_slug: {{ vlab_slug }}
 spec:
     entrypoint: {{ workflow_name }}
-
     serviceAccountName: {{ workflow_service_account }}
-
     volumeClaimTemplates:
     - metadata:
         name: workdir
@@ -17,7 +15,6 @@ spec:
         resources:
           requests:
             storage: {{ workdir_storage_size }}Gi
-
     arguments:
       parameters:
       {% for p, value in global_params.items() %}
@@ -112,8 +109,24 @@ spec:
           {% endfor %}
       {% elif is_visualizer %}
       container:
-        image: "qcdis/geotiff_viewer:v0.1"
+        image: "qcdis/geotiff_viewer:v0.2"
         imagePullPolicy: Always
+        command: ["/bin/sh", "-c"]
+        args:
+          - python /app/python_scripts/main.py
+            {% for d in deps_dag[nid] %}
+            {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
+            {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}
+            {% set stdinname_base = stdinname.split('_')[0] %}
+            --{{ stdinname_base }} '{{ '{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}' }}'
+            {% endfor %}
+            {% for p in params %}
+            --{{ p }} '{{ '{{workflow.parameters.' }}{{ p }}{{ '}}' }}'
+            {% endfor %}
+            && npm start
+      metadata:
+        labels:
+          app.kubernetes.io/name: naavre-visualizer
       {% else %}
       container:
         image: "{{ image_repo }}/{{ cells[nid]['task_name'] }}"

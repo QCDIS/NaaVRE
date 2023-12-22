@@ -16,20 +16,71 @@ export class Visualization extends React.Component {
                     <WorkspaceItem
                         key={'visualizer'}
                         itemKey={'visualizer'}
-                        type={'visualizer'} ports={{
-                            visualizer_source: {
-                                id: 'visualizer_source',
-                                type: 'left',
-                                properties: {
-                                    special_node: 1,
-                                    color: '#000000'
+                        type={'visualizer'} 
+                        ports={
+                            {
+                                hostname: {
+                                    id: 'hostname',
+                                    type: 'left',
+                                    properties: {
+                                        color: '#000000'
+                                    }
+                                },
+                                username: {
+                                    id: 'username',
+                                    type: 'left',
+                                    properties: {
+                                        color: '#000000'
+                                    }
+                                },
+                                password : {
+                                    id: 'password',
+                                    type: 'left',
+                                    properties: 
+                                    {
+                                        color: '#000000'
+                                    }
+                                },
+                                remote_file_path : {
+                                    id: 'remote_file_path',
+                                    type: 'left',
+                                    properties: 
+                                    {
+                                        color: '#000000'
+                                    }
+                                },
+                                num_files : {
+                                    id: 'num_files',
+                                    type: 'left',
+                                    properties: 
+                                    {
+                                        color: '#000000'
+                                    }
+                                },
+                                mode : {
+                                    id: 'mode',
+                                    type: 'left',
+                                    properties: 
+                                    {
+                                        color: '#000000'
+                                    }
+                                },
+                                output_dir : {
+                                    id: 'output_dir',
+                                    type: 'left',
+                                    properties: 
+                                    {
+                                        color: '#000000'
+                                    }
                                 }
                             }
-                        }}
-                        properties={{
+                        }
+                        properties={
+                        {
                             'title': 'Visualizer',
                             'scalingFactor': 1
-                        }}
+                        }
+                        }
                     />
                 </div>
             </Box>

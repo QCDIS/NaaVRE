@@ -12,16 +12,20 @@ export class Parallelization extends React.Component {
                     <WorkspaceItem
                         key={'splitter'}
                         itemKey={'splitter'}
-                        type={'splitter'} ports={{
-                            splitter_source: {
-                                id: 'splitter_source',
-                                type: 'left',
-                                properties: {
+                        type={'splitter'} 
+                        ports={
+                            {
+                                splitter_source: 
+                                {
+                                    id: 'splitter_source',
+                                    type: 'left',
+                                    properties: {
                                     special_node: 1,
                                     color: '#000000'
                                 }
                             },
-                            splitter_target: {
+                            splitter_target: 
+                            {
                                 id: 'splitter_target',
                                 type: 'right',
                                 properties: {
@@ -29,7 +33,8 @@ export class Parallelization extends React.Component {
                                     color: '#000000'
                                 }
                             }
-                        }}
+                        }
+                    }
                         properties={{
                             'title': 'Splitter',
                             'scalingFactor': 1
