@@ -41,16 +41,16 @@ export class Visualization extends React.Component {
                                         color: '#000000'
                                     }
                                 },
-                                remote_file_path : {
-                                    id: 'remote_file_path',
+                                remote : {
+                                    id: 'remote',
                                     type: 'left',
                                     properties: 
                                     {
                                         color: '#000000'
                                     }
                                 },
-                                num_files : {
-                                    id: 'num_files',
+                                num : {
+                                    id: 'num',
                                     type: 'left',
                                     properties: 
                                     {
@@ -65,8 +65,8 @@ export class Visualization extends React.Component {
                                         color: '#000000'
                                     }
                                 },
-                                output_dir : {
-                                    id: 'output_dir',
+                                output : {
+                                    id: 'output',
                                     type: 'left',
                                     properties: 
                                     {
