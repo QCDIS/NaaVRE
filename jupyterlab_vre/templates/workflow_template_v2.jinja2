@@ -126,7 +126,7 @@ spec:
             && npm start
       metadata:
         labels:
-          app.kubernetes.io/name: naavre-visualizer
+          app: naavre-visualizer
       {% else %}
       container:
         image: "{{ image_repo }}/{{ cells[nid]['task_name'] }}"
