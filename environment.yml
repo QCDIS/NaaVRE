@@ -49,5 +49,6 @@ dependencies:
   - webdavclient3
   - pandas
   - zeromq>=4.3.5
+  - papermill
   - pip:
     - pytype~=2023.10.31

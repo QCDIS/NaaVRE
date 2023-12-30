@@ -64,7 +64,7 @@
     "types": {
         "file_path": "str"
     },
-        "example_inputs" : [
+    "example_inputs" : [
     "--id",
     "0"
   ]

@@ -1,0 +1,130 @@
+{
+  "chart": {
+    "offset": {
+      "x": 0,
+      "y": 0
+    },
+    "scale": 1,
+    "nodes": {
+      "dbf93bb9-fce9-4d40-a0fe-1f0b0cb1a2dd": {
+        "id": "dbf93bb9-fce9-4d40-a0fe-1f0b0cb1a2dd",
+        "position": {
+          "x": 426.066650390625,
+          "y": 111
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "download_done": {
+            "properties": {
+              "color": "#1f9367"
+            },
+            "id": "download_done",
+            "type": "right",
+            "position": {
+              "x": 197.5,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "Download-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "download_done",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#1f9367"
+            }
+          ],
+          "params": [
+            "param_username",
+            "param_password",
+            "param_hostname"
+          ],
+          "inputs": [],
+          "outputs": [
+            "download_done"
+          ],
+          "og_node_id": "cb7075e",
+          "deps": [
+            "",
+            "webdav3"
+          ]
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "98de8896-bf91-49c9-8bd0-12b34144d118": {
+        "id": "98de8896-bf91-49c9-8bd0-12b34144d118",
+        "position": {
+          "x": 914.066650390625,
+          "y": 101
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "download_done": {
+            "properties": {
+              "color": "#1f9367"
+            },
+            "id": "download_done",
+            "type": "left",
+            "position": {
+              "x": 50.5,
+              "y": 74.5
+            }
+          }
+        },
+        "properties": {
+          "title": "visualize-rasterio-dev-user-name-at-domain-com",
+          "vars": [
+            {
+              "name": "download_done",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#1f9367"
+            }
+          ],
+          "params": [],
+          "inputs": [
+            "download_done"
+          ],
+          "outputs": [],
+          "og_node_id": "9b2a9b7",
+          "deps": [
+            "",
+            "rasterio",
+            "matplotlib"
+          ]
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      }
+    },
+    "links": {
+      "07e76622-d1a5-4580-a791-dc26f9f875db": {
+        "id": "07e76622-d1a5-4580-a791-dc26f9f875db",
+        "from": {
+          "nodeId": "dbf93bb9-fce9-4d40-a0fe-1f0b0cb1a2dd",
+          "portId": "download_done"
+        },
+        "to": {
+          "nodeId": "98de8896-bf91-49c9-8bd0-12b34144d118",
+          "portId": "download_done"
+        }
+      }
+    },
+    "selected": {},
+    "hovered": {}
+  },
+  "params": {
+    "param_username": "secret",
+    "param_password": "secret",
+    "param_hostname": "secret"
+  }
+}

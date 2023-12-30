@@ -1,0 +1,117 @@
+{
+    "all_inputs": [],
+    "base_image": "qcdis/miniconda3:v0.1",
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "cb7075e": {
+                "id": "cb7075e",
+                "ports": {
+                    "download_done": {
+                        "id": "download_done",
+                        "properties": {
+                            "color": "#1f9367"
+                        },
+                        "type": "right"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [
+                        "",
+                        "webdav3"
+                    ],
+                    "inputs": [],
+                    "og_node_id": "cb7075e",
+                    "outputs": [
+                        "download_done"
+                    ],
+                    "params": [
+                        "param_username",
+                        "param_password",
+                        "param_hostname"
+                    ],
+                    "title": "Download-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#1f9367",
+                            "direction": "output",
+                            "name": "download_done",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {
+        "conf_local_path_geotiff": "conf_local_path_geotiff = os.path.join( pathlib.Path('/tmp/data').as_posix(), 'geotiff')",
+        "conf_remote_path_geotiffs": "conf_remote_path_geotiffs = pathlib.Path('/webdav/vl-laserfarm/' +  '' + '/geotiffs')",
+        "conf_wd_opts": "conf_wd_opts = { 'webdav_hostname': param_hostname, 'webdav_login': param_username, 'webdav_password': param_password}"
+    },
+    "container_source": "",
+    "dependencies": [
+        {
+            "asname": null,
+            "module": "webdav3.client",
+            "name": "Client"
+        },
+        {
+            "asname": null,
+            "module": "",
+            "name": "os"
+        },
+        {
+            "asname": null,
+            "module": "",
+            "name": "pathlib"
+        }
+    ],
+    "inputs": [],
+    "kernel": "ipython",
+    "node_id": "cb7075e",
+    "notebook_dict": {
+        "cells": [
+            {
+                "cell_type": "code",
+                "execution_count": null,
+                "id": "2b3d4c99-52b9-4a61-b690-29b4e1c05fc3",
+                "metadata": {},
+                "outputs": [],
+                "source": "# Download \n\n\nfrom webdav3.client import Client\nprint(conf_local_path_geotiff)\nif not os.path.exists(conf_local_path_geotiff):  # Check if folder doesn't exist\n    os.makedirs(conf_local_path_geotiff)  # Create the folder\n\nclient = Client(conf_wd_opts)\nclient.download_sync(remote_path=os.path.join(conf_remote_path_geotiffs,'geotiff_TILE_000_BAND_perc_95_normalized_height.tif'), local_path=os.path.join(conf_local_path_geotiff,'geotiff_TILE_000_BAND_perc_95_normalized_height.tif'))\n\ndownload_done = 'True'"
+            }
+        ],
+        "metadata": {},
+        "nbformat": 4,
+        "nbformat_minor": 5
+    },
+    "original_source": "conf_local_path_geotiff = os.path.join( pathlib.Path('/tmp/data').as_posix(), 'geotiff')\nconf_wd_opts = { 'webdav_hostname': param_hostname, 'webdav_login': param_username, 'webdav_password': param_password}\nconf_remote_path_geotiffs = pathlib.Path('/webdav/vl-laserfarm/' +  '' + '/geotiffs')\n\n\nprint(conf_local_path_geotiff)\nif not os.path.exists(conf_local_path_geotiff):  # Check if folder doesn't exist\n    os.makedirs(conf_local_path_geotiff)  # Create the folder\n\nclient = Client(conf_wd_opts)\nclient.download_sync(remote_path=os.path.join(conf_remote_path_geotiffs,'geotiff_TILE_000_BAND_perc_95_normalized_height.tif'), local_path=os.path.join(conf_local_path_geotiff,'geotiff_TILE_000_BAND_perc_95_normalized_height.tif'))\n\ndownload_done = 'True'",
+    "outputs": [
+        "download_done"
+    ],
+    "params": [
+        "param_username",
+        "param_password",
+        "param_hostname"
+    ],
+    "task_name": "download-dev-user-name-at-domain-com",
+    "title": "Download-dev-user-name-at-domain-com",
+    "types": {
+        "download_done": "str",
+        "param_hostname": "str",
+        "param_password": "str",
+        "param_username": "str"
+    },
+    "skip_exec": true
+}

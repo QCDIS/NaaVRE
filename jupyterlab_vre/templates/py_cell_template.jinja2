@@ -43,7 +43,10 @@ import json
 {% endfor %}
 
 {% for c in confs %}
-{{ c }}
+{% for c_name in c %}
+{{ c_name }} = {{ c[c_name] }}
+{% endfor %}
+
 {% endfor %}
 
 {{ cell.original_source }}

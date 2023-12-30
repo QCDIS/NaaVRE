@@ -1,0 +1,122 @@
+{
+    "all_inputs": [
+        "download_done"
+    ],
+    "base_image": "qcdis/miniconda3:v0.1",
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "9b2a9b7": {
+                "id": "9b2a9b7",
+                "ports": {
+                    "download_done": {
+                        "id": "download_done",
+                        "properties": {
+                            "color": "#1f9367"
+                        },
+                        "type": "left"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [
+                        "",
+                        "rasterio",
+                        "matplotlib"
+                    ],
+                    "inputs": [
+                        "download_done"
+                    ],
+                    "og_node_id": "9b2a9b7",
+                    "outputs": [],
+                    "params": [],
+                    "title": "visualize-rasterio-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#1f9367",
+                            "direction": "input",
+                            "name": "download_done",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {
+        "conf_local_path_geotiff": "conf_local_path_geotiff = os.path.join( pathlib.Path('/tmp/data').as_posix(), 'geotiff')"
+    },
+    "container_source": "",
+    "dependencies": [
+        {
+            "asname": null,
+            "module": "",
+            "name": "os"
+        },
+        {
+            "asname": null,
+            "module": "",
+            "name": "pathlib"
+        },
+        {
+            "asname": null,
+            "module": "matplotlib",
+            "name": "pyplot"
+        },
+        {
+            "asname": null,
+            "module": "",
+            "name": "rasterio"
+        },
+        {
+            "asname": null,
+            "module": "rasterio.plot",
+            "name": "show"
+        },
+        {
+            "asname": null,
+            "module": "rasterio.plot",
+            "name": "show_hist"
+        }
+    ],
+    "inputs": [
+        "download_done"
+    ],
+    "kernel": "ipython",
+    "node_id": "9b2a9b7",
+    "notebook_dict": {
+        "cells": [
+            {
+                "cell_type": "code",
+                "execution_count": null,
+                "id": "8f484370-6ad0-4fb0-9e94-23810984d17c",
+                "metadata": {},
+                "outputs": [],
+                "source": "#visualize_rasterio\n\nimport os \nimport rasterio\nfrom rasterio.plot import show\nfrom matplotlib import pyplot\nimport numpy as np\nfrom rasterio.plot import show\nfrom rasterio.plot import show_hist\n\ndownload_done\n\ngeo_tiff = os.path.join(conf_local_path_geotiff, 'geotiff_TILE_000_BAND_perc_95_normalized_height.tif')\n# geo_tiff = os.path.join('geotiff_TILE_000_BAND_perc_95_normalized_height_1.tif')\nsrc = rasterio.open(geo_tiff)\nshow(src)\nfig, ax = pyplot.subplots(1, figsize=(30, 30))\nshow((src, 1), interpolation='none', ax=ax)\nshow((src, 1), contour=True, ax=ax)\npyplot.show()\nshow_hist(src, bins=50, lw=0.0, stacked=False, alpha=0.3, histtype='stepfilled', title=\"Histogram\")\npyplot.show()\nsrc.close()"
+            }
+        ],
+        "metadata": {},
+        "nbformat": 4,
+        "nbformat_minor": 5
+    },
+    "original_source": "conf_local_path_geotiff = os.path.join( pathlib.Path('/tmp/data').as_posix(), 'geotiff')\n\n\ndownload_done\n\ngeo_tiff = os.path.join(conf_local_path_geotiff, 'geotiff_TILE_000_BAND_perc_95_normalized_height.tif')\nsrc = rasterio.open(geo_tiff)\nshow(src)\nfig, ax = pyplot.subplots(1, figsize=(30, 30))\nshow((src, 1), interpolation='none', ax=ax)\nshow((src, 1), contour=True, ax=ax)\npyplot.show()\nshow_hist(src, bins=50, lw=0.0, stacked=False, alpha=0.3, histtype='stepfilled', title=\"Histogram\")\npyplot.show()\nsrc.close()",
+    "outputs": [],
+    "params": [],
+    "task_name": "visualize-rasterio-dev-user-name-at-domain-com",
+    "title": "visualize-rasterio-dev-user-name-at-domain-com",
+    "types": {
+        "download_done": "str"
+    },
+    "skip_exec": true
+}

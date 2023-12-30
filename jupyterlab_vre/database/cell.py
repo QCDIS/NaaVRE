@@ -24,6 +24,7 @@ class Cell:
     container_source: str
     global_conf: dict
     kernel: str
+    notebook_json: dict
 
     def __init__(
             self,
@@ -38,11 +39,12 @@ class Cell:
             container_source,
             chart_obj=None,
             node_id='',
-            kernel=''
+            kernel='',
+            notebook_dict=None
     ) -> None:
 
         self.title = title.strip().replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                           '-at-').strip()
+                                                                                                                   '-at-').strip()
         self.task_name = task_name.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
                                                                                                                    '-at-').strip()
         self.original_source = original_source
@@ -57,6 +59,7 @@ class Cell:
         self.node_id = node_id
         self.container_source = container_source
         self.kernel = kernel
+        self.notebook_dict = notebook_dict
 
     def _extract_types(self, vars_dict):
         """ Extract types to self.types and return list of var names
@@ -145,6 +148,14 @@ class Cell:
         resolves = []
         for c in self.confs:
             resolves.append(self.confs[c])
+        return resolves
+
+    def generate_configuration_dict(self):
+        resolves = []
+        for c in self.confs:
+            assignment = self.confs[c].split('=')[1].replace('=', '').strip()
+            conf = {c: assignment}
+            resolves.append(conf)
         return resolves
 
     def toJSON(self):

@@ -5,6 +5,7 @@ import importlib
 import json
 import logging
 import os
+from nbformat import read, write, v4 as nbf
 import sys
 import uuid
 from builtins import Exception
@@ -52,6 +53,13 @@ def git_hash(contents):
     s.update(('blob %u\0' % len(contents)).encode('utf-8'))
     s.update(contents)
     return s.hexdigest()
+
+
+def extract_cell_by_index(notebook, cell_index):
+    new_nb = copy.deepcopy(notebook)
+    if cell_index < len(notebook.cells):
+        new_nb.cells = [notebook.cells[cell_index]]
+        return new_nb
 
 
 class ExtractorHandler(APIHandler, Catalog):
@@ -104,6 +112,12 @@ class ExtractorHandler(APIHandler, Catalog):
             dependencies = extractor.infer_cell_dependencies(source, confs)
 
         node_id = str(uuid.uuid4())[:7]
+        extracted_nb = extract_cell_by_index(notebook, cell_index)
+        print('-------------------------------')
+        print('extracted_nb: ' + str(extracted_nb))
+        print('cell_index: ' + str(cell_index) )
+        print('-------------------------------')
+
         cell = Cell(
             node_id=node_id,
             title=title,
@@ -115,7 +129,8 @@ class ExtractorHandler(APIHandler, Catalog):
             confs=confs,
             dependencies=dependencies,
             container_source="",
-            kernel=kernel
+            kernel=kernel,
+            notebook_dict=extracted_nb.dict()
         )
         if notebook.cells[cell_index].cell_type == 'code':
             cell.integrate_configuration()
@@ -541,18 +556,27 @@ def build_templates(cell=None, files_info=None):
     template_env = Environment(
         loader=loader, trim_blocks=True, lstrip_blocks=True)
 
-    template_cell = template_env.get_template('py_cell_template.jinja2')
+    if cell.title.startswith('visualize-'):
+        template_cell = template_env.get_template('vis_cell_template.jinja2')
+        if cell.notebook_dict:
+            notebook_path = os.path.join(files_info['cell']['path']).replace('.py', '.ipynb')
+            with open(notebook_path, 'w') as f:
+                f.write(json.dumps(cell.notebook_dict, indent=4))
+                f.close()
+    else:
+        template_cell = template_env.get_template('py_cell_template.jinja2')
     template_dockerfile = template_env.get_template(
         'dockerfile_template_conda.jinja2')
     template_conda = template_env.get_template('conda_env_template.jinja2')
 
     compiled_code = template_cell.render(cell=cell, deps=cell.generate_dependencies(), types=cell.types,
-                                         confs=cell.generate_configuration())
+                                         confs=cell.generate_configuration_dict())
+
     compiled_code = autopep8.fix_code(compiled_code)
     cell.container_source = compiled_code
 
     template_cell.stream(cell=cell, deps=cell.generate_dependencies(), types=cell.types,
-                         confs=cell.generate_configuration()).dump(files_info['cell']['path'])
+                         confs=cell.generate_configuration_dict()).dump(files_info['cell']['path'])
     template_dockerfile.stream(task_name=cell.task_name, base_image=cell.base_image).dump(
         files_info['dockerfile']['path'])
     template_conda.stream(base_image=cell.base_image, conda_deps=list(set_conda_deps),
