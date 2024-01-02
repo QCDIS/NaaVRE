@@ -2,7 +2,7 @@
     "all_inputs": [
         "download_done"
     ],
-    "base_image": "qcdis/miniconda3:v0.1",
+    "base_image": "continuumio/miniconda3:23.10.0-1",
     "chart_obj": {
         "hovered": {},
         "links": {},

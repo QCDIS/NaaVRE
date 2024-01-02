@@ -1,0 +1,72 @@
+{% if deps|length >0 %}
+{% for d in deps %}
+{{ d }}
+{% endfor %}
+{% endif %}
+
+import argparse
+import papermill as pm
+
+arg_parser = argparse.ArgumentParser()
+
+arg_parser.add_argument('--id', action='store', type=str, required=True, dest='id')
+
+{% for in_var in cell.inputs|sort %}
+
+{% if types[in_var] == list  or types[in_var] == 'list' %}
+arg_parser.add_argument('--{{ in_var }}', action='store', type=str, required=True, dest='{{ in_var }}')
+{% else %}
+arg_parser.add_argument('--{{ in_var }}', action='store', type={{ types[in_var] }}, required=True, dest='{{ in_var }}')
+{% endif %}
+{% endfor %}
+
+{% for param in cell.params|sort %}
+arg_parser.add_argument('--{{ param }}', action='store', type={{ types[param] }}, required=True, dest='{{ param }}')
+{% endfor %}
+
+args = arg_parser.parse_args()
+print(args)
+
+id = args.id
+parameters = {}
+
+{% for in_var in cell.inputs|sort %}
+{% if types[in_var] == list  or types[in_var] == 'list' %}
+import json
+{{ in_var }} = json.loads(args.{{ in_var }})
+{% elif types[in_var] == str or  types[in_var] == 'str' %}
+{{ in_var }} = args.{{ in_var }}.replace('"','')
+{% else %}
+{{ in_var }} = args.{{ in_var }}
+{% endif %}
+parameters['{{ in_var}}'] = {{ in_var }}
+{% endfor %}
+
+{% for param in cell.params|sort %}
+{{ param }} = args.{{ param }}
+parameters['{{ param}}'] = {{ param }}
+{% endfor %}
+
+{% for c in confs %}
+{% for c_name in c %}
+{{ c_name }} = {{ c[c_name] }}
+parameters['{{ c_name }}'] = {{ c_name }}
+{% endfor %}
+{% endfor %}
+
+pm.execute_notebook(
+    '{{ cell.title }}.ipynb',
+    '{{ cell.title }}-output.ipynb',
+    prepare_only=True,
+    parameters=dict(parameters)
+)
+
+{% if cell.outputs|length > 0 %}
+import json
+{% for out in cell.outputs %}
+filename = "/tmp/{{out}}_" + id + ".json"
+file_{{out}} = open(filename, "w")
+file_{{out}}.write(json.dumps({{out}}))
+file_{{out}}.close()
+{% endfor %}
+{% endif %}

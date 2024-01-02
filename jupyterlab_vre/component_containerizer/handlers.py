@@ -62,6 +62,15 @@ def extract_cell_by_index(notebook, cell_index):
         return new_nb
 
 
+def set_notebook_kernel(notebook, kernel):
+    new_nb = copy.deepcopy(notebook)
+    # Replace kernel name in the notebook metadata
+    new_nb.metadata.kernelspec.name = kernel
+    new_nb.metadata.kernelspec.display_name = kernel
+    new_nb.metadata.kernelspec.language = kernel
+    return new_nb
+
+
 class ExtractorHandler(APIHandler, Catalog):
 
     @web.authenticated
@@ -78,12 +87,14 @@ class ExtractorHandler(APIHandler, Catalog):
         kernel = payload['kernel']
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-
         # extractor based on the kernel
+        extracted_nb = extract_cell_by_index(notebook, cell_index)
         if kernel == "IRkernel":
             extractor = RExtractor(notebook)
+            extracted_nb = set_notebook_kernel(extracted_nb, 'R')
         else:
             extractor = PyExtractor(notebook)
+            extracted_nb = set_notebook_kernel(extracted_nb, 'python3')
 
         # initialize variables
         source = notebook.cells[cell_index].source
@@ -112,12 +123,6 @@ class ExtractorHandler(APIHandler, Catalog):
             dependencies = extractor.infer_cell_dependencies(source, confs)
 
         node_id = str(uuid.uuid4())[:7]
-        extracted_nb = extract_cell_by_index(notebook, cell_index)
-        print('-------------------------------')
-        print('extracted_nb: ' + str(extracted_nb))
-        print('cell_index: ' + str(cell_index) )
-        print('-------------------------------')
-
         cell = Cell(
             node_id=node_id,
             title=title,
@@ -567,7 +572,7 @@ def build_templates(cell=None, files_info=None):
         template_cell = template_env.get_template('py_cell_template.jinja2')
     template_dockerfile = template_env.get_template(
         'dockerfile_template_conda.jinja2')
-    template_conda = template_env.get_template('conda_env_template.jinja2')
+
 
     compiled_code = template_cell.render(cell=cell, deps=cell.generate_dependencies(), types=cell.types,
                                          confs=cell.generate_configuration_dict())
@@ -579,6 +584,8 @@ def build_templates(cell=None, files_info=None):
                          confs=cell.generate_configuration_dict()).dump(files_info['cell']['path'])
     template_dockerfile.stream(task_name=cell.task_name, base_image=cell.base_image).dump(
         files_info['dockerfile']['path'])
+
+    template_conda = template_env.get_template('conda_env_template.jinja2')
     template_conda.stream(base_image=cell.base_image, conda_deps=list(set_conda_deps),
                           pip_deps=list(set_pip_deps)).dump(files_info['environment']['path'])
 
@@ -592,6 +599,9 @@ def get_files_info(cell=None, image_repo=None):
     dockerfile_name = 'Dockerfile.' + image_repo + '.' + cell.task_name
     environment_file_name = cell.task_name + '-environment.yaml'
 
+    notebook_file_name = None
+    if 'visualize-' in cell.task_name:
+        notebook_file_name = cell.task_name + '.ipynb'
     if os.path.exists(cell_path):
         for files in os.listdir(cell_path):
             path = os.path.join(cell_path, files)
@@ -603,7 +613,7 @@ def get_files_info(cell=None, image_repo=None):
     cell_file_path = os.path.join(cell_path, cell_file_name)
     dockerfile_file_path = os.path.join(cell_path, dockerfile_name)
     env_file_path = os.path.join(cell_path, environment_file_name)
-    return {'cell': {
+    info = {'cell': {
         'file_name': cell_file_name,
         'path': cell_file_path},
         'dockerfile': {
@@ -613,3 +623,9 @@ def get_files_info(cell=None, image_repo=None):
             'file_name': environment_file_name,
             'path': env_file_path}
     }
+    if notebook_file_name:
+        info['notebook'] = {
+            'file_name': notebook_file_name,
+            'path': os.path.join(cell_path, notebook_file_name)
+        }
+    return info

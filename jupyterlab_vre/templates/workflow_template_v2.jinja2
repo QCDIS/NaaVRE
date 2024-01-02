@@ -31,6 +31,12 @@ spec:
         {% set is_visualizer = nodes[nid]['type'] == 'visualizer' %}
         {% set task_name =  nodes[nid]['type'] + "-" + nid[:7] if is_special_node else cells[nid]['task_name']+ "-" + nid[:7] %}
         {% set params =  [] if is_special_node else cells[nid]['params'] %}
+        {# {% if 'visualize-' in task_name %}
+        - name: {{ task_name }}-server
+          dependencies: [{{ task_name }}]
+          template: {{ task_name }}-server-tmp
+        {% endif %} #}
+    
         - name: {{ task_name }}
           {% if deps_dag[nid]|length > 0 %}
           dependencies: [{% for d in deps_dag[nid] %} {{ d['task_name'] }}{% if not loop.last %},{% endif %} {% endfor %}]
@@ -60,6 +66,15 @@ spec:
     {% set task_name = nodes[nid]['type'] + "-" + nid[:7] if is_special_node else cells[nid]['task_name'] + "-" + nid[:7] %}
     {% set params = [] if is_special_node else cells[nid]['params'] %}
     {% set ports = nodes[nid]['ports'] %}
+    {# {% if 'visualize-' in task_name %}
+    - name: {{ task_name }}-server-tmp
+      container:
+        image: busybox
+        imagePullPolicy: Always
+        command: ["/bin/bash", "-c"]
+        args:
+          - echo "Starting server"
+    {% endif %} #}
     - name: {{ task_name }}-tmp
       {% if deps_dag[nid]|length > 0 %}
       inputs:
@@ -133,7 +148,25 @@ spec:
         imagePullPolicy: Always
         command: ["/bin/bash", "-c"]
         args:
-        {% if cells[nid]['kernel'] == 'ipython' %}
+        {% if 'visualize-' in cells[nid]['task_name']%}
+          - source /venv/bin/activate; ipython kernel install --user; python {{ cells[nid]['task_name'] }}.py
+            {% for d in deps_dag[nid] %}
+            {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
+            {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}
+            {% set stdinname_base = stdinname.split('_')[0] %}
+            --{{ stdinname_base }} '{{ '{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}' }}'
+            {% endfor %}
+            {% for p in params %}
+            --{{ p }} '{{ '{{workflow.parameters.' }}{{ p }}{{ '}}' }}'
+            {% endfor %}
+            --id {{' '}}{{cells[nid]['node_id']}}{{''}}{{";"}}
+            jupyter execute {{ cells[nid]['task_name'] }}-output.ipynb --allow-errors;
+            jupyter nbconvert --no-input --execute {{ cells[nid]['task_name'] }}-output.ipynb --to html;
+            jupyter notebook --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*'
+      metadata:
+        labels:
+          app: naavre-visualizer
+        {% elif cells[nid]['kernel'] == 'ipython' %}
           - source /venv/bin/activate; python {{ cells[nid]['task_name'] }}.py
             {% for d in deps_dag[nid] %}
             {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
