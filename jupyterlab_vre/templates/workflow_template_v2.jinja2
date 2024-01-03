@@ -162,7 +162,7 @@ spec:
             --id {{' '}}{{cells[nid]['node_id']}}{{''}}{{";"}}
             jupyter execute {{ cells[nid]['task_name'] }}-output.ipynb --allow-errors;
             jupyter nbconvert --no-input --execute {{ cells[nid]['task_name'] }}-output.ipynb --to html;
-            jupyter notebook --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*'
+            jupyter notebook --port 5173 --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --NotebookApp.base_url=/naavre-visualizer
       metadata:
         labels:
           app: naavre-visualizer
