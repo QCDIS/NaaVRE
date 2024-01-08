@@ -120,6 +120,7 @@ class TestExtractor(TestCase):
         'param_int': '1',
         'param_list': '[1, 2, 3]',
         'param_string': 'param_string value',
+        'param_string_with_comment': 'param_string value',
         }
 
     def test_extract_cell(self):

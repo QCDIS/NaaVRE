@@ -30,6 +30,7 @@
     "source": [
      "# params\n",
      "param_string = 'param_string value'\n",
+     "param_string_with_comment = 'param_string value'  # comment\n",
      "param_int = 1\n",
      "param_float = 1.1\n",
      "param_list = [1, 2, 3]"
@@ -46,6 +47,7 @@
     "source": [
      "# Param check\n",
      "print(param_string)\n",
+     "print(param_string_with_comment)\n",
      "print(param_int)\n",
      "print(param_float)\n",
      "print(param_list)"
