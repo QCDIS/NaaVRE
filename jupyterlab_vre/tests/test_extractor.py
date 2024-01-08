@@ -114,6 +114,14 @@ def extract_cell(payload_path):
 
 class TestExtractor(TestCase):
 
+    # Reference parameter values for `test_param_values.json`
+    param_values_ref = {
+        'param_float': '1.1',
+        'param_int': '1',
+        'param_list': '[1, 2, 3]',
+        'param_string': 'param_string value',
+        }
+
     def test_extract_cell(self):
         notebooks_json_path = os.path.join(base_path, 'notebooks')
         notebooks_files = glob.glob(
@@ -130,3 +138,12 @@ class TestExtractor(TestCase):
                 # All params should have matching values
                 for param_name in cell['params']:
                     self.assertTrue(param_name in cell['param_values'])
+
+                # For notebook_file test_param_values.json, extracted params
+                # should match with self.param_values_ref
+                if os.path.basename(notebook_file) == 'test_param_values.json':
+                    for param_name in cell['params']:
+                        self.assertTrue(
+                            cell['param_values'][param_name] ==
+                            self.param_values_ref[param_name]
+                            )
