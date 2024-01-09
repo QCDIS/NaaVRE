@@ -77,10 +77,13 @@ class PyExtractor:
                         param_line = ''
                         for line in lines[node.lineno - 1:node.end_lineno]:
                             param_line += line.strip()
+                        param_value = ast.unparse(node.value)
                         try:
-                            param_value = param_line.split('=')[1].strip(" \"' ")
-                        except IndexError:
-                            param_value = param_line
+                            # remove quotes around strings
+                            param_value = str(ast.literal_eval(param_value))
+                        except ValueError:
+                            # when param_value can't safely be parsed,
+                            pass
                         params[name] = {
                             'name': name,
                             'type': self.notebook_names[name]['type'],

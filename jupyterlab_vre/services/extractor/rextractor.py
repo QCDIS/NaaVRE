@@ -202,7 +202,7 @@ class RExtractor:
                 # this might not work when we have something like: a <- 3; b = 7
                 param_value = ''
                 for line in lines:
-                    m = re.match(r'{}\s*(?:=|<-)(.*)'.format(variable), line)
+                    m = re.match(r'{}\s*(?:=|<-)(.*?)\s*(#.*?)?$'.format(variable), line)
                     if m:
                         param_value = m.group(1).strip(" \"' ")
 
