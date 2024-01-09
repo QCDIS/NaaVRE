@@ -27,7 +27,9 @@ export class ChartElementEditor extends React.Component<ChartElementEditorProps>
         flexGrow: 1,
         position: 'absolute',
         top: 20,
-        right: 20
+        right: 20,
+        maxHeight: 'calc(100% - 40px)',
+        overflow: 'scroll'
       }}>
         <p className='cell-editor section-header'>{this.props.title}</p>
         <div>
