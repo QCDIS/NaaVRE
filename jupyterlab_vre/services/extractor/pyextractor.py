@@ -187,7 +187,11 @@ class PyExtractor:
             if isinstance(module, (ast.Name,)):
                 var_name = module.id
                 if infer_types:
-                    var_type = self.__convert_type_annotation(module.resolved_annotation)
+                    try:
+                        var_type = self.__convert_type_annotation(module.resolved_annotation)
+                    except AttributeError:
+                        print('__extract_cell_names failed', var_name)
+                        var_type = None
                 else:
                     var_type = self.notebook_names[var_name]['type']
                 names[module.id] = {
