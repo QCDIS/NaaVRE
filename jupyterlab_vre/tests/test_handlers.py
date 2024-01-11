@@ -133,6 +133,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             m.return_value = 'cookie'
             cells_json_path = os.path.join(base_path, 'cells')
             cells_files = os.listdir(cells_json_path)
+            test_cells = []
             for cell_file in cells_files:
                 cell_path = os.path.join(cells_json_path, cell_file)
                 test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
@@ -141,6 +142,11 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
                 wf_creation_utc = datetime.datetime.now(tz=datetime.timezone.utc)
                 files_updated = json.loads(response.body.decode('utf-8'))['files_updated']
+                test_cells.append({
+                    'wf_id': wf_id,
+                    'wf_creation_utc': wf_creation_utc,
+                    'files_updated': files_updated,
+                    })
                 if 'skip_exec' in cell and cell['skip_exec']:
                     continue
                 if 'python' in test_cell.kernel and 'skip_exec':
@@ -173,19 +179,19 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     result = subprocess.run(shlex.split(command), capture_output=True, text=True)
                     self.assertEqual(0, result.returncode, result.stderr)
 
-                if files_updated:
-                    cat_repositories = Catalog.get_repositories()
-                    repo_token = cat_repositories[0]['token']
-                    owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
-                    repository_name = cat_repositories[0]['url'].split(
-                        'https://github.com/')[1].split('/')[1]
-                    if '.git' in repository_name:
-                        repository_name = repository_name.split('.git')[0]
+            cat_repositories = Catalog.get_repositories()
+            repo = cat_repositories[0]
+            repo_token = repo['token']
+            owner, repository_name = repo['url'].removeprefix('https://github.com/').split('/')
+            if '.git' in repository_name:
+                repository_name = repository_name.split('.git')[0]
 
+            for test_cell in test_cells[::-1]:
+                if test_cell['files_updated']:
                     # Get job id (many calls to the GitHub API)
                     job = wait_for_job(
-                        wf_id=wf_id,
-                        wf_creation_utc=wf_creation_utc,
+                        wf_id=test_cell['wf_id'],
+                        wf_creation_utc=test_cell['wf_creation_utc'],
                         owner=owner,
                         repository_name=repository_name,
                         token=repo_token,
@@ -193,17 +199,18 @@ class HandlersAPITest(AsyncHTTPTestCase):
                         timeout=200,
                         wait_for_completion=False,
                         )
-                    # Wait for job completion (fewer calls)
-                    job = wait_for_job(
-                        wf_id=wf_id,
-                        wf_creation_utc=None,
-                        owner=owner,
-                        repository_name=repository_name,
-                        token=repo_token,
-                        job_id=job['id'],
-                        timeout=200,
-                        wait_for_completion=True,
-                        )
+                    if job['status'] != 'completed':
+                        # Wait for job completion (fewer calls)
+                        job = wait_for_job(
+                            wf_id=test_cell['wf_id'],
+                            wf_creation_utc=None,
+                            owner=owner,
+                            repository_name=repository_name,
+                            token=repo_token,
+                            job_id=job['id'],
+                            timeout=200,
+                            wait_for_completion=True,
+                            )
                     self.assertIsNotNone(job, 'Job not found')
                     self.assertEqual('completed', job['status'], 'Job not completed')
                     self.assertEqual('success', job['conclusion'], 'Job not successful')
