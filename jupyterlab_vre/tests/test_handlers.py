@@ -10,13 +10,12 @@ from pathlib import Path
 from time import sleep
 from unittest import mock
 
-from github import Github
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
     NotebookSearchHandler, NotebookSearchRatingHandler
-from jupyterlab_vre.component_containerizer.handlers import find_job
+from jupyterlab_vre.component_containerizer.handlers import wait_for_job
 from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.handlers import load_module_names_mapping
@@ -50,25 +49,6 @@ def delete_all_cells():
     for cell in Catalog.get_all_cells():
         print(cell)
         Catalog.delete_cell_from_title(cell['title'])
-
-
-def get_github(cat_repositories=None):
-    if cat_repositories is None:
-        cat_repositories = Catalog.get_repositories()
-    assert cat_repositories is not None
-    assert len(cat_repositories) >= 1
-    return Github(cat_repositories[0]['token'])
-
-
-def get_gh_repository():
-    cat_repositories = Catalog.get_repositories()
-    gh = get_github(cat_repositories=cat_repositories)
-    owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
-    repository_name = cat_repositories[0]['url'].split(
-        'https://github.com/')[1].split('/')[1]
-    if '.git' in repository_name:
-        repository_name = repository_name.split('.git')[0]
-    return gh.get_repo(owner + '/' + repository_name)
 
 
 def create_cell_and_add_to_cat(cell_path=None):
@@ -159,6 +139,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 response = self.call_cell_handler()
                 self.assertEqual(200, response.code)
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
+                wf_creation_utc = datetime.datetime.now(tz=datetime.timezone.utc)
                 files_updated = json.loads(response.body.decode('utf-8'))['files_updated']
                 if 'skip_exec' in cell and cell['skip_exec']:
                     continue
@@ -201,23 +182,29 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     if '.git' in repository_name:
                         repository_name = repository_name.split('.git')[0]
 
-                    gh = get_github(cat_repositories=cat_repositories)
-                    wait_for_api_resource(gh)
-                    sleep(200)
-                    job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token, job_id=None)
+                    # Get job id (many calls to the GitHub API)
+                    job = wait_for_job(
+                        wf_id=wf_id,
+                        wf_creation_utc=wf_creation_utc,
+                        owner=owner,
+                        repository_name=repository_name,
+                        token=repo_token,
+                        job_id=None,
+                        timeout=200,
+                        wait_for_completion=False,
+                        )
+                    # Wait for job completion (fewer calls)
+                    job = wait_for_job(
+                        wf_id=wf_id,
+                        wf_creation_utc=None,
+                        owner=owner,
+                        repository_name=repository_name,
+                        token=repo_token,
+                        job_id=job['id'],
+                        timeout=200,
+                        wait_for_completion=True,
+                        )
                     self.assertIsNotNone(job, 'Job not found')
-                    counter = 0
-                    while 'completed' not in job['status'] or counter < 50:
-                        counter += 1
-                        print('job: ' + job['name'] + ' status: ' + job['status'])
-                        # Wait for 2 minutes for the job to complete to avoid 'API rate limit exceeded for'
-                        sleep(120)
-                        gh = get_github(cat_repositories=cat_repositories)
-                        wait_for_api_resource(gh)
-                        job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token,
-                                       job_id=job['id'])
-                        if job['status'] == 'completed':
-                            break
                     self.assertEqual('completed', job['status'], 'Job not completed')
                     self.assertEqual('success', job['conclusion'], 'Job not successful')
 
