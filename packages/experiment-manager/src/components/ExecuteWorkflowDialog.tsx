@@ -164,7 +164,7 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
                     endIcon={<AutoModeIcon fontSize="inherit" />}
                     style={{color: grey[900], textTransform: 'none'}}
                   >
-                    Use catalog values
+                    Use notebook values
                   </Button>
                 </div>
                 <TableContainer >

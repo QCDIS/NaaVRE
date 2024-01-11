@@ -1,0 +1,59 @@
+{
+ "save": false,
+ "kernel": "IRkernel",
+ "cell_index": 1,
+ "notebook": {
+  "metadata": {
+   "kernelspec": {
+    "display_name": "R",
+    "language": "R",
+    "name": "ir"
+   },
+   "language_info": {
+    "codemirror_mode": "r",
+    "file_extension": ".r",
+    "mimetype": "text/x-r-source",
+    "name": "R",
+    "pygments_lexer": "r",
+    "version": "4.3.1"
+   }
+  },
+  "nbformat_minor": 5,
+  "nbformat": 4,
+  "cells": [
+   {
+    "cell_type": "code",
+    "source": [
+     "# params\n",
+     "param_string = 'param_string value'\n",
+     "param_string_with_comment = 'param_string value'  # comment\n",
+     "param_int = 1\n",
+     "param_float = 1.1"
+    ],
+    "metadata": {
+     "trusted": true
+    },
+    "execution_count": null,
+    "outputs": [],
+    "id": "de7cc7cf-56c9-4538-92be-1a258e5ee812"
+   },
+   {
+    "cell_type": "code",
+    "source": [
+     "# Param check\n",
+     "print(param_string)\n",
+     "print(param_string_with_comment)\n",
+     "print(param_int)\n",
+     "print(param_float)"
+    ],
+    "metadata": {
+     "trusted": true,
+     "tags": []
+    },
+    "execution_count": null,
+    "outputs": [],
+    "id": "9824a80c-b00b-441c-8152-7b2e671e081b"
+   }
+  ]
+ }
+}
