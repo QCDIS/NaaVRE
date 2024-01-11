@@ -189,7 +189,7 @@ def find_job(wf_id=None, owner=None, repository_name=None, token=None, job_id=No
         return None
     for run in runs['workflow_runs']:
         jobs_url = run['jobs_url']
-        jobs = get_github_workflow_jobs(jobs_url)
+        jobs = get_github_workflow_jobs(jobs_url, token=token)
         for job in jobs['jobs']:
             if job['name'] == wf_id:
                 return job
