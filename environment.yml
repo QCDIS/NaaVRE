@@ -42,6 +42,8 @@ dependencies:
   - r-rlang
   - r-purrr
   - r-optparse
+  - r-nloptr
+  - cmake
   - jupyter-collaboration
   - pytest
   - flake8
