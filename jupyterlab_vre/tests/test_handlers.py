@@ -186,34 +186,43 @@ class HandlersAPITest(AsyncHTTPTestCase):
             if '.git' in repository_name:
                 repository_name = repository_name.split('.git')[0]
 
-            for test_cell in test_cells[::-1]:
-                if test_cell['files_updated']:
-                    # Get job id (many calls to the GitHub API)
-                    job = wait_for_job(
-                        wf_id=test_cell['wf_id'],
-                        wf_creation_utc=test_cell['wf_creation_utc'],
-                        owner=owner,
-                        repository_name=repository_name,
-                        token=repo_token,
-                        job_id=None,
-                        timeout=200,
-                        wait_for_completion=False,
-                        )
-                    if job['status'] != 'completed':
-                        # Wait for job completion (fewer calls)
-                        job = wait_for_job(
-                            wf_id=test_cell['wf_id'],
-                            wf_creation_utc=None,
-                            owner=owner,
-                            repository_name=repository_name,
-                            token=repo_token,
-                            job_id=job['id'],
-                            timeout=200,
-                            wait_for_completion=True,
-                            )
-                    self.assertIsNotNone(job, 'Job not found')
-                    self.assertEqual('completed', job['status'], 'Job not completed')
-                    self.assertEqual('success', job['conclusion'], 'Job not successful')
+            updated_cells = list(filter(
+                lambda cell: cell['files_updated'],
+                test_cells,
+                ))
+
+            for cell in updated_cells:
+                # Get job id (many calls to the GitHub API)
+                job = wait_for_job(
+                    wf_id=cell['wf_id'],
+                    wf_creation_utc=cell['wf_creation_utc'],
+                    owner=owner,
+                    repository_name=repository_name,
+                    token=repo_token,
+                    job_id=None,
+                    timeout=300,
+                    wait_for_completion=False,
+                    )
+                cell['job'] = job
+
+            for cell in updated_cells:
+                # Wait for job completion (fewer calls)
+                job = wait_for_job(
+                    wf_id=cell['wf_id'],
+                    wf_creation_utc=None,
+                    owner=owner,
+                    repository_name=repository_name,
+                    token=repo_token,
+                    job_id=cell['job']['id'],
+                    timeout=300,
+                    wait_for_completion=True,
+                    )
+                cell['job'] = job
+
+            for cell in updated_cells:
+                self.assertIsNotNone(cell['job'], 'Job not found')
+                self.assertEqual('completed', cell['job']['status'], 'Job not completed')
+                self.assertEqual('success', cell['job']['conclusion'], 'Job not successful')
 
     def test_extractor_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
