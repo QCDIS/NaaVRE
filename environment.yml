@@ -47,8 +47,6 @@ dependencies:
   - r-ggplot2
   - cmake
   - jupyter-collaboration
-  - jupyterlab_execute_time
-  - jupyterlab_code_formatter
   - pytest
   - flake8
   - r-optparse
