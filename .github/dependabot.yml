@@ -3,53 +3,53 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
 
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
 
   - package-ecosystem: "npm"
     directory: "/packages/chart-customs"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
 
   - package-ecosystem: "npm"
     directory: "/packages/core"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
 
   - package-ecosystem: "npm"
     directory: "/packages/experiment-manager"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
 
   - package-ecosystem: "npm"
     directory: "/packages/notebook-containerizer"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
 
   - package-ecosystem: "npm"
     directory: "/packages/notebook-search"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
 
   - package-ecosystem: "npm"
     directory: "/packages/vre-menu"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
 
   - package-ecosystem: "npm"
     directory: "/packages/vre-panel"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
 
 
   - package-ecosystem: "docker"
     directory: "/docker/laserfarm-pytorch"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
     commit-message:
       # Prefix all commit messages with "[docker] " (no colon, but a trailing whitespace)
       prefix: "[docker] "
@@ -57,7 +57,7 @@ updates:
   - package-ecosystem: "docker"
     directory: "/docker/vanilla"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
     commit-message:
       # Prefix all commit messages with "[docker] " (no colon, but a trailing whitespace)
       prefix: "[docker] "
@@ -66,7 +66,7 @@ updates:
   - package-ecosystem: "docker"
     directory: "/docker/vol2bird"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
     commit-message:
       # Prefix all commit messages with "[docker] " (no colon, but a trailing whitespace)
       prefix: "[docker] "

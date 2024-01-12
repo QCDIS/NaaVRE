@@ -9,6 +9,7 @@ import sys
 import uuid
 from builtins import Exception
 from pathlib import Path
+from time import sleep
 
 import autopep8
 import distro
@@ -176,24 +177,100 @@ class BaseImageHandler(APIHandler, Catalog):
         cell.base_image = base_image
 
 
-def find_job(wf_id=None, owner=None, repository_name=None, token=None, job_id=None):
+def wait_for_github_api_resources():
+    github = Github(Catalog.get_repositories()[0]['token'])
+    rate_limit = github.get_rate_limit()
+    while rate_limit.core.remaining <= 0:
+        reset = rate_limit.core.reset
+        # Calculate remaining time for reset
+        remaining_time = reset.timestamp() - datetime.datetime.now().timestamp()
+        logger.debug(f'Remaining time for reset: {remaining_time} s')
+        logger.debug(f'API rate exceeded, waiting')
+        logger.debug(f'Sleeping for: {remaining_time + 1}')
+        sleep(remaining_time + 1)
+        rate_limit = github.get_rate_limit()
+
+
+def find_job(
+        wf_id=None,
+        wf_creation_utc=None,
+        owner=None,
+        repository_name=None,
+        token=None,
+        job_id=None,
+        ):
+    f""" Find Github workflow job
+
+    If job_id is set, retrieve it through
+    https://api.github.com/repos/{owner}/{repository_name}/actions/jobs/{job_id}
+
+    Else, get all workflows runs created around wf_creation_utc through
+    https://api.github.com/repos/{owner}/{repository_name}/actions/runs
+    and find the one matching {wf_id}
+    """
     if job_id:
         jobs_url = github_url_repos + '/' + owner + '/' + repository_name + '/actions/jobs/' + str(job_id)
+        wait_for_github_api_resources()
         job = get_github_workflow_jobs(jobs_url, token=token)
         return job
-    last_minutes = str(
-        (datetime.datetime.now() - datetime.timedelta(hours=0, minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ"))
-    runs = get_github_workflow_runs(owner=owner, repository_name=repository_name, last_minutes=last_minutes,
-                                    token=token)
+    wait_for_github_api_resources()
+    runs = get_github_workflow_runs(
+        owner=owner,
+        repository_name=repository_name,
+        t_utc=wf_creation_utc,
+        token=token)
     if not runs:
         return None
     for run in runs['workflow_runs']:
         jobs_url = run['jobs_url']
-        jobs = get_github_workflow_jobs(jobs_url)
+        wait_for_github_api_resources()
+        jobs = get_github_workflow_jobs(jobs_url, token=token)
         for job in jobs['jobs']:
             if job['name'] == wf_id:
                 return job
     return None
+
+
+def wait_for_job(
+        wf_id=None,
+        wf_creation_utc=None,
+        owner=None,
+        repository_name=None,
+        token=None,
+        job_id=None,
+        timeout=200,
+        wait_for_completion=False,
+        ):
+    """ Call find_job until something is returned or timeout is reached
+
+    :param wf_id: passed to find_job
+    :param wf_creation_utc: passed to find_job
+    :param owner: passed to find_job
+    :param repository_name: passed to find_job
+    :param token: passed to find_job
+    :param job_id: passed to find_job
+    :param timeout: timeout in seconds
+    :param wait_for_completion: wait for the job's status to be 'complete'
+
+    :return: job or None
+    """
+    start_time = datetime.datetime.now().timestamp()  # seconds
+    stop_time = start_time + timeout
+    while datetime.datetime.now().timestamp() < stop_time:
+        job = find_job(
+            wf_id=wf_id,
+            wf_creation_utc=wf_creation_utc,
+            owner=owner,
+            repository_name=repository_name,
+            token=token,
+            job_id=job_id,
+            )
+        if job:
+            if not wait_for_completion:
+                return job
+            if wait_for_completion and (job['status'] == 'completed'):
+                return job
+        sleep(5)
 
 
 def write_cell_to_file(current_cell):
@@ -446,8 +523,12 @@ def dispatch_github_workflow(owner, repository_name, task_name, files_info, repo
     return resp
 
 
-def get_github_workflow_runs(owner=None, repository_name=None, last_minutes=None, token=None):
+def get_github_workflow_runs(owner=None, repository_name=None, t_utc=None, token=None):
     workflow_runs_url = github_url_repos + '/' + owner + '/' + repository_name + '/actions/runs'
+    if t_utc:
+        t_start = (t_utc - datetime.timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        t_stop = (t_utc + datetime.timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        workflow_runs_url += f"?created={t_start}..{t_stop}"
     headers = {'Accept': 'application/vnd.github.v3+json'}
     if token:
         headers['Authorization'] = 'Bearer ' + token
