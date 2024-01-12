@@ -77,10 +77,13 @@ class PyExtractor:
                         param_line = ''
                         for line in lines[node.lineno - 1:node.end_lineno]:
                             param_line += line.strip()
+                        param_value = ast.unparse(node.value)
                         try:
-                            param_value = param_line.split('=')[1].strip(" \"' ")
-                        except IndexError:
-                            param_value = param_line
+                            # remove quotes around strings
+                            param_value = str(ast.literal_eval(param_value))
+                        except ValueError:
+                            # when param_value can't safely be parsed,
+                            pass
                         params[name] = {
                             'name': name,
                             'type': self.notebook_names[name]['type'],
@@ -184,7 +187,11 @@ class PyExtractor:
             if isinstance(module, (ast.Name,)):
                 var_name = module.id
                 if infer_types:
-                    var_type = self.__convert_type_annotation(module.resolved_annotation)
+                    try:
+                        var_type = self.__convert_type_annotation(module.resolved_annotation)
+                    except AttributeError:
+                        print('__extract_cell_names failed', var_name)
+                        var_type = None
                 else:
                     var_type = self.notebook_names[var_name]['type']
                 names[module.id] = {

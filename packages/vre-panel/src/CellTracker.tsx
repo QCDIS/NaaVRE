@@ -11,7 +11,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { Button, FormControl, MenuItem, Select, TableBody, TextField, ThemeProvider } from "@material-ui/core";
-import { Autocomplete, LinearProgress, Box } from '@mui/material';
+import { Autocomplete, LinearProgress, Alert, Box } from '@mui/material';
 import { AddCellDialog } from './AddCellDialog';
 
 interface IProps {
@@ -20,6 +20,7 @@ interface IProps {
 
 interface IState {
     loading: boolean
+    extractorError: string,
     baseImageSelected: boolean
     currentCellIndex: number
     currentCell: VRECell
@@ -30,6 +31,7 @@ interface IState {
 const DefaultState: IState = {
 
     loading: false,
+    extractorError: '',
     baseImageSelected: false,
     currentCellIndex: -1,
     currentCell: null,
@@ -140,10 +142,13 @@ export class CellTracker extends React.Component<IProps, IState> {
     };
 
     exctractor = async (notebookModel: INotebookModel, save = false) => {
-        this.setState({loading: true})
         await this.loadBaseImages();
-        // try {
-            const kernel = await this.getKernel()
+        const kernel = await this.getKernel()
+        try {
+            this.setState({
+                loading: true,
+                extractorError: '',
+            })
 
             const extractedCell = await requestAPI<any>('containerizer/extract', {
                 body: JSON.stringify({
@@ -157,6 +162,7 @@ export class CellTracker extends React.Component<IProps, IState> {
             this.setState({
                 currentCell: extractedCell,
                 loading: false,
+                extractorError: '',
             });
             let typeSelections: { [type: string]: boolean } = {}
 
@@ -174,10 +180,13 @@ export class CellTracker extends React.Component<IProps, IState> {
             this.setState({ typeSelections: typeSelections })
 
             this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
-        // } catch (error) {
-        //     console.log(error);
-        //     alert('Error exporting cell code: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
-        // }
+        } catch (error) {
+            console.log(error);
+            this.setState({
+                loading: false,
+                extractorError: String(error),
+            })
+        }
     }
 
     onActiveCellChanged = (notebook: Notebook, _activeCell: Cell) => {
@@ -242,14 +251,21 @@ export class CellTracker extends React.Component<IProps, IState> {
                     <div className={'lw-panel-editor'}>
                         <CellPreview ref={this.cellPreviewRef} />
                     </div>
+                    {this.state.extractorError && (
+                      <div>
+                          <Alert severity="error" className={'lw-panel-preview'}>
+                              <p>Notebook cannot be analyzed: {this.state.extractorError}</p>
+                          </Alert>
+                      </div>
+                    )}
                     {(this.state.currentCell != null && !this.state.loading) ? (
-                        <div>
-                            {this.state.currentCell.inputs.length > 0 ? (
-                                <div>
-                                    <p className={'lw-panel-preview'}>Inputs</p>
-                                    <TableContainer component={Paper} className={'lw-panel-table'}>
-                                        <Table aria-label="simple table">
-                                            <TableBody>
+                      <div>
+                          {this.state.currentCell.inputs.length > 0 ? (
+                            <div>
+                                <p className={'lw-panel-preview'}>Inputs</p>
+                                <TableContainer component={Paper} className={'lw-panel-table'}>
+                                    <Table aria-label="simple table">
+                                    <TableBody>
                                                 {this.state.currentCell.inputs.map((input: string) => (
                                                     <TableRow key={this.state.currentCell.node_id + "-" + input}>
                                                         <TableCell component="th" scope="row">

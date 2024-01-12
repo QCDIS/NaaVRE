@@ -54,6 +54,39 @@ pytest --ignore=docker --ignore=cypress
 ```
 
 
+## Running the development environment
+
+
+Setup (once, after creating the conda environment):
+
+```shell
+pip install --no-deps -e .; jupyter serverextension enable --py jupyterlab_vre --user; make build-frontend && make install-ui && make link-ui
+```
+
+Start Jupyter lab:
+
+```shell
+source export_VARS && cp -r ./docker/repo_utils/ /tmp/ && ./docker/init_script.sh && jupyter lab --autoreload --watch --NotebookApp.ip='127.0.0.1'
+```
+
+Reload frontend extension changes
+
+```shell
+# If all extensions were updated:
+make build-frontend
+# If a single extension was updated (eg. vre-panel):
+npx lerna run build --scope @jupyter_vre/vre-panel
+```
+
+The Jupyter lab server should pick up the changes to the frontend extensions, and you just have to reload the browser tab. If Jupyter lab doesn’t pickup the changes, it needs to be restarted.
+
+
+## to create new test
+
+Create cell from UI. Then get cell json from `/tmp/wf`.
+
+
+
 ## Add new test notebooks
 
 In the test_handlers the `test_execute_workflow_handler` tests all workflows in the test/resources/workflows/NaaVRE folder.
