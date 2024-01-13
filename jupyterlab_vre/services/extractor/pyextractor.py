@@ -67,15 +67,27 @@ class PyExtractor:
     def __extract_params(self, sources):
         params = dict()
         for s in sources:
+            lines = s.splitlines()
             tree = ast.parse(s)
             for node in ast.walk(tree):
                 if isinstance(node, ast.Assign) and hasattr(node.targets[0], 'id'):
                     name = node.targets[0].id
                     prefix = name.split('_')[0]
                     if prefix == 'param':
+                        param_line = ''
+                        for line in lines[node.lineno - 1:node.end_lineno]:
+                            param_line += line.strip()
+                        param_value = ast.unparse(node.value)
+                        try:
+                            # remove quotes around strings
+                            param_value = str(ast.literal_eval(param_value))
+                        except ValueError:
+                            # when param_value can't safely be parsed,
+                            pass
                         params[name] = {
                             'name': name,
                             'type': self.notebook_names[name]['type'],
+                            'value': param_value,
                         }
         return params
 
@@ -175,7 +187,11 @@ class PyExtractor:
             if isinstance(module, (ast.Name,)):
                 var_name = module.id
                 if infer_types:
-                    var_type = self.__convert_type_annotation(module.resolved_annotation)
+                    try:
+                        var_type = self.__convert_type_annotation(module.resolved_annotation)
+                    except AttributeError:
+                        print('__extract_cell_names failed', var_name)
+                        var_type = None
                 else:
                     var_type = self.notebook_names[var_name]['type']
                 names[module.id] = {
@@ -211,8 +227,13 @@ class PyExtractor:
         return undef_vars
 
     def extract_cell_params(self, cell_source):
+        params = {}
         cell_unds = self.__extract_cell_undefined(cell_source)
-        return {k: cell_unds[k] for k in cell_unds.keys() & self.global_params.keys()}
+        param_unds = [und for und in cell_unds if und in self.global_params]
+        for u in param_unds:
+            if u not in params:
+                params[u] = self.global_params[u]
+        return params
 
     def extract_cell_conf_ref(self, cell_source):
         confs = {}

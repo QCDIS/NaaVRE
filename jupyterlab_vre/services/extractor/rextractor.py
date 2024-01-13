@@ -180,6 +180,7 @@ class RExtractor:
     def __extract_params(self, sources):  # check source https://adv-r.hadley.nz/expressions.html)
         params = {}
         for s in sources:
+            lines = s.splitlines()
 
             '''Approach 1: Naive way
             Find all variable assignments with a prefix of "param"'''
@@ -196,9 +197,19 @@ class RExtractor:
                 # the prefix should be 'param'
                 if not (variable.split("_")[0] == "param"):
                     continue
+
+                # find the line of the assignment. (TODO) this approach assumes that there is only one expression in one line.
+                # this might not work when we have something like: a <- 3; b = 7
+                param_value = ''
+                for line in lines:
+                    m = re.match(r'{}\s*(?:=|<-)(.*?)\s*(#.*?)?$'.format(variable), line)
+                    if m:
+                        param_value = m.group(1).strip(" \"' ")
+
                 params[variable] = {
                     'name': variable,
                     'type': None,
+                    'value': param_value,
                     }
         return params
 
@@ -362,8 +373,13 @@ class RExtractor:
         return undef_vars
 
     def extract_cell_params(self, cell_source):
+        params = {}
         cell_unds = self.__extract_cell_undefined(cell_source)
-        return {k: cell_unds[k] for k in cell_unds.keys() & self.global_params.keys()}
+        param_unds = [und for und in cell_unds if und in self.global_params]
+        for u in param_unds:
+            if u not in params:
+                params[u] = self.global_params[u]
+        return params
 
     def extract_cell_conf_ref(self, cell_source):
         confs = {}

@@ -1,25 +1,51 @@
-import Box from '@mui/material/Box';
 import * as React from 'react';
-import { VRECell } from '@jupyter_vre/core';
+import {CellInfo} from "./CellInfo";
+import {
+  IConfig,
+  IFlowChartCallbacks,
+  INode,
+} from "@mrblenny/react-flow-chart";
+import {ChartElementEditor} from './ChartElementEditor';
 
 interface CellEditorProps {
-    cell: VRECell
+  callbacks: IFlowChartCallbacks,
+  config: IConfig,
+  node: INode,
 }
 
 export class CellEditor extends React.Component<CellEditorProps> {
 
-    constructor(props: CellEditorProps) {
-        super(props);
-    }
+  cellInfoRef: React.RefObject<CellInfo>;
 
-    render() {
-        return (
-            <Box sx={{ borderRadius: '15px', boxShadow: '1px 1px lightgrey', background: 'white', height: 500, width: 500, transform: 'translateZ(0px)', flexGrow: 1, position: 'absolute', top: 20, right: 20 }}>
-                <p className='cell-editor section-header'>{this.props.cell.title}</p>
-                <div >
-                    
-                </div>
-            </Box>
-        )
-    }
+  constructor(props: CellEditorProps) {
+    super(props);
+    this.cellInfoRef = React.createRef()
+  }
+
+  updateCellInfoRef() {
+    this.cellInfoRef.current.updateCell(
+      this.props.node,
+      [],
+    )
+  }
+
+  componentDidMount() {
+    this.updateCellInfoRef()
+  }
+
+  componentDidUpdate() {
+    this.updateCellInfoRef()
+  }
+
+  render() {
+    return (
+      <ChartElementEditor
+        title={this.props.node.properties.title}
+        callbacks={this.props.callbacks}
+        config={this.props.config}
+      >
+        <CellInfo ref={this.cellInfoRef}/>
+      </ChartElementEditor>
+    )
+  }
 }

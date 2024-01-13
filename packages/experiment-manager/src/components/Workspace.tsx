@@ -67,7 +67,7 @@ export class Workspace extends React.Component {
                 <p className='section-header'>Workspace</p>
                 {this.state.workspace_elements.size == 0 ?
                     (<div className={'empty-workspace'}>
-                        The workspace is empty, click on the '+' bottom-right menu and select 'Explore Catalogs' to start adding cells.
+                        The workspace is empty, click on 'Cells catalog' to add cells.
                     </div>)
                     : (
                         <div className={'workspace-items-container'}>

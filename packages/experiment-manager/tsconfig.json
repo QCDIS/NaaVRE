@@ -9,5 +9,5 @@
     "typeRoots": ["./node_modules/@types"],
     "skipLibCheck": true
   },
-  "include": ["src/*", "src/*/*"]
+  "include": ["src/**/*"]
 }

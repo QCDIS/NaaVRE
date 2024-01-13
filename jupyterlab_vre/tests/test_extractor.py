@@ -76,6 +76,7 @@ def create_cell(payload_path=None):
         cell.integrate_configuration()
         params = extractor.extract_cell_params(cell.original_source)
         cell.add_params(params)
+        cell.add_param_values(params)
 
     return cell
 
@@ -113,6 +114,15 @@ def extract_cell(payload_path):
 
 class TestExtractor(TestCase):
 
+    # Reference parameter values for `test_param_values_*.json`
+    param_values_ref = {
+        'param_float': '1.1',
+        'param_int': '1',
+        'param_list': '[1, 2, 3]',
+        'param_string': 'param_string value',
+        'param_string_with_comment': 'param_string value',
+        }
+
     def test_extract_cell(self):
         notebooks_json_path = os.path.join(base_path, 'notebooks')
         notebooks_files = glob.glob(
@@ -126,3 +136,18 @@ class TestExtractor(TestCase):
                     self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
                                      'conf_ values should not contain conf_ prefix in '
                                      'assignment')
+                # All params should have matching values
+                for param_name in cell['params']:
+                    self.assertTrue(param_name in cell['param_values'])
+
+                # For notebook_file test_param_values_*.json, extracted params
+                # should match with self.param_values_ref
+                if (os.path.basename(notebook_file) in
+                        ['test_param_values_Python.json',
+                         'test_param_values_R.json',
+                         ]):
+                    for param_name in cell['params']:
+                        self.assertTrue(
+                            cell['param_values'][param_name] ==
+                            self.param_values_ref[param_name]
+                            )

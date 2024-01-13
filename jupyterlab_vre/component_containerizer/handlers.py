@@ -141,6 +141,7 @@ class ExtractorHandler(APIHandler, Catalog):
             cell.integrate_configuration()
             params = extractor.extract_cell_params(cell.original_source)
             cell.add_params(params)
+            cell.add_param_values(params)
 
         node = ConverterReactFlowChart.get_node(
             node_id,
