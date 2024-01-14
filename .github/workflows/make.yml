@@ -64,3 +64,16 @@ jobs:
       gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
+  call-build-container-ltier-life:
+    needs: call-pytest
+    uses: ./.github/workflows/build-container.yml
+    with:
+      wheel_artifact_name: jupyterlab_vre
+      docker_folder: ltier-life
+      tag: n-a-a-vre
+      push: ${{ github.event_name == 'release' }}
+    secrets:
+      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
