@@ -3,6 +3,7 @@ from notebook.utils import url_path_join
 from jupyterlab_vre.sdia.sdia_credentials import SDIACredentials
 from ._version import __version__
 from .component_containerizer.handlers import ExtractorHandler, TypesHandler, BaseImageHandler, CellsHandler
+from .dataset_search.handlers import DatasetSearchHandler, DatasetDownloadHandler
 from .experiment_manager.handlers import ExportWorkflowHandler, ExecuteWorkflowHandler
 from .handlers import CatalogGetAllHandler
 from .notebook_containerizer.handlers import NotebookExtractorHandler
@@ -22,6 +23,8 @@ def load_jupyter_server_extension(lab_app):
     host_pattern = '.*$'
 
     lab_app.web_app.add_handlers(host_pattern, [
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/datasetdownloadhandler'), DatasetDownloadHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/datasetsearch'), DatasetSearchHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebooksearch'), NotebookSearchHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebookdownloadhandler'), NotebookDownloadHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebooksourcehandler'), NotebookSourceHandler),

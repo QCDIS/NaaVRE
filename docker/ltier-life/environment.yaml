@@ -1,0 +1,33 @@
+name: venv
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.8
+  - r-purrr
+  - r-optparse
+  - r-nloptr
+  - r-colorspace
+  - r-farver
+  - r-labeling
+  - r-munsell
+  - r-rcolorbrewer
+  - r-viridislite
+  - r-nloptr
+  - r-gtable
+  - r-isoband
+  - r-scales
+  - r-generics
+  - r-timechange
+  - r-minqa
+  - r-insight
+  - r-plyr
+  - r-ggplot2
+  - r-gridextra
+  - r-evd
+  - r-lubridate
+  - r-lme4
+  - r-reshape2
+  - r-reshape
+  - r-mumin
+  - r-numderiv
+  - r-rcpproll
