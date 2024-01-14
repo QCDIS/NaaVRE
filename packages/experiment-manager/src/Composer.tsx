@@ -2,21 +2,20 @@ import * as React from 'react';
 import {Dialog, ReactWidget,} from '@jupyterlab/apputils';
 import * as actions from "@mrblenny/react-flow-chart/src/container/actions";
 import styled from 'styled-components'
-import { theme } from './Theme';
+import {theme} from './components/Theme';
 import { mapValues } from 'lodash';
 import { chartSimple } from './emptyChart';
-import { FlowChart, IChart } from '@mrblenny/react-flow-chart';
 import { ThemeProvider } from '@material-ui/core';
 import { NodeCustom, NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
-import { CatalogDialog } from './CatalogDialog';
+import {CatalogDialog} from './components/CatalogDialog';
 import { VRECell, requestAPI } from '@jupyter_vre/core';
 import { CellEditor, Page } from '@jupyter_vre/components';
-import { Workspace } from './Workspace';
-import { Parallelization } from './Parallelization';
-import { Visualization } from './Visualization';
-import BasicSpeedDial from './SpeedDial';
-import { ExecuteWorkflowDialog } from './ExecuteWorkflowDialog';
+import {Workspace} from './components/Workspace';
+import {Parallelization} from './components/Parallelization';
+import { Visualization } from './components/Visualization';
+import {ExecuteWorkflowDialog} from './components/ExecuteWorkflowDialog';
 import {ChartElementEditor} from "@jupyter_vre/components/lib/ChartElementEditor";
+import {FlowChart, IChart, IConfig} from '@mrblenny/react-flow-chart';
 
 export const CenterContent = styled.div`
     display: flex;
@@ -137,6 +136,15 @@ export class Composer extends React.Component<IProps, IState> {
           >
           </ChartElementEditor>
         );
+        case "visualizer":
+          return (
+            <ChartElementEditor
+              title={"Visualizer"}
+              callbacks={this.chartStateActions}
+              config={this.chartConfig}
+            >
+            </ChartElementEditor>
+          );
     }
     return (
       <CellEditor
@@ -145,10 +153,7 @@ export class Composer extends React.Component<IProps, IState> {
         node={node}
       />
 				);
-			case "visualizer":
-				return (
-					<div>Visualizer</div>
-				);
+
 		}
 
   getChartElementEditor = () => {
