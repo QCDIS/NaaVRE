@@ -25,8 +25,8 @@ build-frontend: jlpm-install
 	npx lerna run build --scope @jupyter_vre/chart-customs
 	npx lerna run build --scope @jupyter_vre/core
 	npx lerna run build --scope @jupyter_vre/notebook-containerizer
-	#npx lerna run build --scope @jupyter_vre/notebook-containerizer2
 	npx lerna run build --scope @jupyter_vre/notebook-search
+	npx lerna run build --scope @jupyter_vre/dataset-search
 	npx lerna run build --scope @jupyter_vre/components
 	npx lerna run build --scope @jupyter_vre/experiment-manager
 	npx lerna run build --scope @jupyter_vre/vre-panel
@@ -57,9 +57,9 @@ jlpm-install:
 
 install-ui:
 	$(call INSTALL_LAB_EXTENSION,notebook-search)
+	$(call INSTALL_LAB_EXTENSION,dataset-search)
 	$(call INSTALL_LAB_EXTENSION,core)
 	$(call INSTALL_LAB_EXTENSION,notebook-containerizer)
-	#$(call INSTALL_LAB_EXTENSION,notebook-containerizer2)
 	$(call INSTALL_LAB_EXTENSION,chart-customs)
 	$(call INSTALL_LAB_EXTENSION,components)
 	$(call INSTALL_LAB_EXTENSION,experiment-manager)
@@ -68,9 +68,9 @@ install-ui:
 
 link-ui:
 	$(call LINK_LAB_EXTENSION,notebook-search)
+	$(call LINK_LAB_EXTENSION,dataset-search)
 	$(call LINK_LAB_EXTENSION,core)
 	$(call LINK_LAB_EXTENSION,notebook-containerizer)
-	#$(call LINK_LAB_EXTENSION,notebook-containerizer2)
 	$(call LINK_LAB_EXTENSION,chart-customs)
 	$(call LINK_LAB_EXTENSION,components)
 	$(call LINK_LAB_EXTENSION,experiment-manager)
@@ -81,13 +81,13 @@ dist-ui: build-frontend
 	mkdir -p dist
 	$(call PACKAGE_LAB_EXTENSION,core)
 	$(call PACKAGE_LAB_EXTENSION,notebook-containerizer)
-	#$(call PACKAGE_LAB_EXTENSION,notebook-containerizer2)
 	$(call PACKAGE_LAB_EXTENSION,chart-customs)
 	$(call PACKAGE_LAB_EXTENSION,components)
 	$(call PACKAGE_LAB_EXTENSION,experiment-manager)
 	$(call PACKAGE_LAB_EXTENSION,vre-panel)
 	$(call PACKAGE_LAB_EXTENSION,vre-menu)
 	$(call PACKAGE_LAB_EXTENSION,notebook-search)
+	$(call PACKAGE_LAB_EXTENSION,dataset-search)
 
 release: dist-ui build-backend
 	
