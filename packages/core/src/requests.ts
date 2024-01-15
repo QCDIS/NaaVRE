@@ -14,11 +14,17 @@ export async function requestAPI<T>(
 ): Promise<T> {
   // Make request to Jupyter API
   const settings = ServerConnection.makeSettings();
+  console.log('Settings: '+settings.toString())
+  console.log('Settings.baseUrl: '+settings.baseUrl)
+  console.log('Settings.appUrl: '+settings.appUrl)
+  console.log('Settings.appendToken: '+settings.appendToken)
+
   const requestUrl = URLExt.join(
     settings.baseUrl,
     'vre', // API Namespace
     endPoint
   );
+  console.log('requestUrl: '+requestUrl)
 
   let response: Response;
   try {
