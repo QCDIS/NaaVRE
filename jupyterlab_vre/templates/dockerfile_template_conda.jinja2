@@ -24,6 +24,14 @@ RUN R -e "install.packages('optparse', repos='http://cran.rstudio.com')"
 
 RUN mkdir -p /app
 COPY {{ task_name }}.R /app
+
+{% elif base_image.startswith('qcdis/conda-lter-life') %}
+FROM ubuntu:24.04
+
+COPY --from={{ base_image }} /venv/ /venv/
+RUN mkdir -p /app
+COPY {{ task_name }}.R /app
+
 {% else %}
 
 FROM {{ base_image }} AS build
