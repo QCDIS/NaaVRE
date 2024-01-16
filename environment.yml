@@ -42,6 +42,10 @@ dependencies:
   - r-rlang
   - r-purrr
   - r-optparse
+  - r-rcpp
+  - r-rcppeigen
+  - r-ggplot2
+  - cmake
   - jupyter-collaboration
   - pytest
   - flake8
