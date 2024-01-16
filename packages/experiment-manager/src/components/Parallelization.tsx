@@ -6,22 +6,26 @@ export class Parallelization extends React.Component {
 
     render() {
         return (
-            <Box sx={{ boxShadow: '1px 1px lightgrey', background: 'white', height: '30%', width: 250, transform: 'translateZ(0px)', flexGrow: 1, position: 'absolute', bottom: 0, left: 0 }}>
+            <Box sx={{ boxShadow: '1px 1px lightgrey', background: 'white', height: '30%', width: 250, transform: 'translateZ(0px)', flexGrow: 1, position: 'relative', bottom: 0, left: 0 }}>
                 <p className='section-header'>Parallelization</p>
                 <div>
                     <WorkspaceItem
                         key={'splitter'}
                         itemKey={'splitter'}
-                        type={'splitter'} ports={{
-                            splitter_source: {
-                                id: 'splitter_source',
-                                type: 'left',
-                                properties: {
+                        type={'splitter'} 
+                        ports={
+                            {
+                                splitter_source: 
+                                {
+                                    id: 'splitter_source',
+                                    type: 'left',
+                                    properties: {
                                     special_node: 1,
                                     color: '#000000'
                                 }
                             },
-                            splitter_target: {
+                            splitter_target: 
+                            {
                                 id: 'splitter_target',
                                 type: 'right',
                                 properties: {
@@ -29,7 +33,8 @@ export class Parallelization extends React.Component {
                                     color: '#000000'
                                 }
                             }
-                        }}
+                        }
+                    }
                         properties={{
                             'title': 'Splitter',
                             'scalingFactor': 1
