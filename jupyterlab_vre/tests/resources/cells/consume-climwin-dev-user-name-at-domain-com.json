@@ -1,0 +1,88 @@
+{
+    "all_inputs": [
+        "temperature_data",
+        "rolling_mean_temp"
+    ],
+    "base_image": "jupyter/r-notebook:70178b8e48d7",
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "c72914f": {
+                "id": "c72914f",
+                "ports": {
+                    "rolling_mean_temp": {
+                        "id": "rolling_mean_temp",
+                        "properties": {
+                            "color": "#40bfb3"
+                        },
+                        "type": "left"
+                    },
+                    "temperature_data": {
+                        "id": "temperature_data",
+                        "properties": {
+                            "color": "#87b3c5"
+                        },
+                        "type": "left"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [],
+                    "inputs": [
+                        "temperature_data",
+                        "rolling_mean_temp"
+                    ],
+                    "og_node_id": "c72914f",
+                    "outputs": [],
+                    "params": [],
+                    "title": "consume climwin-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#87b3c5",
+                            "direction": "input",
+                            "name": "temperature_data",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#40bfb3",
+                            "direction": "input",
+                            "name": "rolling_mean_temp",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {},
+    "container_source": "",
+    "dependencies": [],
+    "inputs": [
+        "temperature_data",
+        "rolling_mean_temp"
+    ],
+    "kernel": "IRkernel",
+    "node_id": "c72914f",
+    "original_source": "\ncat(\"Original Temperature Data:\\n\", head(temperature_data), \"\\n\\n\")\ncat(\"Rolling Mean Temperature in Moving Windows:\\n\", head(coredata(rolling_mean_temp)), \"\\n\")",
+    "outputs": [],
+    "param_values": {},
+    "params": [],
+    "task_name": "consume-climwin-dev-user-name-at-domain-com",
+    "title": "consume climwin-dev-user-name-at-domain-com",
+    "types": {
+        "rolling_mean_temp": "str",
+        "temperature_data": "str"
+    },
+    "skip_exec": true
+}

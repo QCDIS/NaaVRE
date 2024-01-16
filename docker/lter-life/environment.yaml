@@ -31,3 +31,5 @@ dependencies:
   - r-mumin
   - r-numderiv
   - r-rcpproll
+  - r-mumin
+  - r-jsonlite

@@ -1,0 +1,85 @@
+{
+    "all_inputs": [],
+    "base_image": "jupyter/r-notebook:70178b8e48d7",
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "119c012": {
+                "id": "119c012",
+                "ports": {
+                    "rolling_mean_temp": {
+                        "id": "rolling_mean_temp",
+                        "properties": {
+                            "color": "#40bfb3"
+                        },
+                        "type": "right"
+                    },
+                    "temperature_data": {
+                        "id": "temperature_data",
+                        "properties": {
+                            "color": "#87b3c5"
+                        },
+                        "type": "right"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [],
+                    "inputs": [],
+                    "og_node_id": "119c012",
+                    "outputs": [
+                        "temperature_data",
+                        "rolling_mean_temp"
+                    ],
+                    "params": [],
+                    "title": "Install and load the climwinb packages-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#87b3c5",
+                            "direction": "output",
+                            "name": "temperature_data",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#40bfb3",
+                            "direction": "output",
+                            "name": "rolling_mean_temp",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {},
+    "container_source": "",
+    "dependencies": [],
+    "inputs": [],
+    "kernel": "IRkernel",
+    "node_id": "119c012",
+    "original_source": "if (!requireNamespace(\"climwin\", quietly = TRUE)) {\n  install.packages(\"climwin\")\n}\nif (!requireNamespace(\"zoo\", quietly = TRUE)) {\n  install.packages(\"zoo\")\n}\nzoo = ''\nclimwin = ''\nlibrary(climwin)\nlibrary(zoo)\n\nset.seed(123)\ntemperature_data <- rnorm(365, mean = 15, sd = 5)\n\nwindow_size <- 30\n\ntemperature_zoo <- zoo::zoo(temperature_data)\n\nrolling_mean_temp <- rollmean(temperature_zoo, k = window_size, fill = 0.0)\n",
+    "outputs": [
+        "temperature_data",
+        "rolling_mean_temp"
+    ],
+    "param_values": {},
+    "params": [],
+    "task_name": "install-and-load-the-climwinb-packages-dev-user-name-at-domain-com",
+    "title": "Install and load the climwinb packages-dev-user-name-at-domain-com",
+    "types": {
+        "rolling_mean_temp": "str",
+        "temperature_data": "str"
+    },
+    "skip_exec": true
+}
