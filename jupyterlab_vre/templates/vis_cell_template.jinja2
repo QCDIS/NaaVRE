@@ -5,6 +5,8 @@
 {% endif %}
 
 import argparse
+import papermill as pm
+
 arg_parser = argparse.ArgumentParser()
 
 arg_parser.add_argument('--id', action='store', type=str, required=True, dest='id')
@@ -26,6 +28,7 @@ args = arg_parser.parse_args()
 print(args)
 
 id = args.id
+parameters = {}
 
 {% for in_var in cell.inputs|sort %}
 {% if types[in_var] == list  or types[in_var] == 'list' %}
@@ -36,20 +39,27 @@ import json
 {% else %}
 {{ in_var }} = args.{{ in_var }}
 {% endif %}
+parameters['{{ in_var}}'] = {{ in_var }}
 {% endfor %}
 
 {% for param in cell.params|sort %}
 {{ param }} = args.{{ param }}
+parameters['{{ param}}'] = {{ param }}
 {% endfor %}
 
 {% for c in confs %}
 {% for c_name in c %}
 {{ c_name }} = {{ c[c_name] }}
+parameters['{{ c_name }}'] = {{ c_name }}
+{% endfor %}
 {% endfor %}
 
-{% endfor %}
-
-{{ cell.original_source }}
+pm.execute_notebook(
+    '{{ cell.title }}.ipynb',
+    '{{ cell.title }}-output.ipynb',
+    prepare_only=True,
+    parameters=dict(parameters)
+)
 
 {% if cell.outputs|length > 0 %}
 import json

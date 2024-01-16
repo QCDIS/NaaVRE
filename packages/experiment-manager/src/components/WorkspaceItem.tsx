@@ -51,7 +51,7 @@ export const WorkspaceItem = ({ itemKey, type, ports, properties, itemDeleteActi
         event.dataTransfer.setData(REACT_FLOW_CHART, JSON.stringify({ type, ports, properties }))
       }}
     >
-      {type != "splitter" && type != "merger" ? (
+      {type != "splitter" && type != "merger" && type!= "visualizer" ? (
         <div>
           <Tooltip title={properties['title']}>
             <Title>{properties['title']}</Title>
