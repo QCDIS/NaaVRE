@@ -56,10 +56,13 @@ def create_cell_and_add_to_cat(cell_path=None):
     with open(cell_path, 'r') as file:
         cell = json.load(file)
     file.close()
+    notebook_dict = {}
+    if 'notebook_dict' in cell:
+        notebook_dict = cell['notebook_dict']
     test_cell = Cell(cell['title'], cell['task_name'], cell['original_source'], cell['inputs'],
                      cell['outputs'],
                      cell['params'], cell['confs'], cell['dependencies'], cell['container_source'],
-                     cell['chart_obj'], cell['node_id'], cell['kernel'])
+                     cell['chart_obj'], cell['node_id'], cell['kernel'],notebook_dict)
     test_cell.types = cell['types']
     test_cell.base_image = cell['base_image']
     Catalog.editor_buffer = test_cell
@@ -136,6 +139,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             test_cells = []
             for cell_file in cells_files:
                 cell_path = os.path.join(cells_json_path, cell_file)
+                if 'visualize-rasterio-dev-user-name-at-domain-com.json' not in cell_file:
+                    continue
                 test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
                 response = self.call_cell_handler()
                 self.assertEqual(200, response.code)

@@ -3,18 +3,19 @@ import {Dialog, ReactWidget,} from '@jupyterlab/apputils';
 import * as actions from "@mrblenny/react-flow-chart/src/container/actions";
 import styled from 'styled-components'
 import {theme} from './components/Theme';
-import {mapValues} from 'lodash';
-import {chartSimple} from './emptyChart';
-import {FlowChart, IChart, IConfig} from '@mrblenny/react-flow-chart';
-import {ThemeProvider} from '@material-ui/core';
-import {NodeCustom, NodeInnerCustom, PortCustom} from '@jupyter_vre/chart-customs';
+import { mapValues } from 'lodash';
+import { chartSimple } from './emptyChart';
+import { ThemeProvider } from '@material-ui/core';
+import { NodeCustom, NodeInnerCustom, PortCustom } from '@jupyter_vre/chart-customs';
 import {CatalogDialog} from './components/CatalogDialog';
-import {requestAPI, VRECell} from '@jupyter_vre/core';
-import {CellEditor, Page} from '@jupyter_vre/components';
+import { VRECell, requestAPI } from '@jupyter_vre/core';
+import { CellEditor, Page } from '@jupyter_vre/components';
 import {Workspace} from './components/Workspace';
 import {Parallelization} from './components/Parallelization';
+import { Visualization } from './components/Visualization';
 import {ExecuteWorkflowDialog} from './components/ExecuteWorkflowDialog';
 import {ChartElementEditor} from "@jupyter_vre/components/lib/ChartElementEditor";
+import {FlowChart, IChart, IConfig} from '@mrblenny/react-flow-chart';
 
 export const CenterContent = styled.div`
     display: flex;
@@ -54,11 +55,10 @@ export class Composer extends React.Component<IProps, IState> {
     return this.workspaceRef.current.hasElement(cell);
   }
 
-  getWorkspaceElementFromChartId = (chartId: string): VRECell => {
-
-    let nodeId = this.state.chart.nodes[chartId].properties['og_node_id'];
-    return this.workspaceRef.current.getElement(nodeId);
-  }
+	getWorkspaceElementFromChartId = (chartId: string): VRECell => {
+		let nodeId = this.state.chart.nodes[chartId].properties['og_node_id'];
+		return this.workspaceRef.current.getElement(nodeId);
+	}
 
   getCatalogDialogOptions = (): Partial<Dialog.IOptions<any>> => {
     return {
@@ -136,6 +136,15 @@ export class Composer extends React.Component<IProps, IState> {
           >
           </ChartElementEditor>
         );
+        case "visualizer":
+          return (
+            <ChartElementEditor
+              title={"Visualizer"}
+              callbacks={this.chartStateActions}
+              config={this.chartConfig}
+            >
+            </ChartElementEditor>
+          );
     }
     return (
       <CellEditor
@@ -143,8 +152,9 @@ export class Composer extends React.Component<IProps, IState> {
         config={this.chartConfig}
         node={node}
       />
-    );
-  }
+				);
+
+		}
 
   getChartElementEditor = () => {
     switch (this.state.chart.selected.type) {
@@ -187,6 +197,7 @@ export class Composer extends React.Component<IProps, IState> {
             <Workspace ref={this.workspaceRef}/>
             <Parallelization/>
             {this.state.chart.selected.id && this.getChartElementEditor()}
+            <Visualization />
           </CenterContent>
         </Page>
       </ThemeProvider>

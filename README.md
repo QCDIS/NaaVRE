@@ -147,7 +147,7 @@ Removed Anaconda entirely from the machine (MacOS), and do a full reinstall as f
 ```shell
 brew install anaconda
 export PATH="/usr/local/anaconda3/bin:$PATH"
-```
+```[values.yaml](..%2F..%2F..%2F..%2Fmnt%2Ffry%2Fk8s%2Fwebdav%2Fvalues.yaml)
 
 Next, sett up the Anaconda environment:
     
