@@ -96,6 +96,7 @@ find_assign_rec <- function(x) {
 # Load the base R package for parsing and evaluation
 base = importr('base')
 
+
 # TODO: create an interface such that it can be easily extended to other kernels
 
 class RExtractor:
@@ -109,7 +110,7 @@ class RExtractor:
         self.sources = [nbcell.source for nbcell in notebook.cells if
                         nbcell.cell_type == 'code' and len(nbcell.source) > 0]
 
-        self.imports = dict()  # self.__extract_imports(self.sources)
+        self.imports = self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
         self.global_params = self.__extract_params(self.sources)
         self.undefined = dict()
@@ -137,7 +138,13 @@ class RExtractor:
 
                 # transpose renv dependencies to readable dependencies
                 transposed_list = list(map(list, zip(*function_list)))
+                print('--------------transposed_list-------------------')
+                print(transposed_list)
+                print('---------------------------------')
                 packages = [row[1] for row in transposed_list]
+                print('--------------packages-------------------')
+                print(packages)
+                print('---------------------------------')
 
                 tmp_file.close()
                 os.remove(tmp_file.name)
@@ -210,7 +217,7 @@ class RExtractor:
                     'name': variable,
                     'type': None,
                     'value': param_value,
-                    }
+                }
         return params
 
     def infer_cell_outputs(self, cell_source):
@@ -219,11 +226,11 @@ class RExtractor:
             name: properties
             for name, properties in cell_names.items()
             if name not in self.__extract_cell_undefined(cell_source)
-            and name not in self.imports
-            and name in self.undefined
-            and name not in self.configurations
-            and name not in self.global_params
-            }
+               and name not in self.imports
+               and name in self.undefined
+               and name not in self.configurations
+               and name not in self.global_params
+        }
 
     def infer_cell_inputs(self, cell_source):
         cell_undefined = self.__extract_cell_undefined(cell_source)
@@ -231,9 +238,9 @@ class RExtractor:
             und: properties
             for und, properties in cell_undefined.items()
             if und not in self.imports
-            and und not in self.configurations
-            and und not in self.global_params
-            }
+               and und not in self.configurations
+               and und not in self.global_params
+        }
 
     def infer_cell_dependencies(self, cell_source, confs):
         # TODO: check this code, you have removed logic. 
@@ -254,33 +261,33 @@ class RExtractor:
         return dependencies
 
     def get_function_parameters(self, cell_source):
-      result = []
+        result = []
 
-      # Approach 1: Naive Regex
-      functions = re.findall(r'function\s*\((.*?)\)', cell_source)
-      for params in functions:
-          result.extend(re.findall(r'\b\w+\b', params))
+        # Approach 1: Naive Regex
+        functions = re.findall(r'function\s*\((.*?)\)', cell_source)
+        for params in functions:
+            result.extend(re.findall(r'\b\w+\b', params))
 
-      # Approach 2: AST based
-      # TODO
+        # Approach 2: AST based
+        # TODO
 
-      return list(set(result))
+        return list(set(result))
 
     def get_iterator_variables(self, cell_source):
-      result = []
+        result = []
 
-      # Approach 1: Naive Regex. This means that iterator variables are in the following format:
-      # for ( <IT_VAR> .....)
-      result = re.findall(r'for\s*\(\s*([a-zA-Z0-9.]+)\s+in', cell_source)
+        # Approach 1: Naive Regex. This means that iterator variables are in the following format:
+        # for ( <IT_VAR> .....)
+        result = re.findall(r'for\s*\(\s*([a-zA-Z0-9.]+)\s+in', cell_source)
 
-      # Approach 2: Parse AST. Much cleaner option as iterator variables can appear in differen syntaxes.
-      # TODO 
+        # Approach 2: Parse AST. Much cleaner option as iterator variables can appear in differen syntaxes.
+        # TODO
 
-      return result
+        return result
 
     def __extract_cell_names(self, cell_source):
         parsed_r = robjects.r['parse'](text=cell_source)
-        vars_r = robjects.r['all.vars'](parsed_r) 
+        vars_r = robjects.r['all.vars'](parsed_r)
 
         # Challenge 1: Function Parameters
         function_parameters = self.get_function_parameters(cell_source)
@@ -307,9 +314,9 @@ class RExtractor:
             name: {
                 'name': name,
                 'type': None,
-                }
-            for name in vars_r
             }
+            for name in vars_r
+        }
 
         return vars_r
 
@@ -326,7 +333,7 @@ class RExtractor:
                 # Check if assignment. 
                 if (c == "<-" or c == "="):
                     if isinstance(my_expr[1], rinterface.SexpSymbol):
-                        result.add(str(variable))    
+                        result.add(str(variable))
         try:
             for expr in my_expr:
                 result = self.recursive_variables(expr, result)
@@ -348,7 +355,7 @@ class RExtractor:
             %s
         })""" % text)
         result = re.findall(r'"([^"]*)"', str(output_r))
-        
+
         # Return the result
         return result
 
@@ -366,9 +373,9 @@ class RExtractor:
             name: {
                 'name': name,
                 'type': None,
-                }
-            for name in undef_vars
             }
+            for name in undef_vars
+        }
 
         return undef_vars
 

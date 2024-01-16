@@ -6,31 +6,31 @@
     },
     "scale": 1,
     "nodes": {
-      "5c206f75-b90c-446d-879f-6c84380aa9a2": {
-        "id": "5c206f75-b90c-446d-879f-6c84380aa9a2",
+      "442d10bc-d999-400b-8050-0289d8586031": {
+        "id": "442d10bc-d999-400b-8050-0289d8586031",
         "position": {
-          "x": 402.41668701171875,
-          "y": 169
+          "x": 414.66668701171875,
+          "y": 111
         },
         "orientation": 0,
         "type": "input-output",
         "ports": {
-          "temperature_data": {
+          "rolling_mean_temp_str": {
             "properties": {
-              "color": "#87b3c5"
+              "color": "#c5a987"
             },
-            "id": "temperature_data",
+            "id": "rolling_mean_temp_str",
             "type": "right",
             "position": {
               "x": 197.5,
               "y": 60
             }
           },
-          "rolling_mean_temp": {
+          "temperature_data_str": {
             "properties": {
-              "color": "#40bfb3"
+              "color": "#aca953"
             },
-            "id": "rolling_mean_temp",
+            "id": "temperature_data_str",
             "type": "right",
             "position": {
               "x": 197.5,
@@ -42,57 +42,59 @@
           "title": "Install and load the climwinb packages-dev-user-name-at-domain-com",
           "vars": [
             {
-              "name": "temperature_data",
+              "name": "rolling_mean_temp_str",
               "direction": "output",
               "type": "datatype",
-              "color": "#87b3c5"
+              "color": "#c5a987"
             },
             {
-              "name": "rolling_mean_temp",
+              "name": "temperature_data_str",
               "direction": "output",
               "type": "datatype",
-              "color": "#40bfb3"
+              "color": "#aca953"
             }
           ],
           "params": [],
           "inputs": [],
           "outputs": [
-            "temperature_data",
-            "rolling_mean_temp"
+            "rolling_mean_temp_str",
+            "temperature_data_str"
           ],
-          "og_node_id": "119c012",
-          "deps": []
+          "og_node_id": "7b4271d",
+          "deps": [
+            ""
+          ]
         },
         "size": {
           "width": 250,
           "height": 150
         }
       },
-      "72a83712-de7d-47ba-a102-f159d885bf9b": {
-        "id": "72a83712-de7d-47ba-a102-f159d885bf9b",
+      "112085dc-408b-4b9d-b6e8-242257ffebea": {
+        "id": "112085dc-408b-4b9d-b6e8-242257ffebea",
         "position": {
-          "x": 793.4166870117188,
-          "y": 162
+          "x": 855.6666870117188,
+          "y": 76
         },
         "orientation": 0,
         "type": "input-output",
         "ports": {
-          "temperature_data": {
+          "rolling_mean_temp_str": {
             "properties": {
-              "color": "#87b3c5"
+              "color": "#c5a987"
             },
-            "id": "temperature_data",
+            "id": "rolling_mean_temp_str",
             "type": "left",
             "position": {
               "x": 50.5,
               "y": 60
             }
           },
-          "rolling_mean_temp": {
+          "temperature_data_str": {
             "properties": {
-              "color": "#40bfb3"
+              "color": "#aca953"
             },
-            "id": "rolling_mean_temp",
+            "id": "temperature_data_str",
             "type": "left",
             "position": {
               "x": 50.5,
@@ -104,26 +106,28 @@
           "title": "consume climwin-dev-user-name-at-domain-com",
           "vars": [
             {
-              "name": "temperature_data",
+              "name": "rolling_mean_temp_str",
               "direction": "input",
               "type": "datatype",
-              "color": "#87b3c5"
+              "color": "#c5a987"
             },
             {
-              "name": "rolling_mean_temp",
+              "name": "temperature_data_str",
               "direction": "input",
               "type": "datatype",
-              "color": "#40bfb3"
+              "color": "#aca953"
             }
           ],
           "params": [],
           "inputs": [
-            "temperature_data",
-            "rolling_mean_temp"
+            "rolling_mean_temp_str",
+            "temperature_data_str"
           ],
           "outputs": [],
-          "og_node_id": "c72914f",
-          "deps": []
+          "og_node_id": "dd373f8",
+          "deps": [
+            ""
+          ]
         },
         "size": {
           "width": 250,
@@ -132,26 +136,26 @@
       }
     },
     "links": {
-      "e0949ca5-c2eb-47f8-b2f8-8f4e436e1c57": {
-        "id": "e0949ca5-c2eb-47f8-b2f8-8f4e436e1c57",
+      "a88cacb6-cfe8-4c71-a116-c2f2ad919863": {
+        "id": "a88cacb6-cfe8-4c71-a116-c2f2ad919863",
         "from": {
-          "nodeId": "5c206f75-b90c-446d-879f-6c84380aa9a2",
-          "portId": "temperature_data"
+          "nodeId": "442d10bc-d999-400b-8050-0289d8586031",
+          "portId": "rolling_mean_temp_str"
         },
         "to": {
-          "nodeId": "72a83712-de7d-47ba-a102-f159d885bf9b",
-          "portId": "temperature_data"
+          "nodeId": "112085dc-408b-4b9d-b6e8-242257ffebea",
+          "portId": "rolling_mean_temp_str"
         }
       },
-      "07c202f2-0d94-485a-a67b-4f53e002e85e": {
-        "id": "07c202f2-0d94-485a-a67b-4f53e002e85e",
+      "4c2d5463-1da4-4a06-838f-c20a5cd433ca": {
+        "id": "4c2d5463-1da4-4a06-838f-c20a5cd433ca",
         "from": {
-          "nodeId": "5c206f75-b90c-446d-879f-6c84380aa9a2",
-          "portId": "rolling_mean_temp"
+          "nodeId": "442d10bc-d999-400b-8050-0289d8586031",
+          "portId": "temperature_data_str"
         },
         "to": {
-          "nodeId": "72a83712-de7d-47ba-a102-f159d885bf9b",
-          "portId": "rolling_mean_temp"
+          "nodeId": "112085dc-408b-4b9d-b6e8-242257ffebea",
+          "portId": "temperature_data_str"
         }
       }
     },
