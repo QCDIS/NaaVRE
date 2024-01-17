@@ -2,7 +2,6 @@ name: venv
 channels:
   - conda-forge
 dependencies:
-  - python>=3.8
   - r-purrr
   - r-optparse
   - r-nloptr
@@ -31,3 +30,5 @@ dependencies:
   - r-mumin
   - r-numderiv
   - r-rcpproll
+  - r-mumin
+  - r-jsonlite
