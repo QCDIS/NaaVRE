@@ -1,7 +1,8 @@
 {% if base_image.startswith('qcdis/python-vol2bird') %}
 FROM continuumio/miniconda3:22.11.1 AS build
 COPY {{ task_name }}-environment.yaml .
-RUN conda config --remove channels defaults
+
+RUN conda config --remove channels defaults || true
 RUN conda env update -n venv -f {{ task_name }}-environment.yaml
 RUN conda install -c conda-forge conda-pack
 RUN conda-pack -n venv -o /tmp/env.tar && \
@@ -36,7 +37,7 @@ COPY {{ task_name }}.R /app
 
 FROM {{ base_image }} AS build
 COPY {{ task_name }}-environment.yaml .
-RUN conda config --remove channels defaults
+RUN conda config --remove channels defaults || true
 RUN conda env update -n venv -f {{ task_name }}-environment.yaml
 RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
