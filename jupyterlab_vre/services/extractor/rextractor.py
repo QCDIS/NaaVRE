@@ -145,7 +145,6 @@ class RExtractor:
                 print('--------------packages-------------------')
                 print(packages)
                 print('---------------------------------')
-
                 tmp_file.close()
                 os.remove(tmp_file.name)
 
