@@ -49,7 +49,7 @@ const NodeTitle = styled.span`
 
 const renderNode = ({ node, children, ...otherProps }: INodeDefaultProps, ref: React.ForwardedRef<HTMLDivElement>) => {
 
-    if (node.type == "splitter" || node.type == "merger") {
+    if (node.type == "splitter" || node.type == "merger" || node.type == "visualizer") {
         return (
             <NodeContainerSpecial ref={ref} {...otherProps}>
                 <NodeTitleContainerSpecial>

@@ -4,6 +4,9 @@ setwd('/app')
 
 library(optparse)
 library(jsonlite)
+{% for dep in deps%}
+{{ dep }}
+{% endfor %}
 
 
 option_list = list(

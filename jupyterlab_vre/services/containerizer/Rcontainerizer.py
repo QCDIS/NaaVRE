@@ -73,8 +73,22 @@ class Rcontainerizer:
         compiled_code = template_cell.render(cell=cell, deps=cell.generate_dependencies(), types=cell.types,
                                              confs=cell.generate_configuration())
         cell.container_source = compiled_code
+        dependencies = cell.generate_dependencies()
+        print('-------------------dependencies-------------------')
+        print(dependencies)
+        r_dependencies = []
+        for dep in dependencies:
+            r_dep = dep.replace('import ', '')
+            install_packages = 'if (!requireNamespace("' + r_dep + '", quietly = TRUE)) {\ninstall.packages("' + r_dep + '", repos="http://cran.us.r-project.org")\n}'
+            r_dependencies.append(install_packages)
+            library = 'library(' + r_dep + ')'
+            r_dependencies.append(library)
+        print('-------------------r_dependencies-------------------')
+        print(r_dependencies)
 
-        template_cell.stream(cell=cell, deps=cell.generate_dependencies(), types=cell.types,
+        template_cell.stream(cell=cell,
+                             deps=r_dependencies,
+                             types=cell.types,
                              confs=cell.generate_configuration()).dump(files_info['cell']['path'])
         template_dockerfile.stream(task_name=cell.task_name,
                                    base_image=cell.base_image).dump(files_info['dockerfile']['path'])

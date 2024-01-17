@@ -255,4 +255,3 @@ class ExecuteWorkflowHandler(APIHandler):
             self.write_error('Registry credentials are not set!')
             self.flush()
             return
-

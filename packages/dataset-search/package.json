@@ -33,7 +33,7 @@
     },
     "dependencies": {
         "react-ipynb-renderer": "^2.0.1",
-        "ts-node": "~7.0.1"
+        "ts-node": "~10.9.2"
 
     },
     "devDependencies": {
