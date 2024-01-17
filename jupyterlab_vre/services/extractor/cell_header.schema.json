@@ -1,0 +1,198 @@
+{
+  "$schema": "http://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/definitions/CellHeader",
+  "definitions": {
+    "CellHeader": {
+      "title": "Cell header",
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "NaaVRE": {
+          "$ref": "#/definitions/NaaVRECellMetadata"
+        }
+      },
+      "required": [
+        "NaaVRE"
+      ]
+    },
+    "NaaVRECellMetadata": {
+      "title": "NaaVRE cell metadata",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cell": {
+          "$ref": "#/definitions/Cell"
+        }
+      },
+      "required": [
+        "cell"
+      ]
+    },
+    "Cell": {
+      "title": "Cell",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IOElement"
+          }
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/IOElement"
+          }
+        },
+        "params": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ParamElement"
+          }
+        },
+        "confs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ConfElement"
+          }
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DependencyElement"
+          }
+        }
+      }
+    },
+    "VarType": {
+      "title": "Variable type",
+      "type": "string",
+      "enum": [
+        "Integer",
+        "Float",
+        "String",
+        "List"
+      ]
+    },
+    "VarDefaultValue": {
+      "title": "Param variable default_value",
+      "description": "Used to pre-fill workflow parameters",
+      "type": ["string", "number", "array"]
+    },
+    "VarAssignation": {
+      "title": "Conf variable assignation property",
+      "description": "Full variable assignation, e.g. 'conf_answer = 42'",
+      "type": "string"
+    },
+    "ElementVarName": {
+      "title": "Variable name",
+      "description": "simple variable name, as string ('name')",
+      "type": "string"
+    },
+    "ElementVarNameType": {
+      "title": "Variable name and type",
+      "description": "simple variable name and type, as object ({'name': 'type'})",
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^.*$": {
+          "$ref": "#/definitions/VarType"
+        }
+      }
+    },
+    "IOElementVarDict": {
+      "title": "Full i/o variable description",
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "maxProperties": 1,
+      "patternProperties": {
+        "^.*$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {"$ref": "#/definitions/VarType"}
+          }
+        }
+      }
+    },
+    "ParamElementVarDict": {
+      "title": "Full param variable description",
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "maxProperties": 1,
+      "patternProperties": {
+        "^param_.*$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {"$ref": "#/definitions/VarType"},
+            "default_value": {"$ref": "#/definitions/VarDefaultValue"}
+          }
+        }
+      }
+    },
+    "ConfElementVarDict": {
+      "title": "Full param variable description",
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "maxProperties": 1,
+      "patternProperties": {
+        "^conf_.*$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "assignation": {"$ref": "#/definitions/VarAssignation"}
+          },
+          "required": ["assignation"]
+        }
+      }
+    },
+    "DependencyElementVarDict": {
+      "title": "Full param variable description",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {"type": "string"},
+        "asname": {"type": ["string", "null"]},
+        "module": {"type": "string"}
+      },
+      "required": ["name"]
+    },
+    "IOElement": {
+      "title": "I/O element",
+      "description": "description input and output variable elements",
+      "anyOf": [
+        {"$ref": "#/definitions/ElementVarName"},
+        {"$ref": "#/definitions/ElementVarNameType"},
+        {"$ref": "#/definitions/IOElementVarDict"}
+      ]
+    },
+    "ParamElement": {
+      "title": "Param element",
+      "description": "description param variable elements",
+      "anyOf": [
+        {"$ref": "#/definitions/ElementVarName"},
+        {"$ref": "#/definitions/ElementVarNameType"},
+        {"$ref": "#/definitions/ParamElementVarDict"}
+      ]
+    },
+    "ConfElement": {
+      "title": "Conf element",
+      "description": "description conf variable elements",
+      "anyOf": [
+        {"$ref": "#/definitions/ConfElementVarDict"}
+      ]
+    },
+    "DependencyElement": {
+      "title": "Dependency element",
+      "description": "description dependency elements",
+      "anyOf": [
+        {"$ref": "#/definitions/DependencyElementVarDict"}
+      ]
+    }
+  }
+}
