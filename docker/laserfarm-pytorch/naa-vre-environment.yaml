@@ -56,4 +56,5 @@ dependencies:
   - papermill
   - minio
   - pip:
-    - pytype~=2023.10.31
+      - pytype~=2023.10.31
+      - /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl

@@ -5,8 +5,8 @@ import importlib
 import json
 import logging
 import os
-from nbformat import read, write, v4 as nbf
 import sys
+import traceback
 import uuid
 from builtins import Exception
 from pathlib import Path
@@ -14,6 +14,7 @@ from time import sleep
 
 import autopep8
 import distro
+import jsonschema
 import nbformat as nb
 import requests
 from github import Github
@@ -28,6 +29,7 @@ from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
 from jupyterlab_vre.services.extractor.rextractor import RExtractor
+from jupyterlab_vre.services.extractor.headerextractor import HeaderExtractor
 
 logger = logging.getLogger(__name__)
 
@@ -88,17 +90,38 @@ class ExtractorHandler(APIHandler, Catalog):
         kernel = payload['kernel']
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-        # extractor based on the kernel
+
+        source = notebook.cells[cell_index].source
+
+        # extractor based on the cell header
+        try:
+            extractor = HeaderExtractor(notebook, source)
+        except jsonschema.ValidationError as e:
+            self.set_status(400, f"Invalid cell header")
+            self.write(
+                {
+                    'message': f"Error in cell header: {e}",
+                    'reason': None,
+                    'traceback': traceback.format_exception(e),
+                    }
+                )
+            self.flush()
+            return
+
+        # extractor based on the kernel (if cell header is not defined)
+        if not extractor.enabled():
+            if kernel == "IRkernel":
+                extractor = RExtractor(notebook)
+            else:
+                extractor = PyExtractor(notebook)
+
         extracted_nb = extract_cell_by_index(notebook, cell_index)
         if kernel == "IRkernel":
-            extractor = RExtractor(notebook)
             extracted_nb = set_notebook_kernel(extracted_nb, 'R')
         else:
-            extractor = PyExtractor(notebook)
             extracted_nb = set_notebook_kernel(extracted_nb, 'python3')
 
         # initialize variables
-        source = notebook.cells[cell_index].source
         title = source.partition('\n')[0].strip()
         title = title.replace('#', '').replace('.', '-').replace(
             '_', '-').replace('(', '-').replace(')', '-').strip() if title and title[0] == "#" else "Untitled"
