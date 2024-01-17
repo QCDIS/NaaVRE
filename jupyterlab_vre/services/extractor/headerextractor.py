@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Union
 import os
 import re
 
@@ -89,7 +89,7 @@ class HeaderExtractor:
 
     @staticmethod
     def _parse_inputs_outputs_param_items(
-            item: str | dict,
+            item: Union[str, dict],
             item_type: Literal['inputs', 'outputs', 'params'],
             ) -> dict:
         """ Parse inputs, outputs, or params items from the header
