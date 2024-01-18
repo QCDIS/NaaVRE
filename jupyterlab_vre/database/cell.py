@@ -26,6 +26,7 @@ class Cell:
     global_conf: dict
     kernel: str
     notebook_json: dict
+    image_version: str
 
     def __init__(
             self,
@@ -41,7 +42,8 @@ class Cell:
             chart_obj=None,
             node_id='',
             kernel='',
-            notebook_dict=None
+            notebook_dict=None,
+            image_version=None
     ) -> None:
 
         self.title = title.strip().replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
@@ -91,6 +93,10 @@ class Cell:
         if isinstance(params, dict):
             params = self._extract_types(params)
         self.params = params
+
+    def set_image_version(self, image_version):
+        self.image_version = image_version
+
 
     def add_param_values(self, params):
         self.param_values = {}

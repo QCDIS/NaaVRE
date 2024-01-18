@@ -103,8 +103,8 @@ class ExtractorHandler(APIHandler, Catalog):
                     'message': f"Error in cell header: {e}",
                     'reason': None,
                     'traceback': traceback.format_exception(e),
-                    }
-                )
+                }
+            )
             self.flush()
             return
 
@@ -241,7 +241,7 @@ def find_job(
         repository_name=None,
         token=None,
         job_id=None,
-        ):
+):
     f""" Find Github workflow job
 
     If job_id is set, retrieve it through
@@ -270,6 +270,7 @@ def find_job(
         jobs = get_github_workflow_jobs(jobs_url, token=token)
         for job in jobs['jobs']:
             if job['name'] == wf_id:
+                job['head_sha'] = run['head_sha']
                 return job
     return None
 
@@ -283,7 +284,7 @@ def wait_for_job(
         job_id=None,
         timeout=200,
         wait_for_completion=False,
-        ):
+):
     """ Call find_job until something is returned or timeout is reached
 
     :param wf_id: passed to find_job
@@ -307,7 +308,7 @@ def wait_for_job(
             repository_name=repository_name,
             token=token,
             job_id=job_id,
-            )
+        )
         if job:
             if not wait_for_completion:
                 return job
@@ -487,7 +488,9 @@ class CellsHandler(APIHandler, Catalog):
         # Here we force to run the containerization workflow since we can't if the docker image is already built. Also,
         # when testing the workflow we need to run it again
         files_updated = True
+        image_version = ''
         if files_updated:
+            wf_creation_utc = datetime.datetime.now(tz=datetime.timezone.utc)
             resp = dispatch_github_workflow(
                 owner,
                 repository_name,
@@ -503,9 +506,26 @@ class CellsHandler(APIHandler, Catalog):
                 logger.error(resp.text)
                 self.flush()
                 return
-            # job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token)
-            # print(job)
-        self.write(json.dumps({'wf_id': wf_id, 'files_updated': files_updated}))
+
+            job = wait_for_job(
+                wf_id=wf_id,
+                wf_creation_utc=wf_creation_utc,
+                owner=owner,
+                repository_name=repository_name,
+                token=repo_token,
+                job_id=None,
+                timeout=300,
+                wait_for_completion=False,
+            )
+            image_version = job['head_sha']
+            # Get the first 6 characters of the commit hash
+            image_version = image_version[:6]
+            current_cell.set_image_version(image_version)
+            Catalog.delete_cell_from_task_name(current_cell.task_name)
+            Catalog.add_cell(current_cell)
+
+        self.write(
+            json.dumps({'wf_id': wf_id, 'files_updated': files_updated, 'image_version': image_version}))
         self.flush()
 
 
@@ -556,7 +576,7 @@ def dispatch_github_workflow(owner, repository_name, task_name, files_info, repo
                 'dockerfile': files_info['dockerfile']['file_name'],
                 'image_repo': image,
                 'image_tag': task_name,
-                "id": wf_id
+                'id': wf_id
             }
         },
         verify=False,
@@ -677,7 +697,6 @@ def build_templates(cell=None, files_info=None):
         template_cell = template_env.get_template('py_cell_template.jinja2')
     template_dockerfile = template_env.get_template(
         'dockerfile_template_conda.jinja2')
-
 
     compiled_code = template_cell.render(cell=cell, deps=cell.generate_dependencies(), types=cell.types,
                                          confs=cell.generate_configuration_dict())
