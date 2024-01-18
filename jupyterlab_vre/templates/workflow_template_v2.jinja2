@@ -58,7 +58,6 @@ spec:
           {% endfor %}
           {% endif %}
         {% endfor %}
-
     {% for nid in nodes %}
     {% set is_special_node = nodes[nid]['type'] == 'splitter' or nodes[nid]['type'] == 'merger' or nodes[nid]['type'] == 'visualizer' %}
     {% set is_splitter = nodes[nid]['type'] == 'splitter' %}
@@ -70,7 +69,7 @@ spec:
     - name: {{ task_name }}-server-tmp
       container:
         image: busybox
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         command: ["/bin/bash", "-c"]
         args:
           - echo "Starting server"
@@ -125,7 +124,7 @@ spec:
       {% elif is_visualizer %}
       container:
         image: "qcdis/geotiff_viewer:v0.2.6"
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         command: ["/bin/sh", "-c"]
         args:
           - python /app/python_scripts/main.py
