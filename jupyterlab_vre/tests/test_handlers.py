@@ -1,9 +1,11 @@
+import copy
 import datetime
 import glob
 import json
 import os
 import shlex
 import shutil
+import string
 import subprocess
 import sys
 from pathlib import Path
@@ -62,7 +64,7 @@ def create_cell_and_add_to_cat(cell_path=None):
     test_cell = Cell(cell['title'], cell['task_name'], cell['original_source'], cell['inputs'],
                      cell['outputs'],
                      cell['params'], cell['confs'], cell['dependencies'], cell['container_source'],
-                     cell['chart_obj'], cell['node_id'], cell['kernel'],notebook_dict)
+                     cell['chart_obj'], cell['node_id'], cell['kernel'], notebook_dict)
     test_cell.types = cell['types']
     test_cell.base_image = cell['base_image']
     Catalog.editor_buffer = test_cell
@@ -149,7 +151,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     'wf_id': wf_id,
                     'wf_creation_utc': wf_creation_utc,
                     'files_updated': files_updated,
-                    })
+                })
                 if 'skip_exec' in cell and cell['skip_exec']:
                     continue
                 if 'python' in test_cell.kernel and 'skip_exec':
@@ -169,7 +171,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     print("stderr:", cell_exec.stderr)
                     print("return code:", cell_exec.returncode)
                     print('---------------------------------------------------')
-                    self.assertEqual(0, cell_exec.returncode, 'Cell execution failed: '+cell_file)
+                    self.assertEqual(0, cell_exec.returncode, 'Cell execution failed: ' + cell_file)
                 elif test_cell.kernel == 'IRkernel' and 'skip_exec':
                     cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.R')
                     run_local_cell_path = os.path.join(cells_path, test_cell.task_name, 'run_local.R')
@@ -192,7 +194,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             updated_cells = list(filter(
                 lambda cell: cell['files_updated'],
                 test_cells,
-                ))
+            ))
 
             for cell in updated_cells:
                 # Get job id (many calls to the GitHub API)
@@ -205,7 +207,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     job_id=None,
                     timeout=300,
                     wait_for_completion=False,
-                    )
+                )
                 cell['job'] = job
 
             for cell in updated_cells:
@@ -219,7 +221,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     job_id=cell['job']['id'],
                     timeout=300,
                     wait_for_completion=True,
-                    )
+                )
                 cell['job'] = job
 
             for cell in updated_cells:
@@ -312,16 +314,33 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 response = self.call_cell_handler()
                 self.assertEqual(200, response.code)
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
-                files_updated = json.loads(response.body.decode('utf-8'))['files_updated']
-                self.assertFalse(files_updated)
+                dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                self.assertFalse(dispatched_github_workflow)
+
+                # Test if we commit a change to the cell
+                new_cell = copy.deepcopy(cell)
+                original_source = cell['original_source']
+                random_str = string.ascii_lowercase
+                original_source += '\n'+random_str+'=1'
+                new_cell['original_source'] = original_source
+                new_cell_path = os.path.join(cells_json_path, 'new_'+cell_file)
+                with open(new_cell_path, 'w') as file:
+                    json.dump(new_cell, file, indent=2)
+
+                test_cell, cell = create_cell_and_add_to_cat(cell_path=new_cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+                dispatch_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                self.assertTrue(dispatch_github_workflow)
+
                 os.environ["DEBUG"] = "True"
+                test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
                 response = self.call_cell_handler()
                 self.assertEqual(200, response.code)
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
-                files_updated = json.loads(response.body.decode('utf-8'))['files_updated']
-                self.assertTrue(files_updated)
+                dispatch_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                self.assertTrue(dispatch_github_workflow)
                 break
         os.environ["DEBUG"] = "True"
-
-
-
+        # Delete new_cell_path
+        os.remove(new_cell_path)

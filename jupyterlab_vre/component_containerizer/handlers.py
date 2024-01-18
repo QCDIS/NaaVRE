@@ -482,32 +482,33 @@ class CellsHandler(APIHandler, Catalog):
             logger.error(error_message)
             self.flush()
             return
-        files_updated = False
+        do_dispatch_github_workflow = False
         commit = gh_repository.get_commits(path=current_cell.task_name)
         if commit.totalCount > 0:
             try:
-                files_updated = update_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
+                do_dispatch_github_workflow = update_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
                                                           files_info=files_info)
             except UnknownObjectException as ex:
                 create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
                                           files_info=files_info)
-                files_updated = True
+                do_dispatch_github_workflow = True
         elif commit.totalCount <= 0:
             create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
                                       files_info=files_info)
-            files_updated = True
+            do_dispatch_github_workflow = True
         wf_id = str(uuid.uuid4())
         # Here we force to run the containerization workflow since we can't if the docker image is already built. Also,
         # when testing the workflow we need to run it again
         if os.getenv('DEBUG') and os.getenv('DEBUG').lower() == 'true':
-            files_updated = True
+            do_dispatch_github_workflow = True
         else:
             image_info = query_registry_for_image(registry_url='https://hub.docker.com/v2/repositories/',
                                                   image_name=current_cell.task_name,
                                                   repository=registry_url.split('/')[-1])
-            if image_info:
-                files_updated = False
-        if files_updated:
+            if not image_info:
+                do_dispatch_github_workflow = True
+
+        if do_dispatch_github_workflow:
             resp = dispatch_github_workflow(
                 owner,
                 repository_name,
@@ -525,7 +526,7 @@ class CellsHandler(APIHandler, Catalog):
                 return
             # job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token)
             # print(job)
-        self.write(json.dumps({'wf_id': wf_id, 'files_updated': files_updated}))
+        self.write(json.dumps({'wf_id': wf_id, 'dispatched_github_workflow': do_dispatch_github_workflow}))
         self.flush()
 
 
