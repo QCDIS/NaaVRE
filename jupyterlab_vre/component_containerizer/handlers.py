@@ -12,6 +12,9 @@ from builtins import Exception
 from pathlib import Path
 from time import sleep
 
+import requests
+import json
+
 import autopep8
 import distro
 import jsonschema
@@ -48,6 +51,7 @@ logger.addHandler(handler)
 github_url_repos = 'https://api.github.com/repos'
 github_workflow_file_name = 'build-push-docker.yml'
 cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
+registry_url = os.environ.get('REGISTRY_URL', 'https://hub.docker.com/u/qcdis')
 
 
 # code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
@@ -72,6 +76,15 @@ def set_notebook_kernel(notebook, kernel):
     new_nb.metadata.kernelspec.display_name = kernel
     new_nb.metadata.kernelspec.language = kernel
     return new_nb
+
+
+def query_registry_for_image(image_name=None, repository=None, registry_url=None):
+    url = registry_url + repository + '/' + image_name
+    response = requests.get(url)
+    if response.status_code == 200:
+        return json.loads(response.content.decode('utf-8'))
+    else:
+        return None
 
 
 class ExtractorHandler(APIHandler, Catalog):
@@ -103,8 +116,8 @@ class ExtractorHandler(APIHandler, Catalog):
                     'message': f"Error in cell header: {e}",
                     'reason': None,
                     'traceback': traceback.format_exception(e),
-                    }
-                )
+                }
+            )
             self.flush()
             return
 
@@ -241,7 +254,7 @@ def find_job(
         repository_name=None,
         token=None,
         job_id=None,
-        ):
+):
     f""" Find Github workflow job
 
     If job_id is set, retrieve it through
@@ -283,7 +296,7 @@ def wait_for_job(
         job_id=None,
         timeout=200,
         wait_for_completion=False,
-        ):
+):
     """ Call find_job until something is returned or timeout is reached
 
     :param wf_id: passed to find_job
@@ -307,7 +320,7 @@ def wait_for_job(
             repository_name=repository_name,
             token=token,
             job_id=job_id,
-            )
+        )
         if job:
             if not wait_for_completion:
                 return job
@@ -486,7 +499,14 @@ class CellsHandler(APIHandler, Catalog):
         wf_id = str(uuid.uuid4())
         # Here we force to run the containerization workflow since we can't if the docker image is already built. Also,
         # when testing the workflow we need to run it again
+        repository_name = registry_url.split('/')[-1]
         files_updated = True
+        if not os.getenv('DEBUG'):
+            image_info = query_registry_for_image(registry_url='https://hub.docker.com/v2/repositories/',
+                                                  image_name=current_cell.task_name,
+                                                  repository=repository_name)
+            if image_info:
+                files_updated = False
         if files_updated:
             resp = dispatch_github_workflow(
                 owner,
@@ -677,7 +697,6 @@ def build_templates(cell=None, files_info=None):
         template_cell = template_env.get_template('py_cell_template.jinja2')
     template_dockerfile = template_env.get_template(
         'dockerfile_template_conda.jinja2')
-
 
     compiled_code = template_cell.render(cell=cell, deps=cell.generate_dependencies(), types=cell.types,
                                          confs=cell.generate_configuration_dict())

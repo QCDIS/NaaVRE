@@ -27,6 +27,8 @@ on:
         required: true
       argo_api_token:
         required: true
+      debug:
+        required: true
 
 env:
   CELL_GITHUB: ${{ secrets.cell_github }}
@@ -42,6 +44,7 @@ env:
   ARGO_URL: ${{ secrets.ARGO_URL }}
   ARGO_API_TOKEN: ${{ secrets.ARGO_API_TOKEN }}
   ASYNC_TEST_TIMEOUT: 30
+  DEBUG: ${{ secrets.debug }}
 
 
 jobs:
@@ -118,6 +121,11 @@ jobs:
             echo "Exiting with error"
             echo $concatenated_error_message
             exit 1
+          fi
+          if [ -z "$DEBUG" ]; then
+            echo "DEBUG not set"
+            concatenated_error_message="$concatenated_error_message DEBUG not set"
+            vars_not_set=1
           fi
 
       - uses: actions/checkout@v4
