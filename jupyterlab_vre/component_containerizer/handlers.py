@@ -499,13 +499,12 @@ class CellsHandler(APIHandler, Catalog):
         wf_id = str(uuid.uuid4())
         # Here we force to run the containerization workflow since we can't if the docker image is already built. Also,
         # when testing the workflow we need to run it again
-        repository_name = registry_url.split('/')[-1]
         if os.getenv('DEBUG') and os.getenv('DEBUG').lower() == 'true':
             files_updated = True
         else:
             image_info = query_registry_for_image(registry_url='https://hub.docker.com/v2/repositories/',
                                                   image_name=current_cell.task_name,
-                                                  repository=repository_name)
+                                                  repository=registry_url.split('/')[-1])
             if image_info:
                 files_updated = False
         if files_updated:
@@ -568,8 +567,9 @@ def update_cell_in_repository(task_name=None, repository=None, files_info=None):
 
 
 def dispatch_github_workflow(owner, repository_name, task_name, files_info, repository_token, image, wf_id=None):
+    url = github_url_repos + '/' + owner + '/' + repository_name + '/actions/workflows/' + github_workflow_file_name + '/dispatches'
     resp = requests.post(
-        url=github_url_repos + '/' + owner + '/' + repository_name + '/actions/workflows/' + github_workflow_file_name + '/dispatches',
+        url=url,
         json={
             'ref': 'refs/heads/main',
             'inputs': {

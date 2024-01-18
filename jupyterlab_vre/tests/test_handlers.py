@@ -314,6 +314,12 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
                 files_updated = json.loads(response.body.decode('utf-8'))['files_updated']
                 self.assertFalse(files_updated)
+                os.environ["DEBUG"] = "True"
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+                wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
+                files_updated = json.loads(response.body.decode('utf-8'))['files_updated']
+                self.assertTrue(files_updated)
                 break
         os.environ["DEBUG"] = "True"
 
