@@ -526,6 +526,7 @@ class CellsHandler(APIHandler, Catalog):
                 return
             # job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token)
             # print(job)
+        print(json.dumps({'wf_id': wf_id, 'dispatched_github_workflow': do_dispatch_github_workflow}, indent=4))
         self.write(json.dumps({'wf_id': wf_id, 'dispatched_github_workflow': do_dispatch_github_workflow}))
         self.flush()
 
