@@ -15,7 +15,7 @@ from tornado.web import Application
 
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
     NotebookSearchHandler, NotebookSearchRatingHandler
-from jupyterlab_vre.component_containerizer.handlers import wait_for_job
+from jupyterlab_vre.component_containerizer.handlers import wait_for_job, query_registry_for_image
 from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.handlers import load_module_names_mapping
@@ -139,8 +139,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
             test_cells = []
             for cell_file in cells_files:
                 cell_path = os.path.join(cells_json_path, cell_file)
-                if 'visualize-rasterio-dev-user-name-at-domain-com.json' not in cell_file:
-                    continue
                 test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
                 response = self.call_cell_handler()
                 self.assertEqual(200, response.code)
@@ -301,3 +299,23 @@ class HandlersAPITest(AsyncHTTPTestCase):
     def call_cell_handler(self):
         response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
         return response
+
+    def test_files_updated(self):
+        with mock.patch.object(CellsHandler, 'get_secure_cookie') as m:
+            m.return_value = 'cookie'
+            cells_json_path = os.path.join(base_path, 'cells')
+            cells_files = os.listdir(cells_json_path)
+            os.environ["DEBUG"] = "False"
+            for cell_file in cells_files:
+                cell_path = os.path.join(cells_json_path, cell_file)
+                test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+                wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
+                files_updated = json.loads(response.body.decode('utf-8'))['files_updated']
+                self.assertFalse(files_updated)
+                break
+        os.environ["DEBUG"] = "True"
+
+
+

@@ -500,8 +500,9 @@ class CellsHandler(APIHandler, Catalog):
         # Here we force to run the containerization workflow since we can't if the docker image is already built. Also,
         # when testing the workflow we need to run it again
         repository_name = registry_url.split('/')[-1]
-        files_updated = True
-        if not os.getenv('DEBUG'):
+        if os.getenv('DEBUG') and os.getenv('DEBUG').lower() == 'true':
+            files_updated = True
+        else:
             image_info = query_registry_for_image(registry_url='https://hub.docker.com/v2/repositories/',
                                                   image_name=current_cell.task_name,
                                                   repository=repository_name)
