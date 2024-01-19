@@ -194,10 +194,24 @@ export class Composer extends React.Component<IProps, IState> {
                 Port: PortCustom
               }}
             />
-            <Workspace ref={this.workspaceRef}/>
-            <Parallelization/>
             {this.state.chart.selected.id && this.getChartElementEditor()}
-            <Visualization />
+            <div style={{
+              boxShadow: '1px 1px lightgrey',
+              background: 'white',
+              height: '100%',
+              width: 250,
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'scroll',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+            }}
+            >
+              <Workspace ref={this.workspaceRef}/>
+              <Parallelization/>
+              <Visualization />
+            </div>
           </CenterContent>
         </Page>
       </ThemeProvider>
