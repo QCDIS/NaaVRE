@@ -57,7 +57,6 @@ if __name__ == '__main__':
                                     'token': github_token}
     add_gh_credentials(force_replace=force, repository_credentials=input_repository_credentials)
     add_repository_credentials(force_replace=force, repository_credentials=input_repository_credentials)
-
     input_registry_credentials = {'name': registry_url.split('https://hub.docker.com/')[1], 'url': registry_url,
                                   'token': None}
     add_registry_credentials(force_replace=force, input_registry_credentials=input_registry_credentials)
