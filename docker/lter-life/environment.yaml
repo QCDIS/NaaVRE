@@ -42,4 +42,41 @@ dependencies:
   - r-tidyr
   - r-taxize
   - r-geosphere
-  -
+  - r-memoise
+  - r-sass
+  - r-checkmate
+  - r-htmlwidgets
+  - r-bslib
+  - r-tinytex
+  - r-highr
+  - r-reprex
+  - r-htmltable
+  - r-rmarkdown
+  - r-knitr
+  - r-formula
+  - r-triebeard
+  - r-wikipedir
+  - r-wikidataqueryservicer
+  - r-hmisc
+  - r-pbapply
+  - r-urltools
+  - r-httpcode
+  - r-iterators
+  - r-rentrez
+  - r-rncl
+  - r-solrium
+  - r-wikidatar
+  - r-fastmatch
+  - r-igraph
+  - r-quadprog
+  - r-foreach
+  - r-zoo
+  - r-data.table
+  - r-bold
+  - r-rredlist
+  - r-ritis
+  - r-worrms
+  - r-natserv
+  - r-wikitaxa
+  - r-phangorn
+  - r-conditionz
