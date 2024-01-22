@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import re
 from pathlib import Path
 
 from tinydb import TinyDB, where
@@ -49,15 +50,45 @@ def add_repository_credentials(force_replace, repository_credentials):
     repositories.insert(repository_credentials)
 
 
+def get_registry_url(registry_url, github_url):
+    """ Convert registry URL
+
+    https://hub.docker.com/u/my_username/ -> docker.io/my_username
+    oci://ghcr.io/my_username/my_repo/ -> ghcr.io/my_username/my_repo
+    oci://my_domain/my/custom/path/ -> my_domain/my/custom/path
+    None -> ghcr.io url, derived from github_url
+
+    Resulting urls can be converted to pullable, e.g.:
+
+    docker pull {url}/{image_name}:{tag}
+
+    where image_name doesn't contain any path information (e.g. my-cell-name)
+
+    """
+    if registry_url:
+        m = re.match(r'^https://hub\.docker\.com/u/(\w+)/?$', registry_url)
+        if m:
+            return f"docker.io/{m.group(1)}"
+        m = re.match(r'^oci://([\w\./-]+?)/?$', registry_url)
+        if m:
+            return m.group(1)
+        raise ValueError(f"Could not parse registry url: {registry_url}")
+    else:
+        m = re.match(r'^https://github.com/([\w-]+/[\w-]+)(?:\.git)?', github_url)
+        if m:
+            return f"ghcr.io/{m.group(1).lower()}"
+
+
 if __name__ == '__main__':
     github_url = os.getenv('CELL_GITHUB')
     github_token = os.getenv('CELL_GITHUB_TOKEN')
     registry_url = os.getenv('REGISTRY_URL')
+    registry_url = get_registry_url(registry_url, github_url)
     input_repository_credentials = {'name': github_url.split('https://github.com/')[1], 'url': github_url,
                                     'token': github_token}
     add_gh_credentials(force_replace=force, repository_credentials=input_repository_credentials)
     add_repository_credentials(force_replace=force, repository_credentials=input_repository_credentials)
 
-    input_registry_credentials = {'name': registry_url.split('https://hub.docker.com/')[1], 'url': registry_url,
+    input_registry_credentials = {'name': registry_url, 'url': registry_url,
                                   'token': None}
     add_registry_credentials(force_replace=force, input_registry_credentials=input_registry_credentials)

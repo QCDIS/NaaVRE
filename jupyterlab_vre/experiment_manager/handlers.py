@@ -70,8 +70,7 @@ class ExportWorkflowHandler(APIHandler):
 
         vlab_slug = os.getenv('VLAB_SLUG')
 
-        image_repo = registry_credentials[0]['url'].split(
-            'https://hub.docker.com/u/')[1]
+        image_repo = registry_credentials[0]['url']
         loader = PackageLoader('jupyterlab_vre', 'templates')
         template_env = Environment(
             loader=loader, trim_blocks=True, lstrip_blocks=True)
@@ -126,8 +125,7 @@ class ExecuteWorkflowHandler(APIHandler):
 
         registry_credentials = Catalog.get_registry_credentials()
 
-        image_repo = registry_credentials[0]['url'].split(
-            'https://hub.docker.com/u/')[1]
+        image_repo = registry_credentials[0]['url']
         loader = PackageLoader('jupyterlab_vre', 'templates')
         template_env = Environment(
             loader=loader, trim_blocks=True, lstrip_blocks=True)
