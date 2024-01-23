@@ -20,13 +20,13 @@ logger.addHandler(handler)
 
 class Rcontainerizer:
     @staticmethod
-    def get_files_info(cell=None, image_repo=None, cells_path=None):
+    def get_files_info(cell=None, cells_path=None):
         if not os.path.exists(cells_path):
             os.mkdir(cells_path)
         cell_path = os.path.join(cells_path, cell.task_name)
 
         cell_file_name = cell.task_name + '.R'
-        dockerfile_name = 'Dockerfile.' + image_repo + '.' + cell.task_name
+        dockerfile_name = 'Dockerfile.' + cell.task_name
 
         if os.path.exists(cell_path):
             for files in os.listdir(cell_path):
@@ -74,16 +74,13 @@ class Rcontainerizer:
                                              confs=cell.generate_configuration())
         cell.container_source = compiled_code
         dependencies = cell.generate_dependencies()
-        print('-------------------dependencies-------------------')
-        print(dependencies)
         r_dependencies = []
         for dep in dependencies:
             r_dep = dep.replace('import ', '')
-            install_packages = 'if (!requireNamespace("' + r_dep + '", quietly = TRUE)) {\ninstall.packages("' + r_dep + '", repos="http://cran.us.r-project.org")\n}'
+            install_packages = 'if (!requireNamespace("' + r_dep + '", quietly = TRUE)) {\n\tinstall.packages("' + r_dep + '", repos="http://cran.us.r-project.org")\n}'
             r_dependencies.append(install_packages)
             library = 'library(' + r_dep + ')'
             r_dependencies.append(library)
-        print('-------------------r_dependencies-------------------')
         print(r_dependencies)
 
         template_cell.stream(cell=cell,
