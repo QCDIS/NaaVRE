@@ -402,16 +402,7 @@ class CellsHandler(APIHandler, Catalog):
             logger.error('Registry credentials not found')
             self.flush()
             return
-        registry_url = registry_credentials[0]['url']
-        if not registry_url:
-            self.set_status(400)
-            self.write_error('Registry url not found')
-            logger.error('Registry url not found')
-            self.flush()
-            return
-        image_repo = registry_url.split(
-            'https://hub.docker.com/u/')[1]
-
+        image_repo = registry_credentials[0]['url']
         if not image_repo:
             self.set_status(400)
             self.write_error('Registry not found')
@@ -420,10 +411,10 @@ class CellsHandler(APIHandler, Catalog):
             return
 
         if current_cell.kernel == "IRkernel":
-            files_info = Rcontainerizer.get_files_info(cell=current_cell, image_repo=image_repo, cells_path=cells_path)
+            files_info = Rcontainerizer.get_files_info(cell=current_cell, cells_path=cells_path)
             Rcontainerizer.build_templates(cell=current_cell, files_info=files_info)
         elif 'python' in current_cell.kernel.lower():
-            files_info = get_files_info(cell=current_cell, image_repo=image_repo)
+            files_info = get_files_info(cell=current_cell)
             build_templates(cell=current_cell, files_info=files_info)
         else:
             self.set_status(400)
@@ -695,13 +686,13 @@ def build_templates(cell=None, files_info=None):
                           pip_deps=list(set_pip_deps)).dump(files_info['environment']['path'])
 
 
-def get_files_info(cell=None, image_repo=None):
+def get_files_info(cell=None):
     if not os.path.exists(cells_path):
         os.mkdir(cells_path)
     cell_path = os.path.join(cells_path, cell.task_name)
 
     cell_file_name = cell.task_name + '.py'
-    dockerfile_name = 'Dockerfile.' + image_repo + '.' + cell.task_name
+    dockerfile_name = 'Dockerfile.' + cell.task_name
     environment_file_name = cell.task_name + '-environment.yaml'
 
     notebook_file_name = None

@@ -139,8 +139,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
             test_cells = []
             for cell_file in cells_files:
                 cell_path = os.path.join(cells_json_path, cell_file)
-                if 'visualize-rasterio-dev-user-name-at-domain-com.json' not in cell_file:
-                    continue
                 test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
                 response = self.call_cell_handler()
                 self.assertEqual(200, response.code)
