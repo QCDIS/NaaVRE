@@ -20,13 +20,13 @@ logger.addHandler(handler)
 
 class Rcontainerizer:
     @staticmethod
-    def get_files_info(cell=None, image_repo=None, cells_path=None):
+    def get_files_info(cell=None, cells_path=None):
         if not os.path.exists(cells_path):
             os.mkdir(cells_path)
         cell_path = os.path.join(cells_path, cell.task_name)
 
         cell_file_name = cell.task_name + '.R'
-        dockerfile_name = 'Dockerfile.' + image_repo + '.' + cell.task_name
+        dockerfile_name = 'Dockerfile.' + cell.task_name
 
         if os.path.exists(cell_path):
             for files in os.listdir(cell_path):
