@@ -64,11 +64,6 @@ jobs:
             concatenated_error_message="$concatenated_error_message CELL_GITHUB_TOKEN not set"
             vars_not_set=1
           fi
-          if [ -z "$REGISTRY_URL" ]; then
-            echo "REGISTRY_URL not set"
-            concatenated_error_message="$concatenated_error_message REGISTRY_URL not set"
-            vars_not_set=1
-          fi
           if [ -z "$NAAVRE_API_TOKEN" ]; then
             echo "NAAVRE_API_TOKEN not set"
             concatenated_error_message="$concatenated_error_message NAAVRE_API_TOKEN not set"
