@@ -10,8 +10,23 @@ on:
     - cron: '0 4 5,25 * *'
 
 jobs:
+  choose-runner:
+    runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.choose-runner.outputs.runner }}
+    steps:
+      - id: choose-runner
+        uses: QCDIS/chose-action-runner@v2
+        with:
+          preferred-runner: naavre
+          fallback-runner: ubuntu-latest
+          github-token: ${{ secrets.RUNNER_ACCESS_TOKEN }}
+
   call-pytest:
+    needs: [choose-runner]
     uses: ./.github/workflows/test-build wheel.yml
+    with:
+      runs-on: ${{ needs.choose-runner.outputs.runner }}
     secrets:
       jupyterhub_user: ${{ secrets.JUPYTERHUB_USER }}
       vlab_slug: ${{ secrets.VLAB_SLUG }}
@@ -26,7 +41,7 @@ jobs:
       argo_url: ${{ secrets.ARGO_URL }}
       argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
   call-build-container-laserfarm:
-    needs: call-pytest
+    needs: [call-pytest]
     uses: ./.github/workflows/build-container.yml
     with:
       wheel_artifact_name: jupyterlab_vre
@@ -39,7 +54,7 @@ jobs:
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vol2bird:
-    needs: call-pytest
+    needs: [call-pytest]
     uses: ./.github/workflows/build-container.yml
     with:
       wheel_artifact_name: jupyterlab_vre
@@ -52,7 +67,7 @@ jobs:
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vanilla:
-    needs: call-pytest
+    needs: [call-pytest]
     uses: ./.github/workflows/build-container.yml
     with:
       wheel_artifact_name: jupyterlab_vre
@@ -65,7 +80,7 @@ jobs:
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-lter-life:
-    needs: call-pytest
+    needs: [call-pytest]
     uses: ./.github/workflows/build-container.yml
     with:
       wheel_artifact_name: jupyterlab_vre

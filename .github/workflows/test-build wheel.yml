@@ -2,6 +2,10 @@ name: Build wheel
 
 on:
   workflow_call:
+    inputs:
+      runs-on:
+        default: ubuntu-latest
+        type: string
     secrets:
       jupyterhub_user:
         required: true
@@ -46,7 +50,7 @@ env:
 
 jobs:
   build-linux:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
     strategy:
       fail-fast: true
     steps:
@@ -62,11 +66,6 @@ jobs:
           if [ -z "$CELL_GITHUB_TOKEN" ]; then
             echo "CELL_GITHUB_TOKEN not set"
             concatenated_error_message="$concatenated_error_message CELL_GITHUB_TOKEN not set"
-            vars_not_set=1
-          fi
-          if [ -z "$REGISTRY_URL" ]; then
-            echo "REGISTRY_URL not set"
-            concatenated_error_message="$concatenated_error_message REGISTRY_URL not set"
             vars_not_set=1
           fi
           if [ -z "$NAAVRE_API_TOKEN" ]; then
