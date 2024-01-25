@@ -41,10 +41,9 @@ jobs:
       argo_url: ${{ secrets.ARGO_URL }}
       argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
   call-build-container-laserfarm:
-    needs: [choose-runner, call-pytest]
+    needs: [call-pytest]
     uses: ./.github/workflows/build-container.yml
     with:
-      runs-on: ${{ needs.choose-runner.outputs.runner }}
       wheel_artifact_name: jupyterlab_vre
       docker_folder: laserfarm-pytorch
       tag: n-a-a-vre-laserfarm
@@ -55,10 +54,9 @@ jobs:
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vol2bird:
-    needs: [choose-runner, call-pytest]
+    needs: [call-pytest]
     uses: ./.github/workflows/build-container.yml
     with:
-      runs-on: ${{ needs.choose-runner.outputs.runner }}
       wheel_artifact_name: jupyterlab_vre
       docker_folder: vol2bird
       tag: n-a-a-vre-vol2bird
@@ -69,10 +67,9 @@ jobs:
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vanilla:
-    needs: [choose-runner, call-pytest]
+    needs: [call-pytest]
     uses: ./.github/workflows/build-container.yml
     with:
-      runs-on: ${{ needs.choose-runner.outputs.runner }}
       wheel_artifact_name: jupyterlab_vre
       docker_folder: vanilla
       tag: n-a-a-vre
@@ -83,10 +80,9 @@ jobs:
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-lter-life:
-    needs: [choose-runner, call-pytest]
+    needs: [call-pytest]
     uses: ./.github/workflows/build-container.yml
     with:
-      runs-on: ${{ needs.choose-runner.outputs.runner }}
       wheel_artifact_name: jupyterlab_vre
       docker_folder: lter-life
       tag: n-a-a-vre-lter-life
