@@ -16,7 +16,7 @@ jobs:
       runner: ${{ steps.choose-runner.outputs.runner }}
     steps:
       - id: choose-runner
-        uses: QCDIS/chose-action-runner@v1
+        uses: QCDIS/chose-action-runner@v2
         with:
           preferred-runner: naavre
           fallback-runner: ubuntu-latest
