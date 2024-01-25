@@ -34,12 +34,15 @@
     "devDependencies": {
         "@types/node": "^20.2.5",
         "rimraf": "^5.0.0",
-        "typescript": "~5.2.2"
+        "typescript": "~5.3.2"
     },
     "publishConfig": {
         "access": "public"
     },
     "jupyterlab": {
         "extension": true
+    },
+    "dependencies": {
+        "dotenv": "^16.3.1"
     }
 }

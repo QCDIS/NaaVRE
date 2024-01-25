@@ -42,5 +42,18 @@ dependencies:
   - r-rlang
   - r-purrr
   - r-optparse
+  - r-rcpp
+  - r-rcppeigen
+  - r-ggplot2
+  - cmake
   - jupyter-collaboration
+  - pytest
+  - flake8
+  - r-optparse
+  - webdavclient3
+  - pandas
+  - zeromq>=4.3.5
+  - papermill
+  - minio
   - pip:
+    - pytype~=2023.10.31

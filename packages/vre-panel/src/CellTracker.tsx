@@ -11,7 +11,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { Button, FormControl, MenuItem, Select, TableBody, TextField, ThemeProvider } from "@material-ui/core";
-import { Autocomplete } from '@mui/material';
+import { Autocomplete, LinearProgress, Alert, Box } from '@mui/material';
 import { AddCellDialog } from './AddCellDialog';
 
 interface IProps {
@@ -19,33 +19,27 @@ interface IProps {
 }
 
 interface IState {
-
     loading: boolean
+    extractorError: string,
     baseImageSelected: boolean
     currentCellIndex: number
     currentCell: VRECell
     typeSelections: { [type: string]: boolean }
+    baseImages: any[]
 }
 
 const DefaultState: IState = {
 
     loading: false,
+    extractorError: '',
     baseImageSelected: false,
     currentCellIndex: -1,
     currentCell: null,
-    typeSelections: {}
+    typeSelections: {},
+    baseImages: []
 }
 
 type SaveState = 'started' | 'completed' | 'failed';
-
-const baseImages = [
-    { label: "miniconda3", id: "qcdis/miniconda3" },
-    { label: "Laserfarm", id: "qcdis/miniconda3-pdal" },
-    { label: "vol2bird", id: "qcdis/python-vol2bird" },
-    { label: "distributed-learning", id: "qcdis/miniconda3-distributed-learning" },
-    { label: "Jupyter R Notebook", id: "jupyter/r-notebook:70178b8e48d7"}
-]
-
 export class CellTracker extends React.Component<IProps, IState> {
 
     state = DefaultState;
@@ -68,12 +62,6 @@ export class CellTracker extends React.Component<IProps, IState> {
     }
 
     allTypesSelected = () => {
-        console.log('allTypesSelected' )
-        for (let key in this.state.typeSelections) {
-            console.log(key + ": " + this.state.typeSelections[key]);
-          }
-
-        console.log('Object.values(this.state.typeSelections).length: '+Object.values(this.state.typeSelections).length)
         if (Object.values(this.state.typeSelections).length > 0) {
             return (
                 Object.values(this.state.typeSelections).reduce(
@@ -87,8 +75,43 @@ export class CellTracker extends React.Component<IProps, IState> {
         return false;
     };
 
-    typesUpdate = async (event: React.ChangeEvent<{ name?: string; value: unknown; }>, port: string) => {
+    getVarType(var_name: string): string | null {
+        return (var_name in this.state.currentCell.types) && this.state.currentCell.types[var_name];
+    }
 
+    async loadBaseImages() {
+      console.log('baseImageTagsURL: ' + process.env.BASE_IMAGE_TAGS_URL);
+      let baseImageTagsURL;
+      if (!process.env.BASE_IMAGE_TAGS_URL) {
+        console.log('BASE_IMAGE_TAGS_URL not set, using default');
+        baseImageTagsURL = 'https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/base_image_tags.json'
+      }else{
+        baseImageTagsURL = process.env.BASE_IMAGE_TAGS_URL;
+      }
+      try {
+        const response = await fetch(baseImageTagsURL);
+        if (!response.ok) {
+          throw new Error('Failed to fetch base images.');
+        }
+        const baseImagesData = await response.json();
+
+        // Convert object data to an array of objects
+        const updatedBaseImages = Object.entries(baseImagesData).map(([name, image]) => ({
+          name,
+          image,
+        }));
+        console.log('updatedBaseImages');
+        console.log(updatedBaseImages);
+        this.setState({baseImages: updatedBaseImages });
+      } catch (error) {
+        console.log(error);
+        alert('Error loading base images: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
+
+      }
+    }
+
+
+    typesUpdate = async (event: React.ChangeEvent<{ name?: string; value: unknown; }>, port: string) => {
         await requestAPI<any>('containerizer/types', {
             body: JSON.stringify({
                 port: port,
@@ -99,17 +122,19 @@ export class CellTracker extends React.Component<IProps, IState> {
 
         let currTypeSelections = this.state.typeSelections
         currTypeSelections[port] = true
-        console.log('currTypeSelections: '+currTypeSelections)
+        let currCurrentCell = this.state.currentCell
+        currCurrentCell.types[port] = event.target.value ? String(event.target.value) : null
         this.setState({
-            typeSelections: currTypeSelections
+            typeSelections: currTypeSelections,
+            currentCell: currCurrentCell,
         })
     };
 
     baseImageUpdate = async (value: any) => {
-
+        console.log('value: '+value);
         await requestAPI<any>('containerizer/baseimage', {
             body: JSON.stringify({
-                image: value.id
+                image: value
             }),
             method: 'POST'
         });
@@ -117,8 +142,13 @@ export class CellTracker extends React.Component<IProps, IState> {
     };
 
     exctractor = async (notebookModel: INotebookModel, save = false) => {
-        // try {
-            const kernel = await this.getKernel()
+        await this.loadBaseImages();
+        const kernel = await this.getKernel()
+        try {
+            this.setState({
+                loading: true,
+                extractorError: '',
+            })
 
             const extractedCell = await requestAPI<any>('containerizer/extract', {
                 body: JSON.stringify({
@@ -129,33 +159,34 @@ export class CellTracker extends React.Component<IProps, IState> {
                 }),
                 method: 'POST'
             });
-            console.log(extractedCell);
-            this.setState({ currentCell: extractedCell });
+            this.setState({
+                currentCell: extractedCell,
+                loading: false,
+                extractorError: '',
+            });
             let typeSelections: { [type: string]: boolean } = {}
-    
-            this.state.currentCell.inputs.forEach((el: string) => {
-                typeSelections[el] = false
-            })
-    
-            this.state.currentCell.outputs.forEach((el: string) => {
-                typeSelections[el] = false
-            })
-    
-            this.state.currentCell.params.forEach((el: string) => {
-                typeSelections[el] = false
-            })
-            console.log('containerizer/extract typeSelections: '+typeSelections)  
 
-            for (let key in typeSelections) {
-                console.log(key + ": " + typeSelections[key]);
-            }
+            this.state.currentCell.inputs.forEach((el: string) => {
+                typeSelections[el] = (this.getVarType(el) != null)
+            })
+
+            this.state.currentCell.outputs.forEach((el: string) => {
+                typeSelections[el] = (this.getVarType(el) != null)
+            })
+
+            this.state.currentCell.params.forEach((el: string) => {
+                typeSelections[el] = (this.getVarType(el) != null)
+            })
             this.setState({ typeSelections: typeSelections })
-    
+
             this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
-        // } catch (error) {
-        //     console.log(error);
-        //     alert('Error exporting cell code: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
-        // }
+        } catch (error) {
+            console.log(error);
+            this.setState({
+                loading: false,
+                extractorError: String(error),
+            })
+        }
     }
 
     onActiveCellChanged = (notebook: Notebook, _activeCell: Cell) => {
@@ -177,7 +208,7 @@ export class CellTracker extends React.Component<IProps, IState> {
         });
     };
 
-    componentDidMount = () => {
+    async componentDidMount() {
         if (this.props.notebook) {
             this.connectAndInitWhenReady(this.props.notebook);
         }
@@ -220,14 +251,21 @@ export class CellTracker extends React.Component<IProps, IState> {
                     <div className={'lw-panel-editor'}>
                         <CellPreview ref={this.cellPreviewRef} />
                     </div>
-                    {this.state.currentCell != null ? (
-                        <div>
-                            {this.state.currentCell.inputs.length > 0 ? (
-                                <div>
-                                    <p className={'lw-panel-preview'}>Inputs</p>
-                                    <TableContainer component={Paper} className={'lw-panel-table'}>
-                                        <Table aria-label="simple table">
-                                            <TableBody>
+                    {this.state.extractorError && (
+                      <div>
+                          <Alert severity="error" className={'lw-panel-preview'}>
+                              <p>Notebook cannot be analyzed: {this.state.extractorError}</p>
+                          </Alert>
+                      </div>
+                    )}
+                    {(this.state.currentCell != null && !this.state.loading) ? (
+                      <div>
+                          {this.state.currentCell.inputs.length > 0 ? (
+                            <div>
+                                <p className={'lw-panel-preview'}>Inputs</p>
+                                <TableContainer component={Paper} className={'lw-panel-table'}>
+                                    <Table aria-label="simple table">
+                                    <TableBody>
                                                 {this.state.currentCell.inputs.map((input: string) => (
                                                     <TableRow key={this.state.currentCell.node_id + "-" + input}>
                                                         <TableCell component="th" scope="row">
@@ -239,6 +277,8 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                                     labelId="io-types-select-label"
                                                                     id={this.state.currentCell.node_id + "-" + input + "-select"}
                                                                     label="Type"
+                                                                    value={this.getVarType(input)}
+                                                                    error={this.getVarType(input) == null}
                                                                     onChange={(event) => { this.typesUpdate(event, input) }}
                                                                 >
                                                                     <MenuItem value={'int'}>Integer</MenuItem>
@@ -273,6 +313,8 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                                     labelId="io-types-select-label"
                                                                     id={this.state.currentCell.node_id + "-" + output + "-select"}
                                                                     label="Type"
+                                                                    value={this.getVarType(output)}
+                                                                    error={this.getVarType(output) == null}
                                                                     onChange={(event) => { this.typesUpdate(event, output) }}
                                                                 >
                                                                     <MenuItem value={'int'}>Integer</MenuItem>
@@ -307,6 +349,8 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                                     labelId="param-types-select-label"
                                                                     id={this.state.currentCell.node_id + "-" + param + "-select"}
                                                                     label="Type"
+                                                                    value={this.getVarType(param)}
+                                                                    error={this.getVarType(param) == null}
                                                                     onChange={(event) => { this.typesUpdate(event, param) }}
                                                                 >
                                                                     <MenuItem value={'int'}>Integer</MenuItem>
@@ -350,19 +394,36 @@ export class CellTracker extends React.Component<IProps, IState> {
                             <div>
                                 <p className={'lw-panel-preview'}>Base Image</p>
                                 <Autocomplete
+                                    getOptionLabel={(option) => option.name}
+                                    options={this.state.baseImages}
                                     disablePortal
                                     onChange={(_event: any, newValue: any | null) => {
-                                        this.baseImageUpdate(newValue);
+                                        this.baseImageUpdate(newValue.image);
                                     }}
                                     id="combo-box-demo"
-                                    options={baseImages}
                                     sx={{ width: 330, margin: '20px' }}
                                     renderInput={(params) => <TextField {...params} />}
                                 />
                             </div>
                         </div>
                     ) : (
-                        <TableContainer></TableContainer>
+                        <div>
+                            {this.state.loading ? (
+                                <div>
+                                    <p className={'lw-panel-preview'}>
+                                        <span>Analyzing notebook</span>
+                                        <br/>
+                                        <span style={{color: '#aaaaaa'}}>This can take up to a minute</span>
+                                    </p>
+                                    <Box className={'lw-panel-table'} sx={{width: '100%'}}>
+                                        <LinearProgress/>
+                                    </Box>
+                                </div>
+                            ) : (
+                                <TableContainer>
+                                </TableContainer>
+                            )}
+                        </div>
                     )}
                     <div>
                         <Button variant="contained"

@@ -1,5 +1,6 @@
 name: make
 on:
+  release:
   push:
     branches:
       - '**'
@@ -23,7 +24,7 @@ jobs:
 
   call-pytest:
     needs: [choose-runner]
-    uses: ./.github/workflows/python-package-conda.yml
+    uses: ./.github/workflows/test-build wheel.yml
     with:
       runs-on: ${{ needs.choose-runner.outputs.runner }}
     secrets:
@@ -39,74 +40,59 @@ jobs:
       naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
       argo_url: ${{ secrets.ARGO_URL }}
       argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
-  call-build-wheel:
-    needs: [choose-runner, call-pytest]
-    uses: ./.github/workflows/build-wheel.yml
-    with:
-      runs-on: ${{ needs.choose-runner.outputs.runner }}
-      upload: true
   call-build-container-laserfarm:
-    needs: [choose-runner, call-build-wheel]
+    needs: [choose-runner, call-pytest]
     uses: ./.github/workflows/build-container.yml
     with:
       runs-on: ${{ needs.choose-runner.outputs.runner }}
       wheel_artifact_name: jupyterlab_vre
       docker_folder: laserfarm-pytorch
       tag: n-a-a-vre-laserfarm
-      push: false
+      push: ${{ github.event_name == 'release' }}
     secrets:
       gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
       gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vol2bird:
-    needs: [choose-runner, call-build-wheel]
+    needs: [choose-runner, call-pytest]
     uses: ./.github/workflows/build-container.yml
     with:
       runs-on: ${{ needs.choose-runner.outputs.runner }}
       wheel_artifact_name: jupyterlab_vre
       docker_folder: vol2bird
       tag: n-a-a-vre-vol2bird
-      push: false
+      push: ${{ github.event_name == 'release' }}
     secrets:
       gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
       gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
   call-build-container-vanilla:
-    needs: [choose-runner, call-build-wheel]
+    needs: [choose-runner, call-pytest]
     uses: ./.github/workflows/build-container.yml
     with:
       runs-on: ${{ needs.choose-runner.outputs.runner }}
       wheel_artifact_name: jupyterlab_vre
       docker_folder: vanilla
       tag: n-a-a-vre
-      push: false
+      push: ${{ github.event_name == 'release' }}
     secrets:
       gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
       gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-
-#  call-test-deploy:
-#    strategy:
-#      matrix:
-#        environment_names: [ "test-vars" ]
-#    needs: [choose-runner, call-build-container-vanilla,call-build-container-pytorch,call-build-container-vol2bird,call-build-container-laserfarm]
-#    uses: ./.github/workflows/test-deploy-k8s.yaml
-#    with:
-#      runs-on: ${{ needs.choose-runner.outputs.runner }}
-#      wheel_artifact_name: jupyterlab_vre
-#      docker_folder: vanilla
-#      tag: n-a-a-vre
-#      push: true
-#    secrets:
-#      api_endpoint:  ${{ secrets.API_ENDPOINT }}
-#      cell_github: ${{ secrets.CELL_GITHUB }}
-#      cell_github_token:   ${{ secrets.CELL_GITHUB_TOKEN }}
-#      module_mapping_url:  ${{ secrets.MODULE_MAPPING_URL }}
-#      naavre_api_token:  ${{ secrets.NAAVRE_API_TOKEN }}
-#      registry_url:  ${{ secrets.REGISTRY_URL }}
-#      search_api_endpoint:  ${{ secrets.SEARCH_API_ENDPOINT }}
-#      search_api_token:  ${{ secrets.SEARCH_API_TOKEN }}
+  call-build-container-lter-life:
+    needs: [choose-runner, call-pytest]
+    uses: ./.github/workflows/build-container.yml
+    with:
+      runs-on: ${{ needs.choose-runner.outputs.runner }}
+      wheel_artifact_name: jupyterlab_vre
+      docker_folder: lter-life
+      tag: n-a-a-vre-lter-life
+      push: ${{ github.event_name == 'release' }}
+    secrets:
+      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
+      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
+      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}

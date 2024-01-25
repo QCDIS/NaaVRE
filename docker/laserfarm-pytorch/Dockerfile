@@ -11,7 +11,8 @@ RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
     rm /tmp/env.tar
 RUN /venv/bin/conda-unpack
-FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e AS runtime
+
+FROM jupyterhub/k8s-singleuser-sample:1.2.0 AS runtime
 USER root
 
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install fuse
@@ -20,7 +21,9 @@ COPY --from=naavre-pdal-build /venv/ /venv/
 
 ENV PATH=/venv/bin:$PATH
 ENV PATH=/home/jovyan/.local/bin:$PATH
-RUN source /venv/bin/activate
+RUN chmod +x /venv/bin/activate
+#RUN source /venv/bin/activate
+SHELL ["/bin/bash", "-c","/venv/bin/activate"]
 RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 

@@ -1,0 +1,51 @@
+{
+    "name": "@jupyter_vre/dataset-search",
+    "version": "1.0.0",
+    "description": "NaaVRE Dataset Search",
+    "keywords": [
+        "jupyter",
+        "jupyterlab",
+        "jupyterlab-extension"
+    ],
+    "homepage": "https://github.com/QCDIS/NaaVRE",
+    "bugs": {
+        "url": "https://github.com/QCDIS/NaaVRE/issues"
+    },
+    "license": "BSD-3-Clause",
+    "author": "Riccardo Bianchi",
+    "files": [
+        "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
+        "src/**/*.{ts,tsx}",
+        "style/**/*.{css,eot,gif,html,jpg,json,png,svg,woff2,ttf}"
+    ],
+    "main": "lib/index.js",
+    "types": "lib/index.d.ts",
+    "style": "style/index.css",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/QCDIS/NaaVRE.git"
+    },
+    "scripts": {
+        "build": "tsc",
+        "dist": "yarn pack",
+        "clean": "rimraf lib",
+        "watch": "tsc -w"
+    },
+    "dependencies": {
+        "react-ipynb-renderer": "^2.0.1",
+        "ts-node": "~10.9.2"
+
+    },
+    "devDependencies": {
+        "@types/node": "^20.2.5",
+        "@types/react-star-rating-component": "^1.4.1",
+        "rimraf": "^5.0.0",
+        "typescript": "~5.3.2"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "jupyterlab": {
+        "extension": true
+    }
+}

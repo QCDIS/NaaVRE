@@ -17,6 +17,7 @@ class Cell:
     inputs: list
     outputs: list
     params: list
+    param_values: dict
     confs: dict
     dependencies: list
     chart_obj: dict
@@ -24,6 +25,7 @@ class Cell:
     container_source: str
     global_conf: dict
     kernel: str
+    notebook_json: dict
 
     def __init__(
             self,
@@ -38,25 +40,64 @@ class Cell:
             container_source,
             chart_obj=None,
             node_id='',
-            kernel=''
+            kernel='',
+            notebook_dict=None
     ) -> None:
 
-        self.title = title.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                           '-at-').strip()
+        self.title = title.strip().replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
+                                                                                                                   '-at-').strip()
         self.task_name = task_name.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
                                                                                                                    '-at-').strip()
         self.original_source = original_source
-        self.inputs = list(inputs)
-        self.outputs = list(outputs)
-        self.params = list(params)
+        self.types = dict()
+        self.add_inputs(inputs)
+        self.add_outputs(outputs)
+        self.add_params(params)
+        self.add_param_values(params)
         self.confs = confs
         self.all_inputs = list(inputs) + list(params)
-        self.types = dict()
-        self.dependencies = dependencies
+        self.dependencies = list(sorted(dependencies, key=lambda x: x['name']))
         self.chart_obj = chart_obj
         self.node_id = node_id
         self.container_source = container_source
         self.kernel = kernel
+        self.notebook_dict = notebook_dict
+
+    def _extract_types(self, vars_dict):
+        """ Extract types to self.types and return list of var names
+
+        :param vars_dict: {'var1': {'name: 'var1', 'type': 'str'}, 'var2': ...}
+        :return: ['var1', 'var2', ...]
+        """
+        names = []
+        for var_props in vars_dict.values():
+            var_type = var_props['type']
+            var_name = var_props['name']
+            self.types[var_name] = var_type
+            names.append(var_name)
+        return names
+
+    def add_inputs(self, inputs):
+        if isinstance(inputs, dict):
+            inputs = self._extract_types(inputs)
+        self.inputs = inputs
+
+    def add_outputs(self, outputs):
+        if isinstance(outputs, dict):
+            outputs = self._extract_types(outputs)
+        self.outputs = outputs
+
+    def add_params(self, params):
+        if isinstance(params, dict):
+            params = self._extract_types(params)
+        self.params = params
+
+    def add_param_values(self, params):
+        self.param_values = {}
+        if isinstance(params, dict):
+            for param_props in params.values():
+                if 'value' in param_props:
+                    self.param_values[param_props['name']] = param_props['value']
 
     def concatenate_all_inputs(self):
         self.all_inputs = list(self.inputs) + list(self.params)
@@ -116,6 +157,14 @@ class Cell:
         resolves = []
         for c in self.confs:
             resolves.append(self.confs[c])
+        return resolves
+
+    def generate_configuration_dict(self):
+        resolves = []
+        for c in self.confs:
+            assignment = self.confs[c].split('=')[1].replace('=', '').strip()
+            conf = {c: assignment}
+            resolves.append(conf)
         return resolves
 
     def toJSON(self):

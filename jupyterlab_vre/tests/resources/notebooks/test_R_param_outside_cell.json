@@ -1,0 +1,46 @@
+{
+  "save": false,
+  "kernel": "IRkernel",
+  "cell_index": 1,
+  "notebook": {
+    "metadata": {
+      "kernelspec": {
+        "display_name": "R",
+        "language": "R",
+        "name": "ir"
+      },
+      "language_info": {
+        "codemirror_mode": "r",
+        "file_extension": ".r",
+        "mimetype": "text/x-r-source",
+        "name": "R",
+        "pygments_lexer": "r",
+        "version": "4.3.1"
+      }
+    },
+    "nbformat_minor": 5,
+    "nbformat": 4,
+    "cells": [
+      {
+        "cell_type": "code",
+        "source": "param_a = 'value a'",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": 1,
+        "outputs": [],
+        "id": "1b784005-98ec-48d0-8d6d-339def7e42cb"
+      },
+      {
+        "cell_type": "code",
+        "source": "# print param R outside cell\nprint(param_a)",
+        "metadata": {
+          "trusted": true
+        },
+        "execution_count": null,
+        "outputs": [],
+        "id": "e7657fee-d6ef-4748-83d9-997c713afb52"
+      }
+    ]
+  }
+}

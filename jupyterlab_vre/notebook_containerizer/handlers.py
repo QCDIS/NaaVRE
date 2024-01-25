@@ -11,8 +11,8 @@ from tornado import web
 from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.services.extractor.rextractor import RExtractor
 from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
+from jupyterlab_vre.services.extractor.rextractor import RExtractor
 
 
 # TODO: we might have to do something similar here where we have to determine the kernel and based on that get the extractor
@@ -42,8 +42,8 @@ class NotebookExtractorHandler(APIHandler, Catalog):
         source = ''
         params = set()
         confs = set()
-        ins = set()
-        outs = set(extractor.infer_cell_outputs(notebook.cells[len(notebook.cells) - 1].source))
+        ins = dict()
+        outs = extractor.infer_cell_outputs(notebook.cells[len(notebook.cells) - 1].source)
         title = ''
         for cell_source in extractor.sources:
             p = extractor.extract_cell_params(cell_source)
@@ -53,7 +53,7 @@ class NotebookExtractorHandler(APIHandler, Catalog):
             source += cell_source + '\n'
 
             if not title:
-                title = cell_source.partition('\n')[0]
+                title = cell_source.partition('\n')[0].strip()
                 title = 'notebook-' + title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-'). \
                     replace('.', '-').strip() if title[0] == '#' \
                     else 'Untitled'
@@ -70,8 +70,8 @@ class NotebookExtractorHandler(APIHandler, Catalog):
             title=title,
             task_name=title.lower().replace(' ', '-').replace('.', '-'),
             original_source=source,
-            inputs=list(ins),
-            outputs=list(outs),
+            inputs=ins,
+            outputs=outs,
             params=list(params),
             confs=list(confs),
             dependencies=list(dependencies),
@@ -81,8 +81,8 @@ class NotebookExtractorHandler(APIHandler, Catalog):
         node = ConverterReactFlowChart.get_node(
             node_id,
             title,
-            ins,
-            outs,
+            set(ins),
+            set(outs),
             params,
             dependencies
         )

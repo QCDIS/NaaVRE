@@ -6,9 +6,7 @@ metadata:
     vlab_slug: {{ vlab_slug }}
 spec:
     entrypoint: {{ workflow_name }}
-
     serviceAccountName: {{ workflow_service_account }}
-
     volumeClaimTemplates:
     - metadata:
         name: workdir
@@ -16,8 +14,7 @@ spec:
         accessModes: [ "ReadWriteMany" ]
         resources:
           requests:
-            storage: 1Gi
-
+            storage: {{ workdir_storage_size }}Gi
     arguments:
       parameters:
       {% for p, value in global_params.items() %}
@@ -29,10 +26,17 @@ spec:
       dag:
         tasks:
         {% for nid in nodes %}
-        {% set is_special_node = nodes[nid]['type'] == 'splitter' or nodes[nid]['type'] == 'merger' %}
+        {% set is_special_node = nodes[nid]['type'] == 'splitter' or nodes[nid]['type'] == 'merger' or nodes[nid]['type'] == 'visualizer' %}
         {% set is_splitter = nodes[nid]['type'] == 'splitter' %}
+        {% set is_visualizer = nodes[nid]['type'] == 'visualizer' %}
         {% set task_name =  nodes[nid]['type'] + "-" + nid[:7] if is_special_node else cells[nid]['task_name']+ "-" + nid[:7] %}
         {% set params =  [] if is_special_node else cells[nid]['params'] %}
+        {# {% if 'visualize-' in task_name %}
+        - name: {{ task_name }}-server
+          dependencies: [{{ task_name }}]
+          template: {{ task_name }}-server-tmp
+        {% endif %} #}
+    
         - name: {{ task_name }}
           {% if deps_dag[nid]|length > 0 %}
           dependencies: [{% for d in deps_dag[nid] %} {{ d['task_name'] }}{% if not loop.last %},{% endif %} {% endfor %}]
@@ -54,13 +58,22 @@ spec:
           {% endfor %}
           {% endif %}
         {% endfor %}
-
     {% for nid in nodes %}
-    {% set is_special_node = nodes[nid]['type'] == 'splitter' or nodes[nid]['type'] == 'merger' %}
+    {% set is_special_node = nodes[nid]['type'] == 'splitter' or nodes[nid]['type'] == 'merger' or nodes[nid]['type'] == 'visualizer' %}
     {% set is_splitter = nodes[nid]['type'] == 'splitter' %}
+    {% set is_visualizer = nodes[nid]['type'] == 'visualizer' %}
     {% set task_name = nodes[nid]['type'] + "-" + nid[:7] if is_special_node else cells[nid]['task_name'] + "-" + nid[:7] %}
     {% set params = [] if is_special_node else cells[nid]['params'] %}
     {% set ports = nodes[nid]['ports'] %}
+    {# {% if 'visualize-' in task_name %}
+    - name: {{ task_name }}-server-tmp
+      container:
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/bash", "-c"]
+        args:
+          - echo "Starting server"
+    {% endif %} #}
     - name: {{ task_name }}-tmp
       {% if deps_dag[nid]|length > 0 %}
       inputs:
@@ -81,8 +94,8 @@ spec:
               path: /tmp/{{ ports[p]['id'] }}.json
         {% endif %}
         {% endfor %}
-      {% if is_special_node %}
-        {% set special_dep = deps_dag[nid][0] %}
+      {% if is_special_node and not is_visualizer %}
+      {% set special_dep = deps_dag[nid][0] %}
       script:
         image: python:alpine3.9
         command: [python]
@@ -106,15 +119,53 @@ spec:
           f_out.write(json.dumps({{special_dep['port_id']}}))
           f_out.close()
           {% endif %}
-           {% endif %}
+          {% endif %}
           {% endfor %}
+      {% elif is_visualizer %}
+      container:
+        image: "qcdis/geotiff_viewer:v0.2.6"
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "-c"]
+        args:
+          - python /app/python_scripts/main.py
+            {% for d in deps_dag[nid] %}
+            {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
+            {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}
+            {% set stdinname_base = stdinname.split('_')[0] %}
+            --{{ stdinname_base }} '{{ '{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}' }}'
+            {% endfor %}
+            {% for p in params %}
+            --{{ p }} '{{ '{{workflow.parameters.' }}{{ p }}{{ '}}' }}'
+            {% endfor %}
+            && npm start
+      metadata:
+        labels:
+          app: naavre-visualizer
       {% else %}
       container:
         image: "{{ image_repo }}/{{ cells[nid]['task_name'] }}"
         imagePullPolicy: Always
         command: ["/bin/bash", "-c"]
         args:
-        {% if cells[nid]['kernel'] == 'ipython' %}
+        {% if 'visualize-' in cells[nid]['task_name']%}
+          - source /venv/bin/activate; ipython kernel install --user; python {{ cells[nid]['task_name'] }}.py
+            {% for d in deps_dag[nid] %}
+            {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
+            {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}
+            {% set stdinname_base = stdinname.split('_')[0] %}
+            --{{ stdinname_base }} '{{ '{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}' }}'
+            {% endfor %}
+            {% for p in params %}
+            --{{ p }} '{{ '{{workflow.parameters.' }}{{ p }}{{ '}}' }}'
+            {% endfor %}
+            --id {{' '}}{{cells[nid]['node_id']}}{{''}}{{";"}}
+            jupyter execute {{ cells[nid]['task_name'] }}-output.ipynb --allow-errors;
+            jupyter nbconvert --no-input --execute {{ cells[nid]['task_name'] }}-output.ipynb --to html;
+            jupyter notebook --port 5173 --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --NotebookApp.base_url=/naavre-visualizer
+      metadata:
+        labels:
+          app: naavre-visualizer
+        {% elif cells[nid]['kernel'] == 'ipython' %}
           - source /venv/bin/activate; python {{ cells[nid]['task_name'] }}.py
             {% for d in deps_dag[nid] %}
             {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
@@ -127,7 +178,7 @@ spec:
             {% endfor %}
             --id {{' '}}{{cells[nid]['node_id']}}{{''}}{{";"}}
         {% elif cells[nid]['kernel'] == 'IRkernel' %}
-          - Rscript /app/{{ cells[nid]['task_name'] }}.R
+          - source /venv/bin/activate; Rscript /app/{{ cells[nid]['task_name'] }}.R
             {% for d in deps_dag[nid] %}
             {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
             {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}

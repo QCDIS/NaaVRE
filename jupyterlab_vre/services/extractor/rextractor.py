@@ -6,7 +6,6 @@ import rpy2.rinterface as rinterface
 import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
 from rpy2.robjects.packages import importr
-import re
 
 # Create an R environment
 r_env = robjects.globalenv
@@ -97,23 +96,24 @@ find_assign_rec <- function(x) {
 # Load the base R package for parsing and evaluation
 base = importr('base')
 
+
 # TODO: create an interface such that it can be easily extended to other kernels
 
 class RExtractor:
     sources: list
-    imports: set
+    imports: dict
     configurations: dict
-    global_params: set
-    undefined: set
+    global_params: dict
+    undefined: dict
 
     def __init__(self, notebook):
         self.sources = [nbcell.source for nbcell in notebook.cells if
                         nbcell.cell_type == 'code' and len(nbcell.source) > 0]
 
-        self.imports = set() # self.__extract_imports(self.sources)
+        self.imports = self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
         self.global_params = self.__extract_params(self.sources)
-        self.undefined = set()
+        self.undefined = dict()
         for source in self.sources:
             self.undefined.update(self.__extract_cell_undefined(source))
 
@@ -139,7 +139,6 @@ class RExtractor:
                 # transpose renv dependencies to readable dependencies
                 transposed_list = list(map(list, zip(*function_list)))
                 packages = [row[1] for row in transposed_list]
-
                 tmp_file.close()
                 os.remove(tmp_file.name)
 
@@ -179,8 +178,9 @@ class RExtractor:
         return configurations
 
     def __extract_params(self, sources):  # check source https://adv-r.hadley.nz/expressions.html)
-        params = set()
+        params = {}
         for s in sources:
+            lines = s.splitlines()
 
             '''Approach 1: Naive way
             Find all variable assignments with a prefix of "param"'''
@@ -197,18 +197,43 @@ class RExtractor:
                 # the prefix should be 'param'
                 if not (variable.split("_")[0] == "param"):
                     continue
-                params.add(variable)
+
+                # find the line of the assignment. (TODO) this approach assumes that there is only one expression in one line.
+                # this might not work when we have something like: a <- 3; b = 7
+                param_value = ''
+                for line in lines:
+                    m = re.match(r'{}\s*(?:=|<-)(.*?)\s*(#.*?)?$'.format(variable), line)
+                    if m:
+                        param_value = m.group(1).strip(" \"' ")
+
+                params[variable] = {
+                    'name': variable,
+                    'type': None,
+                    'value': param_value,
+                }
         return params
 
     def infer_cell_outputs(self, cell_source):
         cell_names = self.__extract_cell_names(cell_source)
-        return [name for name in cell_names if name not in self.__extract_cell_undefined(cell_source) \
-                and name not in self.imports and name in self.undefined and name not in self.configurations and name not in self.global_params]
+        return {
+            name: properties
+            for name, properties in cell_names.items()
+            if name not in self.__extract_cell_undefined(cell_source)
+               and name not in self.imports
+               and name in self.undefined
+               and name not in self.configurations
+               and name not in self.global_params
+        }
 
     def infer_cell_inputs(self, cell_source):
         cell_undefined = self.__extract_cell_undefined(cell_source)
-        return [und for und in cell_undefined if
-                und not in self.imports and und not in self.configurations and und not in self.global_params]
+        return {
+            und: properties
+            for und, properties in cell_undefined.items()
+            if und not in self.imports
+               and und not in self.configurations
+               and und not in self.global_params
+        }
 
     def infer_cell_dependencies(self, cell_source, confs):
         # TODO: check this code, you have removed logic. 
@@ -229,34 +254,33 @@ class RExtractor:
         return dependencies
 
     def get_function_parameters(self, cell_source):
-      result = []
+        result = []
 
-      # Approach 1: Naive Regex
-      functions = re.findall(r'function\s*\((.*?)\)', cell_source)
-      for params in functions:
-          result.extend(re.findall(r'\b\w+\b', params))
+        # Approach 1: Naive Regex
+        functions = re.findall(r'function\s*\((.*?)\)', cell_source)
+        for params in functions:
+            result.extend(re.findall(r'\b\w+\b', params))
 
-      # Approach 2: AST based
-      # TODO
+        # Approach 2: AST based
+        # TODO
 
-      return list(set(result))
+        return list(set(result))
 
     def get_iterator_variables(self, cell_source):
-      result = []
+        result = []
 
-      # Approach 1: Naive Regex. This means that iterator variables are in the following format:
-      # for ( <IT_VAR> .....)
-      result = re.findall(r'for\s*\(\s*([a-zA-Z0-9.]+)\s+in', cell_source)
+        # Approach 1: Naive Regex. This means that iterator variables are in the following format:
+        # for ( <IT_VAR> .....)
+        result = re.findall(r'for\s*\(\s*([a-zA-Z0-9.]+)\s+in', cell_source)
 
-      # Approach 2: Parse AST. Much cleaner option as iterator variables can appear in differen syntaxes.
-      # TODO 
+        # Approach 2: Parse AST. Much cleaner option as iterator variables can appear in differen syntaxes.
+        # TODO
 
-      return result
+        return result
 
     def __extract_cell_names(self, cell_source):
-        names = set()
         parsed_r = robjects.r['parse'](text=cell_source)
-        vars_r = robjects.r['all.vars'](parsed_r) 
+        vars_r = robjects.r['all.vars'](parsed_r)
 
         # Challenge 1: Function Parameters
         function_parameters = self.get_function_parameters(cell_source)
@@ -279,7 +303,15 @@ class RExtractor:
         # Challenge 6: Variable-based data access
         # MANUALLY SOLVED
 
-        return set(vars_r)
+        vars_r = {
+            name: {
+                'name': name,
+                'type': None,
+            }
+            for name in vars_r
+        }
+
+        return vars_r
 
     # This is a very inefficient approach to obtain all assignment variables (Solution 1)
     def recursive_variables(self, my_expr, result):
@@ -294,7 +326,7 @@ class RExtractor:
                 # Check if assignment. 
                 if (c == "<-" or c == "="):
                     if isinstance(my_expr[1], rinterface.SexpSymbol):
-                        result.add(str(variable))    
+                        result.add(str(variable))
         try:
             for expr in my_expr:
                 result = self.recursive_variables(expr, result)
@@ -316,27 +348,38 @@ class RExtractor:
             %s
         })""" % text)
         result = re.findall(r'"([^"]*)"', str(output_r))
-        
+
         # Return the result
         return result
 
     def __extract_cell_undefined(self, cell_source):
-        undef_vars = set()
-
-        # Approach 1: get all vars and substract the ones with the approach as in 
+        # Approach 1: get all vars and substract the ones with the approach as in
         cell_names = self.__extract_cell_names(cell_source)
         assignment_variables = self.assignment_variables(cell_source)
-        undef_vars = cell_names.difference(set(assignment_variables))
+        undef_vars = set(cell_names).difference(set(assignment_variables))
 
         # Approach 2: (TODO) dynamic analysis approach. this is complex for R as functions 
         # as they are not scoped (which is the case in python). As such, we might have to include
         # all the libraries to make sure that those functions work
 
+        undef_vars = {
+            name: {
+                'name': name,
+                'type': None,
+            }
+            for name in undef_vars
+        }
+
         return undef_vars
 
     def extract_cell_params(self, cell_source):
+        params = {}
         cell_unds = self.__extract_cell_undefined(cell_source)
-        return self.global_params.intersection(cell_unds)
+        param_unds = [und for und in cell_unds if und in self.global_params]
+        for u in param_unds:
+            if u not in params:
+                params[u] = self.global_params[u]
+        return params
 
     def extract_cell_conf_ref(self, cell_source):
         confs = {}
