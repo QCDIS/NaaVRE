@@ -37,7 +37,7 @@
         "@emotion/styled": "^11.8.1",
         "@jupyterlab/application": "~3.5.3",
         "@jupyterlab/coreutils": "~5.5.3",
-        "@jupyterlab/docregistry": "~3.5.3",
+        "@jupyterlab/docregistry": "~3.6.7",
         "@jupyterlab/observables": "~4.5.3",
         "@jupyterlab/services": "^6.5.3",
         "@jupyterlab/launcher": "~3.5.3",
