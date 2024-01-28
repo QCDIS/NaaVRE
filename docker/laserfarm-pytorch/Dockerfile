@@ -1,4 +1,4 @@
-FROM condaforge/mambaforge:23.3.1-1 AS naavre-pdal-build
+FROM condaforge/mambaforge:23.11.0-0 AS naavre-pdal-build
 RUN conda install -c conda-forge conda-pack conda-merge
 COPY environment.yaml .
 COPY naa-vre-environment.yaml .
