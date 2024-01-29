@@ -463,23 +463,26 @@ class CellsHandler(APIHandler, Catalog):
             return
         files_updated = False
         commit = gh_repository.get_commits(path=current_cell.task_name)
+        image_version = None
         if commit.totalCount > 0:
             try:
-                files_updated = update_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
+                res = update_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
                                                           files_info=files_info)
+                files_updated = res['files_updated']
+                image_version = res['content_hash']
             except UnknownObjectException as ex:
-                create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
+                image_version = create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
                                           files_info=files_info)
                 files_updated = True
         elif commit.totalCount <= 0:
-            create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
+            image_version = create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
                                       files_info=files_info)
             files_updated = True
         wf_id = str(uuid.uuid4())
         # Here we force to run the containerization workflow since we can't if the docker image is already built. Also,
         # when testing the workflow we need to run it again
         files_updated = True
-        image_version = ''
+        image_version = image_version[:7]
         if files_updated:
             wf_creation_utc = datetime.datetime.now(tz=datetime.timezone.utc)
             resp = dispatch_github_workflow(
@@ -489,7 +492,8 @@ class CellsHandler(APIHandler, Catalog):
                 files_info,
                 repo_token,
                 image_repo,
-                wf_id=wf_id
+                wf_id=wf_id,
+                image_version=image_version
             )
             if resp.status_code != 201 and resp.status_code != 200 and resp.status_code != 204:
                 self.set_status(400)
@@ -497,20 +501,6 @@ class CellsHandler(APIHandler, Catalog):
                 logger.error(resp.text)
                 self.flush()
                 return
-
-            job = wait_for_job(
-                wf_id=wf_id,
-                wf_creation_utc=wf_creation_utc,
-                owner=owner,
-                repository_name=repository_name,
-                token=repo_token,
-                job_id=None,
-                timeout=300,
-                wait_for_completion=False,
-            )
-            image_version = job['head_sha']
-            # Get the first 6 characters of the commit hash
-            image_version = image_version[:6]
             current_cell.set_image_version(image_version)
             Catalog.delete_cell_from_task_name(current_cell.task_name)
             Catalog.add_cell(current_cell)
@@ -521,6 +511,7 @@ class CellsHandler(APIHandler, Catalog):
 
 
 def create_cell_in_repository(task_name=None, repository=None, files_info=None):
+    code_content_hash = None
     for f_type, f_info in files_info.items():
         f_name = f_info['file_name']
         f_path = f_info['path']
@@ -531,10 +522,15 @@ def create_cell_in_repository(task_name=None, repository=None, files_info=None):
                 message=task_name + ' creation',
                 content=content,
             )
+            if f_type == 'cell':
+                local_content = f.read()
+                code_content_hash = git_hash(local_content)
+    return code_content_hash
 
 
 def update_cell_in_repository(task_name=None, repository=None, files_info=None):
     files_updated = False
+    code_content_hash = None
     for f_type, f_info in files_info.items():
         f_name = f_info['file_name']
         f_path = f_info['path']
@@ -543,6 +539,8 @@ def update_cell_in_repository(task_name=None, repository=None, files_info=None):
         with open(f_path, 'rb') as f:
             local_content = f.read()
             local_hash = git_hash(local_content)
+            if f_type == 'cell':
+                code_content_hash = local_hash
             remote_hash = remote_content.sha
             logger.debug('local_hash: ' + local_hash + ' remote_hash: ' + remote_hash)
             if remote_hash != local_hash:
@@ -554,10 +552,11 @@ def update_cell_in_repository(task_name=None, repository=None, files_info=None):
                     sha=remote_content.sha
                 )
         f.close()
-    return files_updated
+    return {'files_updated': files_updated, 'content_hash': code_content_hash}
 
 
-def dispatch_github_workflow(owner, repository_name, task_name, files_info, repository_token, image, wf_id=None):
+def dispatch_github_workflow(owner, repository_name, task_name, files_info, repository_token, image, wf_id=None,
+                             image_version=None):
     resp = requests.post(
         url=github_url_repos + '/' + owner + '/' + repository_name + '/actions/workflows/' + github_workflow_file_name + '/dispatches',
         json={
@@ -567,7 +566,8 @@ def dispatch_github_workflow(owner, repository_name, task_name, files_info, repo
                 'dockerfile': files_info['dockerfile']['file_name'],
                 'image_repo': image,
                 'image_tag': task_name,
-                'id': wf_id
+                'id': wf_id,
+                'image_version': image_version,
             }
         },
         verify=False,
