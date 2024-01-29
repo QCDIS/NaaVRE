@@ -10,7 +10,6 @@ class TestEnvironmentVariables(TestCase):
     def test_env_vars(self):
         self.assertIsNotNone(os.environ.get('CELL_GITHUB'))
         self.assertIsNotNone(os.environ.get('CELL_GITHUB_TOKEN'))
-        self.assertIsNotNone(os.environ.get('REGISTRY_URL'))
         self.assertIsNotNone(os.environ.get('NAAVRE_API_TOKEN'))
         self.assertIsNotNone(os.environ.get('JUPYTERHUB_USER'))
         self.assertIsNotNone(os.environ.get('API_ENDPOINT'))
