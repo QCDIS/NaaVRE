@@ -368,11 +368,13 @@ class CellsHandler(APIHandler, Catalog):
             self.flush()
             return
         try:
-            logger.debug('Delete if exists: ' + current_cell.task_name)
-            Catalog.delete_cell_from_task_name(current_cell.task_name)
-            Catalog.add_cell(current_cell)
+            doc_cell = Catalog.get_cell_from_og_node_id(current_cell.node_id)
+            if doc_cell:
+                Catalog.update_cell(current_cell)
+            else:
+                Catalog.add_cell(current_cell)
         except Exception as ex:
-            logger.error('Error adding cell in catalog: ' + str(ex))
+            logger.error('Error adding or updating cell in catalog: ' + str(ex))
             self.set_status(400)
             self.write('Error adding cell catalog: ' + str(ex))
             self.write_error('Error adding cell catalog: ' + str(ex))
