@@ -138,14 +138,7 @@ class RExtractor:
 
                 # transpose renv dependencies to readable dependencies
                 transposed_list = list(map(list, zip(*function_list)))
-                print('--------------transposed_list-------------------')
-                print(transposed_list)
-                print('---------------------------------')
                 packages = [row[1] for row in transposed_list]
-                print('--------------packages-------------------')
-                print(packages)
-                print('---------------------------------')
-
                 tmp_file.close()
                 os.remove(tmp_file.name)
 

@@ -5,8 +5,8 @@ import importlib
 import json
 import logging
 import os
-from nbformat import read, write, v4 as nbf
 import sys
+import traceback
 import uuid
 from builtins import Exception
 from pathlib import Path
@@ -14,6 +14,7 @@ from time import sleep
 
 import autopep8
 import distro
+import jsonschema
 import nbformat as nb
 import requests
 from github import Github
@@ -28,6 +29,7 @@ from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
 from jupyterlab_vre.services.extractor.rextractor import RExtractor
+from jupyterlab_vre.services.extractor.headerextractor import HeaderExtractor
 
 logger = logging.getLogger(__name__)
 
@@ -88,17 +90,38 @@ class ExtractorHandler(APIHandler, Catalog):
         kernel = payload['kernel']
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-        # extractor based on the kernel
+
+        source = notebook.cells[cell_index].source
+
+        # extractor based on the cell header
+        try:
+            extractor = HeaderExtractor(notebook, source)
+        except jsonschema.ValidationError as e:
+            self.set_status(400, f"Invalid cell header")
+            self.write(
+                {
+                    'message': f"Error in cell header: {e}",
+                    'reason': None,
+                    'traceback': traceback.format_exception(e),
+                    }
+                )
+            self.flush()
+            return
+
+        # extractor based on the kernel (if cell header is not defined)
+        if not extractor.enabled():
+            if kernel == "IRkernel":
+                extractor = RExtractor(notebook)
+            else:
+                extractor = PyExtractor(notebook)
+
         extracted_nb = extract_cell_by_index(notebook, cell_index)
         if kernel == "IRkernel":
-            extractor = RExtractor(notebook)
             extracted_nb = set_notebook_kernel(extracted_nb, 'R')
         else:
-            extractor = PyExtractor(notebook)
             extracted_nb = set_notebook_kernel(extracted_nb, 'python3')
 
         # initialize variables
-        source = notebook.cells[cell_index].source
         title = source.partition('\n')[0].strip()
         title = title.replace('#', '').replace('.', '-').replace(
             '_', '-').replace('(', '-').replace(')', '-').strip() if title and title[0] == "#" else "Untitled"
@@ -379,16 +402,7 @@ class CellsHandler(APIHandler, Catalog):
             logger.error('Registry credentials not found')
             self.flush()
             return
-        registry_url = registry_credentials[0]['url']
-        if not registry_url:
-            self.set_status(400)
-            self.write_error('Registry url not found')
-            logger.error('Registry url not found')
-            self.flush()
-            return
-        image_repo = registry_url.split(
-            'https://hub.docker.com/u/')[1]
-
+        image_repo = registry_credentials[0]['url']
         if not image_repo:
             self.set_status(400)
             self.write_error('Registry not found')
@@ -397,10 +411,10 @@ class CellsHandler(APIHandler, Catalog):
             return
 
         if current_cell.kernel == "IRkernel":
-            files_info = Rcontainerizer.get_files_info(cell=current_cell, image_repo=image_repo, cells_path=cells_path)
+            files_info = Rcontainerizer.get_files_info(cell=current_cell, cells_path=cells_path)
             Rcontainerizer.build_templates(cell=current_cell, files_info=files_info)
         elif 'python' in current_cell.kernel.lower():
-            files_info = get_files_info(cell=current_cell, image_repo=image_repo)
+            files_info = get_files_info(cell=current_cell)
             build_templates(cell=current_cell, files_info=files_info)
         else:
             self.set_status(400)
@@ -672,13 +686,13 @@ def build_templates(cell=None, files_info=None):
                           pip_deps=list(set_pip_deps)).dump(files_info['environment']['path'])
 
 
-def get_files_info(cell=None, image_repo=None):
+def get_files_info(cell=None):
     if not os.path.exists(cells_path):
         os.mkdir(cells_path)
     cell_path = os.path.join(cells_path, cell.task_name)
 
     cell_file_name = cell.task_name + '.py'
-    dockerfile_name = 'Dockerfile.' + image_repo + '.' + cell.task_name
+    dockerfile_name = 'Dockerfile.' + cell.task_name
     environment_file_name = cell.task_name + '-environment.yaml'
 
     notebook_file_name = None
