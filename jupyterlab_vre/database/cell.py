@@ -116,9 +116,7 @@ class Cell:
                 param_name = re.findall(pattern, line)[0]
                 if param_name in self.params:
                     indices_to_remove.append(line_i)
-            if line.startswith('import') or \
-                    line.startswith('from') or \
-                    line.startswith('#'):
+            if re.match('^\s*(#|import|from)', line):
                 indices_to_remove.append(line_i)
 
         for ir in sorted(indices_to_remove, reverse=True):
