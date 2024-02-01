@@ -55,5 +55,6 @@ dependencies:
   - zeromq>=4.3.5
   - papermill
   - minio
+  - rasterio
   - pip:
     - pytype~=2023.10.31
