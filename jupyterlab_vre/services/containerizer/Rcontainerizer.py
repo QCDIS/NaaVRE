@@ -81,7 +81,6 @@ class Rcontainerizer:
             r_dependencies.append(install_packages)
             library = 'library(' + r_dep + ')'
             r_dependencies.append(library)
-        print(r_dependencies)
 
         template_cell.stream(cell=cell,
                              deps=r_dependencies,
