@@ -35,6 +35,11 @@ class Catalog:
         cls.search_entry.insert(query)
 
     @classmethod
+    def update_cell(cls, cell: Cell):
+        cls.cells.update(cell.__dict__, where('node_id') == cell.node_id)
+
+
+    @classmethod
     def get_search_entries(cls):
         return cls.search_entry.all()
 
@@ -95,6 +100,10 @@ class Catalog:
         cls.gh_credentials.truncate()
 
     @classmethod
+    def delete_all_cells(cls):
+        cls.cells.truncate()
+
+    @classmethod
     def delete_all_repository_credentials(cls):
         cls.repositories.truncate()
         credentials = cls.repositories.all()
@@ -151,3 +160,24 @@ class Catalog:
         res = cls.repositories.search(where('name') == name)
         if res:
             return res[0]
+
+    @classmethod
+    def cast_document_to_cell(cls, cell_document):
+        if not cell_document:
+            return None
+
+        return Cell(
+            title=cell_document.get('title', ''),
+            task_name=cell_document.get('task_name', ''),
+            original_source=cell_document.get('original_source', ''),
+            inputs=cell_document.get('inputs', []),
+            outputs=cell_document.get('outputs', []),
+            params=cell_document.get('params', []),
+            confs=cell_document.get('confs', {}),
+            dependencies=cell_document.get('dependencies', []),
+            container_source=cell_document.get('container_source', ''),
+            chart_obj=cell_document.get('chart_obj', {}),
+            node_id=cell_document.get('node_id', ''),
+            kernel=cell_document.get('kernel', ''),
+            notebook_dict=cell_document.get('notebook_dict', {})
+        )
