@@ -220,6 +220,35 @@ class BaseImageHandler(APIHandler, Catalog):
         cell.base_image = base_image
 
 
+class BaseImageTagsHandler(APIHandler):
+    logger = logging.getLogger(__name__)
+
+    @web.authenticated
+    async def get(self):
+        url = os.getenv(
+            'BASE_IMAGE_TAGS_URL',
+            'https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/base_image_tags.json',
+            )
+        logger.debug(f'Base image tags URL: {url}')
+        print(f'Base image tags URL: {url}')
+        try:
+            res = requests.get(url)
+            res.raise_for_status()
+            dat = res.json()
+        except (
+                requests.ConnectionError,
+                requests.HTTPError,
+                requests.JSONDecodeError,
+                ) as e:
+            msg = f'Error loading base image tags from {url}\n{e}'
+            logger.debug(msg)
+            print(msg)
+            self.set_status(500)
+            self.write(msg)
+            return
+        return self.write(dat)
+
+
 def wait_for_github_api_resources():
     github = Github(Catalog.get_repositories()[0]['token'])
     rate_limit = github.get_rate_limit()
