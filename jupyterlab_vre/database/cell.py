@@ -13,7 +13,7 @@ class Cell:
     title: str
     task_name: str
     original_source: str
-    base_image: str
+    base_image: dict
     inputs: list
     outputs: list
     params: list

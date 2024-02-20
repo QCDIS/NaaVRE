@@ -1,6 +1,6 @@
 {
     "all_inputs": [],
-    "base_image": "qcdis/conda-lter-life:v0.1",
+    "base_image": {"build":"ghcr.io/qcdis/naavre/naavre-cell-build-lter-life-veluwe:latest","runtime":"ghcr.io/qcdis/naavre/naavre-cell-runtime-lter-life-veluwe:latest"},
     "chart_obj": {
         "hovered": {},
         "links": {},
