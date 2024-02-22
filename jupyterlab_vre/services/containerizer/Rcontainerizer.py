@@ -25,9 +25,9 @@ class Rcontainerizer:
             os.mkdir(cells_path)
         cell_path = os.path.join(cells_path, cell.task_name)
 
-        cell_file_name = cell.task_name + '.R'
-        dockerfile_name = 'Dockerfile.' + cell.task_name
-        environment_file_name = cell.task_name + '-environment.yaml'
+        cell_file_name = 'task.R'
+        dockerfile_name = 'Dockerfile'
+        environment_file_name = 'environment.yaml'
 
         if os.path.exists(cell_path):
             for files in os.listdir(cell_path):
@@ -40,9 +40,10 @@ class Rcontainerizer:
         cell_file_path = os.path.join(cell_path, cell_file_name)
         dockerfile_file_path = os.path.join(cell_path, dockerfile_name)
         env_file_path = os.path.join(cell_path, environment_file_name)
-        return {'cell': {
-            'file_name': cell_file_name,
-            'path': cell_file_path},
+        return {
+            'cell': {
+                'file_name': cell_file_name,
+                'path': cell_file_path},
             'dockerfile': {
                 'file_name': dockerfile_name,
                 'path': dockerfile_file_path},

@@ -728,13 +728,13 @@ def get_files_info(cell=None):
         os.mkdir(cells_path)
     cell_path = os.path.join(cells_path, cell.task_name)
 
-    cell_file_name = cell.task_name + '.py'
-    dockerfile_name = 'Dockerfile.' + cell.task_name
-    environment_file_name = cell.task_name + '-environment.yaml'
+    cell_file_name = 'task.py'
+    dockerfile_name = 'Dockerfile'
+    environment_file_name = 'environment.yaml'
 
     notebook_file_name = None
     if 'visualize-' in cell.task_name:
-        notebook_file_name = cell.task_name + '.ipynb'
+        notebook_file_name = 'task.ipynb'
     if os.path.exists(cell_path):
         for files in os.listdir(cell_path):
             path = os.path.join(cell_path, files)
@@ -746,9 +746,10 @@ def get_files_info(cell=None):
     cell_file_path = os.path.join(cell_path, cell_file_name)
     dockerfile_file_path = os.path.join(cell_path, dockerfile_name)
     env_file_path = os.path.join(cell_path, environment_file_name)
-    info = {'cell': {
-        'file_name': cell_file_name,
-        'path': cell_file_path},
+    info = {
+        'cell': {
+            'file_name': cell_file_name,
+            'path': cell_file_path},
         'dockerfile': {
             'file_name': dockerfile_name,
             'path': dockerfile_file_path},
