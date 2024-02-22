@@ -28,6 +28,8 @@ elif os.path.exists('jupyterlab_vre/tests/resources/'):
 
 cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
 
+# Set ASYNC_TEST_TIMEOUT to 60 seconds
+os.environ['ASYNC_TEST_TIMEOUT'] = '60'
 
 def delete_text(file_path, text_to_delete):
     # Read the file
@@ -233,6 +235,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             notebooks_json_path = os.path.join(base_path, 'notebooks')
             notebooks_files = glob.glob(os.path.join(notebooks_json_path, "*.json"))
             for notebook_file in notebooks_files:
+                print(notebook_file)
                 with open(notebook_file, 'r') as file:
                     notebook = json.load(file)
                 file.close()
