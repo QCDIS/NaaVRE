@@ -85,8 +85,10 @@ class ExtractorHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        logging.getLogger(__name__).debug('ExtractorHandler. payload: ' + json.dumps(payload, indent=4))
-        print('ExtractorHandler. payload: ' + json.dumps(payload, indent=4))
+        if os.getenv('DEBUG'):
+            logging.getLogger(__name__).debug('ExtractorHandler. payload: ' + json.dumps(payload, indent=4))
+            write_notebook_to_file(payload)
+
         kernel = payload['kernel']
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
@@ -318,9 +320,19 @@ def wait_for_job(
 
 
 def write_cell_to_file(current_cell):
-    Path('/tmp/workflow_cells/cells').mkdir(parents=True, exist_ok=True)
-    with open('/tmp/workflow_cells/cells/' + current_cell.task_name + '.json', 'w') as f:
-        f.write(current_cell.toJSON())
+    write_payload_to_file(payload=current_cell.toJSON(), path='/tmp/workflow_cells/cells/',
+                          file_name=current_cell.task_name + '.json')
+
+
+def write_notebook_to_file(notebook=None):
+    write_payload_to_file(payload=json.dumps(notebook,indent=4), path='/tmp/workflow_cells/notebooks/',
+                          file_name='notebook.json')
+
+
+def write_payload_to_file(payload=None, path=None, file_name=None):
+    Path(path).mkdir(parents=True, exist_ok=True)
+    with open(os.path.join(path, file_name), 'w') as f:
+        f.write(payload)
         f.close()
 
 
@@ -469,16 +481,16 @@ class CellsHandler(APIHandler, Catalog):
         if commit.totalCount > 0:
             try:
                 res = update_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
-                                                          files_info=files_info)
+                                                files_info=files_info)
                 files_updated = res['files_updated']
                 image_version = res['content_hash']
             except UnknownObjectException as ex:
                 image_version = create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
-                                          files_info=files_info)
+                                                          files_info=files_info)
                 files_updated = True
         elif commit.totalCount <= 0:
             image_version = create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
-                                      files_info=files_info)
+                                                      files_info=files_info)
             files_updated = True
         wf_id = str(uuid.uuid4())
         # Here we force to run the containerization workflow since we can't if the docker image is already built. Also,
