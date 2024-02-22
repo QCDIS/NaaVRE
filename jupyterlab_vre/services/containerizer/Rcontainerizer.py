@@ -62,6 +62,8 @@ class Rcontainerizer:
             dependencies)
         set_conda_deps = set(dependencies)
         set_pip_deps = set()
+        set_conda_deps.discard(None)
+        set_conda_deps.discard(None)
         return set_conda_deps, set_pip_deps
 
     @staticmethod
