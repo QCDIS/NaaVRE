@@ -31,6 +31,7 @@ cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
 # Set ASYNC_TEST_TIMEOUT to 60 seconds
 os.environ['ASYNC_TEST_TIMEOUT'] = '60'
 
+
 def delete_text(file_path, text_to_delete):
     # Read the file
     with open(file_path, 'r') as file:
@@ -58,13 +59,19 @@ def create_cell_and_add_to_cat(cell_path=None):
     with open(cell_path, 'r') as file:
         cell = json.load(file)
     file.close()
+    return create_cell(cell=cell)
+
+
+def create_cell(cell=None):
     notebook_dict = {}
+    if 'base_image' not in cell:
+        cell['base_image'] = 'qcdis/miniconda3:v0.1'
     if 'notebook_dict' in cell:
         notebook_dict = cell['notebook_dict']
     test_cell = Cell(cell['title'], cell['task_name'], cell['original_source'], cell['inputs'],
                      cell['outputs'],
                      cell['params'], cell['confs'], cell['dependencies'], cell['container_source'],
-                     cell['chart_obj'], cell['node_id'], cell['kernel'],notebook_dict)
+                     cell['chart_obj'], cell['node_id'], cell['kernel'], notebook_dict)
     test_cell.types = cell['types']
     test_cell.base_image = cell['base_image']
     Catalog.editor_buffer = test_cell
@@ -151,7 +158,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     'wf_id': wf_id,
                     'wf_creation_utc': wf_creation_utc,
                     'files_updated': files_updated,
-                    })
+                })
                 if 'skip_exec' in cell and cell['skip_exec']:
                     continue
                 if 'python' in test_cell.kernel and 'skip_exec':
@@ -171,7 +178,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     print("stderr:", cell_exec.stderr)
                     print("return code:", cell_exec.returncode)
                     print('---------------------------------------------------')
-                    self.assertEqual(0, cell_exec.returncode, 'Cell execution failed: '+cell_file)
+                    self.assertEqual(0, cell_exec.returncode, 'Cell execution failed: ' + cell_file)
                 elif test_cell.kernel == 'IRkernel' and 'skip_exec':
                     cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.R')
                     run_local_cell_path = os.path.join(cells_path, test_cell.task_name, 'run_local.R')
@@ -194,22 +201,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             updated_cells = list(filter(
                 lambda cell: cell['files_updated'],
                 test_cells,
-                ))
-
-            for cell in updated_cells:
-                # Get job id (many calls to the GitHub API)
-                job = wait_for_job(
-                    wf_id=cell['wf_id'],
-                    wf_creation_utc=cell['wf_creation_utc'],
-                    owner=owner,
-                    repository_name=repository_name,
-                    token=repo_token,
-                    job_id=None,
-                    timeout=300,
-                    wait_for_completion=False,
-                    )
-                cell['job'] = job
-
+            ))
             for cell in updated_cells:
                 # Wait for job completion (fewer calls)
                 job = wait_for_job(
@@ -221,7 +213,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     job_id=cell['job']['id'],
                     timeout=300,
                     wait_for_completion=True,
-                    )
+                )
                 cell['job'] = job
 
             for cell in updated_cells:
@@ -235,17 +227,39 @@ class HandlersAPITest(AsyncHTTPTestCase):
             notebooks_json_path = os.path.join(base_path, 'notebooks')
             notebooks_files = glob.glob(os.path.join(notebooks_json_path, "*.json"))
             for notebook_file in notebooks_files:
-                print(notebook_file)
                 with open(notebook_file, 'r') as file:
                     notebook = json.load(file)
                 file.close()
-                response = self.fetch('/extractorhandler', method='POST', body=json.dumps(notebook))
-                self.assertEqual(response.code, 200)
+                extractor_handler_response = self.fetch('/extractorhandler', method='POST', body=json.dumps(notebook))
+                self.assertEqual(extractor_handler_response.code, 200)
                 # Get Json response
-                json_response = json.loads(response.body.decode('utf-8'))
-                self.assertIsNotNone(json_response)
-                cell = notebook['notebook']['cells'][notebook['cell_index']]
-                print('cell: ', cell)
+                naavre_cell = json.loads(extractor_handler_response.body.decode('utf-8'))
+                self.assertIsNotNone(naavre_cell)
+                test_cell, cell = create_cell(cell=naavre_cell)
+                call_cell_handler_response = self.call_cell_handler()
+                self.assertEqual(200, call_cell_handler_response.code)
+                wf_id = json.loads(call_cell_handler_response.body.decode('utf-8'))['wf_id']
+                wf_creation_utc = datetime.datetime.now(tz=datetime.timezone.utc)
+                files_updated = json.loads(call_cell_handler_response.body.decode('utf-8'))['files_updated']
+                cat_repositories = Catalog.get_repositories()
+                repo = cat_repositories[0]
+                repo_token = repo['token']
+                owner, repository_name = repo['url'].removeprefix('https://github.com/').split('/')
+                if '.git' in repository_name:
+                    repository_name = repository_name.split('.git')[0]
+                job = wait_for_job(
+                    wf_id=wf_id,
+                    wf_creation_utc=wf_creation_utc,
+                    owner=owner,
+                    repository_name=repository_name,
+                    token=repo_token,
+                    job_id=None,
+                    timeout=300,
+                    wait_for_completion=True,
+                )
+                self.assertIsNotNone(job, 'Job not found')
+                self.assertEqual('completed', job['status'], 'Job not completed')
+                self.assertEqual('success', job['conclusion'], 'Job not successful')
 
     def test_execute_workflow_handler(self):
         workflow_path = os.path.join(base_path, 'workflows', 'NaaVRE')

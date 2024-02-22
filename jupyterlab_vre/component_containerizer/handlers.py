@@ -657,13 +657,15 @@ def map_dependencies(dependencies=None):
     set_conda_deps = set([])
     set_pip_deps = set([])
     for dep in dependencies:
+        module_name = None
+        dep_name = None
         if 'module' in dep and dep['module']:
-            if '.' in dep['module']:
-                module_name = dep['module'].split('.')[0]
-            else:
-                module_name = dep['module']
+            dep_name = dep['module']
         elif 'name' in dep and dep['name']:
-            module_name = dep['name']
+            dep_name = dep['name']
+        if '.' in dep_name:
+            module_name = dep_name.split('.')[0]
+
         if module_name:
             conda_package = True
             pip_package = False
