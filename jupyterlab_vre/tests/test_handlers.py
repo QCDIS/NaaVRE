@@ -153,7 +153,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 if 'skip_exec' in cell and cell['skip_exec']:
                     continue
                 if 'python' in test_cell.kernel and 'skip_exec':
-                    cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
+                    cell_path = os.path.join(cells_path, test_cell.task_name, 'task.py')
                     print('---------------------------------------------------')
                     print('Executing cell: ', cell_path)
                     if 'example_inputs' in cell:
@@ -171,7 +171,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     print('---------------------------------------------------')
                     self.assertEqual(0, cell_exec.returncode, 'Cell execution failed: '+cell_file)
                 elif test_cell.kernel == 'IRkernel' and 'skip_exec':
-                    cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.R')
+                    cell_path = os.path.join(cells_path, test_cell.task_name, 'task.R')
                     run_local_cell_path = os.path.join(cells_path, test_cell.task_name, 'run_local.R')
                     shutil.copy(cell_path, run_local_cell_path)
                     delete_text(run_local_cell_path, 'setwd(\'/app\')')
