@@ -1,7 +1,7 @@
 {
     "save": false,
     "kernel": "IRkernel",
-    "cell_index": 3,
+    "cell_index": 2,
     "notebook": {
         "metadata": {
             "kernelspec": {
@@ -28,7 +28,7 @@
                     "tags": [],
                     "trusted": true
                 },
-                "execution_count": null,
+                "execution_count": 1,
                 "outputs": [],
                 "id": "59b2ee0b-958d-431f-a396-b4b34c77d540"
             },
@@ -38,7 +38,7 @@
                 "metadata": {
                     "trusted": true
                 },
-                "execution_count": null,
+                "execution_count": 2,
                 "outputs": [],
                 "id": "0a83d716-23c8-4eb2-b246-9a8f4cdf9ac2"
             },
@@ -48,29 +48,15 @@
                 "metadata": {
                     "trusted": true
                 },
-                "execution_count": null,
-                "outputs": [],
+                "execution_count": 3,
+                "outputs": [
+                    {
+                        "name": "stdout",
+                        "output_type": "stream",
+                        "text": "[1] 6\n"
+                    }
+                ],
                 "id": "bc5ace1d-809a-4dc1-b5f7-075a93e8474a"
-            },
-            {
-                "cell_type": "code",
-                "source": "",
-                "metadata": {
-                    "trusted": true
-                },
-                "execution_count": null,
-                "outputs": [],
-                "id": "528b97bb-396a-4520-8be0-9aeaed7e4715"
-            },
-            {
-                "cell_type": "code",
-                "source": "",
-                "metadata": {
-                    "trusted": true
-                },
-                "execution_count": null,
-                "outputs": [],
-                "id": "1abe1c44-2c33-43b8-a16f-c10fd5e0a774"
             }
         ]
     }

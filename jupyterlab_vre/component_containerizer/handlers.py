@@ -531,11 +531,15 @@ def create_cell_in_repository(task_name=None, repository=None, files_info=None):
         f_path = f_info['path']
         with open(f_path, 'rb') as f:
             content = f.read()
-            repository.create_file(
-                path=task_name + '/' + f_name,
-                message=task_name + ' creation',
-                content=content,
-            )
+            try:
+                repository.create_file(
+                    path=task_name + '/' + f_name,
+                    message=task_name + ' creation',
+                    content=content,
+                )
+            except Exception as ex:
+                logger.error('Error creating file in repository: ' + str(ex))
+                print(ex)
             if f_type == 'cell':
                 local_content = f.read()
                 code_content_hash = git_hash(local_content)
