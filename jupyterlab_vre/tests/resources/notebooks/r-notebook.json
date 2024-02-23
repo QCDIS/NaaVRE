@@ -1,74 +1,77 @@
 {
-  "save": false,
-  "kernel": "IRkernel",
-  "cell_index": 1,
-  "notebook": {
-    "metadata": {
-      "kernelspec": {
-        "display_name": "R [conda env:jupyterlab] *",
-        "language": "R",
-        "name": "conda-env-jupyterlab-r"
-      },
-      "language_info": {
-        "codemirror_mode": "r",
-        "file_extension": ".r",
-        "mimetype": "text/x-r-source",
-        "name": "R",
-        "pygments_lexer": "r",
-        "version": "4.2.3"
-      }
-    },
-    "nbformat_minor": 5,
-    "nbformat": 4,
-    "cells": [
-      {
-        "cell_type": "code",
-        "source": "# input\na = 2 \nnumbers <- c(a, 4, 6, 8, 10)",
+    "save": false,
+    "kernel": "IRkernel",
+    "cell_index": 3,
+    "notebook": {
         "metadata": {
-          "trusted": true,
-          "tags": []
+            "kernelspec": {
+                "display_name": "R",
+                "language": "R",
+                "name": "ir"
+            },
+            "language_info": {
+                "codemirror_mode": "r",
+                "file_extension": ".r",
+                "mimetype": "text/x-r-source",
+                "name": "R",
+                "pygments_lexer": "r",
+                "version": "4.3.2"
+            }
         },
-        "execution_count": 1,
-        "outputs": [],
-        "id": "59b2ee0b-958d-431f-a396-b4b34c77d540"
-      },
-      {
-        "cell_type": "code",
-        "source": "#csddfv\naverage <- mean(numbers)",
-        "metadata": {
-          "trusted": true
-        },
-        "execution_count": 2,
-        "outputs": [],
-        "id": "0a83d716-23c8-4eb2-b246-9a8f4cdf9ac2"
-      },
-      {
-        "cell_type": "code",
-        "source": "print(average)",
-        "metadata": {
-          "trusted": true,
-          "tags": []
-        },
-        "execution_count": 3,
-        "outputs": [
-          {
-            "name": "stdout",
-            "output_type": "stream",
-            "text": "[1] 6\n"
-          }
-        ],
-        "id": "73a1f742-2a8e-4c38-a1c0-5ff8bb372579"
-      },
-      {
-        "cell_type": "code",
-        "source": "",
-        "metadata": {
-          "trusted": true
-        },
-        "execution_count": null,
-        "outputs": [],
-        "id": "528b97bb-396a-4520-8be0-9aeaed7e4715"
-      }
-    ]
-  }
+        "nbformat_minor": 5,
+        "nbformat": 4,
+        "cells": [
+            {
+                "cell_type": "code",
+                "source": "# inputR\na = 2 \nnumbers <- c(a, 4, 6, 8, 10)\n",
+                "metadata": {
+                    "tags": [],
+                    "trusted": true
+                },
+                "execution_count": null,
+                "outputs": [],
+                "id": "59b2ee0b-958d-431f-a396-b4b34c77d540"
+            },
+            {
+                "cell_type": "code",
+                "source": "#averageR\n\n\naverage <- mean(numbers)",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": null,
+                "outputs": [],
+                "id": "0a83d716-23c8-4eb2-b246-9a8f4cdf9ac2"
+            },
+            {
+                "cell_type": "code",
+                "source": "#print \n\nprint(average)",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": null,
+                "outputs": [],
+                "id": "bc5ace1d-809a-4dc1-b5f7-075a93e8474a"
+            },
+            {
+                "cell_type": "code",
+                "source": "",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": null,
+                "outputs": [],
+                "id": "528b97bb-396a-4520-8be0-9aeaed7e4715"
+            },
+            {
+                "cell_type": "code",
+                "source": "",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": null,
+                "outputs": [],
+                "id": "1abe1c44-2c33-43b8-a16f-c10fd5e0a774"
+            }
+        ]
+    }
 }

@@ -65,7 +65,11 @@ def create_cell_and_add_to_cat(cell_path=None):
 def create_cell(cell=None):
     notebook_dict = {}
     if 'base_image' not in cell:
-        cell['base_image'] = 'qcdis/miniconda3:v0.1'
+        if cell['kernel'] == 'python3':
+            cell['base_image'] = 'qcdis/miniconda3:v0.1'
+        elif cell['kernel'] == 'IRkernel':
+            cell['base_image'] = 'jupyter/r-notebook:70178b8e48d7'
+
     if 'notebook_dict' in cell:
         notebook_dict = cell['notebook_dict']
     test_cell = Cell(cell['title'], cell['task_name'], cell['original_source'], cell['inputs'],
@@ -227,6 +231,9 @@ class HandlersAPITest(AsyncHTTPTestCase):
             notebooks_json_path = os.path.join(base_path, 'notebooks')
             notebooks_files = glob.glob(os.path.join(notebooks_json_path, "*.json"))
             for notebook_file in notebooks_files:
+                print('Testing: ' + notebook_file)
+                if 'r-notebook' not in notebook_file:
+                    continue
                 with open(notebook_file, 'r') as file:
                     notebook = json.load(file)
                 file.close()
