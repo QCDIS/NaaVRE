@@ -71,7 +71,7 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
     const params_values = this.state.params_values
     // Extract param values for cells that are in the current workflow
     catalog.forEach((catalogItem: VRECell) => {
-      if (Object.keys(this.chart_node_ids.includes(catalogItem.node_id))) {
+      if (this.chart_node_ids.includes(catalogItem.node_id)) {
         Object.keys(catalogItem.param_values).forEach((paramName) => {
           params_values[paramName] = catalogItem.param_values[paramName]
         })
