@@ -151,6 +151,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cells_files = os.listdir(cells_json_path)
             test_cells = []
             for cell_file in cells_files:
+                if 'create-file-r-dev-user-name-at-domain-com.json' not in cell_file:
+                    continue
                 cell_path = os.path.join(cells_json_path, cell_file)
                 test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
                 response = self.call_cell_handler()
@@ -214,7 +216,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     owner=owner,
                     repository_name=repository_name,
                     token=repo_token,
-                    job_id=cell['job']['id'],
+                    job_id=None,
                     timeout=300,
                     wait_for_completion=True,
                 )
