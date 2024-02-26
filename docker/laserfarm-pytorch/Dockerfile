@@ -47,7 +47,9 @@ RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
 
 
-RUN jupyter lab build --debug;
+RUN jupyter lab build --debug; || true
+# if failed ptin /tmp/jupyterlab-debug-ovbxbngu.log
+RUN [ -e /tmp/jupyterlab-debug-*.log ] && cat /tmp/jupyterlab-debug-*.log || echo "File does not exist"
 COPY test_laserchicken.py .
 RUN python test_laserchicken.py
 RUN rm test_laserchicken.py
