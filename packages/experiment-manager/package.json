@@ -39,7 +39,7 @@
         "@jupyterlab/coreutils": "~5.5.3",
         "@jupyterlab/docregistry": "~3.5.3",
         "@jupyterlab/observables": "~4.5.3",
-        "@jupyterlab/services": "^6.5.3",
+        "@jupyterlab/services": "^7.1.2",
         "@jupyterlab/launcher": "~3.5.3",
         "@jupyterlab/mainmenu": "~3.5.3",
         "@jupyterlab/notebook": "~3.5.3",
