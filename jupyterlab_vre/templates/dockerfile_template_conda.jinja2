@@ -1,5 +1,5 @@
 FROM {{ base_image.build }} AS build
-COPY environment.yaml .
+COPY --chown=$MAMBA_USER:$MAMBA_USER environment.yaml .
 RUN micromamba install -y -n venv -f environment.yaml
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 USER root
