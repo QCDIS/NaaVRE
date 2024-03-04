@@ -25,8 +25,9 @@ class Rcontainerizer:
             os.mkdir(cells_path)
         cell_path = os.path.join(cells_path, cell.task_name)
 
-        cell_file_name = cell.task_name + '.R'
-        dockerfile_name = 'Dockerfile.' + cell.task_name
+        cell_file_name = 'task.R'
+        dockerfile_name = 'Dockerfile'
+        environment_file_name = 'environment.yaml'
 
         if os.path.exists(cell_path):
             for files in os.listdir(cell_path):
@@ -38,16 +39,35 @@ class Rcontainerizer:
 
         cell_file_path = os.path.join(cell_path, cell_file_name)
         dockerfile_file_path = os.path.join(cell_path, dockerfile_name)
-        return {'cell': {
-            'file_name': cell_file_name,
-            'path': cell_file_path},
+        env_file_path = os.path.join(cell_path, environment_file_name)
+        return {
+            'cell': {
+                'file_name': cell_file_name,
+                'path': cell_file_path},
             'dockerfile': {
                 'file_name': dockerfile_name,
-                'path': dockerfile_file_path}
+                'path': dockerfile_file_path},
+            'environment': {
+                'file_name': environment_file_name,
+                'path': env_file_path},
         }
 
     @staticmethod
-    def build_templates(cell=None, files_info=None):
+    def map_dependencies(dependencies, module_name_mapping):
+        dependencies = map(
+            lambda x: 'r-' + x['name'],
+            dependencies)
+        dependencies = map(
+            lambda x: module_name_mapping.get('r', {}).get(x, x),
+            dependencies)
+        set_conda_deps = set(dependencies)
+        set_pip_deps = set()
+        set_conda_deps.discard(None)
+        set_conda_deps.discard(None)
+        return set_conda_deps, set_pip_deps
+
+    @staticmethod
+    def build_templates(cell=None, files_info=None, module_name_mapping=None):
         # we also want to always add the id to the input parameters
         inputs = cell.inputs
         types = cell.types
@@ -89,7 +109,10 @@ class Rcontainerizer:
         template_dockerfile.stream(task_name=cell.task_name,
                                    base_image=cell.base_image).dump(files_info['dockerfile']['path'])
 
-        # set_conda_deps, set_pip_deps = map_dependencies(dependencies=cell.dependencies)
-        # template_conda = template_env.get_template('conda_env_template.jinja2')
-        # template_conda.stream(base_image=cell.base_image, conda_deps=list(set_conda_deps),
-        #                       pip_deps=list(set_pip_deps)).dump(files_info['environment']['path'])
+        set_conda_deps, set_pip_deps = Rcontainerizer.map_dependencies(
+            cell.dependencies,
+            module_name_mapping)
+        logger.debug('cell.dependencies.conda: ' + str(cell.dependencies))
+        template_conda = template_env.get_template('conda_env_template.jinja2')
+        template_conda.stream(base_image=cell.base_image, conda_deps=list(set_conda_deps),
+                              pip_deps=list(set_pip_deps)).dump(files_info['environment']['path'])

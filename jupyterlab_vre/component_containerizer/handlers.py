@@ -220,6 +220,35 @@ class BaseImageHandler(APIHandler, Catalog):
         cell.base_image = base_image
 
 
+class BaseImageTagsHandler(APIHandler):
+    logger = logging.getLogger(__name__)
+
+    @web.authenticated
+    async def get(self):
+        url = os.getenv(
+            'BASE_IMAGE_TAGS_URL',
+            'https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/base_image_tags.json',
+            )
+        logger.debug(f'Base image tags URL: {url}')
+        print(f'Base image tags URL: {url}')
+        try:
+            res = requests.get(url)
+            res.raise_for_status()
+            dat = res.json()
+        except (
+                requests.ConnectionError,
+                requests.HTTPError,
+                requests.JSONDecodeError,
+                ) as e:
+            msg = f'Error loading base image tags from {url}\n{e}'
+            logger.debug(msg)
+            print(msg)
+            self.set_status(500)
+            self.write(msg)
+            return
+        return self.write(dat)
+
+
 def wait_for_github_api_resources():
     github = Github(Catalog.get_repositories()[0]['token'])
     rate_limit = github.get_rate_limit()
@@ -415,10 +444,19 @@ class CellsHandler(APIHandler, Catalog):
 
         if current_cell.kernel == "IRkernel":
             files_info = Rcontainerizer.get_files_info(cell=current_cell, cells_path=cells_path)
-            Rcontainerizer.build_templates(cell=current_cell, files_info=files_info)
+            Rcontainerizer.build_templates(
+                cell=current_cell,
+                files_info=files_info,
+                module_name_mapping=load_module_name_mapping()
+,
+                )
         elif 'python' in current_cell.kernel.lower():
             files_info = get_files_info(cell=current_cell)
-            build_templates(cell=current_cell, files_info=files_info)
+            build_templates(
+                cell=current_cell,
+                files_info=files_info,
+                module_name_mapping=load_module_name_mapping()
+                )
         else:
             self.set_status(400)
             self.write_error('Kernel: ' + current_cell.kernel + ' not supported')
@@ -463,23 +501,11 @@ class CellsHandler(APIHandler, Catalog):
             logger.error(error_message)
             self.flush()
             return
-        files_updated = False
-        commit = gh_repository.get_commits(path=current_cell.task_name)
-        image_version = None
-        if commit.totalCount > 0:
-            try:
-                res = update_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
-                                                          files_info=files_info)
-                files_updated = res['files_updated']
-                image_version = res['content_hash']
-            except UnknownObjectException as ex:
-                image_version = create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
-                                          files_info=files_info)
-                files_updated = True
-        elif commit.totalCount <= 0:
-            image_version = create_cell_in_repository(task_name=current_cell.task_name, repository=gh_repository,
-                                      files_info=files_info)
-            files_updated = True
+        files_updated, image_version = create_or_update_cell_in_repository(
+            task_name=current_cell.task_name,
+            repository=gh_repository,
+            files_info=files_info,
+            )
         wf_id = str(uuid.uuid4())
         # Here we force to run the containerization workflow since we can't if the docker image is already built. Also,
         # when testing the workflow we need to run it again
@@ -512,49 +538,37 @@ class CellsHandler(APIHandler, Catalog):
         self.flush()
 
 
-def create_cell_in_repository(task_name=None, repository=None, files_info=None):
-    code_content_hash = None
-    for f_type, f_info in files_info.items():
-        f_name = f_info['file_name']
-        f_path = f_info['path']
-        with open(f_path, 'rb') as f:
-            content = f.read()
-            repository.create_file(
-                path=task_name + '/' + f_name,
-                message=task_name + ' creation',
-                content=content,
-            )
-            if f_type == 'cell':
-                local_content = f.read()
-                code_content_hash = git_hash(local_content)
-    return code_content_hash
-
-
-def update_cell_in_repository(task_name=None, repository=None, files_info=None):
+def create_or_update_cell_in_repository(task_name, repository, files_info):
     files_updated = False
     code_content_hash = None
     for f_type, f_info in files_info.items():
         f_name = f_info['file_name']
         f_path = f_info['path']
-        remote_content = repository.get_contents(
-            path=task_name + '/' + f_name)
         with open(f_path, 'rb') as f:
             local_content = f.read()
             local_hash = git_hash(local_content)
-            if f_type == 'cell':
-                code_content_hash = local_hash
-            remote_hash = remote_content.sha
-            logger.debug('local_hash: ' + local_hash + ' remote_hash: ' + remote_hash)
-            if remote_hash != local_hash:
-                files_updated = True
+            try:
+                remote_hash = repository.get_contents(path=task_name + '/' + f_name).sha
+            except UnknownObjectException:
+                remote_hash = None
+            logger.debug(f'local_hash: {local_hash}; remote_hash: {remote_hash}')
+            if remote_hash is None:
+                repository.create_file(
+                    path=task_name + '/' + f_name,
+                    message=task_name + ' creation',
+                    content=local_content,
+                    )
+            elif remote_hash != local_hash:
                 repository.update_file(
                     path=task_name + '/' + f_name,
                     message=task_name + ' update',
                     content=local_content,
-                    sha=remote_content.sha
-                )
-        f.close()
-    return {'files_updated': files_updated, 'content_hash': code_content_hash}
+                    sha=remote_hash,
+                    )
+                files_updated = True
+            if f_type == 'cell':
+                code_content_hash = local_hash
+    return files_updated, code_content_hash
 
 
 def dispatch_github_workflow(owner, repository_name, task_name, files_info, repository_token, image, wf_id=None,
@@ -620,7 +634,7 @@ def is_standard_module(module_name):
     return 'dist-packages' not in installation_path if linux_os == 'Ubuntu' else 'site-packages' not in installation_path
 
 
-def load_module_names_mapping():
+def load_module_name_mapping():
     module_mapping_url = os.getenv('MODULE_MAPPING_URL')
     module_mapping = {}
     if module_mapping_url:
@@ -640,8 +654,7 @@ def load_module_names_mapping():
     return loaded_module_name_mapping
 
 
-def map_dependencies(dependencies=None):
-    module_name_mapping = load_module_names_mapping()
+def map_dependencies(dependencies=None, module_name_mapping=None):
     set_conda_deps = set([])
     set_pip_deps = set([])
     for dep in dependencies:
@@ -671,10 +684,13 @@ def map_dependencies(dependencies=None):
     return set_conda_deps, set_pip_deps
 
 
-def build_templates(cell=None, files_info=None):
+def build_templates(cell=None, files_info=None, module_name_mapping=None):
     logger.debug('files_info: ' + str(files_info))
     logger.debug('cell.dependencies: ' + str(cell.dependencies))
-    set_conda_deps, set_pip_deps = map_dependencies(dependencies=cell.dependencies)
+    set_conda_deps, set_pip_deps = map_dependencies(
+        dependencies=cell.dependencies,
+        module_name_mapping=module_name_mapping,
+        )
     loader = PackageLoader('jupyterlab_vre', 'templates')
     template_env = Environment(
         loader=loader, trim_blocks=True, lstrip_blocks=True)
@@ -712,13 +728,13 @@ def get_files_info(cell=None):
         os.mkdir(cells_path)
     cell_path = os.path.join(cells_path, cell.task_name)
 
-    cell_file_name = cell.task_name + '.py'
-    dockerfile_name = 'Dockerfile.' + cell.task_name
-    environment_file_name = cell.task_name + '-environment.yaml'
+    cell_file_name = 'task.py'
+    dockerfile_name = 'Dockerfile'
+    environment_file_name = 'environment.yaml'
 
     notebook_file_name = None
     if 'visualize-' in cell.task_name:
-        notebook_file_name = cell.task_name + '.ipynb'
+        notebook_file_name = 'task.ipynb'
     if os.path.exists(cell_path):
         for files in os.listdir(cell_path):
             path = os.path.join(cell_path, files)
@@ -730,9 +746,10 @@ def get_files_info(cell=None):
     cell_file_path = os.path.join(cell_path, cell_file_name)
     dockerfile_file_path = os.path.join(cell_path, dockerfile_name)
     env_file_path = os.path.join(cell_path, environment_file_name)
-    info = {'cell': {
-        'file_name': cell_file_name,
-        'path': cell_file_path},
+    info = {
+        'cell': {
+            'file_name': cell_file_name,
+            'path': cell_file_path},
         'dockerfile': {
             'file_name': dockerfile_name,
             'path': dockerfile_file_path},
