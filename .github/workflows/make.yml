@@ -1,6 +1,7 @@
 name: make
 on:
   release:
+    types: [published]
   push:
     branches:
       - '**'
