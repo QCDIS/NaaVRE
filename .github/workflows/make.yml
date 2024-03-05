@@ -10,23 +10,32 @@ on:
     - cron: '0 4 5,25 * *'
 
 jobs:
-  choose-runner:
+  configure-workflow:
+    name: Configure workflow
     runs-on: ubuntu-latest
     outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
       runner: ${{ steps.choose-runner.outputs.runner }}
     steps:
+      - id: skip_check
+        name: Configure skip-duplicate-actions
+        uses: fkirc/skip-duplicate-actions@v5
+        with:
+          paths_ignore: '["**/README.md"]'  # FIXME
+          do_not_skip: '["workflow_dispatch", "schedule", "release"]'
       - id: choose-runner
-        uses: QCDIS/chose-action-runner@v2
+        uses: QCDIS/choose-action-runner@v2
         with:
           preferred-runner: naavre
           fallback-runner: ubuntu-latest
           github-token: ${{ secrets.RUNNER_ACCESS_TOKEN }}
 
   call-pytest:
-    needs: [choose-runner]
     uses: ./.github/workflows/test-build wheel.yml
+    needs: [configure-workflow]
+    if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
     with:
-      runs-on: ${{ needs.choose-runner.outputs.runner }}
+      runs-on: ${{ needs.configure-workflow.outputs.runner }}
     secrets:
       jupyterhub_user: ${{ secrets.JUPYTERHUB_USER }}
       vlab_slug: ${{ secrets.VLAB_SLUG }}
@@ -40,6 +49,7 @@ jobs:
       naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
       argo_url: ${{ secrets.ARGO_URL }}
       argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
+
   call-build-container-vanilla:
     needs: [call-pytest]
     uses: ./.github/workflows/build-container.yml
