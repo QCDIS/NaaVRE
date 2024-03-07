@@ -80,34 +80,22 @@ export class CellTracker extends React.Component<IProps, IState> {
     }
 
     async loadBaseImages() {
-      console.log('baseImageTagsURL: ' + process.env.BASE_IMAGE_TAGS_URL);
-      let baseImageTagsURL;
-      if (!process.env.BASE_IMAGE_TAGS_URL) {
-        console.log('BASE_IMAGE_TAGS_URL not set, using default');
-        baseImageTagsURL = 'https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/base_image_tags.json'
-      }else{
-        baseImageTagsURL = process.env.BASE_IMAGE_TAGS_URL;
-      }
-      try {
-        const response = await fetch(baseImageTagsURL);
-        if (!response.ok) {
-          throw new Error('Failed to fetch base images.');
+        try {
+            const baseImagesData = await requestAPI<any>(
+              'containerizer/baseimagetags',
+              { method: 'GET' }
+            )
+
+            // Convert object data to an array of objects
+            const updatedBaseImages = Object.entries(baseImagesData).map(
+              ([name, image]) => ({ name, image})
+            )
+            console.log('updatedBaseImages');
+            console.log(updatedBaseImages);
+            this.setState({baseImages: updatedBaseImages });
+        } catch (error) {
+            console.log(error);
         }
-        const baseImagesData = await response.json();
-
-        // Convert object data to an array of objects
-        const updatedBaseImages = Object.entries(baseImagesData).map(([name, image]) => ({
-          name,
-          image,
-        }));
-        console.log('updatedBaseImages');
-        console.log(updatedBaseImages);
-        this.setState({baseImages: updatedBaseImages });
-      } catch (error) {
-        console.log(error);
-        alert('Error loading base images: ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
-
-      }
     }
 
 

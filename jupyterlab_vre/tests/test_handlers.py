@@ -166,7 +166,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 if 'skip_exec' in cell and cell['skip_exec']:
                     continue
                 if 'python' in test_cell.kernel and 'skip_exec':
-                    cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
+                    cell_path = os.path.join(cells_path, test_cell.task_name, 'task.py')
                     print('---------------------------------------------------')
                     print('Executing cell: ', cell_path)
                     if 'example_inputs' in cell:
@@ -184,7 +184,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     print('---------------------------------------------------')
                     self.assertEqual(0, cell_exec.returncode, 'Cell execution failed: ' + cell_file)
                 elif test_cell.kernel == 'IRkernel' and 'skip_exec':
-                    cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.R')
+                    cell_path = os.path.join(cells_path, test_cell.task_name, 'task.R')
                     run_local_cell_path = os.path.join(cells_path, test_cell.task_name, 'run_local.R')
                     shutil.copy(cell_path, run_local_cell_path)
                     delete_text(run_local_cell_path, 'setwd(\'/app\')')
@@ -271,18 +271,18 @@ class HandlersAPITest(AsyncHTTPTestCase):
         workflow_files = os.listdir(workflow_path)
         with mock.patch.object(ExecuteWorkflowHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
+        cells_json_path = os.path.join(base_path, 'cells')
+        cells_files = os.listdir(cells_json_path)
+        for cell_file in cells_files:
+            cell_path = os.path.join(cells_json_path, cell_file)
+            create_cell_and_add_to_cat(cell_path=cell_path)
+            response = self.call_cell_handler()
+            self.assertEqual(200, response.code)
         for workflow_file in workflow_files:
             print('workflow_file: ', workflow_file)
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
-            cells_json_path = os.path.join(base_path, 'cells')
-            cells_files = os.listdir(cells_json_path)
-            for cell_file in cells_files:
-                cell_path = os.path.join(cells_json_path, cell_file)
-                create_cell_and_add_to_cat(cell_path=cell_path)
-                response = self.call_cell_handler()
-                self.assertEqual(200, response.code)
 
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
             self.assertEqual(response.code, 200, response.body)

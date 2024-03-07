@@ -2,7 +2,7 @@
     "all_inputs": [
         "lines"
     ],
-    "base_image": "qcdis/miniconda3:v0.1",
+    "base_image": {"build":"ghcr.io/qcdis/naavre/naavre-cell-build-python:latest","runtime":"ghcr.io/qcdis/naavre/naavre-cell-runtime-python:latest"},
     "chart_obj": {
         "hovered": {},
         "links": {},

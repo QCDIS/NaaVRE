@@ -1,6 +1,6 @@
 {
     "all_inputs": [],
-    "base_image": "jupyter/r-notebook:70178b8e48d7",
+    "base_image": {"build":"ghcr.io/qcdis/naavre/naavre-cell-build-r:latest","runtime":"ghcr.io/qcdis/naavre/naavre-cell-runtime-r:latest"},
     "chart_obj": {
         "hovered": {},
         "links": {},
