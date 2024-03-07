@@ -85,10 +85,8 @@ class ExtractorHandler(APIHandler, Catalog):
     @web.authenticated
     async def post(self, *args, **kwargs):
         payload = self.get_json_body()
-        if os.getenv('DEBUG'):
-            logging.getLogger(__name__).debug('ExtractorHandler. payload: ' + json.dumps(payload, indent=4))
-            write_notebook_to_file(payload)
-
+        logging.getLogger(__name__).debug('ExtractorHandler. payload: ' + json.dumps(payload, indent=4))
+        print('ExtractorHandler. payload: ' + json.dumps(payload, indent=4))
         kernel = payload['kernel']
         cell_index = payload['cell_index']
         notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
@@ -349,19 +347,9 @@ def wait_for_job(
 
 
 def write_cell_to_file(current_cell):
-    write_payload_to_file(payload=current_cell.toJSON(), path='/tmp/workflow_cells/cells/',
-                          file_name=current_cell.task_name + '.json')
-
-
-def write_notebook_to_file(notebook=None):
-    write_payload_to_file(payload=json.dumps(notebook,indent=4), path='/tmp/workflow_cells/notebooks/',
-                          file_name='notebook.json')
-
-
-def write_payload_to_file(payload=None, path=None, file_name=None):
-    Path(path).mkdir(parents=True, exist_ok=True)
-    with open(os.path.join(path, file_name), 'w') as f:
-        f.write(payload)
+    Path('/tmp/workflow_cells/cells').mkdir(parents=True, exist_ok=True)
+    with open('/tmp/workflow_cells/cells/' + current_cell.task_name + '.json', 'w') as f:
+        f.write(current_cell.toJSON())
         f.close()
 
 
@@ -515,8 +503,8 @@ class CellsHandler(APIHandler, Catalog):
             return
         files_updated, image_version = create_or_update_cell_in_repository(
             task_name=current_cell.task_name,
-             repository=gh_repository,
-                                                      files_info=files_info,
+            repository=gh_repository,
+            files_info=files_info,
             )
         wf_id = str(uuid.uuid4())
         # Here we force to run the containerization workflow since we can't if the docker image is already built. Also,
@@ -557,39 +545,20 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
         f_name = f_info['file_name']
         f_path = f_info['path']
         with open(f_path, 'rb') as f:
-            content = f.read()
+            local_content = f.read()
+            local_hash = git_hash(local_content)
             try:
+                remote_hash = repository.get_contents(path=task_name + '/' + f_name).sha
+            except UnknownObjectException:
+                remote_hash = None
+            logger.debug(f'local_hash: {local_hash}; remote_hash: {remote_hash}')
+            if remote_hash is None:
                 repository.create_file(
                     path=task_name + '/' + f_name,
                     message=task_name + ' creation',
-                    content=content,
-                )
-            except Exception as ex:
-                logger.error('Error creating file in repository: ' + str(ex))
-                print(ex)
-            if f_type == 'cell':
-                local_content = f.read()
-                code_content_hash = git_hash(local_content)
-    return code_content_hash
-
-
-def update_cell_in_repository(task_name=None, repository=None, files_info=None):
-    files_updated = False
-    code_content_hash = None
-    for f_type, f_info in files_info.items():
-        f_name = f_info['file_name']
-        f_path = f_info['path']
-        remote_content = repository.get_contents(
-            path=task_name + '/' + f_name)
-        with open(f_path, 'rb') as f:
-            local_content = f.read()
-            local_hash = git_hash(local_content)
-            if f_type == 'cell':
-                code_content_hash = local_hash
-            remote_hash = remote_content.sha
-            logger.debug('local_hash: ' + local_hash + ' remote_hash: ' + remote_hash)
-            if remote_hash != local_hash:
-                files_updated = True
+                    content=local_content,
+                    )
+            elif remote_hash != local_hash:
                 repository.update_file(
                     path=task_name + '/' + f_name,
                     message=task_name + ' update',
@@ -689,15 +658,13 @@ def map_dependencies(dependencies=None, module_name_mapping=None):
     set_conda_deps = set([])
     set_pip_deps = set([])
     for dep in dependencies:
-        module_name = None
-        dep_name = None
         if 'module' in dep and dep['module']:
-            dep_name = dep['module']
+            if '.' in dep['module']:
+                module_name = dep['module'].split('.')[0]
+            else:
+                module_name = dep['module']
         elif 'name' in dep and dep['name']:
-            dep_name = dep['name']
-        if '.' in dep_name:
-            module_name = dep_name.split('.')[0]
-
+            module_name = dep['name']
         if module_name:
             conda_package = True
             pip_package = False
