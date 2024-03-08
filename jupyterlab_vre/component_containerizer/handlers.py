@@ -681,6 +681,8 @@ def map_dependencies(dependencies=None, module_name_mapping=None):
                     set_conda_deps.add(module_name)
                 if pip_package:
                     set_pip_deps.add(module_name)
+    set_conda_deps.discard(None)
+    set_pip_deps.discard(None)
     return set_conda_deps, set_pip_deps
 
 
