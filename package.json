@@ -15,7 +15,7 @@
     "@emotion/react": "^11.9.0",
     "@emotion/styled": "^11.8.1",
     "@jupyterlab/application": "~3.5.3",
-    "@jupyterlab/apputils": "~3.6.7",
+    "@jupyterlab/apputils": "4.1.9",
     "@jupyterlab/statedb": "^4.0.11",
     "@jupyterlab/builder": "~4.0.2",
     "@jupyterlab/coreutils": "~5.5.3",
@@ -29,6 +29,6 @@
     "@mui/icons-material": "^5.6.1",
     "@mui/material": "5.13.6",
     "lodash": "^4.17.21",
-    "react-window": "^1.8.6"
+    "react-window": "1.8.6"
   }
 }
