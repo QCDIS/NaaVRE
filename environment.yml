@@ -6,7 +6,7 @@ dependencies:
   - nbformat
   - widgetsnbextension
   - jupyterlab
-  - nodejs=18.12.0
+  - nodejs
   - python>=3.8
   - yarn=1.22.19
   - tinydb>=4.6.1
