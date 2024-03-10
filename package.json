@@ -8,8 +8,8 @@
   "devDependencies": {
     "@types/node": "17.0.33",
     "@types/react-window": "1.8.8",
-    "lerna": "^6.5.1",
-    "typescript": "^5.0.2"
+    "lerna": "6.5.1",
+    "typescript": "5.0.2"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",
