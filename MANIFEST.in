@@ -3,6 +3,7 @@ include README.md
 include pyproject.toml
 include jupyterlab_vre/templates/*
 include jupyter-config/jupyterlab_vre.json
+include jupyterlab_vre/services/extractor/cell_header.schema.json
 
 include package.json
 include install.json

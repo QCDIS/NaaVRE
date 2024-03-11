@@ -48,7 +48,7 @@ class HeaderExtractor:
              r"\s*#\s*\.\.\.\s*\n"
              ),
             re.MULTILINE)
-        # self.schema = self._load_schema()
+        self.schema = self._load_schema()
 
         self.notebook = notebook
         self.cell_source = cell_source
@@ -80,11 +80,11 @@ class HeaderExtractor:
         # parse yaml
         header = yaml.safe_load(yaml_doc)
         # validate schema
-        # try:
-            # jsonschema.validate(header, self.schema)
-        # except jsonschema.ValidationError as e:
-        #     logging.getLogger().debug(f"Cell header validation error: {e}")
-        #     raise e
+        try:
+            jsonschema.validate(header, self.schema)
+        except jsonschema.ValidationError as e:
+            logging.getLogger().debug(f"Cell header validation error: {e}")
+            raise e
         return header
 
     @staticmethod

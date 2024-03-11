@@ -1,10 +1,8 @@
-FROM condaforge/mambaforge:23.3.1-1 AS naavre-build
+FROM condaforge/mambaforge:23.11.0-0 AS naavre-build
 RUN conda install -c conda-forge conda-pack conda-merge
 COPY environment.yaml .
 COPY naa-vre-environment.yaml .
 RUN conda-merge environment.yaml naa-vre-environment.yaml > merged-environment.yaml
-
-ADD ./jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 
 RUN mamba env update --name venv -f merged-environment.yaml
 RUN conda-pack -n venv -o /tmp/env.tar && \
@@ -26,6 +24,9 @@ RUN chmod +x /venv/bin/activate
 SHELL ["/bin/bash", "-c","/venv/bin/activate"]
 RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
+
+ADD ./jupyterlab_vre-0.1.0-py3-none-any.whl /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
+RUN pip install /home/jovyan/jupyterlab_vre-0.1.0-py3-none-any.whl
 
 ADD start-jupyter.sh /usr/local/bin/start-jupyter.sh
 ADD start-jupyter-venv.sh /usr/local/bin/start-jupyter-venv.sh

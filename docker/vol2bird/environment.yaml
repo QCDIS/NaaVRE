@@ -1,7 +1,0 @@
-name: venv
-channels:
-  - conda-forge
-  - bioconda
-dependencies:
-  - minio
-  - h5py

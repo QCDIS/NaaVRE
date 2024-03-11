@@ -20,13 +20,14 @@ logger.addHandler(handler)
 
 class Rcontainerizer:
     @staticmethod
-    def get_files_info(cell=None, image_repo=None, cells_path=None):
+    def get_files_info(cell=None, cells_path=None):
         if not os.path.exists(cells_path):
             os.mkdir(cells_path)
         cell_path = os.path.join(cells_path, cell.task_name)
 
-        cell_file_name = cell.task_name + '.R'
-        dockerfile_name = 'Dockerfile.' + image_repo + '.' + cell.task_name
+        cell_file_name = 'task.R'
+        dockerfile_name = 'Dockerfile'
+        environment_file_name = 'environment.yaml'
 
         if os.path.exists(cell_path):
             for files in os.listdir(cell_path):
@@ -38,16 +39,35 @@ class Rcontainerizer:
 
         cell_file_path = os.path.join(cell_path, cell_file_name)
         dockerfile_file_path = os.path.join(cell_path, dockerfile_name)
-        return {'cell': {
-            'file_name': cell_file_name,
-            'path': cell_file_path},
+        env_file_path = os.path.join(cell_path, environment_file_name)
+        return {
+            'cell': {
+                'file_name': cell_file_name,
+                'path': cell_file_path},
             'dockerfile': {
                 'file_name': dockerfile_name,
-                'path': dockerfile_file_path}
+                'path': dockerfile_file_path},
+            'environment': {
+                'file_name': environment_file_name,
+                'path': env_file_path},
         }
 
     @staticmethod
-    def build_templates(cell=None, files_info=None):
+    def map_dependencies(dependencies, module_name_mapping):
+        dependencies = map(
+            lambda x: 'r-' + x['name'],
+            dependencies)
+        dependencies = map(
+            lambda x: module_name_mapping.get('r', {}).get(x, x),
+            dependencies)
+        set_conda_deps = set(dependencies)
+        set_pip_deps = set()
+        set_conda_deps.discard(None)
+        set_conda_deps.discard(None)
+        return set_conda_deps, set_pip_deps
+
+    @staticmethod
+    def build_templates(cell=None, files_info=None, module_name_mapping=None):
         # we also want to always add the id to the input parameters
         inputs = cell.inputs
         types = cell.types
@@ -74,17 +94,13 @@ class Rcontainerizer:
                                              confs=cell.generate_configuration())
         cell.container_source = compiled_code
         dependencies = cell.generate_dependencies()
-        print('-------------------dependencies-------------------')
-        print(dependencies)
         r_dependencies = []
         for dep in dependencies:
             r_dep = dep.replace('import ', '')
-            install_packages = 'if (!requireNamespace("' + r_dep + '", quietly = TRUE)) {\ninstall.packages("' + r_dep + '", repos="http://cran.us.r-project.org")\n}'
+            install_packages = 'if (!requireNamespace("' + r_dep + '", quietly = TRUE)) {\n\tinstall.packages("' + r_dep + '", repos="http://cran.us.r-project.org")\n}'
             r_dependencies.append(install_packages)
             library = 'library(' + r_dep + ')'
             r_dependencies.append(library)
-        print('-------------------r_dependencies-------------------')
-        print(r_dependencies)
 
         template_cell.stream(cell=cell,
                              deps=r_dependencies,
@@ -93,7 +109,10 @@ class Rcontainerizer:
         template_dockerfile.stream(task_name=cell.task_name,
                                    base_image=cell.base_image).dump(files_info['dockerfile']['path'])
 
-        # set_conda_deps, set_pip_deps = map_dependencies(dependencies=cell.dependencies)
-        # template_conda = template_env.get_template('conda_env_template.jinja2')
-        # template_conda.stream(base_image=cell.base_image, conda_deps=list(set_conda_deps),
-        #                       pip_deps=list(set_pip_deps)).dump(files_info['environment']['path'])
+        set_conda_deps, set_pip_deps = Rcontainerizer.map_dependencies(
+            cell.dependencies,
+            module_name_mapping)
+        logger.debug('cell.dependencies.conda: ' + str(cell.dependencies))
+        template_conda = template_env.get_template('conda_env_template.jinja2')
+        template_conda.stream(base_image=cell.base_image, conda_deps=list(set_conda_deps),
+                              pip_deps=list(set_pip_deps)).dump(files_info['environment']['path'])
