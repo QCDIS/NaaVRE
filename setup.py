@@ -17,8 +17,8 @@ setup_args = dict(
     name=name,
     version="0.1.0",
     url="https://github.com/QCDIS/NaaVRE",
-    author="Riccardo Bianchi",
-    author_email="riccardo.bianchi@lifewatch.eu",
+    author="R. Bianchi,S. Koulouzis, G. Pelouze",
+    author_email="S.Koulouzis@uva.nl",
     description="Jupyter Lab extension for virtual research environments",
     license="BSD-3-Clause",
     long_description=long_description,
@@ -36,7 +36,6 @@ setup_args = dict(
     classifiers=[
         "License :: OSI Approved :: BSD License",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Framework :: Jupyter",
