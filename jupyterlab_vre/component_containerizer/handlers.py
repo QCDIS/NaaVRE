@@ -172,7 +172,18 @@ class ExtractorHandler(APIHandler, Catalog):
             confs = extractor.extract_cell_conf_ref(source)
             dependencies = extractor.infer_cell_dependencies(source, confs)
 
-        node_id = str(uuid.uuid4())[:7]
+        # If any of these change, we create a new cell in the catalog.
+        # This matches the cell properties saved in workflows.
+        cell_identity_dict = {
+            'title': title,
+            'params': params,
+            'inputs': ins,
+            'outputs': outs,
+            'deps': sorted(dependencies, key=lambda x: x['name']),
+            }
+        cell_identity_str = json.dumps(cell_identity_dict, sort_keys=True)
+        node_id = hashlib.sha1(cell_identity_str.encode()).hexdigest()
+
         cell = Cell(
             node_id=node_id,
             title=title,
