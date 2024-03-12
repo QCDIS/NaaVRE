@@ -146,11 +146,11 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertEqual(200, response.code)
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
                 wf_creation_utc = datetime.datetime.now(tz=datetime.timezone.utc)
-                files_updated = json.loads(response.body.decode('utf-8'))['files_updated']
+                dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
                 test_cells.append({
                     'wf_id': wf_id,
                     'wf_creation_utc': wf_creation_utc,
-                    'files_updated': files_updated,
+                    'dispatched_github_workflow': dispatched_github_workflow,
                 })
                 if 'skip_exec' in cell and cell['skip_exec']:
                     continue
@@ -192,7 +192,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 repository_name = repository_name.split('.git')[0]
 
             updated_cells = list(filter(
-                lambda cell: cell['files_updated'],
+                lambda cell: cell['dispatched_github_workflow'],
                 test_cells,
             ))
 
