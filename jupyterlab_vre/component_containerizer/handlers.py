@@ -2,7 +2,6 @@ import copy
 import datetime
 import hashlib
 import importlib
-import json
 import logging
 import os
 import re
@@ -13,7 +12,6 @@ from builtins import Exception
 from pathlib import Path
 from time import sleep
 
-import requests
 import json
 
 import autopep8
@@ -79,7 +77,7 @@ def set_notebook_kernel(notebook, kernel):
 
 
 def query_registry_for_image(image_repo, image_name):
-    m = re.match(r'^docker.io/(\w+)')
+    m = re.match(r'^docker.io/(\w+)', image_name)
     if m:
         # Docker Hub
         url = f'https://hub.docker.com/v2/repositories/{m.group(1)}/{image_name}'
@@ -87,14 +85,14 @@ def query_registry_for_image(image_repo, image_name):
     else:
         # OCI registries
         domain = image_repo.split('/')[0]
-        path = image_repo.split('/')[1:]
+        path = '/'.join(image_repo.split('/')[1:])
         url = f'https://{domain}/v2/{path}/{image_name}/tags/list'
         # OCI registries require authentication, even for public registries.
         # For ghcr.io, OCI_TOKEN should be a base64-encoded GitHub classic
         # access token with the read:packages scope
         headers = {
             "Authorization": f"Bearer {os.getenv('OCI_TOKEN')}",
-            },
+            }
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         return json.loads(response.content.decode('utf-8'))
@@ -548,7 +546,6 @@ class CellsHandler(APIHandler, Catalog):
         # xyz
         image_version = image_version[:7]
         if do_dispatch_github_workflow:
-            wf_creation_utc = datetime.datetime.now(tz=datetime.timezone.utc)
             resp = dispatch_github_workflow(
                 owner,
                 repository_name,
