@@ -5,6 +5,7 @@ import importlib
 import json
 import logging
 import os
+import re
 import sys
 import traceback
 import uuid
@@ -51,7 +52,6 @@ logger.addHandler(handler)
 github_url_repos = 'https://api.github.com/repos'
 github_workflow_file_name = 'build-push-docker.yml'
 cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
-registry_url = os.environ.get('REGISTRY_URL', 'https://hub.docker.com/u/qcdis')
 
 
 # code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
@@ -78,9 +78,24 @@ def set_notebook_kernel(notebook, kernel):
     return new_nb
 
 
-def query_registry_for_image(image_name=None, repository=None, registry_url=None):
-    url = registry_url + repository + '/' + image_name
-    response = requests.get(url)
+def query_registry_for_image(image_repo, image_name):
+    m = re.match(r'^docker.io/(\w+)')
+    if m:
+        # Docker Hub
+        url = f'https://hub.docker.com/v2/repositories/{m.group(1)}/{image_name}'
+        headers = {}
+    else:
+        # OCI registries
+        domain = image_repo.split('/')[0]
+        path = image_repo.split('/')[1:]
+        url = f'https://{domain}/v2/{path}/{image_name}/tags/list'
+        # OCI registries require authentication, even for public registries.
+        # For ghcr.io, OCI_TOKEN should be a base64-encoded GitHub classic
+        # access token with the read:packages scope
+        headers = {
+            "Authorization": f"Bearer {os.getenv('OCI_TOKEN')}",
+            },
+    response = requests.get(url, headers=headers)
     if response.status_code == 200:
         return json.loads(response.content.decode('utf-8'))
     else:
@@ -460,15 +475,14 @@ class CellsHandler(APIHandler, Catalog):
             Rcontainerizer.build_templates(
                 cell=current_cell,
                 files_info=files_info,
-                module_name_mapping=load_module_name_mapping()
-,
+                module_name_mapping=load_module_name_mapping(),
                 )
         elif 'python' in current_cell.kernel.lower():
             files_info = get_files_info(cell=current_cell)
             build_templates(
                 cell=current_cell,
                 files_info=files_info,
-                module_name_mapping=load_module_name_mapping()
+                module_name_mapping=load_module_name_mapping(),
                 )
         else:
             self.set_status(400)
@@ -525,9 +539,8 @@ class CellsHandler(APIHandler, Catalog):
             do_dispatch_github_workflow = True
         else:
             image_info = query_registry_for_image(
-                registry_url='https://hub.docker.com/v2/repositories/',
+                image_repo=image_repo,
                 image_name=current_cell.task_name,
-                repository=registry_url.split('/')[-1]
                 )
             if not image_info:
                 do_dispatch_github_workflow = True
