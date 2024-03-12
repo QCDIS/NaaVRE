@@ -2,15 +2,17 @@ import copy
 import datetime
 import hashlib
 import importlib
-import json
 import logging
 import os
+import re
 import sys
 import traceback
 import uuid
 from builtins import Exception
 from pathlib import Path
 from time import sleep
+
+import json
 
 import autopep8
 import distro
@@ -72,6 +74,30 @@ def set_notebook_kernel(notebook, kernel):
     new_nb.metadata.kernelspec.display_name = kernel
     new_nb.metadata.kernelspec.language = kernel
     return new_nb
+
+
+def query_registry_for_image(image_repo, image_name):
+    m = re.match(r'^docker.io/(\w+)', image_name)
+    if m:
+        # Docker Hub
+        url = f'https://hub.docker.com/v2/repositories/{m.group(1)}/{image_name}'
+        headers = {}
+    else:
+        # OCI registries
+        domain = image_repo.split('/')[0]
+        path = '/'.join(image_repo.split('/')[1:])
+        url = f'https://{domain}/v2/{path}/{image_name}/tags/list'
+        # OCI registries require authentication, even for public registries.
+        # For ghcr.io, OCI_TOKEN should be a base64-encoded GitHub classic
+        # access token with the read:packages scope
+        headers = {
+            "Authorization": f"Bearer {os.getenv('OCI_TOKEN')}",
+            }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return json.loads(response.content.decode('utf-8'))
+    else:
+        return None
 
 
 class ExtractorHandler(APIHandler, Catalog):
@@ -447,15 +473,14 @@ class CellsHandler(APIHandler, Catalog):
             Rcontainerizer.build_templates(
                 cell=current_cell,
                 files_info=files_info,
-                module_name_mapping=load_module_name_mapping()
-,
+                module_name_mapping=load_module_name_mapping(),
                 )
         elif 'python' in current_cell.kernel.lower():
             files_info = get_files_info(cell=current_cell)
             build_templates(
                 cell=current_cell,
                 files_info=files_info,
-                module_name_mapping=load_module_name_mapping()
+                module_name_mapping=load_module_name_mapping(),
                 )
         else:
             self.set_status(400)
@@ -501,18 +526,26 @@ class CellsHandler(APIHandler, Catalog):
             logger.error(error_message)
             self.flush()
             return
-        files_updated, image_version = create_or_update_cell_in_repository(
+        do_dispatch_github_workflow, image_version = create_or_update_cell_in_repository(
             task_name=current_cell.task_name,
             repository=gh_repository,
             files_info=files_info,
             )
         wf_id = str(uuid.uuid4())
-        # Here we force to run the containerization workflow since we can't if the docker image is already built. Also,
-        # when testing the workflow we need to run it again
-        files_updated = True
+
+        if os.getenv('DEBUG') and os.getenv('DEBUG').lower() == 'true':
+            do_dispatch_github_workflow = True
+        else:
+            image_info = query_registry_for_image(
+                image_repo=image_repo,
+                image_name=current_cell.task_name,
+                )
+            if not image_info:
+                do_dispatch_github_workflow = True
+
+        # xyz
         image_version = image_version[:7]
-        if files_updated:
-            wf_creation_utc = datetime.datetime.now(tz=datetime.timezone.utc)
+        if do_dispatch_github_workflow:
             resp = dispatch_github_workflow(
                 owner,
                 repository_name,
@@ -533,8 +566,8 @@ class CellsHandler(APIHandler, Catalog):
             Catalog.delete_cell_from_task_name(current_cell.task_name)
             Catalog.add_cell(current_cell)
 
-        self.write(
-            json.dumps({'wf_id': wf_id, 'files_updated': files_updated, 'image_version': image_version}))
+        print(json.dumps({'wf_id': wf_id, 'dispatched_github_workflow': do_dispatch_github_workflow, 'image_version': image_version}, indent=4))
+        self.write(json.dumps({'wf_id': wf_id, 'dispatched_github_workflow': do_dispatch_github_workflow, 'image_version': image_version}))
         self.flush()
 
 
@@ -571,10 +604,10 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
     return files_updated, code_content_hash
 
 
-def dispatch_github_workflow(owner, repository_name, task_name, files_info, repository_token, image, wf_id=None,
-                             image_version=None):
+def dispatch_github_workflow(owner, repository_name, task_name, files_info, repository_token, image, wf_id=None, image_version=None):
+    url = github_url_repos + '/' + owner + '/' + repository_name + '/actions/workflows/' + github_workflow_file_name + '/dispatches'
     resp = requests.post(
-        url=github_url_repos + '/' + owner + '/' + repository_name + '/actions/workflows/' + github_workflow_file_name + '/dispatches',
+        url=url,
         json={
             'ref': 'refs/heads/main',
             'inputs': {

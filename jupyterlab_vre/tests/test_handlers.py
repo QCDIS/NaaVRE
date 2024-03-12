@@ -2,6 +2,7 @@ import datetime
 import glob
 import json
 import os
+import random
 import shlex
 import shutil
 import subprocess
@@ -62,7 +63,7 @@ def create_cell_and_add_to_cat(cell_path=None):
     test_cell = Cell(cell['title'], cell['task_name'], cell['original_source'], cell['inputs'],
                      cell['outputs'],
                      cell['params'], cell['confs'], cell['dependencies'], cell['container_source'],
-                     cell['chart_obj'], cell['node_id'], cell['kernel'],notebook_dict)
+                     cell['chart_obj'], cell['node_id'], cell['kernel'], notebook_dict)
     test_cell.types = cell['types']
     test_cell.base_image = cell['base_image']
     Catalog.editor_buffer = test_cell
@@ -144,12 +145,12 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertEqual(200, response.code)
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
                 wf_creation_utc = datetime.datetime.now(tz=datetime.timezone.utc)
-                files_updated = json.loads(response.body.decode('utf-8'))['files_updated']
+                dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
                 test_cells.append({
                     'wf_id': wf_id,
                     'wf_creation_utc': wf_creation_utc,
-                    'files_updated': files_updated,
-                    })
+                    'dispatched_github_workflow': dispatched_github_workflow,
+                })
                 if 'skip_exec' in cell and cell['skip_exec']:
                     continue
                 if 'python' in test_cell.kernel and 'skip_exec':
@@ -169,7 +170,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     print("stderr:", cell_exec.stderr)
                     print("return code:", cell_exec.returncode)
                     print('---------------------------------------------------')
-                    self.assertEqual(0, cell_exec.returncode, 'Cell execution failed: '+cell_file)
+                    self.assertEqual(0, cell_exec.returncode, 'Cell execution failed: ' + cell_file)
                 elif test_cell.kernel == 'IRkernel' and 'skip_exec':
                     cell_path = os.path.join(cells_path, test_cell.task_name, 'task.R')
                     run_local_cell_path = os.path.join(cells_path, test_cell.task_name, 'run_local.R')
@@ -190,9 +191,9 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 repository_name = repository_name.split('.git')[0]
 
             updated_cells = list(filter(
-                lambda cell: cell['files_updated'],
+                lambda cell: cell['dispatched_github_workflow'],
                 test_cells,
-                ))
+            ))
 
             for cell in updated_cells:
                 # Get job id (many calls to the GitHub API)
@@ -205,7 +206,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     job_id=None,
                     timeout=300,
                     wait_for_completion=False,
-                    )
+                )
                 cell['job'] = job
 
             for cell in updated_cells:
@@ -219,7 +220,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     job_id=cell['job']['id'],
                     timeout=300,
                     wait_for_completion=True,
-                    )
+                )
                 cell['job'] = job
 
             for cell in updated_cells:
@@ -299,3 +300,57 @@ class HandlersAPITest(AsyncHTTPTestCase):
     def call_cell_handler(self):
         response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
         return response
+
+    def test_files_updated(self):
+        with mock.patch.object(CellsHandler, 'get_secure_cookie') as m:
+            m.return_value = 'cookie'
+            cells_json_path = os.path.join(base_path, 'cells')
+            cells_files = os.listdir(cells_json_path)
+            saved_debug_value = os.getenv("DEBUG")
+            for cell_file in cells_files:
+                cell_path = os.path.join(cells_json_path, cell_file)
+
+                # Commit cell
+                os.environ["DEBUG"] = "False"
+                create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+
+                # Commit same cell again
+                os.environ["DEBUG"] = "False"
+                create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+                dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                self.assertFalse(dispatched_github_workflow)
+
+                # Commit same cell again, forcing update
+                os.environ["DEBUG"] = "True"
+                create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+                dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                self.assertTrue(dispatched_github_workflow)
+
+                # Commit modified cell
+                _, new_cell = create_cell_and_add_to_cat(cell_path=cell_path)
+                new_cell['original_source'] += f'\na = {random.random()}'
+                with open(cell_path, 'r') as f:
+                    saved_cell_text = f.read()
+                try:
+                    with open(cell_path, 'w') as file:
+                        json.dump(new_cell, file, indent=2)
+                    os.environ["DEBUG"] = "False"
+                    create_cell_and_add_to_cat(cell_path=cell_path)
+                    response = self.call_cell_handler()
+                    self.assertEqual(200, response.code)
+                    dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                    self.assertTrue(dispatched_github_workflow)
+                finally:
+                    with open(cell_path, 'w') as f:
+                        f.write(saved_cell_text)
+
+        if saved_debug_value is not None:
+            os.environ["DEBUG"] = saved_debug_value
+        else:
+            del os.environ["DEBUG"]
