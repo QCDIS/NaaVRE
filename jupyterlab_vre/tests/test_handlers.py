@@ -1,11 +1,10 @@
-import copy
 import datetime
 import glob
 import json
 import os
+import random
 import shlex
 import shutil
-import string
 import subprocess
 import sys
 from pathlib import Path
@@ -17,7 +16,7 @@ from tornado.web import Application
 
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
     NotebookSearchHandler, NotebookSearchRatingHandler
-from jupyterlab_vre.component_containerizer.handlers import wait_for_job, query_registry_for_image
+from jupyterlab_vre.component_containerizer.handlers import wait_for_job
 from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.handlers import load_module_names_mapping
@@ -307,40 +306,51 @@ class HandlersAPITest(AsyncHTTPTestCase):
             m.return_value = 'cookie'
             cells_json_path = os.path.join(base_path, 'cells')
             cells_files = os.listdir(cells_json_path)
-            os.environ["DEBUG"] = "False"
+            saved_debug_value = os.getenv("DEBUG")
             for cell_file in cells_files:
                 cell_path = os.path.join(cells_json_path, cell_file)
-                test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
+
+                # Commit cell
+                os.environ["DEBUG"] = "False"
+                create_cell_and_add_to_cat(cell_path=cell_path)
                 response = self.call_cell_handler()
                 self.assertEqual(200, response.code)
-                wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
+
+                # Commit same cell again
+                os.environ["DEBUG"] = "False"
+                create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
                 dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
                 self.assertFalse(dispatched_github_workflow)
 
-                # Test if we commit a change to the cell
-                new_cell = copy.deepcopy(cell)
-                original_source = cell['original_source']
-                random_str = string.ascii_lowercase
-                original_source += '\n'+random_str+'=1'
-                new_cell['original_source'] = original_source
-                new_cell_path = os.path.join(cells_json_path, 'new_'+cell_file)
-                with open(new_cell_path, 'w') as file:
-                    json.dump(new_cell, file, indent=2)
-
-                test_cell, cell = create_cell_and_add_to_cat(cell_path=new_cell_path)
-                response = self.call_cell_handler()
-                self.assertEqual(200, response.code)
-                dispatch_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
-                self.assertTrue(dispatch_github_workflow)
-
+                # Commit same cell again, forcing update
                 os.environ["DEBUG"] = "True"
-                test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
+                create_cell_and_add_to_cat(cell_path=cell_path)
                 response = self.call_cell_handler()
                 self.assertEqual(200, response.code)
-                wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
-                dispatch_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
-                self.assertTrue(dispatch_github_workflow)
-                break
-        os.environ["DEBUG"] = "True"
-        # Delete new_cell_path
-        os.remove(new_cell_path)
+                dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                self.assertTrue(dispatched_github_workflow)
+
+                # Commit modified cell
+                _, new_cell = create_cell_and_add_to_cat(cell_path=cell_path)
+                new_cell['original_source'] += f'\na = {random.random()}'
+                with open(cell_path, 'r') as f:
+                    saved_cell_text = f.read()
+                try:
+                    with open(cell_path, 'w') as file:
+                        json.dump(new_cell, file, indent=2)
+                    os.environ["DEBUG"] = "False"
+                    create_cell_and_add_to_cat(cell_path=cell_path)
+                    response = self.call_cell_handler()
+                    self.assertEqual(200, response.code)
+                    dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                    self.assertTrue(dispatched_github_workflow)
+                finally:
+                    with open(cell_path, 'w') as f:
+                        f.write(saved_cell_text)
+
+        if saved_debug_value is not None:
+            os.environ["DEBUG"] = saved_debug_value
+        else:
+            del os.environ["DEBUG"]
