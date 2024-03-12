@@ -88,8 +88,13 @@ def query_registry_for_image(image_repo, image_name):
         path = '/'.join(image_repo.split('/')[1:])
         url = f'https://{domain}/v2/{path}/{image_name}/tags/list'
         # OCI registries require authentication, even for public registries.
-        # For ghcr.io, OCI_TOKEN should be a base64-encoded GitHub classic
-        # access token with the read:packages scope
+        # The token should be set in the $OCI_TOKEN environment variable.
+        # For ghcr.io, connections still succeed when $OCI_TOKEN is unset (this
+        # results in header "Authorization: Bearer None", which grants access
+        # to public registries, although it is not officially documented). If
+        # this fails, or when accessing private registries, OCI_TOKEN should be
+        # a base64-encoded GitHub classic access token with the read:packages
+        # scope.
         headers = {
             "Authorization": f"Bearer {os.getenv('OCI_TOKEN')}",
             }
