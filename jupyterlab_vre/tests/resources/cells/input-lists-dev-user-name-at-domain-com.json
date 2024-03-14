@@ -37,7 +37,6 @@
                     "y": 15
                 },
                 "properties": {
-                    "deps": [],
                     "inputs": [
                         "msg"
                     ],

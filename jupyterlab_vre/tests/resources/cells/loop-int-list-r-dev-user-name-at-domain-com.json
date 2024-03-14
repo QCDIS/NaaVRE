@@ -23,7 +23,6 @@
                     "y": 15
                 },
                 "properties": {
-                    "deps": [],
                     "inputs": [
                         "list_of_ints"
                     ],

@@ -42,8 +42,7 @@
           "outputs": [
             "file_path"
           ],
-          "og_node_id": "c45fb67",
-          "deps": []
+          "og_node_id": "c45fb67"
         },
         "size": {
           "width": 250,
@@ -105,8 +104,7 @@
           "outputs": [
             "lines"
           ],
-          "og_node_id": "47b2d97",
-          "deps": []
+          "og_node_id": "47b2d97"
         },
         "size": {
           "width": 250,
@@ -168,8 +166,7 @@
           "outputs": [
             "lines"
           ],
-          "og_node_id": "47b2d97",
-          "deps": []
+          "og_node_id": "47b2d97"
         },
         "size": {
           "width": 250,
@@ -274,8 +271,7 @@
           "outputs": [
             "count"
           ],
-          "og_node_id": "f893a78",
-          "deps": []
+          "og_node_id": "f893a78"
         },
         "size": {
           "width": 250,
@@ -337,8 +333,7 @@
           "outputs": [
             "count"
           ],
-          "og_node_id": "f893a78",
-          "deps": []
+          "og_node_id": "f893a78"
         },
         "size": {
           "width": 250,
@@ -381,8 +376,7 @@
             "count"
           ],
           "outputs": [],
-          "og_node_id": "d9acfa2",
-          "deps": []
+          "og_node_id": "d9acfa2"
         },
         "size": {
           "width": 250,
@@ -443,8 +437,7 @@
             "list_of_ints",
             "list_of_paths"
           ],
-          "og_node_id": "3cfdc6f",
-          "deps": []
+          "og_node_id": "3cfdc6f"
         },
         "size": {
           "width": 250,
@@ -573,8 +566,7 @@
             "list_of_ints"
           ],
           "outputs": [],
-          "og_node_id": "3285abd",
-          "deps": []
+          "og_node_id": "3285abd"
         },
         "size": {
           "width": 250,
@@ -617,8 +609,7 @@
             "list_of_ints"
           ],
           "outputs": [],
-          "og_node_id": "3285abd",
-          "deps": []
+          "og_node_id": "3285abd"
         },
         "size": {
           "width": 250,
@@ -661,8 +652,7 @@
             "list_of_paths"
           ],
           "outputs": [],
-          "og_node_id": "943e143",
-          "deps": []
+          "og_node_id": "943e143"
         },
         "size": {
           "width": 250,
@@ -705,8 +695,7 @@
             "list_of_paths"
           ],
           "outputs": [],
-          "og_node_id": "943e143",
-          "deps": []
+          "og_node_id": "943e143"
         },
         "size": {
           "width": 250,
