@@ -182,7 +182,7 @@ class ExtractorHandler(APIHandler, Catalog):
             'deps': sorted(dependencies, key=lambda x: x['name']),
             }
         cell_identity_str = json.dumps(cell_identity_dict, sort_keys=True)
-        node_id = hashlib.sha1(cell_identity_str.encode()).hexdigest()
+        node_id = hashlib.sha1(cell_identity_str.encode()).hexdigest()[:7]
 
         cell = Cell(
             node_id=node_id,
@@ -554,7 +554,6 @@ class CellsHandler(APIHandler, Catalog):
             if not image_info:
                 do_dispatch_github_workflow = True
 
-        # xyz
         image_version = image_version[:7]
         if do_dispatch_github_workflow:
             resp = dispatch_github_workflow(
