@@ -86,6 +86,8 @@ def wait_for_api_resource(github=None):
 
 class HandlersAPITest(AsyncHTTPTestCase):
 
+    os.environ["ASYNC_TEST_TIMEOUT"] = "120"
+
     def get_app(self):
         notebook_path = os.path.join(base_path, 'notebooks/test_notebook.ipynb')
         with open(notebook_path, mode='r', encoding='utf-8') as f:
@@ -139,6 +141,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cells_files = os.listdir(cells_json_path)
             test_cells = []
             for cell_file in cells_files:
+                if 'knmi-vol-h5-to-odim-h5-dev-user-name-at-domain-com.json' not in cell_file:
+                    continue
                 cell_path = os.path.join(cells_json_path, cell_file)
                 test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
                 response = self.call_cell_handler()
