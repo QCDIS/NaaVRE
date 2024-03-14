@@ -258,7 +258,7 @@ class BaseImageTagsHandler(APIHandler):
     async def get(self):
         url = os.getenv(
             'BASE_IMAGE_TAGS_URL',
-            'https://raw.githubusercontent.com/QCDIS/NaaVRE-conf/main/base_image_tags.json',
+            'https://github.com/QCDIS/NaaVRE-flavors/releases/latest/download/base_image_tags.json',
             )
         logger.debug(f'Base image tags URL: {url}')
         print(f'Base image tags URL: {url}')
