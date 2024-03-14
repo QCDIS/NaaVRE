@@ -98,6 +98,7 @@ spec:
       {% set special_dep = deps_dag[nid][0] %}
       script:
         image: python:alpine3.9
+        imagePullPolicy: IfNotPresent
         command: [python]
         source: |
           import json
@@ -115,6 +116,7 @@ spec:
           f_out.close()
           {% else %}
           {# Merger logic #}
+          {{special_dep['port_id']}} = [item for items in {{special_dep['port_id']}} for item in json.loads(items)]
           f_out = open("/tmp/{{ports[p]['id']}}.json", "w")
           f_out.write(json.dumps({{special_dep['port_id']}}))
           f_out.close()
@@ -161,10 +163,10 @@ spec:
             --id {{' '}}{{cells[nid]['node_id']}}{{''}}{{";"}}
             jupyter execute /app/task-output.ipynb --allow-errors;
             jupyter nbconvert --no-input --execute /app/task-output.ipynb --to html;
-            jupyter notebook --port 5173 --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --NotebookApp.base_url=/naavre-visualizer
+            jupyter notebook --port 5173 --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --NotebookApp.base_url=/naavre-visualizer-notebook
       metadata:
         labels:
-          app: naavre-visualizer
+          app: naavre-visualizer-notebook
         {% elif cells[nid]['kernel'] == 'ipython' %}
           - source /venv/bin/activate; python /app/task.py
             {% for d in deps_dag[nid] %}
