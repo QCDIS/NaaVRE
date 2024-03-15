@@ -2,6 +2,7 @@ import datetime
 import glob
 import json
 import os
+import random
 import shlex
 import shutil
 import subprocess
@@ -98,6 +99,8 @@ def wait_for_api_resource(github=None):
 
 class HandlersAPITest(AsyncHTTPTestCase):
 
+    os.environ["ASYNC_TEST_TIMEOUT"] = "120"
+
     def get_app(self):
         notebook_path = os.path.join(base_path, 'notebooks/test_notebook.ipynb')
         with open(notebook_path, mode='r', encoding='utf-8') as f:
@@ -157,11 +160,11 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertEqual(200, response.code)
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
                 wf_creation_utc = datetime.datetime.now(tz=datetime.timezone.utc)
-                files_updated = json.loads(response.body.decode('utf-8'))['files_updated']
+                dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
                 test_cells.append({
                     'wf_id': wf_id,
                     'wf_creation_utc': wf_creation_utc,
-                    'files_updated': files_updated,
+                    'dispatched_github_workflow': dispatched_github_workflow,
                 })
                 if 'skip_exec' in cell and cell['skip_exec']:
                     continue
@@ -203,7 +206,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 repository_name = repository_name.split('.git')[0]
 
             updated_cells = list(filter(
-                lambda cell: cell['files_updated'],
+                lambda cell: cell['dispatched_github_workflow'],
                 test_cells,
             ))
             for cell in updated_cells:
@@ -321,3 +324,57 @@ class HandlersAPITest(AsyncHTTPTestCase):
     def call_cell_handler(self):
         response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
         return response
+
+    def test_files_updated(self):
+        with mock.patch.object(CellsHandler, 'get_secure_cookie') as m:
+            m.return_value = 'cookie'
+            cells_json_path = os.path.join(base_path, 'cells')
+            cells_files = os.listdir(cells_json_path)
+            saved_debug_value = os.getenv("DEBUG")
+            for cell_file in cells_files:
+                cell_path = os.path.join(cells_json_path, cell_file)
+
+                # Commit cell
+                os.environ["DEBUG"] = "False"
+                create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+
+                # Commit same cell again
+                os.environ["DEBUG"] = "False"
+                create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+                dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                self.assertFalse(dispatched_github_workflow)
+
+                # Commit same cell again, forcing update
+                os.environ["DEBUG"] = "True"
+                create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+                dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                self.assertTrue(dispatched_github_workflow)
+
+                # Commit modified cell
+                _, new_cell = create_cell_and_add_to_cat(cell_path=cell_path)
+                new_cell['original_source'] += f'\na = {random.random()}'
+                with open(cell_path, 'r') as f:
+                    saved_cell_text = f.read()
+                try:
+                    with open(cell_path, 'w') as file:
+                        json.dump(new_cell, file, indent=2)
+                    os.environ["DEBUG"] = "False"
+                    create_cell_and_add_to_cat(cell_path=cell_path)
+                    response = self.call_cell_handler()
+                    self.assertEqual(200, response.code)
+                    dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                    self.assertTrue(dispatched_github_workflow)
+                finally:
+                    with open(cell_path, 'w') as f:
+                        f.write(saved_cell_text)
+
+        if saved_debug_value is not None:
+            os.environ["DEBUG"] = saved_debug_value
+        else:
+            del os.environ["DEBUG"]

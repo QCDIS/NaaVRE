@@ -32,12 +32,12 @@
         "watch": "tsc -w"
     },
     "dependencies": {
-        "@jupyterlab/notebook": "~3.5.3"
+        "@jupyterlab/notebook": "3.5.3"
     },
     "devDependencies": {
-        "@types/node": "^20.2.5",
-        "rimraf": "^5.0.0",
-        "typescript": "~5.0.2"
+        "@types/node": "20.2.5",
+        "rimraf": "5.0.0",
+        "typescript": "5.0.2"
     },
     "publishConfig": {
         "access": "public"

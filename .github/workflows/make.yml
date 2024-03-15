@@ -50,6 +50,7 @@ jobs:
       naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
       argo_url: ${{ secrets.ARGO_URL }}
       argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
+      debug: ${{ secrets.DEBUG }}
 
   call-build-container-vanilla:
     needs: [call-pytest]

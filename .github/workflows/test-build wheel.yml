@@ -31,6 +31,8 @@ on:
         required: true
       argo_api_token:
         required: true
+      debug:
+        required: true
 
 env:
   CELL_GITHUB: ${{ secrets.cell_github }}
@@ -46,6 +48,7 @@ env:
   ARGO_URL: ${{ secrets.ARGO_URL }}
   ARGO_API_TOKEN: ${{ secrets.ARGO_API_TOKEN }}
   ASYNC_TEST_TIMEOUT: 30
+  DEBUG: ${{ secrets.debug }}
 
 
 jobs:
@@ -118,6 +121,11 @@ jobs:
             echo $concatenated_error_message
             exit 1
           fi
+          if [ -z "$DEBUG" ]; then
+            echo "DEBUG not set"
+            concatenated_error_message="$concatenated_error_message DEBUG not set"
+            vars_not_set=1
+          fi
 
       - uses: actions/checkout@v4
 
@@ -126,7 +134,7 @@ jobs:
           auto-update-conda: true
           miniforge-version: latest
           miniforge-variant: Mambaforge
-          python-version: 3.9
+          python-version: 3.11
           path: ${{ env.CONDA }}/envs
           environment-file: environment.yml
           activate-environment: jupyterlab
@@ -173,3 +181,11 @@ jobs:
         with:
           name: jupyterlab_vre
           path: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
+
+      - name: Print conda environment
+        shell: bash -el {0}
+        run: conda env export
+
+      - name: Print conda yarn.lock
+        shell: bash -el {0}
+        run: cat yarn.lock
