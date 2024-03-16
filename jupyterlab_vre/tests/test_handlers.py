@@ -86,6 +86,8 @@ def wait_for_api_resource(github=None):
 
 class HandlersAPITest(AsyncHTTPTestCase):
 
+    os.environ["ASYNC_TEST_TIMEOUT"] = "120"
+
     def get_app(self):
         notebook_path = os.path.join(base_path, 'notebooks/test_notebook.ipynb')
         with open(notebook_path, mode='r', encoding='utf-8') as f:
