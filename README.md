@@ -252,3 +252,8 @@ echo -n $ARGO_TOKEN | base64 -w 0
 
 
 
+# Cypress
+
+```commandline
+docker run -it -v $PWD:/e2e -w /e2e cypress/included:12.17.2
+```
