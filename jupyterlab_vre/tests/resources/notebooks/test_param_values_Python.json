@@ -1,0 +1,56 @@
+{
+    "save": false,
+    "kernel": "ipython",
+    "cell_index": 1,
+    "notebook": {
+        "metadata": {
+            "kernelspec": {
+                "name": "conda-env-anaconda3-jupyterlab2-py",
+                "display_name": "Python [conda env:anaconda3-jupyterlab2]",
+                "language": "python"
+            },
+            "language_info": {
+                "name": "python",
+                "version": "3.12.1",
+                "mimetype": "text/x-python",
+                "codemirror_mode": {
+                    "name": "ipython",
+                    "version": 3
+                },
+                "pygments_lexer": "ipython3",
+                "nbconvert_exporter": "python",
+                "file_extension": ".py"
+            }
+        },
+        "nbformat_minor": 5,
+        "nbformat": 4,
+        "cells": [
+            {
+                "cell_type": "code",
+                "source": "# params\nparam_string = 'param_string value'\nparam_string_with_comment = 'param_string value'  # comment\nparam_int = 1\nparam_float = 1.1\nparam_list = [1, 2, 3]",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": 1,
+                "outputs": [],
+                "id": "8519a0de-0023-40ab-8b53-b7342950fed3"
+            },
+            {
+                "cell_type": "code",
+                "source": "# Param check\nprint(param_string)\nprint(param_string_with_comment)\nprint(param_int)\nprint(param_float)\nprint(param_list)",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": 2,
+                "outputs": [
+                    {
+                        "name": "stdout",
+                        "text": "param_string value\nparam_string value\n1\n1.1\n[1, 2, 3]\n",
+                        "output_type": "stream"
+                    }
+                ],
+                "id": "3c6969b8-ffd7-4f09-bb9a-01d1e01a834a"
+            }
+        ]
+    }
+}

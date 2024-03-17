@@ -2,6 +2,10 @@ name: Build wheel
 
 on:
   workflow_call:
+    inputs:
+      runs-on:
+        default: ubuntu-latest
+        type: string
     secrets:
       jupyterhub_user:
         required: true
@@ -27,6 +31,8 @@ on:
         required: true
       argo_api_token:
         required: true
+      debug:
+        required: true
 
 env:
   CELL_GITHUB: ${{ secrets.cell_github }}
@@ -42,11 +48,12 @@ env:
   ARGO_URL: ${{ secrets.ARGO_URL }}
   ARGO_API_TOKEN: ${{ secrets.ARGO_API_TOKEN }}
   ASYNC_TEST_TIMEOUT: 30
+  DEBUG: ${{ secrets.debug }}
 
 
 jobs:
   build-linux:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
     strategy:
       fail-fast: true
     steps:
@@ -62,11 +69,6 @@ jobs:
           if [ -z "$CELL_GITHUB_TOKEN" ]; then
             echo "CELL_GITHUB_TOKEN not set"
             concatenated_error_message="$concatenated_error_message CELL_GITHUB_TOKEN not set"
-            vars_not_set=1
-          fi
-          if [ -z "$REGISTRY_URL" ]; then
-            echo "REGISTRY_URL not set"
-            concatenated_error_message="$concatenated_error_message REGISTRY_URL not set"
             vars_not_set=1
           fi
           if [ -z "$NAAVRE_API_TOKEN" ]; then
@@ -119,22 +121,27 @@ jobs:
             echo $concatenated_error_message
             exit 1
           fi
+          if [ -z "$DEBUG" ]; then
+            echo "DEBUG not set"
+            concatenated_error_message="$concatenated_error_message DEBUG not set"
+            vars_not_set=1
+          fi
 
       - uses: actions/checkout@v4
 
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
           miniforge-version: latest
           miniforge-variant: Mambaforge
-          python-version: 3.9
+          python-version: 3.11
           path: ${{ env.CONDA }}/envs
           environment-file: environment.yml
           activate-environment: jupyterlab
           use-mamba: true
 
       - name: Cache Conda environment
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: ${{ env.CONDA }}/envs
           key: conda-environment-${{ runner.os }}-${{ hashFiles('environment.yml') }}
@@ -142,10 +149,10 @@ jobs:
             conda-environment-${{ runner.os }}-
         id: cache-conda
 
-      - name: Update environment
-        if: steps.cache-conda.outputs.cache-hit != 'true'
-        run:
-          mamba env update -n jupyterlab -f environment.yml
+#      - name: Update environment
+#        if: steps.cache-conda.outputs.cache-hit != 'true'
+#        run:
+#          mamba env update -n jupyterlab -f environment.yml
 
       - name: Lint with flake8
         shell: bash -l {0}
@@ -162,7 +169,8 @@ jobs:
           conda activate jupyterlab
           python docker/repo_utils/conf_vl_repos.py  --force=True
           pip install --upgrade build
-          pytest --ignore=docker --ignore=cypress
+          mkdir -p /tmp/data
+          pytest -s --ignore=docker --ignore=cypress --no-header -v
 
       - name: make release
         shell: bash -el {0}
@@ -173,3 +181,11 @@ jobs:
         with:
           name: jupyterlab_vre
           path: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
+
+      - name: Print conda environment
+        shell: bash -el {0}
+        run: conda env export
+
+      - name: Print conda yarn.lock
+        shell: bash -el {0}
+        run: cat yarn.lock

@@ -7,6 +7,7 @@ node_modules/
 jupyterlab_vre/labextension
 yarn.lock
 .idea
+.vscode
 
 # Created by https://www.gitignore.io/api/python
 # Edit at https://www.gitignore.io/?templates=python
@@ -121,4 +122,15 @@ dmypy.json
 /docker/MULTIPLY/naa-vre-environment.yaml
 /docker/MULTIPLY/start-jupyter.sh
 /docker/MULTIPLY/start-jupyter-venv.sh
-/cypress/videos/
+/docker/lter-life/init_script.sh
+/docker/lter-life/jupyterlab_vre-0.1.0-py3-none-any.whl
+/docker/lter-life/naa-vre-environment.yaml
+/docker/lter-life/start-jupyter.sh
+/docker/lter-life/start-jupyter-venv.sh
+/docker/laserfarm-pytorch/init_script.sh
+/docker/laserfarm-pytorch/jupyterlab_vre-0.1.0-py3-none-any.whl
+/docker/laserfarm-pytorch/naa-vre-environment.yaml
+/docker/laserfarm-pytorch/start-jupyter.sh
+/docker/laserfarm-pytorch/start-jupyter-venv.sh
+/docker/laserfarm-pytorch/repo_utils/
+/docker/lter-life/repo_utils/

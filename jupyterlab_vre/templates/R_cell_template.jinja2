@@ -4,26 +4,44 @@ setwd('/app')
 
 library(optparse)
 library(jsonlite)
+{% for dep in deps%}
+{{ dep }}
+{% endfor %}
 
-option_list = list
 
 option_list = list(
+
 {% for in_var in cell.all_inputs|sort %}
-{% if loop.last %}
-make_option(c("--{{ in_var }}"), action="store", default=NA, type='character', help="my description")
+{% if types[in_var] == list or types[in_var] == 'list' %}
+{% set type = 'character' %}
+{% elif types[in_var] == str or types[in_var] == 'str' %}
+{% set type = 'character' %}
+{% elif types[in_var] == int or types[in_var] == 'int' %}
+{% set type = 'integer' %}
+{% elif types[in_var] == float or types[in_var] == 'float' %}
+{% set type = 'numeric' %}
+{% elif types[in_var] == bool or types[in_var] == 'bool' %}
+{% set type = 'logical' %}
 {% else %}
-make_option(c("--{{ in_var }}"), action="store", default=NA, type='character', help="my description"),
+{% set type = 'character' %}
 {% endif %}
+{% set option = 'make_option(c("--' +  in_var+'"), action="store", default=NA, type="'+type+'", help="my description")'   %}
+{% if not loop.last %}
+{% set option = option + ', '%}
+{% endif %}
+{{ option }}
 {% endfor %}
+
 )
 
 # set input parameters accordingly
 opt = parse_args(OptionParser(option_list=option_list))
 
-
 {% for in_var in cell.inputs|sort %}
 {% if types[in_var] == list  or types[in_var] == 'list' %}
 {{ in_var }} = fromJSON(opt${{ in_var }})
+{% elif types[in_var] == str or  types[in_var] == 'str' %}
+{{ in_var }} <- gsub('"', '', opt${{ in_var }})
 {% else %}
 {{ in_var }} = opt${{ in_var }}
 {% endif %}

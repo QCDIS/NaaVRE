@@ -1,4 +1,4 @@
-FROM condaforge/mambaforge:23.3.1-1 AS naavre-pdal-build
+FROM condaforge/mambaforge:23.11.0-0 AS naavre-pdal-build
 RUN conda install -c conda-forge conda-pack conda-merge
 COPY environment.yaml .
 COPY naa-vre-environment.yaml .
@@ -11,7 +11,8 @@ RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
     rm /tmp/env.tar
 RUN /venv/bin/conda-unpack
-FROM jupyterhub/k8s-singleuser-sample:1.1.3-n248.h20c9028e AS runtime
+
+FROM jupyterhub/k8s-singleuser-sample:1.2.0 AS runtime
 USER root
 
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install fuse
@@ -20,7 +21,9 @@ COPY --from=naavre-pdal-build /venv/ /venv/
 
 ENV PATH=/venv/bin:$PATH
 ENV PATH=/home/jovyan/.local/bin:$PATH
-RUN source /venv/bin/activate
+RUN chmod +x /venv/bin/activate
+#RUN source /venv/bin/activate
+SHELL ["/bin/bash", "-c","/venv/bin/activate"]
 RUN echo "source /venv/bin/activate" >> ~/.bashrc
 SHELL ["/bin/bash", "--login", "-c"]
 
@@ -44,7 +47,9 @@ RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
 
 
-RUN jupyter lab build --debug;
+RUN jupyter lab build --debug; || true
+# if failed ptin /tmp/jupyterlab-debug-ovbxbngu.log
+RUN [ -e /tmp/jupyterlab-debug-*.log ] && cat /tmp/jupyterlab-debug-*.log || echo "File does not exist"
 COPY test_laserchicken.py .
 RUN python test_laserchicken.py
 RUN rm test_laserchicken.py
