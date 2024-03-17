@@ -129,7 +129,7 @@ export class CellTracker extends React.Component<IProps, IState> {
         this.setState({ baseImageSelected: true });
     };
 
-    exctractor = async (notebookModel: INotebookModel, save = false) => {
+    extractor = async (notebookModel: INotebookModel, save = false) => {
         await this.loadBaseImages();
         const kernel = await this.getKernel()
         try {
@@ -179,12 +179,12 @@ export class CellTracker extends React.Component<IProps, IState> {
 
     onActiveCellChanged = (notebook: Notebook, _activeCell: Cell) => {
         this.setState({ currentCellIndex: notebook.activeCellIndex });
-        this.exctractor(this.props.notebook.model);
+        this.extractor(this.props.notebook.model);
     };
 
     handleSaveState = (_context: DocumentRegistry.Context, state: SaveState) => {
         if (state === 'completed') {
-            this.exctractor(this.props.notebook.model);
+            this.extractor(this.props.notebook.model);
         }
     };
 

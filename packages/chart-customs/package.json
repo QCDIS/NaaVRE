@@ -32,9 +32,9 @@
         "watch": "tsc -w"
     },
     "devDependencies": {
-        "@types/node": "^20.2.5",
-        "rimraf": "^5.0.0",
-        "typescript": "~5.3.2"
+        "@types/node": "20.2.5",
+        "rimraf": "5.0.0",
+        "typescript": "5.3.2"
     },
     "publishConfig": {
         "access": "public"

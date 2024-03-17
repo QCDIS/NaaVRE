@@ -61,7 +61,7 @@ class TestCatalog(TestCase):
             self.assertEqual(returned_cell.task_name, test_cell.task_name)
             self.assertEqual(returned_cell.node_id, test_cell.node_id)
 
-            #Modify cell source and update
+            # Modify cell source and update
             returned_cell.original_source = 'modified'
             Catalog.update_cell(returned_cell)
             modified_cell_doc = Catalog.get_cell_from_og_node_id(test_cell.node_id)

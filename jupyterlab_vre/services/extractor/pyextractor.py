@@ -1,6 +1,7 @@
 import ast
 import logging
 import re
+import time
 from functools import lru_cache
 
 from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api

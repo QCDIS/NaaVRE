@@ -6,6 +6,7 @@ import ImageIcon from '@mui/icons-material/Image';
 import { INodeInnerDefaultProps } from "@mrblenny/react-flow-chart";
 
 
+
 const NodeInnerContainer = styled.div`
     min-height: 100px;
 `
