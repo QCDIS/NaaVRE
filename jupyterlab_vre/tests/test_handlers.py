@@ -2,6 +2,7 @@ import datetime
 import glob
 import json
 import os
+import random
 import shlex
 import shutil
 import subprocess
@@ -10,13 +11,12 @@ from pathlib import Path
 from time import sleep
 from unittest import mock
 
-from github import Github
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
     NotebookSearchHandler, NotebookSearchRatingHandler
-from jupyterlab_vre.component_containerizer.handlers import find_job
+from jupyterlab_vre.component_containerizer.handlers import wait_for_job
 from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.handlers import load_module_names_mapping
@@ -54,33 +54,18 @@ def delete_all_cells():
         Catalog.delete_cell_from_title(cell['title'])
 
 
-def get_github(cat_repositories=None):
-    if cat_repositories is None:
-        cat_repositories = Catalog.get_repositories()
-    assert cat_repositories is not None
-    assert len(cat_repositories) >= 1
-    return Github(cat_repositories[0]['token'])
-
-
-def get_gh_repository():
-    cat_repositories = Catalog.get_repositories()
-    gh = get_github(cat_repositories=cat_repositories)
-    owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
-    repository_name = cat_repositories[0]['url'].split(
-        'https://github.com/')[1].split('/')[1]
-    if '.git' in repository_name:
-        repository_name = repository_name.split('.git')[0]
-    return gh.get_repo(owner + '/' + repository_name)
-
-
 def create_cell_and_add_to_cat(cell_path=None):
+    print('Creating cell from: ', cell_path)
     with open(cell_path, 'r') as file:
         cell = json.load(file)
     file.close()
+    notebook_dict = {}
+    if 'notebook_dict' in cell:
+        notebook_dict = cell['notebook_dict']
     test_cell = Cell(cell['title'], cell['task_name'], cell['original_source'], cell['inputs'],
                      cell['outputs'],
                      cell['params'], cell['confs'], cell['dependencies'], cell['container_source'],
-                     cell['chart_obj'], cell['node_id'], cell['kernel'])
+                     cell['chart_obj'], cell['node_id'], cell['kernel'], notebook_dict)
     test_cell.types = cell['types']
     test_cell.base_image = cell['base_image']
     Catalog.editor_buffer = test_cell
@@ -102,6 +87,8 @@ def wait_for_api_resource(github=None):
 
 
 class HandlersAPITest(AsyncHTTPTestCase):
+
+    os.environ["ASYNC_TEST_TIMEOUT"] = "120"
 
     def get_app(self):
         notebook_path = os.path.join(base_path, 'notebooks/test_notebook.ipynb')
@@ -154,14 +141,26 @@ class HandlersAPITest(AsyncHTTPTestCase):
             m.return_value = 'cookie'
             cells_json_path = os.path.join(base_path, 'cells')
             cells_files = os.listdir(cells_json_path)
+            test_cells = []
             for cell_file in cells_files:
                 cell_path = os.path.join(cells_json_path, cell_file)
                 test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
                 response = self.call_cell_handler()
                 self.assertEqual(200, response.code)
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
-                if test_cell.kernel == 'python3':
-                    cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.py')
+                wf_creation_utc = datetime.datetime.now(tz=datetime.timezone.utc)
+                dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                test_cells.append({
+                    'wf_id': wf_id,
+                    'wf_creation_utc': wf_creation_utc,
+                    'dispatched_github_workflow': dispatched_github_workflow,
+                })
+                if 'skip_exec' in cell and cell['skip_exec']:
+                    continue
+                if 'python' in test_cell.kernel and 'skip_exec':
+                    cell_path = os.path.join(cells_path, test_cell.task_name, 'task.py')
+                    print('---------------------------------------------------')
+                    print('Executing cell: ', cell_path)
                     if 'example_inputs' in cell:
                         exec_args = [sys.executable, cell_path] + cell['example_inputs']
                     else:
@@ -169,16 +168,15 @@ class HandlersAPITest(AsyncHTTPTestCase):
 
                     cell_exec = subprocess.Popen(exec_args,
                                                  stdout=subprocess.PIPE)
-                    print('---------------------------------------------------')
                     text = cell_exec.communicate()[0]
                     print(text)
                     print("stdout:", cell_exec.stdout)
                     print("stderr:", cell_exec.stderr)
                     print("return code:", cell_exec.returncode)
                     print('---------------------------------------------------')
-                    self.assertEqual(0, cell_exec.returncode, text)
-                elif test_cell.kernel == 'IRkernel':
-                    cell_path = os.path.join(cells_path, test_cell.task_name, test_cell.task_name + '.R')
+                    self.assertEqual(0, cell_exec.returncode, 'Cell execution failed: ' + cell_file)
+                elif test_cell.kernel == 'IRkernel' and 'skip_exec':
+                    cell_path = os.path.join(cells_path, test_cell.task_name, 'task.R')
                     run_local_cell_path = os.path.join(cells_path, test_cell.task_name, 'run_local.R')
                     shutil.copy(cell_path, run_local_cell_path)
                     delete_text(run_local_cell_path, 'setwd(\'/app\')')
@@ -189,34 +187,50 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     result = subprocess.run(shlex.split(command), capture_output=True, text=True)
                     self.assertEqual(0, result.returncode, result.stderr)
 
-                cat_repositories = Catalog.get_repositories()
-                repo_token = cat_repositories[0]['token']
-                owner = cat_repositories[0]['url'].split('https://github.com/')[1].split('/')[0]
-                repository_name = cat_repositories[0]['url'].split(
-                    'https://github.com/')[1].split('/')[1]
-                if '.git' in repository_name:
-                    repository_name = repository_name.split('.git')[0]
+            cat_repositories = Catalog.get_repositories()
+            repo = cat_repositories[0]
+            repo_token = repo['token']
+            owner, repository_name = repo['url'].removeprefix('https://github.com/').split('/')
+            if '.git' in repository_name:
+                repository_name = repository_name.split('.git')[0]
 
-                gh = get_github(cat_repositories=cat_repositories)
-                wait_for_api_resource(gh)
-                sleep(200)
-                job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token, job_id=None)
-                self.assertIsNotNone(job, 'Job not found')
-                counter = 0
-                while 'completed' not in job['status'] or counter < 50:
-                    counter += 1
-                    print('job: ' + job['name'] + ' status: ' + job['status'])
-                    # Wait for 2 minutes for the job to complete to avoid 'API rate limit exceeded for'
-                    sleep(120)
-                    gh = get_github(cat_repositories=cat_repositories)
-                    wait_for_api_resource(gh)
-                    job = find_job(wf_id=wf_id, owner=owner, repository_name=repository_name, token=repo_token,
-                                   job_id=job['id'])
-                    if job['status'] == 'completed':
-                        break
-                self.assertEqual('completed', job['status'], 'Job not completed')
-                self.assertEqual('success', job['conclusion'], 'Job not successful')
+            updated_cells = list(filter(
+                lambda cell: cell['dispatched_github_workflow'],
+                test_cells,
+            ))
 
+            for cell in updated_cells:
+                # Get job id (many calls to the GitHub API)
+                job = wait_for_job(
+                    wf_id=cell['wf_id'],
+                    wf_creation_utc=cell['wf_creation_utc'],
+                    owner=owner,
+                    repository_name=repository_name,
+                    token=repo_token,
+                    job_id=None,
+                    timeout=300,
+                    wait_for_completion=False,
+                )
+                cell['job'] = job
+
+            for cell in updated_cells:
+                # Wait for job completion (fewer calls)
+                job = wait_for_job(
+                    wf_id=cell['wf_id'],
+                    wf_creation_utc=None,
+                    owner=owner,
+                    repository_name=repository_name,
+                    token=repo_token,
+                    job_id=cell['job']['id'],
+                    timeout=300,
+                    wait_for_completion=True,
+                )
+                cell['job'] = job
+
+            for cell in updated_cells:
+                self.assertIsNotNone(cell['job'], 'Job not found')
+                self.assertEqual('completed', cell['job']['status'], 'Job not completed')
+                self.assertEqual('success', cell['job']['conclusion'], 'Job not successful')
 
     def test_extractor_handler(self):
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
@@ -233,35 +247,114 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 json_response = json.loads(response.body.decode('utf-8'))
                 self.assertIsNotNone(json_response)
                 cell = notebook['notebook']['cells'][notebook['cell_index']]
+                print('cell: ', cell)
 
     def test_execute_workflow_handler(self):
         workflow_path = os.path.join(base_path, 'workflows', 'NaaVRE')
         workflow_files = os.listdir(workflow_path)
         with mock.patch.object(ExecuteWorkflowHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
+        cells_json_path = os.path.join(base_path, 'cells')
+        cells_files = os.listdir(cells_json_path)
+        for cell_file in cells_files:
+            cell_path = os.path.join(cells_json_path, cell_file)
+            create_cell_and_add_to_cat(cell_path=cell_path)
+            response = self.call_cell_handler()
+            self.assertEqual(200, response.code)
         for workflow_file in workflow_files:
-            if 'test_list_Py_workflow.json' not in workflow_file:
-                continue
+            print('workflow_file: ', workflow_file)
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
-            cells_json_path = os.path.join(base_path, 'cells')
-            cells_files = os.listdir(cells_json_path)
-            for cell_file in cells_files:
-                cell_path = os.path.join(cells_json_path, cell_file)
-                test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
-                response = self.call_cell_handler()
-                self.assertEqual(200, response.code)
 
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
+            self.assertEqual(response.code, 200, response.body)
             json_response = json.loads(response.body.decode('utf-8'))
             self.assertIsNotNone(json_response)
-            self.assertEqual(response.code, 200)
             self.assertTrue('argo_id' in json_response)
             self.assertTrue('created' in json_response)
             self.assertTrue('status' in json_response)
             self.assertTrue('argo_url' in json_response)
+            workflow_id = json_response['argo_id']
+            response = self.fetch(f'/executeworkflowhandler?workflow_id={workflow_id}', method='GET')
+            self.assertEqual(response.code, 200, response.body)
+            json_response = json.loads(response.body.decode('utf-8'))
+            self.assertIsNotNone(json_response)
+            self.assertTrue('argo_id' in json_response)
+            self.assertTrue('created' in json_response)
+            self.assertTrue('status' in json_response)
+            self.assertTrue('argo_url' in json_response)
+            self.assertTrue('progress' in json_response)
+            while json_response['status'] == 'Running':
+                response = self.fetch(f'/executeworkflowhandler?workflow_id={workflow_id}', method='GET')
+                self.assertEqual(response.code, 200, response.body)
+                json_response = json.loads(response.body.decode('utf-8'))
+                print(json.dumps(json_response, indent=2))
+                self.assertIsNotNone(json_response)
+                self.assertTrue('argo_id' in json_response)
+                self.assertTrue('created' in json_response)
+                self.assertTrue('status' in json_response)
+                self.assertTrue('argo_url' in json_response)
+                self.assertTrue('progress' in json_response)
+                if json_response['status'] != 'Running':
+                    break
+                sleep(60)
+            self.assertTrue(json_response['status'] == 'Succeeded', json_response)
 
     def call_cell_handler(self):
         response = self.fetch('/cellshandler', method='POST', body=json.dumps(''))
         return response
+
+    def test_files_updated(self):
+        with mock.patch.object(CellsHandler, 'get_secure_cookie') as m:
+            m.return_value = 'cookie'
+            cells_json_path = os.path.join(base_path, 'cells')
+            cells_files = os.listdir(cells_json_path)
+            saved_debug_value = os.getenv("DEBUG")
+            for cell_file in cells_files:
+                cell_path = os.path.join(cells_json_path, cell_file)
+
+                # Commit cell
+                os.environ["DEBUG"] = "False"
+                create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+
+                # Commit same cell again
+                os.environ["DEBUG"] = "False"
+                create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+                dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                self.assertFalse(dispatched_github_workflow)
+
+                # Commit same cell again, forcing update
+                os.environ["DEBUG"] = "True"
+                create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+                dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                self.assertTrue(dispatched_github_workflow)
+
+                # Commit modified cell
+                _, new_cell = create_cell_and_add_to_cat(cell_path=cell_path)
+                new_cell['original_source'] += f'\na = {random.random()}'
+                with open(cell_path, 'r') as f:
+                    saved_cell_text = f.read()
+                try:
+                    with open(cell_path, 'w') as file:
+                        json.dump(new_cell, file, indent=2)
+                    os.environ["DEBUG"] = "False"
+                    create_cell_and_add_to_cat(cell_path=cell_path)
+                    response = self.call_cell_handler()
+                    self.assertEqual(200, response.code)
+                    dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                    self.assertTrue(dispatched_github_workflow)
+                finally:
+                    with open(cell_path, 'w') as f:
+                        f.write(saved_cell_text)
+
+        if saved_debug_value is not None:
+            os.environ["DEBUG"] = saved_debug_value
+        else:
+            del os.environ["DEBUG"]

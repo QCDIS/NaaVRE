@@ -1,0 +1,133 @@
+{
+    "all_inputs": [],
+    "base_image": {"build":"ghcr.io/qcdis/naavre/naavre-cell-build-lter-life-veluwe:latest","runtime":"ghcr.io/qcdis/naavre/naavre-cell-runtime-lter-life-veluwe:latest"},
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "7b4271d": {
+                "id": "7b4271d",
+                "ports": {
+                    "rolling_mean_temp_str": {
+                        "id": "rolling_mean_temp_str",
+                        "properties": {
+                            "color": "#c5a987"
+                        },
+                        "type": "right"
+                    },
+                    "temperature_data_str": {
+                        "id": "temperature_data_str",
+                        "properties": {
+                            "color": "#aca953"
+                        },
+                        "type": "right"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [
+                        ""
+                    ],
+                    "inputs": [],
+                    "og_node_id": "7b4271d",
+                    "outputs": [
+                        "rolling_mean_temp_str",
+                        "temperature_data_str"
+                    ],
+                    "params": [],
+                    "title": "Install and load the climwinb packages-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#c5a987",
+                            "direction": "output",
+                            "name": "rolling_mean_temp_str",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#aca953",
+                            "direction": "output",
+                            "name": "temperature_data_str",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {},
+    "container_source": "",
+    "dependencies": [
+        {
+            "asname": "",
+            "module": "",
+            "name": "climwin"
+        },
+        {
+            "asname": "",
+            "module": "",
+            "name": "zoo"
+        }
+    ],
+    "inputs": [],
+    "kernel": "IRkernel",
+    "node_id": "7b4271d",
+    "notebook_dict": {
+        "cells": [
+            {
+                "cell_type": "code",
+                "execution_count": 1,
+                "id": "4681c280-3623-47c4-a020-fe8f34166536",
+                "metadata": {},
+                "outputs": [
+                    {
+                        "name": "stderr",
+                        "output_type": "stream",
+                        "text": "Loading required package: ggplot2\n\nLoading required package: gridExtra\n\nLoading required package: Matrix\n\n\nAttaching package: \u2018zoo\u2019\n\n\nThe following objects are masked from \u2018package:base\u2019:\n\n    as.Date, as.Date.numeric\n\n\n"
+                    }
+                ],
+                "source": "# Install and load the climwinb packages\nif (!requireNamespace(\"climwin\", quietly = TRUE)) {\n  install.packages(\"climwin\",repos = \"http://cran.us.r-project.org\")\n}\nif (!requireNamespace(\"zoo\", quietly = TRUE)) {\n  install.packages(\"zoo\",repos = \"http://cran.us.r-project.org\")\n}\n\nzoo = ''\nclimwin = ''\nlibrary(climwin)\nlibrary(zoo)\n\n# Generate example temperature data\nset.seed(123)\ntemperature_data <- rnorm(365, mean = 15, sd = 5)\n\n# Define the window size (e.g., 30 days)\nwindow_size <- 30\n\n# Convert temperature_data to a zoo object for rollmean\ntemperature_zoo <- zoo::zoo(temperature_data)\n\n# Calculate the rolling mean temperature within a moving window\nrolling_mean_temp <- rollmean(temperature_zoo, k = window_size, fill = 0.0)\n\ntemperature_zoo_str <- toString(temperature_zoo)\nrolling_mean_temp_str <- toString(rolling_mean_temp)\ntemperature_data_str <- toString(temperature_data)\n\n\n"
+            }
+        ],
+        "metadata": {
+            "kernelspec": {
+                "display_name": "R",
+                "language": "R",
+                "name": "R"
+            },
+            "language_info": {
+                "codemirror_mode": "r",
+                "file_extension": ".r",
+                "mimetype": "text/x-r-source",
+                "name": "R",
+                "pygments_lexer": "r",
+                "version": "4.3.2"
+            }
+        },
+        "nbformat": 4,
+        "nbformat_minor": 5
+    },
+    "original_source": "if (!requireNamespace(\"climwin\", quietly = TRUE)) {\n  install.packages(\"climwin\",repos = \"http://cran.us.r-project.org\")\n}\nif (!requireNamespace(\"zoo\", quietly = TRUE)) {\n  install.packages(\"zoo\",repos = \"http://cran.us.r-project.org\")\n}\n\nzoo = ''\nclimwin = ''\nlibrary(climwin)\nlibrary(zoo)\n\nset.seed(123)\ntemperature_data <- rnorm(365, mean = 15, sd = 5)\n\nwindow_size <- 30\n\ntemperature_zoo <- zoo::zoo(temperature_data)\n\nrolling_mean_temp <- rollmean(temperature_zoo, k = window_size, fill = 0.0)\n\ntemperature_zoo_str <- toString(temperature_zoo)\nrolling_mean_temp_str <- toString(rolling_mean_temp)\ntemperature_data_str <- toString(temperature_data)\n",
+    "outputs": [
+        "rolling_mean_temp_str",
+        "temperature_data_str"
+    ],
+    "param_values": {},
+    "params": [],
+    "task_name": "install-and-load-the-climwinb-packages-dev-user-name-at-domain-com",
+    "title": "Install and load the climwinb packages-dev-user-name-at-domain-com",
+    "types": {
+        "rolling_mean_temp_str": "str",
+        "temperature_data_str": "str"
+    },
+    "skip_exec": false
+}

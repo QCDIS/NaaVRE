@@ -11,7 +11,16 @@ function renderRow(props: ListChildComponentProps, clickAction: (cell_index: num
   return (
     <ListItem style={style} key={index} component="div" disablePadding>
       <ListItemButton onClick={() => { clickAction(index) }}>
-        <ListItemText primary={data[index]['title']} />
+        <ListItemText
+          primary={data[index]['title']}
+          primaryTypographyProps={{
+            style: {
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }
+          }}
+        />
       </ListItemButton>
     </ListItem>
   );

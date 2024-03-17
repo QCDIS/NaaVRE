@@ -20,7 +20,7 @@ export class CellInfo extends React.Component {
         this.setState({ cell: cell, types: types });
     }
 
-    render(): React.ReactNode {
+    render() {
         return (
             <div>
                 {

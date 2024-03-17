@@ -1,4 +1,5 @@
 import { INodeDefaultProps } from '@mrblenny/react-flow-chart';
+import { Tooltip } from '@material-ui/core';
 import styled from 'styled-components';
 import * as React from 'react';
 
@@ -48,7 +49,7 @@ const NodeTitle = styled.span`
 
 const renderNode = ({ node, children, ...otherProps }: INodeDefaultProps, ref: React.ForwardedRef<HTMLDivElement>) => {
 
-    if (node.type == "splitter" || node.type == "merger") {
+    if (node.type == "splitter" || node.type == "merger" || node.type == "visualizer") {
         return (
             <NodeContainerSpecial ref={ref} {...otherProps}>
                 <NodeTitleContainerSpecial>
@@ -63,9 +64,11 @@ const renderNode = ({ node, children, ...otherProps }: INodeDefaultProps, ref: R
 
     return (
         <NodeContainer ref={ref} {...otherProps} >
-            <NodeTitleContainer>
-                <NodeTitle>{node.properties.title}</NodeTitle>
-            </NodeTitleContainer>
+            <Tooltip title={node.properties.title}>
+                <NodeTitleContainer>
+                    <NodeTitle>{node.properties.title}</NodeTitle>
+                </NodeTitleContainer>
+            </Tooltip>
             <NodeChildrenContainer>
                 {children}
             </NodeChildrenContainer>

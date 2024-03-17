@@ -1,0 +1,70 @@
+{
+    "all_inputs": [
+        "list_of_paths"
+    ],
+    "base_image": {"build":"ghcr.io/qcdis/naavre/naavre-cell-build-r:latest","runtime":"ghcr.io/qcdis/naavre/naavre-cell-runtime-r:latest"},
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "943e143": {
+                "id": "943e143",
+                "ports": {
+                    "list_of_paths": {
+                        "id": "list_of_paths",
+                        "properties": {
+                            "color": "#79c5d2"
+                        },
+                        "type": "left"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [],
+                    "inputs": [
+                        "list_of_paths"
+                    ],
+                    "og_node_id": "943e143",
+                    "outputs": [],
+                    "params": [],
+                    "title": "loop list R-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#79c5d2",
+                            "direction": "input",
+                            "name": "list_of_paths",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {},
+    "container_source": "",
+    "dependencies": [],
+    "inputs": [
+        "list_of_paths"
+    ],
+    "kernel": "IRkernel",
+    "node_id": "943e143",
+    "original_source": "\nfor (l in list_of_paths) {\n    print(l)\n}",
+    "outputs": [],
+    "params": [],
+    "task_name": "loop-list-r-dev-user-name-at-domain-com",
+    "title": "loop list R-dev-user-name-at-domain-com",
+    "types": {
+        "list_of_paths": "list"
+    },
+    "skip_exec": true
+}

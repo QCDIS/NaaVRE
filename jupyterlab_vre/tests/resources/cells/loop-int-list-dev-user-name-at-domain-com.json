@@ -2,13 +2,13 @@
     "all_inputs": [
         "list_of_ints"
     ],
-    "base_image": "qcdis/miniconda3",
+    "base_image": {"build":"ghcr.io/qcdis/naavre/naavre-cell-build-python:latest","runtime":"ghcr.io/qcdis/naavre/naavre-cell-runtime-python:latest"},
     "chart_obj": {
         "hovered": {},
         "links": {},
         "nodes": {
-            "7899e6e": {
-                "id": "7899e6e",
+            "e1578ef": {
+                "id": "e1578ef",
                 "ports": {
                     "a": {
                         "id": "a",
@@ -34,7 +34,7 @@
                     "inputs": [
                         "list_of_ints"
                     ],
-                    "og_node_id": "7899e6e",
+                    "og_node_id": "e1578ef",
                     "outputs": [
                         "a"
                     ],
@@ -72,8 +72,8 @@
         "list_of_ints"
     ],
     "kernel": "ipython",
-    "node_id": "7899e6e",
-    "original_source": "\nfor i in list_of_ints:\n    a = i +1\n    print(a)",
+    "node_id": "e1578ef",
+    "original_source": "\nfor i in list_of_ints:\n    a = i -1\n    print(a)",
     "outputs": [
         "a"
     ],
@@ -83,5 +83,6 @@
     "types": {
         "a": "int",
         "list_of_ints": "list"
-    }
+    },
+    "skip_exec": true
 }

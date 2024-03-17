@@ -1,0 +1,75 @@
+{
+    "all_inputs": [
+        "count"
+    ],
+    "base_image": {"build":"ghcr.io/qcdis/naavre/naavre-cell-build-r:latest","runtime":"ghcr.io/qcdis/naavre/naavre-cell-runtime-r:latest"},
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "d9acfa2": {
+                "id": "d9acfa2",
+                "ports": {
+                    "count": {
+                        "id": "count",
+                        "properties": {
+                            "color": "#783d3a"
+                        },
+                        "type": "left"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [],
+                    "inputs": [
+                        "count"
+                    ],
+                    "og_node_id": "d9acfa2",
+                    "outputs": [],
+                    "params": [],
+                    "title": "Add1 R-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#783d3a",
+                            "direction": "input",
+                            "name": "count",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {},
+    "container_source": "",
+    "dependencies": [],
+    "inputs": [
+        "count"
+    ],
+    "kernel": "IRkernel",
+    "node_id": "d9acfa2",
+    "original_source": "\na = count + 1",
+    "outputs": [],
+    "params": [],
+    "task_name": "add1-r-dev-user-name-at-domain-com",
+    "title": "Add1 R-dev-user-name-at-domain-com",
+    "types": {
+        "count": "int"
+    },
+    "example_inputs" : [
+    "--id",
+    "0",
+    "--count",
+    "1"
+  ]
+}

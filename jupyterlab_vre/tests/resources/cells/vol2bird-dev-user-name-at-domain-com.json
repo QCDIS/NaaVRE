@@ -1,0 +1,96 @@
+{
+    "all_inputs": [
+        "a"
+    ],
+    "base_image": {"build":"ghcr.io/qcdis/naavre/naavre-cell-build-vol2bird:latest","runtime":"ghcr.io/qcdis/naavre/naavre-cell-runtime-vol2bird:latest"},
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "ded63d7": {
+                "id": "ded63d7",
+                "ports": {
+                    "a": {
+                        "id": "a",
+                        "properties": {
+                            "color": "#77862d"
+                        },
+                        "type": "left"
+                    },
+                    "msg": {
+                        "id": "msg",
+                        "properties": {
+                            "color": "#7bd279"
+                        },
+                        "type": "right"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "deps": [
+                        ""
+                    ],
+                    "inputs": [
+                        "a"
+                    ],
+                    "og_node_id": "ded63d7",
+                    "outputs": [
+                        "msg"
+                    ],
+                    "params": [],
+                    "title": "vol2bird-dev-user-name-at-domain-com",
+                    "vars": [
+                        {
+                            "color": "#77862d",
+                            "direction": "input",
+                            "name": "a",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#7bd279",
+                            "direction": "output",
+                            "name": "msg",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {},
+    "container_source": "",
+    "dependencies": [
+        {
+            "asname": null,
+            "module": "",
+            "name": "os"
+        }
+    ],
+    "inputs": [
+        "a"
+    ],
+    "kernel": "ipython",
+    "node_id": "ded63d7",
+    "original_source": "print(a)\ncmd = \"vol2bird --version\"\n\nmsg = os.system(cmd)  # returns the exit code in unix\n",
+    "outputs": [
+        "msg"
+    ],
+    "params": [],
+    "task_name": "vol2bird-dev-user-name-at-domain-com",
+    "title": "vol2bird-dev-user-name-at-domain-com",
+    "types": {
+        "a": "int",
+        "msg": "int"
+    },
+    "skip_exec": true
+}
