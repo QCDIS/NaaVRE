@@ -29,6 +29,7 @@ from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
+from jupyterlab_vre.services.extractor.extractor import DummyExtractor
 from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
 from jupyterlab_vre.services.extractor.rextractor import RExtractor
 from jupyterlab_vre.services.extractor.headerextractor import HeaderExtractor
@@ -124,27 +125,31 @@ class ExtractorHandler(APIHandler, Catalog):
 
         source = notebook.cells[cell_index].source
 
-        # extractor based on the cell header
-        try:
-            extractor = HeaderExtractor(notebook, source)
-        except jsonschema.ValidationError as e:
-            self.set_status(400, f"Invalid cell header")
-            self.write(
-                {
-                    'message': f"Error in cell header: {e}",
-                    'reason': None,
-                    'traceback': traceback.format_exception(e),
-                }
-            )
-            self.flush()
-            return
+        if notebook.cells[cell_index].cell_type != 'code':
+            # dummy extractor for non-code cells (e.g. markdown)
+            extractor = DummyExtractor(notebook, source)
+        else:
+            # extractor based on the cell header
+            try:
+                extractor = HeaderExtractor(notebook, source)
+            except jsonschema.ValidationError as e:
+                self.set_status(400, f"Invalid cell header")
+                self.write(
+                    {
+                        'message': f"Error in cell header: {e}",
+                        'reason': None,
+                        'traceback': traceback.format_exception(e),
+                    }
+                )
+                self.flush()
+                return
 
-        # extractor based on the kernel (if cell header is not defined)
-        if not extractor.enabled():
-            if kernel == "IRkernel":
-                extractor = RExtractor(notebook)
-            else:
-                extractor = PyExtractor(notebook)
+            # extractor based on the kernel (if cell header is not defined)
+            if not extractor.enabled():
+                if kernel == "IRkernel":
+                    extractor = RExtractor(notebook, source)
+                else:
+                    extractor = PyExtractor(notebook, source)
 
         extracted_nb = extract_cell_by_index(notebook, cell_index)
         if kernel == "IRkernel":
@@ -162,49 +167,33 @@ class ExtractorHandler(APIHandler, Catalog):
                 '.', '-').replace('@',
                                   '-at-').strip()
 
-        ins = {}
-        outs = {}
-        params = {}
-        confs = []
-        dependencies = []
-
-        # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infer_cell_inputs(
-        # source)'
-        if notebook.cells[cell_index].cell_type == 'code':
-            ins = extractor.infer_cell_inputs(source)
-            outs = extractor.infer_cell_outputs(source)
-
-            confs = extractor.extract_cell_conf_ref(source)
-            dependencies = extractor.infer_cell_dependencies(source, confs)
-
         node_id = str(uuid.uuid4())[:7]
         cell = Cell(
             node_id=node_id,
             title=title,
             task_name=title.lower().replace(' ', '-').replace('.', '-'),
             original_source=source,
-            inputs=ins,
-            outputs=outs,
-            params=params,
-            confs=confs,
-            dependencies=dependencies,
+            inputs=extractor.ins,
+            outputs=extractor.outs,
+            params={},
+            confs=extractor.confs,
+            dependencies=extractor.dependencies,
             container_source="",
             kernel=kernel,
             notebook_dict=extracted_nb.dict()
         )
-        if notebook.cells[cell_index].cell_type == 'code':
-            cell.integrate_configuration()
-            params = extractor.extract_cell_params(cell.original_source)
-            cell.add_params(params)
-            cell.add_param_values(params)
+        cell.integrate_configuration()
+        extractor.params = extractor.extract_cell_params(cell.original_source)
+        cell.add_params(extractor.params)
+        cell.add_param_values(extractor.params)
 
         node = ConverterReactFlowChart.get_node(
             node_id,
             title,
-            set(ins),
-            set(outs),
-            params,
-            dependencies
+            set(extractor.ins),
+            set(extractor.outs),
+            extractor.params,
+            extractor.dependencies
         )
 
         chart = {

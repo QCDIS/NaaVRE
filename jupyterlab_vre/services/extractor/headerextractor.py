@@ -7,8 +7,10 @@ import jsonschema
 import logging
 import yaml
 
+from .extractor import Extractor
 
-class HeaderExtractor:
+
+class HeaderExtractor(Extractor):
     """ Extracts cells using information defined by the user in its header
 
     Cells should contain a comment with a yaml block defining inputs, outputs,
@@ -49,10 +51,9 @@ class HeaderExtractor:
              ),
             re.MULTILINE)
         self.schema = self._load_schema()
-
-        self.notebook = notebook
-        self.cell_source = cell_source
         self.cell_header = self._extract_header(cell_source)
+
+        super().__init__(notebook, cell_source)
 
     @staticmethod
     def _load_schema():
@@ -155,32 +156,44 @@ class HeaderExtractor:
 
     def _infer_cell_inputs_outputs_params(
             self,
-            source,
+            header: Union[dict, None],
             item_type: Literal['inputs', 'outputs', 'params'],
             ) -> dict:
-        header = self._extract_header(source)
+        if header is None:
+            return {}
         items = header['NaaVRE']['cell'].get(item_type, [])
         items = [self._parse_inputs_outputs_param_items(it, item_type)
                  for it in items]
         return {it['name']: it for it in items}
 
-    def infer_cell_inputs(self, source):
-        return self._infer_cell_inputs_outputs_params(source, 'inputs')
+    def infer_cell_inputs(self):
+        return self._infer_cell_inputs_outputs_params(
+            self.cell_header,
+            'inputs',
+            )
 
-    def infer_cell_outputs(self, source):
-        return self._infer_cell_inputs_outputs_params(source, 'outputs')
+    def infer_cell_outputs(self):
+        return self._infer_cell_inputs_outputs_params(
+            self.cell_header,
+            'outputs',
+            )
 
     def extract_cell_params(self, source):
-        return self._infer_cell_inputs_outputs_params(source, 'params')
+        return self._infer_cell_inputs_outputs_params(
+            self._extract_header(source),
+            'params',
+            )
 
-    def extract_cell_conf_ref(self, source):
-        header = self._extract_header(source)
-        items = header['NaaVRE']['cell'].get('confs', [])
+    def extract_cell_conf_ref(self):
+        if self.cell_header is None:
+            return {}
+        items = self.cell_header['NaaVRE']['cell'].get('confs', [])
         return {k: v['assignation'] for it in items for k, v in it.items()}
 
-    def infer_cell_dependencies(self, source, confs):
-        header = self._extract_header(source)
-        items = header['NaaVRE']['cell'].get('dependencies', [])
+    def infer_cell_dependencies(self, confs):
+        if self.cell_header is None:
+            return []
+        items = self.cell_header['NaaVRE']['cell'].get('dependencies', [])
         return [
             {
                 'name': it.get('name'),
