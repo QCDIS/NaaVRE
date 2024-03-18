@@ -34,7 +34,7 @@
     },
     "dependencies": {
         "@emotion/react": "11.9.0",
-        "@emotion/styled": "11.8.1",
+        "@emotion/styled": "11.11.0",
         "@jupyterlab/application": "3.5.3",
         "@jupyterlab/coreutils": "5.5.3",
         "@jupyterlab/docregistry": "3.5.3",
