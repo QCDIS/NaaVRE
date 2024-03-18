@@ -4,7 +4,7 @@ import os
 import time
 from builtins import print
 from pathlib import Path
-
+from slugify import slugify
 import requests
 from notebook.base.handlers import APIHandler
 from tornado import web
@@ -15,10 +15,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 if 'JUPYTERHUB_USER' in os.environ:
-    client_id = 'NaaVRE_' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace(
-        '.', '-').replace('@',
-                          '-at-').strip()
-
+    client_id = 'NaaVRE_' + slugify(os.environ['JUPYTERHUB_USER'])
 
 ################################################################################
 

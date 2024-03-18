@@ -11,7 +11,7 @@ import uuid
 from builtins import Exception
 from pathlib import Path
 from time import sleep
-
+from slugify import slugify
 import json
 
 import autopep8
@@ -154,13 +154,10 @@ class ExtractorHandler(APIHandler, Catalog):
 
         # initialize variables
         title = source.partition('\n')[0].strip()
-        title = title.replace('#', '').replace('.', '-').replace(
-            '_', '-').replace('(', '-').replace(')', '-').strip() if title and title[0] == "#" else "Untitled"
+        title = slugify(title) if title and title[0] == "#" else "Untitled"
 
         if 'JUPYTERHUB_USER' in os.environ:
-            title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace(
-                '.', '-').replace('@',
-                                  '-at-').strip()
+            title += '-' + slugify(os.environ['JUPYTERHUB_USER'])
 
         ins = {}
         outs = {}
@@ -181,7 +178,7 @@ class ExtractorHandler(APIHandler, Catalog):
         cell = Cell(
             node_id=node_id,
             title=title,
-            task_name=title.lower().replace(' ', '-').replace('.', '-'),
+            task_name=slugify(title.lower()),
             original_source=source,
             inputs=ins,
             outputs=outs,

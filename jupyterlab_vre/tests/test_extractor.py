@@ -2,6 +2,7 @@ import glob
 import json
 import logging
 import os
+from slugify import slugify
 import uuid
 from unittest import TestCase
 
@@ -34,15 +35,11 @@ def create_cell(payload_path=None):
 
     source = notebook.cells[cell_index].source
     title = source.partition('\n')[0]
-    title = title.replace('#', '').replace(
-        '_', '-').replace('(', '-').replace(')', '-').replace('.', '-').strip() if title and title[
+    title = slugify(title) if title and title[
         0] == "#" else "Untitled"
 
     if 'JUPYTERHUB_USER' in os.environ:
-        title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.',
-                                                                                                                   '-').replace(
-            '@',
-            '-at-').strip()
+        title += '-' + slugify(os.environ['JUPYTERHUB_USER'])
 
     ins = {}
     outs = {}
@@ -63,7 +60,7 @@ def create_cell(payload_path=None):
     cell = Cell(
         node_id=node_id,
         title=title,
-        task_name=title.lower().replace(' ', '-'),
+        task_name=slugify(title.lower()),
         original_source=source,
         inputs=ins,
         outputs=outs,
