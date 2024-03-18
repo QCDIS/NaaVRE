@@ -1,65 +1,56 @@
 {
- "save": false,
- "kernel": "ipython",
- "cell_index": 1,
- "notebook": {
-  "metadata": {
-   "kernelspec": {
-    "display_name": "Python 3 (ipykernel)",
-    "language": "python",
-    "name": "python3"
-   },
-   "language_info": {
-    "codemirror_mode": {
-     "name": "ipython",
-     "version": 3
-    },
-    "file_extension": ".py",
-    "mimetype": "text/x-python",
-    "name": "python",
-    "nbconvert_exporter": "python",
-    "pygments_lexer": "ipython3",
-    "version": "3.11.4"
-   }
-  },
-  "nbformat_minor": 5,
-  "nbformat": 4,
-  "cells": [
-   {
-    "cell_type": "code",
-    "source": [
-     "# params\n",
-     "param_string = 'param_string value'\n",
-     "param_string_with_comment = 'param_string value'  # comment\n",
-     "param_int = 1\n",
-     "param_float = 1.1\n",
-     "param_list = [1, 2, 3]"
-    ],
-    "metadata": {
-     "trusted": true
-    },
-    "execution_count": null,
-    "outputs": [],
-    "id": "de7cc7cf-56c9-4538-92be-1a258e5ee812"
-   },
-   {
-    "cell_type": "code",
-    "source": [
-     "# Param check\n",
-     "print(param_string)\n",
-     "print(param_string_with_comment)\n",
-     "print(param_int)\n",
-     "print(param_float)\n",
-     "print(param_list)"
-    ],
-    "metadata": {
-     "trusted": true,
-     "tags": []
-    },
-    "execution_count": null,
-    "outputs": [],
-    "id": "9824a80c-b00b-441c-8152-7b2e671e081b"
-   }
-  ]
- }
+    "save": false,
+    "kernel": "ipython",
+    "cell_index": 1,
+    "notebook": {
+        "metadata": {
+            "kernelspec": {
+                "name": "conda-env-anaconda3-jupyterlab2-py",
+                "display_name": "Python [conda env:anaconda3-jupyterlab2]",
+                "language": "python"
+            },
+            "language_info": {
+                "name": "python",
+                "version": "3.12.1",
+                "mimetype": "text/x-python",
+                "codemirror_mode": {
+                    "name": "ipython",
+                    "version": 3
+                },
+                "pygments_lexer": "ipython3",
+                "nbconvert_exporter": "python",
+                "file_extension": ".py"
+            }
+        },
+        "nbformat_minor": 5,
+        "nbformat": 4,
+        "cells": [
+            {
+                "cell_type": "code",
+                "source": "# params\nparam_string = 'param_string value'\nparam_string_with_comment = 'param_string value'  # comment\nparam_int = 1\nparam_float = 1.1\nparam_list = [1, 2, 3]",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": 1,
+                "outputs": [],
+                "id": "8519a0de-0023-40ab-8b53-b7342950fed3"
+            },
+            {
+                "cell_type": "code",
+                "source": "# Param check\nprint(param_string)\nprint(param_string_with_comment)\nprint(param_int)\nprint(param_float)\nprint(param_list)",
+                "metadata": {
+                    "trusted": true
+                },
+                "execution_count": 2,
+                "outputs": [
+                    {
+                        "name": "stdout",
+                        "text": "param_string value\nparam_string value\n1\n1.1\n[1, 2, 3]\n",
+                        "output_type": "stream"
+                    }
+                ],
+                "id": "3c6969b8-ffd7-4f09-bb9a-01d1e01a834a"
+            }
+        ]
+    }
 }
