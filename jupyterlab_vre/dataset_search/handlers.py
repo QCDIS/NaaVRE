@@ -4,7 +4,7 @@ import os
 import time
 from builtins import print
 from pathlib import Path
-
+from slugify import slugify
 import requests
 from notebook.base.handlers import APIHandler
 from tornado import web
