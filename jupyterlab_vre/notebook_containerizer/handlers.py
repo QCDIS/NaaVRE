@@ -3,9 +3,10 @@ import json
 import logging
 import os
 import uuid
-from slugify import slugify
+
 import nbformat as nb
 from notebook.base.handlers import APIHandler
+from slugify import slugify
 from tornado import web
 
 from jupyterlab_vre.database.catalog import Catalog

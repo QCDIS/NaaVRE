@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+
 from slugify import slugify
 
 logger = logging.getLogger(__name__)

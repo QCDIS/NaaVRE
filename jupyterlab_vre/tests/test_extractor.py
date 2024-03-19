@@ -2,11 +2,11 @@ import glob
 import json
 import logging
 import os
-from slugify import slugify
 import uuid
 from unittest import TestCase
 
 import nbformat as nb
+from slugify import slugify
 
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
