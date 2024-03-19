@@ -46,6 +46,7 @@ USER $NB_USER
 RUN jupyter serverextension enable --py jupyterlab_vre --user
 RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
+RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager
 
 RUN jupyter lab build --debug;
 
