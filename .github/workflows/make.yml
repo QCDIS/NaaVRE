@@ -61,7 +61,5 @@ jobs:
       tag: n-a-a-vre
       push: ${{ github.event_name == 'release' }}
     secrets:
-      gitlab_username: ${{ secrets.GITLAB_REGISTRY_USERNAME }}
-      gitlab_password: ${{ secrets.GITLAB_REGISTRY_PASSWORD }}
       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
