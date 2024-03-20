@@ -16,7 +16,7 @@
     "@emotion/styled": "11.8.1",
     "@jupyterlab/application": "3.5.3",
     "@jupyterlab/apputils": "3.6.7",
-    "@jupyterlab/statedb": "4.0.11",
+    "@jupyterlab/statedb": "4.1.5",
     "@jupyterlab/builder": "4.0.2",
     "@jupyterlab/coreutils": "5.5.3",
     "@jupyterlab/launcher": "3.5.3",
