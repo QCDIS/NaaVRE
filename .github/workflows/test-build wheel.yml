@@ -6,49 +6,49 @@ on:
       runs-on:
         default: ubuntu-latest
         type: string
-    secrets:
-      jupyterhub_user:
-        required: true
-      vlab_slug:
-        required: true
-      cell_github:
-        required: true
-      cell_github_token:
-        required: true
       api_endpoint:
-        required: true
-      module_mapping_url:
-        required: true
-      search_api_endpoint:
-        required: true
-      search_api_token:
-        required: true
-      registry_url:
-        required: true
-      naavre_api_token:
         required: true
       argo_url:
         required: true
-      argo_api_token:
+      cell_github:
         required: true
       debug:
         required: true
+      jupyterhub_user:
+        required: true
+      module_mapping_url:
+        required: true
+      registry_url:
+        required: true
+      search_api_endpoint:
+        required: true
+      vlab_slug:
+        required: true
+    secrets:
+      argo_api_token:
+        required: true
+      cell_github_token:
+        required: true
+      naavre_api_token:
+        required: true
+      search_api_token:
+        required: true
 
 env:
-  CELL_GITHUB: ${{ secrets.cell_github }}
+  CELL_GITHUB: ${{ inputs.cell_github }}
   CELL_GITHUB_TOKEN: ${{ secrets.cell_github_token }}
-  REGISTRY_URL: ${{ secrets.registry_url }}
+  REGISTRY_URL: ${{ inputs.registry_url }}
   NAAVRE_API_TOKEN: ${{ secrets.naavre_api_token }}
-  JUPYTERHUB_USER: ${{ secrets.jupyterhub_user }}
-  API_ENDPOINT: ${{ secrets.api_endpoint }}
-  VLAB_SLUG: ${{ secrets.vlab_slug }}
-  MODULE_MAPPING_URL: ${{ secrets.module_mapping_url }}
-  SEARCH_API_ENDPOINT: ${{ secrets.search_api_endpoint }}
+  JUPYTERHUB_USER: ${{ inputs.jupyterhub_user }}
+  API_ENDPOINT: ${{ inputs.api_endpoint }}
+  VLAB_SLUG: ${{ inputs.vlab_slug }}
+  MODULE_MAPPING_URL: ${{ inputs.module_mapping_url }}
+  SEARCH_API_ENDPOINT: ${{ inputs.search_api_endpoint }}
   SEARCH_API_TOKEN: ${{ secrets.search_api_token }}
-  ARGO_URL: ${{ secrets.ARGO_URL }}
+  ARGO_URL: ${{ inputs.ARGO_URL }}
   ARGO_API_TOKEN: ${{ secrets.ARGO_API_TOKEN }}
   ASYNC_TEST_TIMEOUT: 30
-  DEBUG: ${{ secrets.debug }}
+  DEBUG: ${{ inputs.debug }}
 
 
 jobs:
@@ -57,7 +57,7 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - name: Check secrets
+      - name: Check secrets and variables
         run: |
           vars_not_set=0
           concatenated_error_message=""
@@ -116,15 +116,16 @@ jobs:
             concatenated_error_message="$concatenated_error_message ARGO_API_TOKEN not set"
             vars_not_set=1
           fi
-          if [ $vars_not_set -eq 1 ]; then
-            echo "Exiting with error"
-            echo $concatenated_error_message
-            exit 1
-          fi
           if [ -z "$DEBUG" ]; then
             echo "DEBUG not set"
             concatenated_error_message="$concatenated_error_message DEBUG not set"
             vars_not_set=1
+          fi
+
+          if [ $vars_not_set -eq 1 ]; then
+            echo "Exiting with error"
+            echo $concatenated_error_message
+            exit 1
           fi
 
       - uses: actions/checkout@v4
