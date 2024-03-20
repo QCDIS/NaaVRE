@@ -8,22 +8,31 @@ on:
         type: string
       api_endpoint:
         required: true
+        type: string
       argo_url:
         required: true
+        type: string
       cell_github:
         required: true
+        type: string
       debug:
         required: true
+        type: string
       jupyterhub_user:
         required: true
+        type: string
       module_mapping_url:
         required: true
+        type: string
       registry_url:
         required: true
+        type: string
       search_api_endpoint:
         required: true
+        type: string
       vlab_slug:
         required: true
+        type: string
     secrets:
       argo_api_token:
         required: true
