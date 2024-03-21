@@ -43,10 +43,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/packages/vre-panel"
     schedule:
-      interval: "daily"
-      time: "16:35"
-    open-pull-requests-limit: 1
-    target-branch: "convert_secrets_to_variables"
+      interval: "weekly"
 
   - package-ecosystem: "docker"
     directory: "/docker/vanilla"
