@@ -89,7 +89,6 @@ def extract_cell(payload_path):
             cell.inputs,
             cell.outputs,
             cell.params,
-            cell.dependencies
         )
 
         chart = {

@@ -82,7 +82,6 @@ class NotebookExtractorHandler(APIHandler, Catalog):
             set(ins),
             set(outs),
             params,
-            dependencies
         )
 
         chart = {
