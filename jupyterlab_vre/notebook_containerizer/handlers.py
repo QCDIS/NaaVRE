@@ -6,6 +6,7 @@ import uuid
 
 import nbformat as nb
 from notebook.base.handlers import APIHandler
+from slugify import slugify
 from tornado import web
 
 from jupyterlab_vre.database.catalog import Catalog
@@ -54,21 +55,18 @@ class NotebookExtractorHandler(APIHandler, Catalog):
 
             if not title:
                 title = cell_source.partition('\n')[0].strip()
-                title = 'notebook-' + title.replace('#', '').replace('_', '-').replace('(', '-').replace(')', '-'). \
-                    replace('.', '-').strip() if title[0] == '#' \
-                    else 'Untitled'
+                title = 'notebook-' + slugify(title)
+            else:
+                title = 'Untitled'
                 if 'JUPYTERHUB_USER' in os.environ:
-                    title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')',
-                                                                                                             '-').replace(
-                        '.', '-').replace('@',
-                                          '-at-').strip()
+                    title += '-' + slugify(os.environ['JUPYTERHUB_USER'])
         dependencies = extractor.infer_cell_dependencies(source, confs)
 
         node_id = str(uuid.uuid4())[:7]
         cell = Cell(
             node_id=node_id,
             title=title,
-            task_name=title.lower().replace(' ', '-').replace('.', '-'),
+            task_name=slugify(title.lower()),
             original_source=source,
             inputs=ins,
             outputs=outs,
