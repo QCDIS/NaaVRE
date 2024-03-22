@@ -2,6 +2,7 @@ import copy
 import datetime
 import hashlib
 import importlib
+import json
 import logging
 import os
 import re
@@ -12,8 +13,6 @@ from builtins import Exception
 from pathlib import Path
 from time import sleep
 
-import json
-
 import autopep8
 import distro
 import jsonschema
@@ -23,15 +22,16 @@ from github import Github
 from github.GithubException import UnknownObjectException
 from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
+from slugify import slugify
 from tornado import web
 
 from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
+from jupyterlab_vre.services.extractor.headerextractor import HeaderExtractor
 from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
 from jupyterlab_vre.services.extractor.rextractor import RExtractor
-from jupyterlab_vre.services.extractor.headerextractor import HeaderExtractor
 
 logger = logging.getLogger(__name__)
 
@@ -154,13 +154,10 @@ class ExtractorHandler(APIHandler, Catalog):
 
         # initialize variables
         title = source.partition('\n')[0].strip()
-        title = title.replace('#', '').replace('.', '-').replace(
-            '_', '-').replace('(', '-').replace(')', '-').strip() if title and title[0] == "#" else "Untitled"
+        title = slugify(title) if title and title[0] == "#" else "Untitled"
 
         if 'JUPYTERHUB_USER' in os.environ:
-            title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace(
-                '.', '-').replace('@',
-                                  '-at-').strip()
+            title += '-' + slugify(os.environ['JUPYTERHUB_USER'])
 
         ins = {}
         outs = {}
@@ -177,11 +174,22 @@ class ExtractorHandler(APIHandler, Catalog):
             confs = extractor.extract_cell_conf_ref(source)
             dependencies = extractor.infer_cell_dependencies(source, confs)
 
-        node_id = str(uuid.uuid4())[:7]
+        # If any of these change, we create a new cell in the catalog.
+        # This matches the cell properties saved in workflows.
+        cell_identity_dict = {
+            'title': title,
+            'params': params,
+            'inputs': ins,
+            'outputs': outs,
+            'deps': sorted(dependencies, key=lambda x: x['name']),
+            }
+        cell_identity_str = json.dumps(cell_identity_dict, sort_keys=True)
+        node_id = hashlib.sha1(cell_identity_str.encode()).hexdigest()[:7]
+
         cell = Cell(
             node_id=node_id,
             title=title,
-            task_name=title.lower().replace(' ', '-').replace('.', '-'),
+            task_name=slugify(title.lower()),
             original_source=source,
             inputs=ins,
             outputs=outs,
@@ -204,7 +212,6 @@ class ExtractorHandler(APIHandler, Catalog):
             set(ins),
             set(outs),
             params,
-            dependencies
         )
 
         chart = {
@@ -293,7 +300,6 @@ def wait_for_github_api_resources():
         sleep(remaining_time + 1)
         rate_limit = github.get_rate_limit()
 
-
 def find_job(
         wf_id=None,
         wf_creation_utc=None,
@@ -333,7 +339,6 @@ def find_job(
                 job['head_sha'] = run['head_sha']
                 return job
     return None
-
 
 def wait_for_job(
         wf_id=None,
@@ -376,13 +381,11 @@ def wait_for_job(
                 return job
         sleep(5)
 
-
 def write_cell_to_file(current_cell):
     Path('/tmp/workflow_cells/cells').mkdir(parents=True, exist_ok=True)
     with open('/tmp/workflow_cells/cells/' + current_cell.task_name + '.json', 'w') as f:
         f.write(current_cell.toJSON())
         f.close()
-
 
 class CellsHandler(APIHandler, Catalog):
     logger = logging.getLogger(__name__)
@@ -548,7 +551,6 @@ class CellsHandler(APIHandler, Catalog):
             if not image_info:
                 do_dispatch_github_workflow = True
 
-        # xyz
         image_version = image_version[:7]
         if do_dispatch_github_workflow:
             resp = dispatch_github_workflow(

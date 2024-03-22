@@ -31,9 +31,6 @@
                     "y": 15
                 },
                 "properties": {
-                    "deps": [
-                        ""
-                    ],
                     "inputs": [
                         "rolling_mean_temp_str",
                         "temperature_data_str"

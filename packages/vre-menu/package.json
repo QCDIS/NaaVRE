@@ -33,7 +33,7 @@
         "watch": "tsc -w"
     },
     "dependencies": {
-        "@emotion/react": "11.10.6",
+        "@emotion/react": "11.11.4",
         "@emotion/styled": "11.10.6",
         "@jupyterlab/application": "3.5.3",
         "@jupyterlab/apputils": "3.5.3",
@@ -44,7 +44,7 @@
     "devDependencies": {
         "@jupyterlab/builder": "4.0.2",
         "@typescript-eslint/eslint-plugin": "6.19.0",
-        "eslint-plugin-jsdoc": "48.0.2",
+        "eslint-plugin-jsdoc": "48.2.1",
         "@typescript-eslint/parser": "7.1.1",
         "eslint": "8.56.0",
         "eslint-config-prettier": "9.1.0",
