@@ -173,7 +173,6 @@ class ExtractorHandler(APIHandler, Catalog):
             'params': extractor.params,
             'inputs': extractor.ins,
             'outputs': extractor.outs,
-            'deps': sorted(extractor.dependencies, key=lambda x: x['name']),
             }
         cell_identity_str = json.dumps(cell_identity_dict, sort_keys=True)
         node_id = hashlib.sha1(cell_identity_str.encode()).hexdigest()[:7]
