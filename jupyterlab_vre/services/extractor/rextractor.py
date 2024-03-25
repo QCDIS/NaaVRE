@@ -7,6 +7,9 @@ import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
 from rpy2.robjects.packages import importr
 
+from .extractor import Extractor
+
+
 # Create an R environment
 r_env = robjects.globalenv
 
@@ -99,14 +102,14 @@ base = importr('base')
 
 # TODO: create an interface such that it can be easily extended to other kernels
 
-class RExtractor:
+class RExtractor(Extractor):
     sources: list
     imports: dict
     configurations: dict
     global_params: dict
     undefined: dict
 
-    def __init__(self, notebook):
+    def __init__(self, notebook, cell_source):
         self.sources = [nbcell.source for nbcell in notebook.cells if
                         nbcell.cell_type == 'code' and len(nbcell.source) > 0]
 
@@ -116,6 +119,8 @@ class RExtractor:
         self.undefined = dict()
         for source in self.sources:
             self.undefined.update(self.__extract_cell_undefined(source))
+
+        super().__init__(notebook, cell_source)
 
     def __extract_imports(self, sources):
         imports = {}
@@ -213,20 +218,20 @@ class RExtractor:
                 }
         return params
 
-    def infer_cell_outputs(self, cell_source):
-        cell_names = self.__extract_cell_names(cell_source)
+    def infer_cell_outputs(self):
+        cell_names = self.__extract_cell_names(self.cell_source)
         return {
             name: properties
             for name, properties in cell_names.items()
-            if name not in self.__extract_cell_undefined(cell_source)
+            if name not in self.__extract_cell_undefined(self.cell_source)
                and name not in self.imports
                and name in self.undefined
                and name not in self.configurations
                and name not in self.global_params
         }
 
-    def infer_cell_inputs(self, cell_source):
-        cell_undefined = self.__extract_cell_undefined(cell_source)
+    def infer_cell_inputs(self):
+        cell_undefined = self.__extract_cell_undefined(self.cell_source)
         return {
             und: properties
             for und, properties in cell_undefined.items()
@@ -235,7 +240,7 @@ class RExtractor:
                and und not in self.global_params
         }
 
-    def infer_cell_dependencies(self, cell_source, confs):
+    def infer_cell_dependencies(self, confs):
         # TODO: check this code, you have removed logic. 
         # we probably like to only use dependencies that are necessary to execute the cell
         # however this is challenging in R as functions are non-scoped
@@ -381,9 +386,9 @@ class RExtractor:
                 params[u] = self.global_params[u]
         return params
 
-    def extract_cell_conf_ref(self, cell_source):
+    def extract_cell_conf_ref(self):
         confs = {}
-        cell_unds = self.__extract_cell_undefined(cell_source)
+        cell_unds = self.__extract_cell_undefined(self.cell_source)
         conf_unds = [und for und in cell_unds if und in self.configurations]
         for u in conf_unds:
             if u not in confs:

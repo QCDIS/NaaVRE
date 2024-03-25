@@ -29,9 +29,10 @@ from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.services.extractor.headerextractor import HeaderExtractor
+from jupyterlab_vre.services.extractor.extractor import DummyExtractor
 from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
 from jupyterlab_vre.services.extractor.rextractor import RExtractor
+from jupyterlab_vre.services.extractor.headerextractor import HeaderExtractor
 
 logger = logging.getLogger(__name__)
 
@@ -124,27 +125,33 @@ class ExtractorHandler(APIHandler, Catalog):
 
         source = notebook.cells[cell_index].source
 
-        # extractor based on the cell header
-        try:
-            extractor = HeaderExtractor(notebook, source)
-        except jsonschema.ValidationError as e:
-            self.set_status(400, f"Invalid cell header")
-            self.write(
-                {
-                    'message': f"Error in cell header: {e}",
-                    'reason': None,
-                    'traceback': traceback.format_exception(e),
-                }
-            )
-            self.flush()
-            return
+        if notebook.cells[cell_index].cell_type != 'code':
+            # dummy extractor for non-code cells (e.g. markdown)
+            extractor = DummyExtractor(notebook, source)
+        else:
+            # extractor based on the cell header
+            try:
+                extractor = HeaderExtractor(notebook, source)
+            except jsonschema.ValidationError as e:
+                self.set_status(400, f"Invalid cell header")
+                self.write(
+                    {
+                        'message': f"Error in cell header: {e}",
+                        'reason': None,
+                        'traceback': traceback.format_exception(e),
+                    }
+                )
+                self.flush()
+                return
 
-        # extractor based on the kernel (if cell header is not defined)
-        if not extractor.enabled():
-            if kernel == "IRkernel":
-                extractor = RExtractor(notebook)
-            else:
-                extractor = PyExtractor(notebook)
+            # Extractor based on code analysis. Used if the cell has no header,
+            # or if some values are not specified in the header
+            if not extractor.is_complete():
+                if kernel == "IRkernel":
+                    code_extractor = RExtractor(notebook, source)
+                else:
+                    code_extractor = PyExtractor(notebook, source)
+                extractor.add_missing_values(code_extractor)
 
         extracted_nb = extract_cell_by_index(notebook, cell_index)
         if kernel == "IRkernel":
@@ -159,29 +166,13 @@ class ExtractorHandler(APIHandler, Catalog):
         if 'JUPYTERHUB_USER' in os.environ:
             title += '-' + slugify(os.environ['JUPYTERHUB_USER'])
 
-        ins = {}
-        outs = {}
-        params = {}
-        confs = []
-        dependencies = []
-
-        # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infer_cell_inputs(
-        # source)'
-        if notebook.cells[cell_index].cell_type == 'code':
-            ins = extractor.infer_cell_inputs(source)
-            outs = extractor.infer_cell_outputs(source)
-
-            confs = extractor.extract_cell_conf_ref(source)
-            dependencies = extractor.infer_cell_dependencies(source, confs)
-
         # If any of these change, we create a new cell in the catalog.
         # This matches the cell properties saved in workflows.
         cell_identity_dict = {
             'title': title,
-            'params': params,
-            'inputs': ins,
-            'outputs': outs,
-            'deps': sorted(dependencies, key=lambda x: x['name']),
+            'params': extractor.params,
+            'inputs': extractor.ins,
+            'outputs': extractor.outs,
             }
         cell_identity_str = json.dumps(cell_identity_dict, sort_keys=True)
         node_id = hashlib.sha1(cell_identity_str.encode()).hexdigest()[:7]
@@ -191,27 +182,26 @@ class ExtractorHandler(APIHandler, Catalog):
             title=title,
             task_name=slugify(title.lower()),
             original_source=source,
-            inputs=ins,
-            outputs=outs,
-            params=params,
-            confs=confs,
-            dependencies=dependencies,
+            inputs=extractor.ins,
+            outputs=extractor.outs,
+            params={},
+            confs=extractor.confs,
+            dependencies=extractor.dependencies,
             container_source="",
             kernel=kernel,
             notebook_dict=extracted_nb.dict()
         )
-        if notebook.cells[cell_index].cell_type == 'code':
-            cell.integrate_configuration()
-            params = extractor.extract_cell_params(cell.original_source)
-            cell.add_params(params)
-            cell.add_param_values(params)
+        cell.integrate_configuration()
+        extractor.params = extractor.extract_cell_params(cell.original_source)
+        cell.add_params(extractor.params)
+        cell.add_param_values(extractor.params)
 
         node = ConverterReactFlowChart.get_node(
             node_id,
             title,
-            set(ins),
-            set(outs),
-            params,
+            set(extractor.ins),
+            set(extractor.outs),
+            extractor.params,
         )
 
         chart = {
@@ -300,6 +290,7 @@ def wait_for_github_api_resources():
         sleep(remaining_time + 1)
         rate_limit = github.get_rate_limit()
 
+
 def find_job(
         wf_id=None,
         wf_creation_utc=None,
@@ -339,6 +330,7 @@ def find_job(
                 job['head_sha'] = run['head_sha']
                 return job
     return None
+
 
 def wait_for_job(
         wf_id=None,
@@ -381,11 +373,13 @@ def wait_for_job(
                 return job
         sleep(5)
 
+
 def write_cell_to_file(current_cell):
     Path('/tmp/workflow_cells/cells').mkdir(parents=True, exist_ok=True)
     with open('/tmp/workflow_cells/cells/' + current_cell.task_name + '.json', 'w') as f:
         f.write(current_cell.toJSON())
         f.close()
+
 
 class CellsHandler(APIHandler, Catalog):
     logger = logging.getLogger(__name__)
