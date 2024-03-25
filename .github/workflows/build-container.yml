@@ -39,7 +39,7 @@ jobs:
       with:
         name: ${{ inputs.wheel_artifact_name }}
         path: docker/${{ inputs.docker_folder }}
-    - uses: mikefarah/yq@v4.42.1
+    - uses: mikefarah/yq@v4.43.1
 
     - name: add whl and start files
       run: |
