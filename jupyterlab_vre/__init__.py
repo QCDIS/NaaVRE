@@ -6,7 +6,6 @@ from .component_containerizer.handlers import ExtractorHandler, TypesHandler, Ba
 from .dataset_search.handlers import DatasetSearchHandler, DatasetDownloadHandler
 from .experiment_manager.handlers import ExportWorkflowHandler, ExecuteWorkflowHandler
 from .handlers import CatalogGetAllHandler
-from .notebook_containerizer.handlers import NotebookExtractorHandler
 from .notebook_search.handlers import NotebookSearchHandler, NotebookSearchRatingHandler, NotebookDownloadHandler, \
     NotebookSeachHistoryHandler, NotebookSourceHandler
 from .registries.handlers import RegistriesHandler
@@ -33,8 +32,6 @@ def load_jupyter_server_extension(lab_app):
         (
         url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebooksearchrating'), NotebookSearchRatingHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/extract'), ExtractorHandler),
-        (
-        url_path_join(lab_app.web_app.settings['base_url'], r'/vre/nbcontainerizer/extract'), NotebookExtractorHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/types'), TypesHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/baseimage'), BaseImageHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/addcell'), CellsHandler),
