@@ -41,6 +41,11 @@ class HeaderExtractor(Extractor):
     The document is validated with the schema `cell_header.schema.json`
 
     """
+    ins: Union[dict, None]
+    outs: Union[dict, None]
+    params: Union[dict, None]
+    confs: Union[list, None]
+    dependencies: Union[list, None]
 
     def __init__(self, notebook, cell_source):
         self.re_yaml_doc_in_comment = re.compile(
@@ -52,6 +57,7 @@ class HeaderExtractor(Extractor):
             re.MULTILINE)
         self.schema = self._load_schema()
         self.cell_header = self._extract_header(cell_source)
+        self._external_extract_cell_params = None
 
         super().__init__(notebook, cell_source)
 
@@ -66,6 +72,15 @@ class HeaderExtractor(Extractor):
 
     def enabled(self):
         return self.cell_header is not None
+
+    def is_complete(self):
+        return (
+                (self.ins is not None)
+                and (self.outs is not None)
+                and (self.params is not None)
+                and (self.confs is not None)
+                and (self.dependencies is not None)
+            )
 
     def _extract_header(self, cell_source):
         # get yaml document from cell comments
@@ -87,6 +102,25 @@ class HeaderExtractor(Extractor):
             logging.getLogger().debug(f"Cell header validation error: {e}")
             raise e
         return header
+
+    def add_missing_values(self, extractor: Extractor):
+        """ Add values not specified in the header from another extractor
+        (e.g. PyExtractor or RExtractor)
+        """
+        if self.ins is None:
+            self.ins = extractor.ins
+        if self.outs is None:
+            self.outs = extractor.outs
+        if self.params is None:
+            self.params = extractor.params
+            # We store a reference to extractor.extract_cell_params because
+            # self.extract_cell_params is called after self.add_missing_values
+            # in component_containerizer.handlers.ExtractorHandler.post()
+            self._external_extract_cell_params = extractor.extract_cell_params
+        if self.confs is None:
+            self.confs = extractor.confs
+        if self.dependencies is None:
+            self.dependencies = extractor.dependencies
 
     @staticmethod
     def _parse_inputs_outputs_param_items(
@@ -158,10 +192,12 @@ class HeaderExtractor(Extractor):
             self,
             header: Union[dict, None],
             item_type: Literal['inputs', 'outputs', 'params'],
-            ) -> dict:
+            ) -> Union[dict, None]:
         if header is None:
-            return {}
-        items = header['NaaVRE']['cell'].get(item_type, [])
+            return None
+        items = header['NaaVRE']['cell'].get(item_type)
+        if items is None:
+            return None
         items = [self._parse_inputs_outputs_param_items(it, item_type)
                  for it in items]
         return {it['name']: it for it in items}
@@ -179,6 +215,8 @@ class HeaderExtractor(Extractor):
             )
 
     def extract_cell_params(self, source):
+        if self._external_extract_cell_params is not None:
+            return self._external_extract_cell_params(source)
         return self._infer_cell_inputs_outputs_params(
             self._extract_header(source),
             'params',
@@ -186,14 +224,18 @@ class HeaderExtractor(Extractor):
 
     def extract_cell_conf_ref(self):
         if self.cell_header is None:
-            return {}
-        items = self.cell_header['NaaVRE']['cell'].get('confs', [])
+            return None
+        items = self.cell_header['NaaVRE']['cell'].get('confs')
+        if items is None:
+            return None
         return {k: v['assignation'] for it in items for k, v in it.items()}
 
     def infer_cell_dependencies(self, confs):
         if self.cell_header is None:
-            return []
-        items = self.cell_header['NaaVRE']['cell'].get('dependencies', [])
+            return None
+        items = self.cell_header['NaaVRE']['cell'].get('dependencies')
+        if items is None:
+            return None
         return [
             {
                 'name': it.get('name'),

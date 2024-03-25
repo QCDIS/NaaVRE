@@ -144,12 +144,14 @@ class ExtractorHandler(APIHandler, Catalog):
                 self.flush()
                 return
 
-            # extractor based on the kernel (if cell header is not defined)
-            if not extractor.enabled():
+            # Extractor based on code analysis. Used if the cell has no header,
+            # or if some values are not specified in the header
+            if not extractor.is_complete():
                 if kernel == "IRkernel":
-                    extractor = RExtractor(notebook, source)
+                    code_extractor = RExtractor(notebook, source)
                 else:
-                    extractor = PyExtractor(notebook, source)
+                    code_extractor = PyExtractor(notebook, source)
+                extractor.add_missing_values(code_extractor)
 
         extracted_nb = extract_cell_by_index(notebook, cell_index)
         if kernel == "IRkernel":
