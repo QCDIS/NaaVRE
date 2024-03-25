@@ -2,6 +2,7 @@ import copy
 import datetime
 import hashlib
 import importlib
+import json
 import logging
 import os
 import re
@@ -12,8 +13,6 @@ from builtins import Exception
 from pathlib import Path
 from time import sleep
 
-import json
-
 import autopep8
 import distro
 import jsonschema
@@ -23,6 +22,7 @@ from github import Github
 from github.GithubException import UnknownObjectException
 from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
+from slugify import slugify
 from tornado import web
 
 from jupyterlab_vre.database.catalog import Catalog
@@ -159,13 +159,10 @@ class ExtractorHandler(APIHandler, Catalog):
 
         # initialize variables
         title = source.partition('\n')[0].strip()
-        title = title.replace('#', '').replace('.', '-').replace(
-            '_', '-').replace('(', '-').replace(')', '-').strip() if title and title[0] == "#" else "Untitled"
+        title = slugify(title) if title and title[0] == "#" else "Untitled"
 
         if 'JUPYTERHUB_USER' in os.environ:
-            title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace(
-                '.', '-').replace('@',
-                                  '-at-').strip()
+            title += '-' + slugify(os.environ['JUPYTERHUB_USER'])
 
         # If any of these change, we create a new cell in the catalog.
         # This matches the cell properties saved in workflows.
@@ -182,7 +179,7 @@ class ExtractorHandler(APIHandler, Catalog):
         cell = Cell(
             node_id=node_id,
             title=title,
-            task_name=title.lower().replace(' ', '-').replace('.', '-'),
+            task_name=slugify(title.lower()),
             original_source=source,
             inputs=extractor.ins,
             outputs=extractor.outs,

@@ -6,6 +6,7 @@ import uuid
 from unittest import TestCase
 
 import nbformat as nb
+from slugify import slugify
 
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
@@ -34,15 +35,11 @@ def create_cell(payload_path=None):
         extractor = PyExtractor(notebook, source)
 
     title = source.partition('\n')[0]
-    title = title.replace('#', '').replace(
-        '_', '-').replace('(', '-').replace(')', '-').replace('.', '-').strip() if title and title[
+    title = slugify(title) if title and title[
         0] == "#" else "Untitled"
 
     if 'JUPYTERHUB_USER' in os.environ:
-        title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.',
-                                                                                                                   '-').replace(
-            '@',
-            '-at-').strip()
+        title += '-' + slugify(os.environ['JUPYTERHUB_USER'])
 
     ins = {}
     outs = {}
@@ -63,7 +60,7 @@ def create_cell(payload_path=None):
     cell = Cell(
         node_id=node_id,
         title=title,
-        task_name=title.lower().replace(' ', '-'),
+        task_name=slugify(title.lower()),
         original_source=source,
         inputs=ins,
         outputs=outs,
