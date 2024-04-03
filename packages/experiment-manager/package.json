@@ -33,7 +33,7 @@
         "watch": "tsc -w"
     },
     "dependencies": {
-        "@emotion/react": "11.9.0",
+        "@emotion/react": "11.11.4",
         "@emotion/styled": "11.11.5",
         "@jupyterlab/application": "3.5.3",
         "@jupyterlab/coreutils": "5.5.3",
