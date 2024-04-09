@@ -1,0 +1,52 @@
+{
+  "chart": {
+    "offset": {
+      "x": 0,
+      "y": 0
+    },
+    "scale": 1,
+    "nodes": {
+      "44b24f05-b926-412b-98d2-b1952c9dc4c9": {
+        "id": "44b24f05-b926-412b-98d2-b1952c9dc4c9",
+        "position": {
+          "x": 582.3666687011719,
+          "y": 140
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {},
+        "properties": {
+          "title": "Param-n-conf-check-dev-user-name-domain-com",
+          "vars": [],
+          "params": [
+            "param_string",
+            "param_string_with_comment",
+            "param_int",
+            "param_float",
+            "param_list_int",
+            "param_list_str"
+          ],
+          "inputs": [],
+          "outputs": [],
+          "og_node_id": "ca605ee"
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      }
+    },
+    "links": {},
+    "selected": {},
+    "hovered": {}
+  },
+  "params": {
+    "param_float": "1.1",
+    "param_int": "1",
+    "param_list_int": "[1, 2, 3]",
+    "param_list_str": "['1', 'two', '3']",
+    "param_string": "param_string value",
+    "param_string_with_comment": "param_string value"
+  },
+  "skip_exec": true
+}

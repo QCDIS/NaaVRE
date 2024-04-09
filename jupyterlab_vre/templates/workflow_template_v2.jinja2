@@ -19,7 +19,7 @@ spec:
       parameters:
       {% for p, value in global_params.items() %}
       - name: {{ p }}
-        value: {{ value }}
+        value:  "{{ value }}"
       {% endfor %}
     templates:
     - name: {{ workflow_name }}
