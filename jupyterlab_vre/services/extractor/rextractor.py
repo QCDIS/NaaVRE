@@ -396,22 +396,16 @@ class RExtractor(Extractor):
         return confs
 
     def __resolve_configurations(self, configurations):
-        confs_in_assignment = {}
         resolved_configurations = {}
-        for conf_name in configurations:
-            conf = configurations[conf_name]
-            if 'conf_' in conf.split('=')[1]:
-                confs_in_assignment[conf_name] = conf
-        for conf_name in configurations:
-            for confs_in_assignment_name in confs_in_assignment:
-                if conf_name in confs_in_assignment[
-                    confs_in_assignment_name] and conf_name not in resolved_configurations:
-                    replace_value = configurations[conf_name].split('=')[1]
-                    if confs_in_assignment_name in resolved_configurations:
-                        new_value = resolved_configurations[confs_in_assignment_name].replace(conf_name, replace_value)
-                    else:
-                        new_value = confs_in_assignment[confs_in_assignment_name].replace(conf_name, replace_value)
-                    resolved_configurations[confs_in_assignment_name] = new_value
+        for k, assignment in configurations.items():
+            while 'conf_' in assignment.split('=')[1]:
+                for conf_name, replacing_assignment in configurations.items():
+                    if conf_name in assignment.split('=')[1]:
+                        assignment = assignment.replace(
+                            conf_name,
+                            replacing_assignment.split('=')[1],
+                            )
+                resolved_configurations[k] = assignment
         configurations.update(resolved_configurations)
         return configurations
 
