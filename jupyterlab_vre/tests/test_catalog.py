@@ -1,10 +1,8 @@
 import os
 from unittest import TestCase
+
 from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.tests.test_handlers import create_cell_and_add_to_cat
-
-
-# from jupyterlab_vre.storage.catalog import Catalog
 
 
 class TestCatalog(TestCase):
@@ -61,7 +59,7 @@ class TestCatalog(TestCase):
             self.assertEqual(returned_cell.task_name, test_cell.task_name)
             self.assertEqual(returned_cell.node_id, test_cell.node_id)
 
-            #Modify cell source and update
+            # Modify cell source and update
             returned_cell.original_source = 'modified'
             Catalog.update_cell(returned_cell)
             modified_cell_doc = Catalog.get_cell_from_og_node_id(test_cell.node_id)
@@ -80,9 +78,3 @@ class TestCatalog(TestCase):
             Catalog.delete_all_cells()
             all_cells = Catalog.get_all_cells()
             self.assertEqual(len(all_cells), 0)
-
-
-
-
-
-

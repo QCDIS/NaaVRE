@@ -125,11 +125,6 @@ Then run the tests as described in the [Testing](#testing) section.
 This will case all cells in the `test/resources/cells` folder to be dockerized. Next all the workflows in the 
 `test/resources/workflows/NaaVRE` folder will be submitted to the Argo Workflow engine.
 
-
-
-
-
-
 ## Troubleshooting
 
 When running make install-backend, if the following error occurs:
@@ -158,8 +153,14 @@ conda env update --file environment.yml
 
 ## Docker 
 
+### Build the docker image
+
+```shell
+docker build -t n-a-a-vre .
+```
+
 ```commandline
-docker run -it -p 8888:8888 --env-file ~/Downloads/notbooks/docker_VARS qcdis/n-a-a-vre-laserfarm /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative"
+docker run -it -p 8888:8888 --env-file ~/Downloads/notbooks/docker_VARS n-a-a-vre /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative"
 ```
 
 
