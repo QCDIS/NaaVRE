@@ -62,26 +62,20 @@
                     "inputs": [],
                     "og_node_id": "ea65d0e",
                     "outputs": [
-                        "var_float",
-                        "var_list_str",
-                        "var_string",
                         "var_int",
+                        "var_string",
                         "var_list_int",
-                        "var_string_with_comment"
+                        "var_float",
+                        "var_string_with_comment",
+                        "var_list_str"
                     ],
                     "params": [],
                     "title": "vars-types-dev-user-name-domain-com",
                     "vars": [
                         {
-                            "color": "#53ac8b",
+                            "color": "#aad279",
                             "direction": "output",
-                            "name": "var_float",
-                            "type": "datatype"
-                        },
-                        {
-                            "color": "#6c89e0",
-                            "direction": "output",
-                            "name": "var_list_str",
+                            "name": "var_int",
                             "type": "datatype"
                         },
                         {
@@ -91,21 +85,27 @@
                             "type": "datatype"
                         },
                         {
-                            "color": "#aad279",
-                            "direction": "output",
-                            "name": "var_int",
-                            "type": "datatype"
-                        },
-                        {
                             "color": "#2d4ed2",
                             "direction": "output",
                             "name": "var_list_int",
                             "type": "datatype"
                         },
                         {
+                            "color": "#53ac8b",
+                            "direction": "output",
+                            "name": "var_float",
+                            "type": "datatype"
+                        },
+                        {
                             "color": "#87c0c5",
                             "direction": "output",
                             "name": "var_string_with_comment",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#6c89e0",
+                            "direction": "output",
+                            "name": "var_list_str",
                             "type": "datatype"
                         }
                     ]
@@ -131,10 +131,10 @@
             {
                 "cell_type": "code",
                 "execution_count": 4,
-                "id": "8519a0de-0023-40ab-8b53-b7342950fed3",
+                "id": "0afee7dc-9cf1-4b8a-b148-6e4bf54724a5",
                 "metadata": {},
                 "outputs": [],
-                "source": "# vars types\nparam_string = 'param_string value'\nparam_string_with_comment = 'param_string value'  # comment\nparam_int = 1\nparam_float = 1.1\nparam_list_int = [1, 2, 3]\nparam_list_str = [\"1\", \"two\", \"3\"]\n\nconf_string = 'param_string value'\nconf_string_with_comment = 'param_string value'  # comment\nconf_int = 1\nconf_float = 1.1\nconf_list_int = [1, 2, 3]\nconf_list_str = [\"1\", \"two\", \"3\"]\n\nvar_string = 'var_string value'\nvar_string_with_comment = 'var_string value'  # comment\nvar_int = 1\nvar_float = 1.1\nvar_list_int = [1, 2, 3]\nvar_list_str = [\"1\", \"two\", \"3\"]"
+                "source": "# vars types\nparam_string = 'param_string value'\nparam_string_with_comment = 'param_string value'  # comment\nparam_int = 1\nparam_float = 1.1\nparam_list_int = [1, 2, 3]\nparam_list_str = [\"list_str\", \"space in elem\", \"3\"]\n\nconf_string = 'param_string value'\nconf_string_with_comment = 'param_string value'  # comment\nconf_int = 1\nconf_float = 1.1\nconf_list_int = [1, 2, 3]\nconf_list_str = [\"list_str\", \"space in elem\", \"3\"]\n\nvar_string = 'var_string value'\nvar_string_with_comment = 'var_string value'  # comment\nvar_int = 1\nvar_float = 1.1\nvar_list_int = [1, 2, 3]\nvar_list_str = [\"list_str\", \"space in elem\", \"3\"]\n"
             }
         ],
         "metadata": {
@@ -153,13 +153,13 @@
                 "name": "python",
                 "nbconvert_exporter": "python",
                 "pygments_lexer": "ipython3",
-                "version": "3.12.1"
+                "version": "3.11.8"
             }
         },
         "nbformat": 4,
         "nbformat_minor": 5
     },
-    "original_source": "param_string = 'param_string value'\nparam_string_with_comment = 'param_string value'  # comment\nparam_int = 1\nparam_float = 1.1\nparam_list_int = [1, 2, 3]\nparam_list_str = [\"1\", \"two\", \"3\"]\n\nconf_string = 'param_string value'\nconf_string_with_comment = 'param_string value'  # comment\nconf_int = 1\nconf_float = 1.1\nconf_list_int = [1, 2, 3]\nconf_list_str = [\"1\", \"two\", \"3\"]\n\nvar_string = 'var_string value'\nvar_string_with_comment = 'var_string value'  # comment\nvar_int = 1\nvar_float = 1.1\nvar_list_int = [1, 2, 3]\nvar_list_str = [\"1\", \"two\", \"3\"]",
+    "original_source": "param_string = 'param_string value'\nparam_string_with_comment = 'param_string value'  # comment\nparam_int = 1\nparam_float = 1.1\nparam_list_int = [1, 2, 3]\nparam_list_str = [\"list_str\", \"space in elem\", \"3\"]\n\nconf_string = 'param_string value'\nconf_string_with_comment = 'param_string value'  # comment\nconf_int = 1\nconf_float = 1.1\nconf_list_int = [1, 2, 3]\nconf_list_str = [\"list_str\", \"space in elem\", \"3\"]\n\nvar_string = 'var_string value'\nvar_string_with_comment = 'var_string value'  # comment\nvar_int = 1\nvar_float = 1.1\nvar_list_int = [1, 2, 3]\nvar_list_str = [\"list_str\", \"space in elem\", \"3\"]",
     "outputs": [
         "var_string",
         "var_string_with_comment",
@@ -179,5 +179,6 @@
         "var_list_str": "list",
         "var_string": "str",
         "var_string_with_comment": "str"
-    }
+    },
+    "skip_exec": true
 }

@@ -5,6 +5,7 @@
 {% endif %}
 
 import argparse
+import json
 arg_parser = argparse.ArgumentParser()
 
 arg_parser.add_argument('--id', action='store', type=str, required=True, dest='id')
@@ -51,6 +52,7 @@ except Exception as e:
     if e.__class__.__name__ == 'JSONDecodeError':
         import ast
         {{ param }} = ast.literal_eval(args.{{ param }}.replace('[','["').replace(',','","').replace('" ','"').replace(']','"]'))
+        {{ param }}.replace("'","")
     else:
         raise e
 {% elif types[param] == dict  or types[param] == 'dict' %}
