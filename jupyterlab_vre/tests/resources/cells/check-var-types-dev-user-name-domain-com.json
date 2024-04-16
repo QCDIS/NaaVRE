@@ -74,12 +74,12 @@
                 },
                 "properties": {
                     "inputs": [
-                        "var_int",
-                        "var_string",
                         "var_list_int",
+                        "var_int",
                         "var_float",
-                        "var_string_with_comment",
-                        "var_list_str"
+                        "var_list_str",
+                        "var_string",
+                        "var_string_with_comment"
                     ],
                     "og_node_id": "fa27dcb",
                     "outputs": [
@@ -96,21 +96,15 @@
                     "title": "check-var-types-dev-user-name-domain-com",
                     "vars": [
                         {
-                            "color": "#aad279",
-                            "direction": "input",
-                            "name": "var_int",
-                            "type": "datatype"
-                        },
-                        {
-                            "color": "#98e06c",
-                            "direction": "input",
-                            "name": "var_string",
-                            "type": "datatype"
-                        },
-                        {
                             "color": "#2d4ed2",
                             "direction": "input",
                             "name": "var_list_int",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#aad279",
+                            "direction": "input",
+                            "name": "var_int",
                             "type": "datatype"
                         },
                         {
@@ -120,15 +114,21 @@
                             "type": "datatype"
                         },
                         {
-                            "color": "#87c0c5",
-                            "direction": "input",
-                            "name": "var_string_with_comment",
-                            "type": "datatype"
-                        },
-                        {
                             "color": "#6c89e0",
                             "direction": "input",
                             "name": "var_list_str",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#98e06c",
+                            "direction": "input",
+                            "name": "var_string",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#87c0c5",
+                            "direction": "input",
+                            "name": "var_string_with_comment",
                             "type": "datatype"
                         },
                         {
@@ -244,6 +244,5 @@
         "var_list_str": "list",
         "var_string": "str",
         "var_string_with_comment": "str"
-    },
-    "skip_exec": true
+    },"skip_exec": true
 }

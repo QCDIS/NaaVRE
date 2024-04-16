@@ -51,8 +51,7 @@ try:
 except Exception as e:
     if e.__class__.__name__ == 'JSONDecodeError':
         import ast
-        {{ param }} = ast.literal_eval(args.{{ param }}.replace('[','["').replace(',','","').replace('" ','"').replace(']','"]'))
-        {{ param }}.replace("'","")
+        {{ param }} = ast.literal_eval(args.{{ param }}.replace('[','["').replace(',','","').replace('" ','"').replace(']','"]').replace("'",""))
     else:
         raise e
 {% elif types[param] == dict  or types[param] == 'dict' %}

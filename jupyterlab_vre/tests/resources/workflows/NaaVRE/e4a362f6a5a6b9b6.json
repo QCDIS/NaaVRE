@@ -1,51 +1,29 @@
 {
   "chart": {
     "offset": {
-      "x": 0,
-      "y": 0
+      "x": -258,
+      "y": 13
     },
     "scale": 1,
     "nodes": {
-      "78553ede-29c3-466e-95aa-726559be6032": {
-        "id": "78553ede-29c3-466e-95aa-726559be6032",
+      "de2e227d-42c4-4beb-b600-b509b2d1e92c": {
+        "id": "de2e227d-42c4-4beb-b600-b509b2d1e92c",
         "position": {
-          "x": 353.3500061035156,
-          "y": 97
+          "x": 322.58331298828125,
+          "y": 87
         },
         "orientation": 0,
         "type": "input-output",
         "ports": {
-          "var_int": {
+          "var_string_with_comment": {
             "properties": {
-              "color": "#aad279"
+              "color": "#87c0c5"
             },
-            "id": "var_int",
+            "id": "var_string_with_comment",
             "type": "right",
             "position": {
               "x": 197.5,
               "y": 14
-            }
-          },
-          "var_string": {
-            "properties": {
-              "color": "#98e06c"
-            },
-            "id": "var_string",
-            "type": "right",
-            "position": {
-              "x": 197.5,
-              "y": 42
-            }
-          },
-          "var_list_int": {
-            "properties": {
-              "color": "#2d4ed2"
-            },
-            "id": "var_list_int",
-            "type": "right",
-            "position": {
-              "x": 197.5,
-              "y": 70
             }
           },
           "var_float": {
@@ -56,18 +34,29 @@
             "type": "right",
             "position": {
               "x": 197.5,
-              "y": 98
+              "y": 42
             }
           },
-          "var_string_with_comment": {
+          "var_int": {
             "properties": {
-              "color": "#87c0c5"
+              "color": "#aad279"
             },
-            "id": "var_string_with_comment",
+            "id": "var_int",
             "type": "right",
             "position": {
               "x": 197.5,
-              "y": 126
+              "y": 70
+            }
+          },
+          "var_string": {
+            "properties": {
+              "color": "#98e06c"
+            },
+            "id": "var_string",
+            "type": "right",
+            "position": {
+              "x": 197.5,
+              "y": 98
             }
           },
           "var_list_str": {
@@ -78,6 +67,17 @@
             "type": "right",
             "position": {
               "x": 197.5,
+              "y": 126
+            }
+          },
+          "var_list_int": {
+            "properties": {
+              "color": "#2d4ed2"
+            },
+            "id": "var_list_int",
+            "type": "right",
+            "position": {
+              "x": 197.5,
               "y": 154
             }
           }
@@ -85,6 +85,18 @@
         "properties": {
           "title": "vars-types-dev-user-name-domain-com",
           "vars": [
+            {
+              "name": "var_string_with_comment",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#87c0c5"
+            },
+            {
+              "name": "var_float",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#53ac8b"
+            },
             {
               "name": "var_int",
               "direction": "output",
@@ -98,39 +110,27 @@
               "color": "#98e06c"
             },
             {
-              "name": "var_list_int",
-              "direction": "output",
-              "type": "datatype",
-              "color": "#2d4ed2"
-            },
-            {
-              "name": "var_float",
-              "direction": "output",
-              "type": "datatype",
-              "color": "#53ac8b"
-            },
-            {
-              "name": "var_string_with_comment",
-              "direction": "output",
-              "type": "datatype",
-              "color": "#87c0c5"
-            },
-            {
               "name": "var_list_str",
               "direction": "output",
               "type": "datatype",
               "color": "#6c89e0"
+            },
+            {
+              "name": "var_list_int",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#2d4ed2"
             }
           ],
           "params": [],
           "inputs": [],
           "outputs": [
+            "var_string_with_comment",
+            "var_float",
             "var_int",
             "var_string",
-            "var_list_int",
-            "var_float",
-            "var_string_with_comment",
-            "var_list_str"
+            "var_list_str",
+            "var_list_int"
           ],
           "og_node_id": "ea65d0e"
         },
@@ -139,46 +139,24 @@
           "height": 150
         }
       },
-      "8aef4872-b509-45c4-8a9c-1d4e164e0bd0": {
-        "id": "8aef4872-b509-45c4-8a9c-1d4e164e0bd0",
+      "8172245b-51e5-41f1-8419-e8fb2121836c": {
+        "id": "8172245b-51e5-41f1-8419-e8fb2121836c",
         "position": {
-          "x": 692.3500061035156,
-          "y": 92
+          "x": 732.5833129882812,
+          "y": 84
         },
         "orientation": 0,
         "type": "input-output",
         "ports": {
-          "var_int": {
+          "var_string_with_comment": {
             "properties": {
-              "color": "#aad279"
+              "color": "#87c0c5"
             },
-            "id": "var_int",
+            "id": "var_string_with_comment",
             "type": "left",
             "position": {
               "x": 50.5,
               "y": 14
-            }
-          },
-          "var_string": {
-            "properties": {
-              "color": "#98e06c"
-            },
-            "id": "var_string",
-            "type": "left",
-            "position": {
-              "x": 50.5,
-              "y": 42
-            }
-          },
-          "var_list_int": {
-            "properties": {
-              "color": "#2d4ed2"
-            },
-            "id": "var_list_int",
-            "type": "left",
-            "position": {
-              "x": 50.5,
-              "y": 70
             }
           },
           "var_float": {
@@ -189,18 +167,29 @@
             "type": "left",
             "position": {
               "x": 50.5,
-              "y": 98
+              "y": 42
             }
           },
-          "var_string_with_comment": {
+          "var_int": {
             "properties": {
-              "color": "#87c0c5"
+              "color": "#aad279"
             },
-            "id": "var_string_with_comment",
+            "id": "var_int",
             "type": "left",
             "position": {
               "x": 50.5,
-              "y": 126
+              "y": 70
+            }
+          },
+          "var_string": {
+            "properties": {
+              "color": "#98e06c"
+            },
+            "id": "var_string",
+            "type": "left",
+            "position": {
+              "x": 50.5,
+              "y": 98
             }
           },
           "var_list_str": {
@@ -208,6 +197,17 @@
               "color": "#6c89e0"
             },
             "id": "var_list_str",
+            "type": "left",
+            "position": {
+              "x": 50.5,
+              "y": 126
+            }
+          },
+          "var_list_int": {
+            "properties": {
+              "color": "#2d4ed2"
+            },
+            "id": "var_list_int",
             "type": "left",
             "position": {
               "x": 50.5,
@@ -230,6 +230,18 @@
           "title": "check-var-types-dev-user-name-domain-com",
           "vars": [
             {
+              "name": "var_string_with_comment",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#87c0c5"
+            },
+            {
+              "name": "var_float",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#53ac8b"
+            },
+            {
               "name": "var_int",
               "direction": "input",
               "type": "datatype",
@@ -242,28 +254,16 @@
               "color": "#98e06c"
             },
             {
-              "name": "var_list_int",
-              "direction": "input",
-              "type": "datatype",
-              "color": "#2d4ed2"
-            },
-            {
-              "name": "var_float",
-              "direction": "input",
-              "type": "datatype",
-              "color": "#53ac8b"
-            },
-            {
-              "name": "var_string_with_comment",
-              "direction": "input",
-              "type": "datatype",
-              "color": "#87c0c5"
-            },
-            {
               "name": "var_list_str",
               "direction": "input",
               "type": "datatype",
               "color": "#6c89e0"
+            },
+            {
+              "name": "var_list_int",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#2d4ed2"
             },
             {
               "name": "done",
@@ -281,12 +281,12 @@
             "param_list_str"
           ],
           "inputs": [
+            "var_string_with_comment",
+            "var_float",
             "var_int",
             "var_string",
-            "var_list_int",
-            "var_float",
-            "var_string_with_comment",
-            "var_list_str"
+            "var_list_str",
+            "var_list_int"
           ],
           "outputs": [
             "done"
@@ -298,11 +298,11 @@
           "height": 150
         }
       },
-      "4dcf186f-ad29-4714-9127-9b1e408a6f00": {
-        "id": "4dcf186f-ad29-4714-9127-9b1e408a6f00",
+      "afa07949-f577-47f6-bfbf-9fde8c3a8dbd": {
+        "id": "afa07949-f577-47f6-bfbf-9fde8c3a8dbd",
         "position": {
-          "x": 1028.3500061035156,
-          "y": 95
+          "x": 1156.5833129882812,
+          "y": 85
         },
         "orientation": 0,
         "type": "input-output",
@@ -350,80 +350,80 @@
       }
     },
     "links": {
-      "bd581829-0bae-48d6-b444-56b4644f4020": {
-        "id": "bd581829-0bae-48d6-b444-56b4644f4020",
+      "907b5e76-061d-43de-9529-c3e32335bb70": {
+        "id": "907b5e76-061d-43de-9529-c3e32335bb70",
         "from": {
-          "nodeId": "78553ede-29c3-466e-95aa-726559be6032",
-          "portId": "var_list_str"
-        },
-        "to": {
-          "nodeId": "8aef4872-b509-45c4-8a9c-1d4e164e0bd0",
-          "portId": "var_list_str"
-        }
-      },
-      "c43b0fbf-81fd-4e5f-96dd-7e9f0f39bd50": {
-        "id": "c43b0fbf-81fd-4e5f-96dd-7e9f0f39bd50",
-        "from": {
-          "nodeId": "78553ede-29c3-466e-95aa-726559be6032",
+          "nodeId": "de2e227d-42c4-4beb-b600-b509b2d1e92c",
           "portId": "var_string_with_comment"
         },
         "to": {
-          "nodeId": "8aef4872-b509-45c4-8a9c-1d4e164e0bd0",
+          "nodeId": "8172245b-51e5-41f1-8419-e8fb2121836c",
           "portId": "var_string_with_comment"
         }
       },
-      "90eb4bcb-cc2f-4f1f-a2c9-749c0fb7c51c": {
-        "id": "90eb4bcb-cc2f-4f1f-a2c9-749c0fb7c51c",
+      "39e61c0b-b598-42c6-b201-91fa2a139f67": {
+        "id": "39e61c0b-b598-42c6-b201-91fa2a139f67",
         "from": {
-          "nodeId": "78553ede-29c3-466e-95aa-726559be6032",
+          "nodeId": "de2e227d-42c4-4beb-b600-b509b2d1e92c",
           "portId": "var_float"
         },
         "to": {
-          "nodeId": "8aef4872-b509-45c4-8a9c-1d4e164e0bd0",
+          "nodeId": "8172245b-51e5-41f1-8419-e8fb2121836c",
           "portId": "var_float"
         }
       },
-      "7c2e7bf9-16e0-4a89-b777-5b45c5fafc08": {
-        "id": "7c2e7bf9-16e0-4a89-b777-5b45c5fafc08",
+      "e67e74d7-ed5f-4ded-8860-577199edfe1a": {
+        "id": "e67e74d7-ed5f-4ded-8860-577199edfe1a",
         "from": {
-          "nodeId": "78553ede-29c3-466e-95aa-726559be6032",
-          "portId": "var_list_int"
-        },
-        "to": {
-          "nodeId": "8aef4872-b509-45c4-8a9c-1d4e164e0bd0",
-          "portId": "var_list_int"
-        }
-      },
-      "f0425ec4-c90e-4727-871c-877a28bc10d8": {
-        "id": "f0425ec4-c90e-4727-871c-877a28bc10d8",
-        "from": {
-          "nodeId": "78553ede-29c3-466e-95aa-726559be6032",
-          "portId": "var_string"
-        },
-        "to": {
-          "nodeId": "8aef4872-b509-45c4-8a9c-1d4e164e0bd0",
-          "portId": "var_string"
-        }
-      },
-      "2810e2a0-c173-46c6-a647-e350acfa56de": {
-        "id": "2810e2a0-c173-46c6-a647-e350acfa56de",
-        "from": {
-          "nodeId": "78553ede-29c3-466e-95aa-726559be6032",
+          "nodeId": "de2e227d-42c4-4beb-b600-b509b2d1e92c",
           "portId": "var_int"
         },
         "to": {
-          "nodeId": "8aef4872-b509-45c4-8a9c-1d4e164e0bd0",
+          "nodeId": "8172245b-51e5-41f1-8419-e8fb2121836c",
           "portId": "var_int"
         }
       },
-      "18b6f724-5b1a-441d-bab7-a0588d55c6c0": {
-        "id": "18b6f724-5b1a-441d-bab7-a0588d55c6c0",
+      "efce9f78-6614-4bda-bed2-8bf8dbd8aff5": {
+        "id": "efce9f78-6614-4bda-bed2-8bf8dbd8aff5",
         "from": {
-          "nodeId": "8aef4872-b509-45c4-8a9c-1d4e164e0bd0",
+          "nodeId": "de2e227d-42c4-4beb-b600-b509b2d1e92c",
+          "portId": "var_string"
+        },
+        "to": {
+          "nodeId": "8172245b-51e5-41f1-8419-e8fb2121836c",
+          "portId": "var_string"
+        }
+      },
+      "7e0cb407-36bb-4dc1-aecb-df0e3670cda8": {
+        "id": "7e0cb407-36bb-4dc1-aecb-df0e3670cda8",
+        "from": {
+          "nodeId": "de2e227d-42c4-4beb-b600-b509b2d1e92c",
+          "portId": "var_list_str"
+        },
+        "to": {
+          "nodeId": "8172245b-51e5-41f1-8419-e8fb2121836c",
+          "portId": "var_list_str"
+        }
+      },
+      "22dd49eb-8a47-447a-90e4-cb472aa7f4d6": {
+        "id": "22dd49eb-8a47-447a-90e4-cb472aa7f4d6",
+        "from": {
+          "nodeId": "de2e227d-42c4-4beb-b600-b509b2d1e92c",
+          "portId": "var_list_int"
+        },
+        "to": {
+          "nodeId": "8172245b-51e5-41f1-8419-e8fb2121836c",
+          "portId": "var_list_int"
+        }
+      },
+      "7dbf420e-e80c-4081-9269-bd52d9a84e69": {
+        "id": "7dbf420e-e80c-4081-9269-bd52d9a84e69",
+        "from": {
+          "nodeId": "8172245b-51e5-41f1-8419-e8fb2121836c",
           "portId": "done"
         },
         "to": {
-          "nodeId": "4dcf186f-ad29-4714-9127-9b1e408a6f00",
+          "nodeId": "afa07949-f577-47f6-bfbf-9fde8c3a8dbd",
           "portId": "done"
         }
       }

@@ -261,8 +261,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
             self.assertEqual(200, response.code)
         for workflow_file in workflow_files:
             print('workflow_file: ', workflow_file)
-            if '7d08229330097a24.json'  not in workflow_file:
-                continue
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
