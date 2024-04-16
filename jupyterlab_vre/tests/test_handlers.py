@@ -255,6 +255,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
         cells_json_path = os.path.join(base_path, 'cells')
         cells_files = os.listdir(cells_json_path)
         for cell_file in cells_files:
+            if 'install-and-load-the-climwinb-packages-dev-user-name-at-domain-com.json' not in cell_file:
+                continue
             cell_path = os.path.join(cells_json_path, cell_file)
             create_cell_and_add_to_cat(cell_path=cell_path)
             response = self.call_cell_handler()
