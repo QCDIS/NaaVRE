@@ -188,7 +188,7 @@ spec:
             --{{ stdinname_base }} '{{ '{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}' }}'
             {% endfor %}
             {% for p in params %}
-            --{{ p }} {{ '"{{workflow.parameters.' }}{{ p }}{{ '}}"' }}}
+            --{{ p }} {{ '"{{workflow.parameters.' }}{{ p }}{{ '}}"' }}
             {% endfor %}
             --id {{' '}}{{cells[nid]['node_id']}}{{''}}{{";"}}
         {% endif %}
