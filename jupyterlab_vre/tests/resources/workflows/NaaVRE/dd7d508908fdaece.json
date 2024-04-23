@@ -6,24 +6,46 @@
     },
     "scale": 1,
     "nodes": {
-      "df4faf3d-27c1-42f1-bc82-b03046c70fc2": {
-        "id": "df4faf3d-27c1-42f1-bc82-b03046c70fc2",
+      "d59a3205-21df-4448-b1a7-0e793c9e12ee": {
+        "id": "d59a3205-21df-4448-b1a7-0e793c9e12ee",
         "position": {
-          "x": 347.1000061035156,
-          "y": 97
+          "x": 756.8666687011719,
+          "y": 53
         },
         "orientation": 0,
         "type": "input-output",
         "ports": {
+          "var_string": {
+            "properties": {
+              "color": "#98e06c"
+            },
+            "id": "var_string",
+            "type": "left",
+            "position": {
+              "x": 50.5,
+              "y": 14
+            }
+          },
+          "var_list_int": {
+            "properties": {
+              "color": "#2d4ed2"
+            },
+            "id": "var_list_int",
+            "type": "left",
+            "position": {
+              "x": 50.5,
+              "y": 42
+            }
+          },
           "var_list_str": {
             "properties": {
               "color": "#6c89e0"
             },
             "id": "var_list_str",
-            "type": "right",
+            "type": "left",
             "position": {
-              "x": 197.5,
-              "y": 14
+              "x": 50.5,
+              "y": 70
             }
           },
           "var_int": {
@@ -31,21 +53,10 @@
               "color": "#aad279"
             },
             "id": "var_int",
-            "type": "right",
+            "type": "left",
             "position": {
-              "x": 197.5,
-              "y": 42
-            }
-          },
-          "var_float": {
-            "properties": {
-              "color": "#53ac8b"
-            },
-            "id": "var_float",
-            "type": "right",
-            "position": {
-              "x": 197.5,
-              "y": 70
+              "x": 50.5,
+              "y": 98
             }
           },
           "var_string_with_comment": {
@@ -53,12 +64,97 @@
               "color": "#87c0c5"
             },
             "id": "var_string_with_comment",
-            "type": "right",
+            "type": "left",
             "position": {
-              "x": 197.5,
-              "y": 98
+              "x": 50.5,
+              "y": 126
             }
           },
+          "var_float": {
+            "properties": {
+              "color": "#53ac8b"
+            },
+            "id": "var_float",
+            "type": "left",
+            "position": {
+              "x": 50.5,
+              "y": 154
+            }
+          }
+        },
+        "properties": {
+          "title": "R-Check-var-types-dev-user-name-domain-com",
+          "vars": [
+            {
+              "name": "var_string",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#98e06c"
+            },
+            {
+              "name": "var_list_int",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#2d4ed2"
+            },
+            {
+              "name": "var_list_str",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#6c89e0"
+            },
+            {
+              "name": "var_int",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#aad279"
+            },
+            {
+              "name": "var_string_with_comment",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#87c0c5"
+            },
+            {
+              "name": "var_float",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#53ac8b"
+            }
+          ],
+          "params": [
+            "param_string",
+            "param_string_with_comment",
+            "param_int",
+            "param_float",
+            "param_list_int",
+            "param_list_str"
+          ],
+          "inputs": [
+            "var_string",
+            "var_list_int",
+            "var_list_str",
+            "var_int",
+            "var_string_with_comment",
+            "var_float"
+          ],
+          "outputs": [],
+          "og_node_id": "7eee697"
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "a40f9f8b-fea8-42f7-a8b4-4b631de9a84a": {
+        "id": "a40f9f8b-fea8-42f7-a8b4-4b631de9a84a",
+        "position": {
+          "x": 317.8666687011719,
+          "y": 51
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
           "var_string": {
             "properties": {
               "color": "#98e06c"
@@ -67,7 +163,7 @@
             "type": "right",
             "position": {
               "x": 197.5,
-              "y": 126
+              "y": 14
             }
           },
           "var_list_int": {
@@ -78,6 +174,50 @@
             "type": "right",
             "position": {
               "x": 197.5,
+              "y": 42
+            }
+          },
+          "var_list_str": {
+            "properties": {
+              "color": "#6c89e0"
+            },
+            "id": "var_list_str",
+            "type": "right",
+            "position": {
+              "x": 197.5,
+              "y": 70
+            }
+          },
+          "var_int": {
+            "properties": {
+              "color": "#aad279"
+            },
+            "id": "var_int",
+            "type": "right",
+            "position": {
+              "x": 197.5,
+              "y": 98
+            }
+          },
+          "var_string_with_comment": {
+            "properties": {
+              "color": "#87c0c5"
+            },
+            "id": "var_string_with_comment",
+            "type": "right",
+            "position": {
+              "x": 197.5,
+              "y": 126
+            }
+          },
+          "var_float": {
+            "properties": {
+              "color": "#53ac8b"
+            },
+            "id": "var_float",
+            "type": "right",
+            "position": {
+              "x": 197.5,
               "y": 154
             }
           }
@@ -85,6 +225,18 @@
         "properties": {
           "title": "R-vars-types-dev-user-name-domain-com",
           "vars": [
+            {
+              "name": "var_string",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#98e06c"
+            },
+            {
+              "name": "var_list_int",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#2d4ed2"
+            },
             {
               "name": "var_list_str",
               "direction": "output",
@@ -98,28 +250,16 @@
               "color": "#aad279"
             },
             {
-              "name": "var_float",
-              "direction": "output",
-              "type": "datatype",
-              "color": "#53ac8b"
-            },
-            {
               "name": "var_string_with_comment",
               "direction": "output",
               "type": "datatype",
               "color": "#87c0c5"
             },
             {
-              "name": "var_string",
+              "name": "var_float",
               "direction": "output",
               "type": "datatype",
-              "color": "#98e06c"
-            },
-            {
-              "name": "var_list_int",
-              "direction": "output",
-              "type": "datatype",
-              "color": "#2d4ed2"
+              "color": "#53ac8b"
             }
           ],
           "params": [
@@ -132,154 +272,14 @@
           ],
           "inputs": [],
           "outputs": [
+            "var_string",
+            "var_list_int",
             "var_list_str",
             "var_int",
-            "var_float",
             "var_string_with_comment",
-            "var_string",
-            "var_list_int"
+            "var_float"
           ],
           "og_node_id": "0c22714"
-        },
-        "size": {
-          "width": 250,
-          "height": 150
-        }
-      },
-      "03bd2435-0be1-45c0-a23d-66133febe0ce": {
-        "id": "03bd2435-0be1-45c0-a23d-66133febe0ce",
-        "position": {
-          "x": 785.1000061035156,
-          "y": 104
-        },
-        "orientation": 0,
-        "type": "input-output",
-        "ports": {
-          "var_list_str": {
-            "properties": {
-              "color": "#6c89e0"
-            },
-            "id": "var_list_str",
-            "type": "left",
-            "position": {
-              "x": 50.5,
-              "y": 14
-            }
-          },
-          "var_int": {
-            "properties": {
-              "color": "#aad279"
-            },
-            "id": "var_int",
-            "type": "left",
-            "position": {
-              "x": 50.5,
-              "y": 42
-            }
-          },
-          "var_float": {
-            "properties": {
-              "color": "#53ac8b"
-            },
-            "id": "var_float",
-            "type": "left",
-            "position": {
-              "x": 50.5,
-              "y": 70
-            }
-          },
-          "var_string_with_comment": {
-            "properties": {
-              "color": "#87c0c5"
-            },
-            "id": "var_string_with_comment",
-            "type": "left",
-            "position": {
-              "x": 50.5,
-              "y": 98
-            }
-          },
-          "var_string": {
-            "properties": {
-              "color": "#98e06c"
-            },
-            "id": "var_string",
-            "type": "left",
-            "position": {
-              "x": 50.5,
-              "y": 126
-            }
-          },
-          "var_list_int": {
-            "properties": {
-              "color": "#2d4ed2"
-            },
-            "id": "var_list_int",
-            "type": "left",
-            "position": {
-              "x": 50.5,
-              "y": 154
-            }
-          }
-        },
-        "properties": {
-          "title": "R-Check-var-types-dev-user-name-domain-com",
-          "vars": [
-            {
-              "name": "var_list_str",
-              "direction": "input",
-              "type": "datatype",
-              "color": "#6c89e0"
-            },
-            {
-              "name": "var_int",
-              "direction": "input",
-              "type": "datatype",
-              "color": "#aad279"
-            },
-            {
-              "name": "var_float",
-              "direction": "input",
-              "type": "datatype",
-              "color": "#53ac8b"
-            },
-            {
-              "name": "var_string_with_comment",
-              "direction": "input",
-              "type": "datatype",
-              "color": "#87c0c5"
-            },
-            {
-              "name": "var_string",
-              "direction": "input",
-              "type": "datatype",
-              "color": "#98e06c"
-            },
-            {
-              "name": "var_list_int",
-              "direction": "input",
-              "type": "datatype",
-              "color": "#2d4ed2"
-            }
-          ],
-          "params": [
-            "param_string",
-            "param_string_with_comment",
-            "param_int",
-            "param_float",
-            "param_list_int",
-            "param_list_str"
-          ],
-          "inputs": [
-            "var_list_str",
-            "var_int",
-            "var_float",
-            "var_string_with_comment",
-            "var_string",
-            "var_list_int"
-          ],
-          "outputs": [],
-          "og_node_id": "7eee697"
         },
         "size": {
           "width": 250,
@@ -288,70 +288,70 @@
       }
     },
     "links": {
-      "ef6177d8-e581-48c7-ac0d-df4f91b805e0": {
-        "id": "ef6177d8-e581-48c7-ac0d-df4f91b805e0",
+      "0a17dddd-6c44-43f8-9395-6c84ec4af1cb": {
+        "id": "0a17dddd-6c44-43f8-9395-6c84ec4af1cb",
         "from": {
-          "nodeId": "df4faf3d-27c1-42f1-bc82-b03046c70fc2",
-          "portId": "var_list_str"
-        },
-        "to": {
-          "nodeId": "03bd2435-0be1-45c0-a23d-66133febe0ce",
-          "portId": "var_list_str"
-        }
-      },
-      "85f882a4-79a8-4657-afea-f802ae1daf4f": {
-        "id": "85f882a4-79a8-4657-afea-f802ae1daf4f",
-        "from": {
-          "nodeId": "df4faf3d-27c1-42f1-bc82-b03046c70fc2",
-          "portId": "var_int"
-        },
-        "to": {
-          "nodeId": "03bd2435-0be1-45c0-a23d-66133febe0ce",
-          "portId": "var_int"
-        }
-      },
-      "293c8d41-b22d-48f0-9f08-08466955c77c": {
-        "id": "293c8d41-b22d-48f0-9f08-08466955c77c",
-        "from": {
-          "nodeId": "df4faf3d-27c1-42f1-bc82-b03046c70fc2",
-          "portId": "var_float"
-        },
-        "to": {
-          "nodeId": "03bd2435-0be1-45c0-a23d-66133febe0ce",
-          "portId": "var_float"
-        }
-      },
-      "6a2a8eb3-17ad-47a7-bb17-4ec166c3b32a": {
-        "id": "6a2a8eb3-17ad-47a7-bb17-4ec166c3b32a",
-        "from": {
-          "nodeId": "df4faf3d-27c1-42f1-bc82-b03046c70fc2",
-          "portId": "var_string_with_comment"
-        },
-        "to": {
-          "nodeId": "03bd2435-0be1-45c0-a23d-66133febe0ce",
-          "portId": "var_string_with_comment"
-        }
-      },
-      "8d69aeff-6429-4526-8ae0-d0edc310e47c": {
-        "id": "8d69aeff-6429-4526-8ae0-d0edc310e47c",
-        "from": {
-          "nodeId": "df4faf3d-27c1-42f1-bc82-b03046c70fc2",
+          "nodeId": "a40f9f8b-fea8-42f7-a8b4-4b631de9a84a",
           "portId": "var_string"
         },
         "to": {
-          "nodeId": "03bd2435-0be1-45c0-a23d-66133febe0ce",
+          "nodeId": "d59a3205-21df-4448-b1a7-0e793c9e12ee",
           "portId": "var_string"
         }
       },
-      "7830ec30-b4cb-4e55-afe2-da1e56e16852": {
-        "id": "7830ec30-b4cb-4e55-afe2-da1e56e16852",
+      "2949870f-7d4b-4e62-aeb3-ec591a25b099": {
+        "id": "2949870f-7d4b-4e62-aeb3-ec591a25b099",
         "from": {
-          "nodeId": "df4faf3d-27c1-42f1-bc82-b03046c70fc2",
+          "nodeId": "a40f9f8b-fea8-42f7-a8b4-4b631de9a84a",
           "portId": "var_list_int"
         },
         "to": {
-          "nodeId": "03bd2435-0be1-45c0-a23d-66133febe0ce",
+          "nodeId": "d59a3205-21df-4448-b1a7-0e793c9e12ee",
           "portId": "var_list_int"
+        }
+      },
+      "73bf9414-3702-498f-bd90-b5a73277027c": {
+        "id": "73bf9414-3702-498f-bd90-b5a73277027c",
+        "from": {
+          "nodeId": "a40f9f8b-fea8-42f7-a8b4-4b631de9a84a",
+          "portId": "var_list_str"
+        },
+        "to": {
+          "nodeId": "d59a3205-21df-4448-b1a7-0e793c9e12ee",
+          "portId": "var_list_str"
+        }
+      },
+      "3fd25b5a-0cb7-441f-aecb-c2c31fafac60": {
+        "id": "3fd25b5a-0cb7-441f-aecb-c2c31fafac60",
+        "from": {
+          "nodeId": "a40f9f8b-fea8-42f7-a8b4-4b631de9a84a",
+          "portId": "var_int"
+        },
+        "to": {
+          "nodeId": "d59a3205-21df-4448-b1a7-0e793c9e12ee",
+          "portId": "var_int"
+        }
+      },
+      "e8385b07-0046-4f66-84b0-edc1b1d1456a": {
+        "id": "e8385b07-0046-4f66-84b0-edc1b1d1456a",
+        "from": {
+          "nodeId": "a40f9f8b-fea8-42f7-a8b4-4b631de9a84a",
+          "portId": "var_string_with_comment"
+        },
+        "to": {
+          "nodeId": "d59a3205-21df-4448-b1a7-0e793c9e12ee",
+          "portId": "var_string_with_comment"
+        }
+      },
+      "c0c1af6e-fd8e-4544-85dd-cb44887561de": {
+        "id": "c0c1af6e-fd8e-4544-85dd-cb44887561de",
+        "from": {
+          "nodeId": "a40f9f8b-fea8-42f7-a8b4-4b631de9a84a",
+          "portId": "var_float"
+        },
+        "to": {
+          "nodeId": "d59a3205-21df-4448-b1a7-0e793c9e12ee",
+          "portId": "var_float"
         }
       }
     },

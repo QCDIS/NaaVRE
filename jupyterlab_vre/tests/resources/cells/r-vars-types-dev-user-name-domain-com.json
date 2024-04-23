@@ -62,12 +62,12 @@
                     "inputs": [],
                     "og_node_id": "0c22714",
                     "outputs": [
+                        "var_string",
+                        "var_list_int",
                         "var_list_str",
                         "var_int",
-                        "var_float",
                         "var_string_with_comment",
-                        "var_string",
-                        "var_list_int"
+                        "var_float"
                     ],
                     "params": [
                         "param_string",
@@ -79,6 +79,18 @@
                     ],
                     "title": "R-vars-types-dev-user-name-domain-com",
                     "vars": [
+                        {
+                            "color": "#98e06c",
+                            "direction": "output",
+                            "name": "var_string",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#2d4ed2",
+                            "direction": "output",
+                            "name": "var_list_int",
+                            "type": "datatype"
+                        },
                         {
                             "color": "#6c89e0",
                             "direction": "output",
@@ -92,27 +104,15 @@
                             "type": "datatype"
                         },
                         {
-                            "color": "#53ac8b",
-                            "direction": "output",
-                            "name": "var_float",
-                            "type": "datatype"
-                        },
-                        {
                             "color": "#87c0c5",
                             "direction": "output",
                             "name": "var_string_with_comment",
                             "type": "datatype"
                         },
                         {
-                            "color": "#98e06c",
+                            "color": "#53ac8b",
                             "direction": "output",
-                            "name": "var_string",
-                            "type": "datatype"
-                        },
-                        {
-                            "color": "#2d4ed2",
-                            "direction": "output",
-                            "name": "var_list_int",
+                            "name": "var_float",
                             "type": "datatype"
                         }
                     ]
@@ -144,10 +144,19 @@
         "cells": [
             {
                 "cell_type": "code",
-                "execution_count": 1,
+                "execution_count": null,
                 "id": "62acca7c-1f91-4266-bb7e-23d85a3d7157",
                 "metadata": {},
-                "outputs": [],
+                "outputs": [
+                    {
+                        "ename": "ERROR",
+                        "evalue": "Error in parse(text = x, srcfile = src): <text>:57:17: unexpected '['\n56: conf_list_int <- c(1, 2, 3)\n57: conf_list_int = [\n                    ^\n",
+                        "output_type": "error",
+                        "traceback": [
+                            "Error in parse(text = x, srcfile = src): <text>:57:17: unexpected '['\n56: conf_list_int <- c(1, 2, 3)\n57: conf_list_int = [\n                    ^\nTraceback:\n"
+                        ]
+                    }
+                ],
                 "source": "# R vars types\n# ---\n# NaaVRE:\n#  cell:\n#   params:\n#    - param_string: \n#       type: String\n#       default_value: \"param_string value\"\n#    - param_string_with_comment:\n#       type: String\n#       default_value: \"param_string value\"\n#    - param_int: \n#       type: Integer\n#       default_value: 1\n#    - param_float: \n#       type: Float\n#       default_value: 1.1\n#    - param_list_int:\n#       type: List\n#       default_value: [1, 2, 3]\n#    - param_list_str: \n#       type: List\n#       default_value: ['list_str', 'space in elem', '3']\n#   outputs:\n#    - var_string: String\n#    - var_string_with_comment: String\n#    - var_int: Integer\n#    - var_float: Float\n#    - var_list_int: List\n#    - var_list_str: List\n#   confs:\n#    - conf_string:\n#       assignation: \"conf_string = 'param_string value'\"\n#    - conf_string_with_comment:\n#       assignation: \"conf_string_with_comment = 'param_string value'\"\n#    - conf_int:\n#       assignation: \"conf_int = 1\"\n#    - conf_float:\n#       assignation: \"conf_float = 1.1\"\n#    - conf_list_int:\n#       assignation: \"conf_list_int = [1, 2, 3]\"\n#    - conf_list_str:\n#       assignation: \"conf_list_str = ['list_str', 'space in elem', '3']\"\n# ...\nparam_string <- 'param_string value'\nparam_string_with_comment <- 'param_string value'  # comment\nparam_int <- 1\nparam_float <- 1.1\nparam_list_int <- c(1, 2, 3)\nparam_list_str <- c(\"list_str\", \"space in elem\", \"3\")\n\nconf_string <- 'param_string value'\nconf_string_with_comment <- 'param_string value'  # comment\nconf_int <- 1\nconf_float <- 1.1\nconf_list_int <- c(1, 2, 3)\nconf_list_str <- c(\"list_str\", \"space in elem\", \"3\")\n\nvar_string <- 'var_string value'\nvar_string_with_comment <- 'var_string value'  # comment\nvar_int <- 1\nvar_float <- 1.1\nvar_list_int <- c(1, 2, 3)\nvar_list_str <- c(\"list_str\", \"space in elem\", \"3\")"
             }
         ],
@@ -217,5 +226,6 @@
         "var_list_str": "list",
         "var_string": "str",
         "var_string_with_comment": "str"
-    },    "skip_exec": true
+    },
+    "skip_exec": true
 }

@@ -67,12 +67,12 @@
                 },
                 "properties": {
                     "inputs": [
+                        "var_string",
+                        "var_list_int",
                         "var_list_str",
                         "var_int",
-                        "var_float",
                         "var_string_with_comment",
-                        "var_string",
-                        "var_list_int"
+                        "var_float"
                     ],
                     "og_node_id": "7eee697",
                     "outputs": [],
@@ -87,6 +87,18 @@
                     "title": "R-Check-var-types-dev-user-name-domain-com",
                     "vars": [
                         {
+                            "color": "#98e06c",
+                            "direction": "input",
+                            "name": "var_string",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#2d4ed2",
+                            "direction": "input",
+                            "name": "var_list_int",
+                            "type": "datatype"
+                        },
+                        {
                             "color": "#6c89e0",
                             "direction": "input",
                             "name": "var_list_str",
@@ -99,27 +111,15 @@
                             "type": "datatype"
                         },
                         {
-                            "color": "#53ac8b",
-                            "direction": "input",
-                            "name": "var_float",
-                            "type": "datatype"
-                        },
-                        {
                             "color": "#87c0c5",
                             "direction": "input",
                             "name": "var_string_with_comment",
                             "type": "datatype"
                         },
                         {
-                            "color": "#98e06c",
+                            "color": "#53ac8b",
                             "direction": "input",
-                            "name": "var_string",
-                            "type": "datatype"
-                        },
-                        {
-                            "color": "#2d4ed2",
-                            "direction": "input",
-                            "name": "var_list_int",
+                            "name": "var_float",
                             "type": "datatype"
                         }
                     ]
@@ -230,6 +230,5 @@
         "var_list_str": "list",
         "var_string": "str",
         "var_string_with_comment": "str"
-    },
-        "skip_exec": true
+    }
 }

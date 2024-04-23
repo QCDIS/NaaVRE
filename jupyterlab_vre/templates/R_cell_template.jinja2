@@ -34,56 +34,11 @@ option_list = list(
 
 )
 
-print(option_list)
-
 # set input parameters accordingly
 opt = parse_args(OptionParser(option_list=option_list))
 
-{% for in_var in cell.inputs|sort %}
-{% if types[in_var] == list  or types[in_var] == 'list' %}
-{{ in_var }} = fromJSON(opt${{ in_var }})
-{% elif types[in_var] == str or  types[in_var] == 'str' %}
-{{ in_var }} <- gsub('"', '', opt${{ in_var }})
-{% else %}
-{{ in_var }} = opt${{ in_var }}
-{% endif %}
-{% endfor %}
-
-{% for param in cell.params|sort %}
-{% if types[param] == list  or types[param] == 'list' %}
-tryCatch({
-  {{ param }} <- fromJSON({{ param }})
-}, error = function(e) {
-  if (class(e) == 'jsonlite_error') {
-    {{ param }} <- gsub("\\[", '["', {{ param }})
-    {{ param }} <- gsub(",", '","', {{ param }})
-    {{ param }} <- gsub("\" ", "\"", {{ param }})
-    {{ param }} <- gsub("\\]", '"]', {{ param }})
-    {{ param }} <- gsub("'", "", {{ param }})
-    {{ param }} <- fromJSON({{ param }})
-  } else {
-    stop(e)
-  }
-})
-{% elif types[param] == dict  or types[param] == 'dict' %}
-{{ param }} = fromJSON(opt${{ param }})
-{% elif types[param] == str or  types[param] == 'str' %}
-{{ param }} <- gsub('"', '', opt${{ param }})
-{% elif types[param] == str or  types[param] == 'str' %}
-{{ param }} <- gsub('"', '', opt${{ param }})
-{% else %}
-{{ param }} = opt${{ param }}
-{% endif %}
-{% endfor %}
-
-
-{% for c in confs %}
-{{ c }}
-{% endfor %}
-
 
 {{ cell.original_source }}
-
 
 
 {% if cell.outputs|length > 0 %}
