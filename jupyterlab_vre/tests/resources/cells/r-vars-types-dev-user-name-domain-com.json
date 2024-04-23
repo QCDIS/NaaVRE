@@ -1,16 +1,8 @@
 {
-    "all_inputs": [
-        "id",
-        "param_string",
-        "param_string_with_comment",
-        "param_int",
-        "param_float",
-        "param_list_int",
-        "param_list_str"
-    ],
+    "all_inputs": [],
     "base_image": {
-        "build": "ghcr.io/qcdis/naavre/naavre-cell-build-r:v0.9",
-        "runtime": "ghcr.io/qcdis/naavre/naavre-cell-runtime-r:v0.9"
+        "build": "ghcr.io/qcdis/naavre/naavre-cell-build-r:v0.10",
+        "runtime": "ghcr.io/qcdis/naavre/naavre-cell-runtime-r:v0.10"
     },
     "chart_obj": {
         "hovered": {},
@@ -70,12 +62,12 @@
                     "inputs": [],
                     "og_node_id": "0c22714",
                     "outputs": [
-                        "var_string_with_comment",
-                        "var_int",
-                        "var_list_int",
                         "var_list_str",
+                        "var_int",
+                        "var_float",
+                        "var_string_with_comment",
                         "var_string",
-                        "var_float"
+                        "var_list_int"
                     ],
                     "params": [
                         "param_string",
@@ -88,9 +80,9 @@
                     "title": "R-vars-types-dev-user-name-domain-com",
                     "vars": [
                         {
-                            "color": "#87c0c5",
+                            "color": "#6c89e0",
                             "direction": "output",
-                            "name": "var_string_with_comment",
+                            "name": "var_list_str",
                             "type": "datatype"
                         },
                         {
@@ -100,15 +92,15 @@
                             "type": "datatype"
                         },
                         {
-                            "color": "#2d4ed2",
+                            "color": "#53ac8b",
                             "direction": "output",
-                            "name": "var_list_int",
+                            "name": "var_float",
                             "type": "datatype"
                         },
                         {
-                            "color": "#6c89e0",
+                            "color": "#87c0c5",
                             "direction": "output",
-                            "name": "var_list_str",
+                            "name": "var_string_with_comment",
                             "type": "datatype"
                         },
                         {
@@ -118,9 +110,9 @@
                             "type": "datatype"
                         },
                         {
-                            "color": "#53ac8b",
+                            "color": "#2d4ed2",
                             "direction": "output",
-                            "name": "var_float",
+                            "name": "var_list_int",
                             "type": "datatype"
                         }
                     ]
@@ -143,12 +135,9 @@
         "conf_string": "conf_string = 'param_string value'",
         "conf_string_with_comment": "conf_string_with_comment = 'param_string value'"
     },
-    "container_source": "setwd('/app')\n\n# retrieve input parameters\n\nlibrary(optparse)\nlibrary(jsonlite)\n\n\noption_list = list(\n\nmake_option(c(\"--id\"), action=\"store\", default=NA, type=\"character\", help=\"my description\"), \nmake_option(c(\"--param_float\"), action=\"store\", default=NA, type=\"numeric\", help=\"my description\"), \nmake_option(c(\"--param_int\"), action=\"store\", default=NA, type=\"integer\", help=\"my description\"), \nmake_option(c(\"--param_list_int\"), action=\"store\", default=NA, type=\"character\", help=\"my description\"), \nmake_option(c(\"--param_list_str\"), action=\"store\", default=NA, type=\"character\", help=\"my description\"), \nmake_option(c(\"--param_string\"), action=\"store\", default=NA, type=\"character\", help=\"my description\"), \nmake_option(c(\"--param_string_with_comment\"), action=\"store\", default=NA, type=\"character\", help=\"my description\")\n\n)\n\n# set input parameters accordingly\nopt = parse_args(OptionParser(option_list=option_list))\n\nid <- gsub('\"', '', opt$id)\n\nparam_float = opt$param_float\nparam_int = opt$param_int\ntryCatch({\n  param_list_int <- fromJSON(args$param_list_int)\n}, error = function(e) {\n  if (class(e) == 'jsonlite_error') {\n    param_list_int <- gsub(\"\\\\[\", '[\"', args$param_list_int)\n    param_list_int <- gsub(\",\", '\",\"', param_list_int)\n    param_list_int <- gsub(\"\\\" \", \"\\\"\", param_list_int)\n    param_list_int <- gsub(\"\\\\]\", '\"]', param_list_int)\n    param_list_int <- gsub(\"'\", \"\", param_list_int)\n    param_list_int <- fromJSON(param_list_int)\n  } else {\n    stop(e)\n  }\n})\ntryCatch({\n  param_list_int <- fromJSON(args$param_list_int)\n}, error = function(e) {\n  if (class(e) == 'jsonlite_error') {\n    param_list_int <- gsub(\"\\\\[\", '[\"', args$param_list_int)\n    param_list_int <- gsub(\",\", '\",\"', param_list_int)\n    param_list_int <- gsub(\"\\\" \", \"\\\"\", param_list_int)\n    param_list_int <- gsub(\"\\\\]\", '\"]', param_list_int)\n    param_list_int <- gsub(\"'\", \"\", param_list_int)\n    param_list_int <- fromJSON(param_list_int)\n  } else {\n    stop(e)\n  }\n})\nparam_string <- gsub('\"', '', opt$param_string)\nparam_string_with_comment <- gsub('\"', '', opt$param_string_with_comment)\n\n\nconf_string = 'param_string value'\nconf_string_with_comment = 'param_string value'\nconf_int = 1\nconf_float = 1.1\nconf_list_int = [1, 2, 3]\nconf_list_str = ['list_str', 'space in elem', '3']\n\n\nconf_string = 'param_string value'\nconf_string_with_comment = 'param_string value'\nconf_int = 1\nconf_float = 1.1\nconf_list_int = [1, 2, 3]\nconf_list_str = ['list_str', 'space in elem', '3']\n\nconf_string <- 'param_string value'\nconf_string_with_comment <- 'param_string value'  # comment\nconf_int <- 1\nconf_float <- 1.1\nconf_list_int <- c(1, 2, 3)\nconf_list_str <- c(\"list_str\", \"space in elem\", \"3\")\n\nvar_string <- 'var_string value'\nvar_string_with_comment <- 'var_string value'  # comment\nvar_int <- 1\nvar_float <- 1.1\nvar_list_int <- c(1, 2, 3)\nvar_list_str <- c(\"list_str\", \"space in elem\", \"3\")\n\n\n\n# capturing outputs\nfile <- file(paste0('/tmp/var_string_', id, '.json'))\nwriteLines(toJSON(var_string, auto_unbox=TRUE), file)\nclose(file)\nfile <- file(paste0('/tmp/var_string_with_comment_', id, '.json'))\nwriteLines(toJSON(var_string_with_comment, auto_unbox=TRUE), file)\nclose(file)\nfile <- file(paste0('/tmp/var_int_', id, '.json'))\nwriteLines(toJSON(var_int, auto_unbox=TRUE), file)\nclose(file)\nfile <- file(paste0('/tmp/var_float_', id, '.json'))\nwriteLines(toJSON(var_float, auto_unbox=TRUE), file)\nclose(file)\nfile <- file(paste0('/tmp/var_list_int_', id, '.json'))\nwriteLines(toJSON(var_list_int, auto_unbox=TRUE), file)\nclose(file)\nfile <- file(paste0('/tmp/var_list_str_', id, '.json'))\nwriteLines(toJSON(var_list_str, auto_unbox=TRUE), file)\nclose(file)\n",
+    "container_source": "",
     "dependencies": [],
-    "image_version": "e8615dd",
-    "inputs": [
-        "id"
-    ],
+    "inputs": [],
     "kernel": "IRkernel",
     "node_id": "0c22714",
     "notebook_dict": {
@@ -216,7 +205,6 @@
     "task_name": "r-vars-types-dev-user-name-domain-com",
     "title": "R-vars-types-dev-user-name-domain-com",
     "types": {
-        "id": "str",
         "param_float": "float",
         "param_int": "int",
         "param_list_int": "list",
@@ -229,6 +217,5 @@
         "var_list_str": "list",
         "var_string": "str",
         "var_string_with_comment": "str"
-    },
-        "skip_exec": true
+    },    "skip_exec": true
 }

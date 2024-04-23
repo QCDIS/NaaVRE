@@ -34,6 +34,8 @@ option_list = list(
 
 )
 
+print(option_list)
+
 # set input parameters accordingly
 opt = parse_args(OptionParser(option_list=option_list))
 
@@ -50,15 +52,15 @@ opt = parse_args(OptionParser(option_list=option_list))
 {% for param in cell.params|sort %}
 {% if types[param] == list  or types[param] == 'list' %}
 tryCatch({
-  param_list_int <- fromJSON(args$param_list_int)
+  {{ param }} <- fromJSON({{ param }})
 }, error = function(e) {
   if (class(e) == 'jsonlite_error') {
-    param_list_int <- gsub("\\[", '["', args$param_list_int)
-    param_list_int <- gsub(",", '","', param_list_int)
-    param_list_int <- gsub("\" ", "\"", param_list_int)
-    param_list_int <- gsub("\\]", '"]', param_list_int)
-    param_list_int <- gsub("'", "", param_list_int)
-    param_list_int <- fromJSON(param_list_int)
+    {{ param }} <- gsub("\\[", '["', {{ param }})
+    {{ param }} <- gsub(",", '","', {{ param }})
+    {{ param }} <- gsub("\" ", "\"", {{ param }})
+    {{ param }} <- gsub("\\]", '"]', {{ param }})
+    {{ param }} <- gsub("'", "", {{ param }})
+    {{ param }} <- fromJSON({{ param }})
   } else {
     stop(e)
   }

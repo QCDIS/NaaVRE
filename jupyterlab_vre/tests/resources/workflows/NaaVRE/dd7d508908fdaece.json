@@ -1,25 +1,25 @@
 {
   "chart": {
     "offset": {
-      "x": -232,
-      "y": 5
+      "x": 0,
+      "y": 0
     },
     "scale": 1,
     "nodes": {
-      "65e410d1-4f63-4833-92c0-375423e38ac5": {
-        "id": "65e410d1-4f63-4833-92c0-375423e38ac5",
+      "df4faf3d-27c1-42f1-bc82-b03046c70fc2": {
+        "id": "df4faf3d-27c1-42f1-bc82-b03046c70fc2",
         "position": {
-          "x": 539.5833129882812,
-          "y": 175
+          "x": 347.1000061035156,
+          "y": 97
         },
         "orientation": 0,
         "type": "input-output",
         "ports": {
-          "var_string_with_comment": {
+          "var_list_str": {
             "properties": {
-              "color": "#87c0c5"
+              "color": "#6c89e0"
             },
-            "id": "var_string_with_comment",
+            "id": "var_list_str",
             "type": "right",
             "position": {
               "x": 197.5,
@@ -37,22 +37,22 @@
               "y": 42
             }
           },
-          "var_list_int": {
+          "var_float": {
             "properties": {
-              "color": "#2d4ed2"
+              "color": "#53ac8b"
             },
-            "id": "var_list_int",
+            "id": "var_float",
             "type": "right",
             "position": {
               "x": 197.5,
               "y": 70
             }
           },
-          "var_list_str": {
+          "var_string_with_comment": {
             "properties": {
-              "color": "#6c89e0"
+              "color": "#87c0c5"
             },
-            "id": "var_list_str",
+            "id": "var_string_with_comment",
             "type": "right",
             "position": {
               "x": 197.5,
@@ -70,11 +70,11 @@
               "y": 126
             }
           },
-          "var_float": {
+          "var_list_int": {
             "properties": {
-              "color": "#53ac8b"
+              "color": "#2d4ed2"
             },
-            "id": "var_float",
+            "id": "var_list_int",
             "type": "right",
             "position": {
               "x": 197.5,
@@ -86,10 +86,10 @@
           "title": "R-vars-types-dev-user-name-domain-com",
           "vars": [
             {
-              "name": "var_string_with_comment",
+              "name": "var_list_str",
               "direction": "output",
               "type": "datatype",
-              "color": "#87c0c5"
+              "color": "#6c89e0"
             },
             {
               "name": "var_int",
@@ -98,16 +98,16 @@
               "color": "#aad279"
             },
             {
-              "name": "var_list_int",
+              "name": "var_float",
               "direction": "output",
               "type": "datatype",
-              "color": "#2d4ed2"
+              "color": "#53ac8b"
             },
             {
-              "name": "var_list_str",
+              "name": "var_string_with_comment",
               "direction": "output",
               "type": "datatype",
-              "color": "#6c89e0"
+              "color": "#87c0c5"
             },
             {
               "name": "var_string",
@@ -116,10 +116,10 @@
               "color": "#98e06c"
             },
             {
-              "name": "var_float",
+              "name": "var_list_int",
               "direction": "output",
               "type": "datatype",
-              "color": "#53ac8b"
+              "color": "#2d4ed2"
             }
           ],
           "params": [
@@ -132,12 +132,12 @@
           ],
           "inputs": [],
           "outputs": [
-            "var_string_with_comment",
-            "var_int",
-            "var_list_int",
             "var_list_str",
+            "var_int",
+            "var_float",
+            "var_string_with_comment",
             "var_string",
-            "var_float"
+            "var_list_int"
           ],
           "og_node_id": "0c22714"
         },
@@ -146,20 +146,20 @@
           "height": 150
         }
       },
-      "fe46d0a2-a280-4b44-a9a7-7673a412d3f2": {
-        "id": "fe46d0a2-a280-4b44-a9a7-7673a412d3f2",
+      "03bd2435-0be1-45c0-a23d-66133febe0ce": {
+        "id": "03bd2435-0be1-45c0-a23d-66133febe0ce",
         "position": {
-          "x": 988.5833129882812,
-          "y": 164
+          "x": 785.1000061035156,
+          "y": 104
         },
         "orientation": 0,
         "type": "input-output",
         "ports": {
-          "var_string_with_comment": {
+          "var_list_str": {
             "properties": {
-              "color": "#87c0c5"
+              "color": "#6c89e0"
             },
-            "id": "var_string_with_comment",
+            "id": "var_list_str",
             "type": "left",
             "position": {
               "x": 50.5,
@@ -177,22 +177,22 @@
               "y": 42
             }
           },
-          "var_list_int": {
+          "var_float": {
             "properties": {
-              "color": "#2d4ed2"
+              "color": "#53ac8b"
             },
-            "id": "var_list_int",
+            "id": "var_float",
             "type": "left",
             "position": {
               "x": 50.5,
               "y": 70
             }
           },
-          "var_list_str": {
+          "var_string_with_comment": {
             "properties": {
-              "color": "#6c89e0"
+              "color": "#87c0c5"
             },
-            "id": "var_list_str",
+            "id": "var_string_with_comment",
             "type": "left",
             "position": {
               "x": 50.5,
@@ -210,11 +210,11 @@
               "y": 126
             }
           },
-          "var_float": {
+          "var_list_int": {
             "properties": {
-              "color": "#53ac8b"
+              "color": "#2d4ed2"
             },
-            "id": "var_float",
+            "id": "var_list_int",
             "type": "left",
             "position": {
               "x": 50.5,
@@ -226,10 +226,10 @@
           "title": "R-Check-var-types-dev-user-name-domain-com",
           "vars": [
             {
-              "name": "var_string_with_comment",
+              "name": "var_list_str",
               "direction": "input",
               "type": "datatype",
-              "color": "#87c0c5"
+              "color": "#6c89e0"
             },
             {
               "name": "var_int",
@@ -238,16 +238,16 @@
               "color": "#aad279"
             },
             {
-              "name": "var_list_int",
+              "name": "var_float",
               "direction": "input",
               "type": "datatype",
-              "color": "#2d4ed2"
+              "color": "#53ac8b"
             },
             {
-              "name": "var_list_str",
+              "name": "var_string_with_comment",
               "direction": "input",
               "type": "datatype",
-              "color": "#6c89e0"
+              "color": "#87c0c5"
             },
             {
               "name": "var_string",
@@ -256,10 +256,10 @@
               "color": "#98e06c"
             },
             {
-              "name": "var_float",
+              "name": "var_list_int",
               "direction": "input",
               "type": "datatype",
-              "color": "#53ac8b"
+              "color": "#2d4ed2"
             }
           ],
           "params": [
@@ -271,12 +271,12 @@
             "param_list_str"
           ],
           "inputs": [
-            "var_string_with_comment",
-            "var_int",
-            "var_list_int",
             "var_list_str",
+            "var_int",
+            "var_float",
+            "var_string_with_comment",
             "var_string",
-            "var_float"
+            "var_list_int"
           ],
           "outputs": [],
           "og_node_id": "7eee697"
@@ -288,70 +288,70 @@
       }
     },
     "links": {
-      "7c88a69d-38e7-4f42-b98c-dcc96df35a39": {
-        "id": "7c88a69d-38e7-4f42-b98c-dcc96df35a39",
+      "ef6177d8-e581-48c7-ac0d-df4f91b805e0": {
+        "id": "ef6177d8-e581-48c7-ac0d-df4f91b805e0",
         "from": {
-          "nodeId": "65e410d1-4f63-4833-92c0-375423e38ac5",
-          "portId": "var_float"
-        },
-        "to": {
-          "nodeId": "fe46d0a2-a280-4b44-a9a7-7673a412d3f2",
-          "portId": "var_float"
-        }
-      },
-      "53964c5e-ab1a-4101-89ec-534fe3608d9f": {
-        "id": "53964c5e-ab1a-4101-89ec-534fe3608d9f",
-        "from": {
-          "nodeId": "65e410d1-4f63-4833-92c0-375423e38ac5",
-          "portId": "var_string"
-        },
-        "to": {
-          "nodeId": "fe46d0a2-a280-4b44-a9a7-7673a412d3f2",
-          "portId": "var_string"
-        }
-      },
-      "c97c867d-c13a-4043-a5e0-9fb0e74616c8": {
-        "id": "c97c867d-c13a-4043-a5e0-9fb0e74616c8",
-        "from": {
-          "nodeId": "65e410d1-4f63-4833-92c0-375423e38ac5",
+          "nodeId": "df4faf3d-27c1-42f1-bc82-b03046c70fc2",
           "portId": "var_list_str"
         },
         "to": {
-          "nodeId": "fe46d0a2-a280-4b44-a9a7-7673a412d3f2",
+          "nodeId": "03bd2435-0be1-45c0-a23d-66133febe0ce",
           "portId": "var_list_str"
         }
       },
-      "e1cebe2f-fd6d-4e4e-9054-08fffe7c2973": {
-        "id": "e1cebe2f-fd6d-4e4e-9054-08fffe7c2973",
+      "85f882a4-79a8-4657-afea-f802ae1daf4f": {
+        "id": "85f882a4-79a8-4657-afea-f802ae1daf4f",
         "from": {
-          "nodeId": "65e410d1-4f63-4833-92c0-375423e38ac5",
-          "portId": "var_list_int"
-        },
-        "to": {
-          "nodeId": "fe46d0a2-a280-4b44-a9a7-7673a412d3f2",
-          "portId": "var_list_int"
-        }
-      },
-      "8a9540ef-046d-40d9-bcdc-f180255d4588": {
-        "id": "8a9540ef-046d-40d9-bcdc-f180255d4588",
-        "from": {
-          "nodeId": "65e410d1-4f63-4833-92c0-375423e38ac5",
+          "nodeId": "df4faf3d-27c1-42f1-bc82-b03046c70fc2",
           "portId": "var_int"
         },
         "to": {
-          "nodeId": "fe46d0a2-a280-4b44-a9a7-7673a412d3f2",
+          "nodeId": "03bd2435-0be1-45c0-a23d-66133febe0ce",
           "portId": "var_int"
         }
       },
-      "e17f40cc-e2ac-47fc-b55f-6729de928556": {
-        "id": "e17f40cc-e2ac-47fc-b55f-6729de928556",
+      "293c8d41-b22d-48f0-9f08-08466955c77c": {
+        "id": "293c8d41-b22d-48f0-9f08-08466955c77c",
         "from": {
-          "nodeId": "65e410d1-4f63-4833-92c0-375423e38ac5",
+          "nodeId": "df4faf3d-27c1-42f1-bc82-b03046c70fc2",
+          "portId": "var_float"
+        },
+        "to": {
+          "nodeId": "03bd2435-0be1-45c0-a23d-66133febe0ce",
+          "portId": "var_float"
+        }
+      },
+      "6a2a8eb3-17ad-47a7-bb17-4ec166c3b32a": {
+        "id": "6a2a8eb3-17ad-47a7-bb17-4ec166c3b32a",
+        "from": {
+          "nodeId": "df4faf3d-27c1-42f1-bc82-b03046c70fc2",
           "portId": "var_string_with_comment"
         },
         "to": {
-          "nodeId": "fe46d0a2-a280-4b44-a9a7-7673a412d3f2",
+          "nodeId": "03bd2435-0be1-45c0-a23d-66133febe0ce",
           "portId": "var_string_with_comment"
+        }
+      },
+      "8d69aeff-6429-4526-8ae0-d0edc310e47c": {
+        "id": "8d69aeff-6429-4526-8ae0-d0edc310e47c",
+        "from": {
+          "nodeId": "df4faf3d-27c1-42f1-bc82-b03046c70fc2",
+          "portId": "var_string"
+        },
+        "to": {
+          "nodeId": "03bd2435-0be1-45c0-a23d-66133febe0ce",
+          "portId": "var_string"
+        }
+      },
+      "7830ec30-b4cb-4e55-afe2-da1e56e16852": {
+        "id": "7830ec30-b4cb-4e55-afe2-da1e56e16852",
+        "from": {
+          "nodeId": "df4faf3d-27c1-42f1-bc82-b03046c70fc2",
+          "portId": "var_list_int"
+        },
+        "to": {
+          "nodeId": "03bd2435-0be1-45c0-a23d-66133febe0ce",
+          "portId": "var_list_int"
         }
       }
     },
