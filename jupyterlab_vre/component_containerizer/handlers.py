@@ -32,7 +32,8 @@ from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.extractor import DummyExtractor
 from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
 from jupyterlab_vre.services.extractor.rextractor import RExtractor
-from jupyterlab_vre.services.extractor.headerextractor import HeaderExtractor
+from jupyterlab_vre.services.extractor.pyheaderextractor import PyHeaderExtractor
+from jupyterlab_vre.services.extractor.rheaderextractor import RHeaderExtractor
 
 logger = logging.getLogger(__name__)
 
@@ -131,7 +132,10 @@ class ExtractorHandler(APIHandler, Catalog):
         else:
             # extractor based on the cell header
             try:
-                extractor = HeaderExtractor(notebook, source)
+                if 'python' in kernel.lower():
+                    extractor = PyHeaderExtractor(notebook, source)
+                elif 'r' in kernel.lower():
+                    extractor = RHeaderExtractor(notebook, source)
             except jsonschema.ValidationError as e:
                 self.set_status(400, f"Invalid cell header")
                 self.write(

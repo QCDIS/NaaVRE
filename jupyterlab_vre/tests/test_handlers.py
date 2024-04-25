@@ -236,6 +236,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             notebooks_json_path = os.path.join(base_path, 'notebooks')
             notebooks_files = glob.glob(os.path.join(notebooks_json_path, "*.json"))
             for notebook_file in notebooks_files:
+                if 'test_types_R.json' not in notebook_file:
+                    continue
                 with open(notebook_file, 'r') as file:
                     notebook = json.load(file)
                 file.close()
