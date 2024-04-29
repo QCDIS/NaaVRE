@@ -36,7 +36,7 @@
         "@emotion/react": "11.9.0",
         "@emotion/styled": "11.11.5",
         "@jupyterlab/application": "3.5.3",
-        "@jupyterlab/coreutils": "5.5.3",
+        "@jupyterlab/coreutils": "6.1.8",
         "@jupyterlab/docregistry": "3.5.3",
         "@jupyterlab/observables": "4.5.3",
         "@jupyterlab/services": "6.5.3",
