@@ -248,6 +248,15 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertIsNotNone(json_response)
                 cell = notebook['notebook']['cells'][notebook['cell_index']]
                 print('cell: ', cell)
+                inputs = json_response.inputs
+                outputs = json_response.outputs
+                params = json_response.params
+                types = json_response.types
+
+                # if 'r' in cell.kernel.lower():
+                #     for input in cell.inputs:
+                #         if input.
+
 
     def test_execute_workflow_handler(self):
         workflow_path = os.path.join(base_path, 'workflows', 'NaaVRE')

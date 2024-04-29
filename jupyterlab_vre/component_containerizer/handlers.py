@@ -147,7 +147,10 @@ class ExtractorHandler(APIHandler, Catalog):
                 )
                 self.flush()
                 return
-
+            params = extractor.params
+            inputs = extractor.ins
+            outputs = extractor.outs
+            confs = extractor.confs
             # Extractor based on code analysis. Used if the cell has no header,
             # or if some values are not specified in the header
             if not extractor.is_complete():

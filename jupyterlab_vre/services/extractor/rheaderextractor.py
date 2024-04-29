@@ -197,7 +197,6 @@ class RHeaderExtractor(Extractor):
         # 'value' should only be kept for params
         if item_type not in ['params']:
             del var_dict['value']
-
         return var_dict
 
     def _infer_cell_inputs_outputs_params(
@@ -212,7 +211,8 @@ class RHeaderExtractor(Extractor):
             return None
         items = [self._parse_inputs_outputs_param_items(it, item_type)
                  for it in items]
-        return {it['name']: it for it in items}
+        inputs_outputs_params = {it['name']: it for it in items}
+        return inputs_outputs_params
 
     def infer_cell_inputs(self):
         return self._infer_cell_inputs_outputs_params(
@@ -240,7 +240,18 @@ class RHeaderExtractor(Extractor):
         items = self.cell_header['NaaVRE']['cell'].get('confs')
         if items is None:
             return None
-        return {k: v['assignation'] for it in items for k, v in it.items()}
+        for item in items:
+            for k, v in item.items():
+                if 'assignation' in v:
+                    assignation = v.get('assignation')
+                    if '[' in assignation and ']' in assignation:
+                        # Replace to R list format
+                        assignation = assignation.replace('[', 'list(').replace(']', ')')
+                        item[k]['assignation'] = assignation
+
+
+        cell_conf = {k: v['assignation'] for it in items for k, v in it.items()}
+        return cell_conf
 
     def infer_cell_dependencies(self, confs):
         if self.cell_header is None:
