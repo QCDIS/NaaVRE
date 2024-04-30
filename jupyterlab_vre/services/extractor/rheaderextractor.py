@@ -248,8 +248,6 @@ class RHeaderExtractor(Extractor):
                         # Replace to R list format
                         assignation = assignation.replace('[', 'list(').replace(']', ')')
                         item[k]['assignation'] = assignation
-
-
         cell_conf = {k: v['assignation'] for it in items for k, v in it.items()}
         return cell_conf
 

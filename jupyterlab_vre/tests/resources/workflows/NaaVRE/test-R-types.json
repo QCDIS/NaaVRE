@@ -1,0 +1,362 @@
+{
+  "chart": {
+    "offset": {
+      "x": 0,
+      "y": 0
+    },
+    "scale": 1,
+    "nodes": {
+      "f67a013d-f21b-40d8-9cd0-b673a73a39ac": {
+        "id": "f67a013d-f21b-40d8-9cd0-b673a73a39ac",
+        "position": {
+          "x": 429.75,
+          "y": 96
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "var_float": {
+            "properties": {
+              "color": "#53ac8b"
+            },
+            "id": "var_float",
+            "type": "right",
+            "position": {
+              "x": 197.5,
+              "y": 14
+            }
+          },
+          "var_int": {
+            "properties": {
+              "color": "#aad279"
+            },
+            "id": "var_int",
+            "type": "right",
+            "position": {
+              "x": 197.5,
+              "y": 42
+            }
+          },
+          "var_string_with_comment": {
+            "properties": {
+              "color": "#87c0c5"
+            },
+            "id": "var_string_with_comment",
+            "type": "right",
+            "position": {
+              "x": 197.5,
+              "y": 70
+            }
+          },
+          "var_list_int": {
+            "properties": {
+              "color": "#2d4ed2"
+            },
+            "id": "var_list_int",
+            "type": "right",
+            "position": {
+              "x": 197.5,
+              "y": 98
+            }
+          },
+          "var_list_str": {
+            "properties": {
+              "color": "#6c89e0"
+            },
+            "id": "var_list_str",
+            "type": "right",
+            "position": {
+              "x": 197.5,
+              "y": 126
+            }
+          },
+          "var_string": {
+            "properties": {
+              "color": "#98e06c"
+            },
+            "id": "var_string",
+            "type": "right",
+            "position": {
+              "x": 197.5,
+              "y": 154
+            }
+          }
+        },
+        "properties": {
+          "title": "R-vars-types-dev-user-name-domain-com",
+          "vars": [
+            {
+              "name": "var_float",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#53ac8b"
+            },
+            {
+              "name": "var_int",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#aad279"
+            },
+            {
+              "name": "var_string_with_comment",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#87c0c5"
+            },
+            {
+              "name": "var_list_int",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#2d4ed2"
+            },
+            {
+              "name": "var_list_str",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#6c89e0"
+            },
+            {
+              "name": "var_string",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#98e06c"
+            }
+          ],
+          "params": [],
+          "inputs": [],
+          "outputs": [
+            "var_float",
+            "var_int",
+            "var_string_with_comment",
+            "var_list_int",
+            "var_list_str",
+            "var_string"
+          ],
+          "og_node_id": "49eea50"
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      },
+      "f05472bd-085b-422a-ae2d-13e111515e8a": {
+        "id": "f05472bd-085b-422a-ae2d-13e111515e8a",
+        "position": {
+          "x": 916.75,
+          "y": 102
+        },
+        "orientation": 0,
+        "type": "input-output",
+        "ports": {
+          "var_float": {
+            "properties": {
+              "color": "#53ac8b"
+            },
+            "id": "var_float",
+            "type": "left",
+            "position": {
+              "x": 50.5,
+              "y": 14
+            }
+          },
+          "var_int": {
+            "properties": {
+              "color": "#aad279"
+            },
+            "id": "var_int",
+            "type": "left",
+            "position": {
+              "x": 50.5,
+              "y": 42
+            }
+          },
+          "var_string_with_comment": {
+            "properties": {
+              "color": "#87c0c5"
+            },
+            "id": "var_string_with_comment",
+            "type": "left",
+            "position": {
+              "x": 50.5,
+              "y": 70
+            }
+          },
+          "var_list_int": {
+            "properties": {
+              "color": "#2d4ed2"
+            },
+            "id": "var_list_int",
+            "type": "left",
+            "position": {
+              "x": 50.5,
+              "y": 98
+            }
+          },
+          "var_list_str": {
+            "properties": {
+              "color": "#6c89e0"
+            },
+            "id": "var_list_str",
+            "type": "left",
+            "position": {
+              "x": 50.5,
+              "y": 126
+            }
+          },
+          "var_string": {
+            "properties": {
+              "color": "#98e06c"
+            },
+            "id": "var_string",
+            "type": "left",
+            "position": {
+              "x": 50.5,
+              "y": 154
+            }
+          }
+        },
+        "properties": {
+          "title": "R-Check-var-types-dev-user-name-domain-com",
+          "vars": [
+            {
+              "name": "var_float",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#53ac8b"
+            },
+            {
+              "name": "var_int",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#aad279"
+            },
+            {
+              "name": "var_string_with_comment",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#87c0c5"
+            },
+            {
+              "name": "var_list_int",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#2d4ed2"
+            },
+            {
+              "name": "var_list_str",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#6c89e0"
+            },
+            {
+              "name": "var_string",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#98e06c"
+            }
+          ],
+          "params": [
+            "param_string",
+            "param_string_with_comment",
+            "param_int",
+            "param_float",
+            "param_list_int",
+            "param_list_str"
+          ],
+          "inputs": [
+            "var_float",
+            "var_int",
+            "var_string_with_comment",
+            "var_list_int",
+            "var_list_str",
+            "var_string"
+          ],
+          "outputs": [],
+          "og_node_id": "578cf05"
+        },
+        "size": {
+          "width": 250,
+          "height": 150
+        }
+      }
+    },
+    "links": {
+      "1cc593f8-0be3-4d6b-b669-fee5f725fe25": {
+        "id": "1cc593f8-0be3-4d6b-b669-fee5f725fe25",
+        "from": {
+          "nodeId": "f67a013d-f21b-40d8-9cd0-b673a73a39ac",
+          "portId": "var_string"
+        },
+        "to": {
+          "nodeId": "f05472bd-085b-422a-ae2d-13e111515e8a",
+          "portId": "var_string"
+        }
+      },
+      "eab24f71-4bde-4ffc-9826-2129d7a49763": {
+        "id": "eab24f71-4bde-4ffc-9826-2129d7a49763",
+        "from": {
+          "nodeId": "f67a013d-f21b-40d8-9cd0-b673a73a39ac",
+          "portId": "var_list_str"
+        },
+        "to": {
+          "nodeId": "f05472bd-085b-422a-ae2d-13e111515e8a",
+          "portId": "var_list_str"
+        }
+      },
+      "50c2883e-19c8-4121-836f-1e893ada8aac": {
+        "id": "50c2883e-19c8-4121-836f-1e893ada8aac",
+        "from": {
+          "nodeId": "f67a013d-f21b-40d8-9cd0-b673a73a39ac",
+          "portId": "var_list_int"
+        },
+        "to": {
+          "nodeId": "f05472bd-085b-422a-ae2d-13e111515e8a",
+          "portId": "var_list_int"
+        }
+      },
+      "bc60cba2-8766-4e11-98b3-e5ba171a8063": {
+        "id": "bc60cba2-8766-4e11-98b3-e5ba171a8063",
+        "from": {
+          "nodeId": "f67a013d-f21b-40d8-9cd0-b673a73a39ac",
+          "portId": "var_string_with_comment"
+        },
+        "to": {
+          "nodeId": "f05472bd-085b-422a-ae2d-13e111515e8a",
+          "portId": "var_string_with_comment"
+        }
+      },
+      "c4aaf315-d767-4515-a7af-749ce3084416": {
+        "id": "c4aaf315-d767-4515-a7af-749ce3084416",
+        "from": {
+          "nodeId": "f67a013d-f21b-40d8-9cd0-b673a73a39ac",
+          "portId": "var_int"
+        },
+        "to": {
+          "nodeId": "f05472bd-085b-422a-ae2d-13e111515e8a",
+          "portId": "var_int"
+        }
+      },
+      "c8fc9769-f342-4ce5-87a6-f1da17d0fcb1": {
+        "id": "c8fc9769-f342-4ce5-87a6-f1da17d0fcb1",
+        "from": {
+          "nodeId": "f67a013d-f21b-40d8-9cd0-b673a73a39ac",
+          "portId": "var_float"
+        },
+        "to": {
+          "nodeId": "f05472bd-085b-422a-ae2d-13e111515e8a",
+          "portId": "var_float"
+        }
+      }
+    },
+    "selected": {},
+    "hovered": {}
+  },
+  "params": {
+    "param_float": 1.1,
+    "param_int": 1,
+    "param_list_int": "list(1, 2, 3)",
+    "param_list_str": "list(\"list_str\", \"space in elem\", \"3\")",
+    "param_string": "param_string value",
+    "param_string_with_comment": "param_string value"
+  }
+}
