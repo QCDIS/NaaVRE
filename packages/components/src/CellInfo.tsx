@@ -63,20 +63,6 @@ export class CellInfo extends React.Component {
                                     </TableBody>
                                 </Table>
                             </TableContainer>
-                            <p className={'lw-panel-preview'}>Dependencies</p>
-                            <TableContainer component={Paper} className={'lw-panel-table'}>
-                                <Table aria-label="simple table">
-                                    <TableBody>
-                                        {this.state.cell['properties']['deps'].map((dep: any) => (
-                                            <TableRow key={dep}>
-                                                <TableCell component="th" scope="row">
-                                                    {dep}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
                         </div>
                     ) : (
                         <TableContainer></TableContainer>

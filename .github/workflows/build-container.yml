@@ -19,10 +19,6 @@ on:
         required: true
         type: boolean
     secrets:
-      gitlab_username:
-        required: true
-      gitlab_password:
-        required: true
       docker_username:
         required: true
       docker_password:
@@ -30,7 +26,6 @@ on:
 env:
   DOCKER_FOLDER:  ${{ inputs.docker_folder }}
   TAG:  ${{ inputs.tag }}
-  GITLAB_IMAGE_ID: "registry.gitlab.com/qcd1/registry/"
   DOCKERHUB_IMAGE_ID: "qcdis/"
 
 jobs:

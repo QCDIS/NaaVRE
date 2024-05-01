@@ -33,7 +33,7 @@
     },
     "devDependencies": {
         "@types/node": "20.2.5",
-        "rimraf": "5.0.0",
+        "rimraf": "5.0.5",
         "typescript": "5.3.2"
     },
     "publishConfig": {
@@ -43,6 +43,6 @@
         "extension": true
     },
     "dependencies": {
-        "dotenv": "16.3.1"
+        "dotenv": "16.4.5"
     }
 }
