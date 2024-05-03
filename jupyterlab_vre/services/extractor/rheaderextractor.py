@@ -169,15 +169,8 @@ class RHeaderExtractor(Extractor):
                 var_type = var_props.get('type')
                 default_value = var_props.get('default_value')
                 if var_type == 'List':
-                    # Declare as R list list() instead of Python list []
-                    r_list = 'list('
-                    for elem in default_value:
-                        if isinstance(elem, int) or isinstance(elem, float):
-                            r_list += f'{elem}, '
-                        elif isinstance(elem, str):
-                            r_list += f'"{elem}", '
-                    r_list = r_list[:-2] + ')'
-                    default_value = r_list if default_value is not None else None
+                    # Convert list to string representation
+                    default_value = json.dumps(default_value)
                 var_dict = {
                     'name': var_name,
                     'type': var_type,
