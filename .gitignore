@@ -134,3 +134,6 @@ dmypy.json
 /docker/laserfarm-pytorch/start-jupyter-venv.sh
 /docker/laserfarm-pytorch/repo_utils/
 /docker/lter-life/repo_utils/
+
+#
+export_VARS
