@@ -37,9 +37,16 @@ option_list = list(
 # set input parameters accordingly
 opt = parse_args(OptionParser(option_list=option_list))
 
-{% for in_var in cell.inputs|sort %}
+{% for in_var in cell.all_inputs|sort %}
 {% if types[in_var] == list  or types[in_var] == 'list' %}
-{{ in_var }} = fromJSON(opt${{ in_var }})
+{{ in_var }} <- NULL
+print('Serialization of {{ in_var }}')
+tryCatch({
+  {{ in_var }} <<- fromJSON(opt${{ in_var }})
+}, error = function(e) {
+  {{ in_var }} <<- gsub("'", '"', opt${{ in_var }})
+  {{ in_var }} <<- fromJSON({{ in_var }})
+})
 {% elif types[in_var] == str or  types[in_var] == 'str' %}
 {{ in_var }} <- gsub('"', '', opt${{ in_var }})
 {% else %}
@@ -47,23 +54,18 @@ opt = parse_args(OptionParser(option_list=option_list))
 {% endif %}
 {% endfor %}
 
-{% for param in cell.params|sort %}
-{{ param }} = opt${{ param }}
-{% endfor %}
-
-
 {% for c in confs %}
 {{ c }}
 {% endfor %}
 
-
+print('-----------Running cell----------------')
 {{ cell.original_source }}
-
-
+print('-----------Cell executed----------------')
 
 {% if cell.outputs|length > 0 %}
 # capturing outputs
 {% for out in cell.outputs %}
+print('Serialization of {{ out }}')
 file <- file(paste0('/tmp/{{out}}_', id, '.json'))
 writeLines(toJSON({{out}}, auto_unbox=TRUE), file)
 close(file)
