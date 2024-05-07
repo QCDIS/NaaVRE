@@ -1,5 +1,5 @@
-from RVisitor import RVisitor
-from RParser import RParser
+from .RVisitor import RVisitor
+from .RParser import RParser
 
 class ExtractConfigs(RVisitor):
     def __init__(self):

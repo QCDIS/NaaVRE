@@ -1,5 +1,5 @@
-from RVisitor import RVisitor
-from RParser import RParser
+from .RVisitor import RVisitor
+from .RParser import RParser
 
 class ExtractNames(RVisitor):
 # Build a dictionairy to keep track of all identifiers and their data types
