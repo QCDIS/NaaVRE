@@ -7,6 +7,13 @@ import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
 from rpy2.robjects.packages import importr
 
+# Import ANTLR R parser
+from .parseR.parsing import parse_text
+from .parseR.ExtractImports import ExtractImports
+from .parseR.ExtractConfigs import ExtractConfigs
+from .parseR.ExtractParams import ExtractParams
+from .parseR.ExtractNames import ExtractNames
+
 from .extractor import Extractor
 
 
@@ -112,7 +119,6 @@ class RExtractor(Extractor):
     def __init__(self, notebook, cell_source):
         self.sources = [nbcell.source for nbcell in notebook.cells if
                         nbcell.cell_type == 'code' and len(nbcell.source) > 0]
-
         self.imports = self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
         self.global_params = self.__extract_params(self.sources)
