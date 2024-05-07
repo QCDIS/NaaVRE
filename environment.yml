@@ -59,3 +59,4 @@ dependencies:
   - ipywidgets=8.1.2
   - pip:
     - pytype==2023.10.31
+    - antlr4-python3-runtime==4.13.1
