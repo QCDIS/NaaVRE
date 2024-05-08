@@ -37,17 +37,36 @@ option_list = list(
 # set input parameters accordingly
 opt = parse_args(OptionParser(option_list=option_list))
 
+var_serialization <- function(in_var){
+    tryCatch(
+        {
+            in_var <<- fromJSON(in_var)
+            return(in_var)
+        },
+        error=function(e) {
+            {{ in_var }} <<- gsub("'", '"', in_var)
+            {{ in_var }} <<- fromJSON(in_var)
+            return(in_var)
+        },
+        warning=function(w) {
+            {{ in_var }} <<- gsub("'", '"', in_var)
+            {{ in_var }} <<- fromJSON(in_var)
+            return(in_var)
+        }
+    )
+}
+
+
 {% for in_var in cell.all_inputs|sort %}
 {% if types[in_var] == list  or types[in_var] == 'list' %}
 {{ in_var }} <- NULL
 print('Serialization of {{ in_var }}')
-tryCatch({
-  {{ in_var }} <<- fromJSON(opt${{ in_var }})
-}, error = function(e) {
-  {{ in_var }} <<- gsub("'", '"', opt${{ in_var }})
-  {{ in_var }} <<- fromJSON({{ in_var }})
-})
+
+{{ in_var }} = var_serialization(opt${{ in_var }})
+
+{% elif types[in_var] == str or types[in_var] == 'str' %}
 {% elif types[in_var] == str or  types[in_var] == 'str' %}
+print('Running : {{ in_var }} <- opt${{ in_var }}')
 {{ in_var }} <- gsub('"', '', opt${{ in_var }})
 {% else %}
 {{ in_var }} = opt${{ in_var }}
