@@ -59,9 +59,7 @@ var_serialization <- function(in_var){
 
 {% for in_var in cell.all_inputs|sort %}
 {% if types[in_var] == list  or types[in_var] == 'list' %}
-{{ in_var }} <- NULL
 print('Serialization of {{ in_var }}')
-
 {{ in_var }} = var_serialization(opt${{ in_var }})
 
 {% elif types[in_var] == str or types[in_var] == 'str' %}
