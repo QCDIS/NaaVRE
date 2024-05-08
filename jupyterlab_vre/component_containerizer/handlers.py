@@ -18,6 +18,8 @@ import distro
 import jsonschema
 import nbformat as nb
 import requests
+import requests.adapters
+import urllib3
 from github import Github
 from github.GithubException import UnknownObjectException
 from jinja2 import Environment, PackageLoader
@@ -52,6 +54,11 @@ github_url_repos = 'https://api.github.com/repos'
 github_workflow_file_name = 'build-push-docker.yml'
 cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
 
+# customized requests.Session
+session = requests.Session()
+retry_adapter = requests.adapters.HTTPAdapter(max_retries=urllib3.Retry(total=5, status_forcelist=[500]))
+session.mount('http://', retry_adapter)
+session.mount('https://', retry_adapter)
 
 # code from https://stackoverflow.com/questions/552659/how-to-assign-a-git-sha1s-to-a-file-without-git
 def git_hash(contents):
@@ -99,7 +106,8 @@ def query_registry_for_image(image_repo, image_name):
         headers = {
             "Authorization": f"Bearer {os.getenv('OCI_TOKEN')}",
             }
-    response = requests.get(url, headers=headers)
+    # response = requests.get(url, headers=headers)
+    response = session.get(url, headers=headers)
     if response.status_code == 200:
         return json.loads(response.content.decode('utf-8'))
     else:
@@ -260,7 +268,8 @@ class BaseImageTagsHandler(APIHandler):
         logger.debug(f'Base image tags URL: {url}')
         print(f'Base image tags URL: {url}')
         try:
-            res = requests.get(url)
+            # res = requests.get(url)
+            res = session.get(url)
             res.raise_for_status()
             dat = res.json()
         except (
@@ -607,7 +616,8 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
 
 def dispatch_github_workflow(owner, repository_name, task_name, files_info, repository_token, image, wf_id=None, image_version=None):
     url = github_url_repos + '/' + owner + '/' + repository_name + '/actions/workflows/' + github_workflow_file_name + '/dispatches'
-    resp = requests.post(
+    # resp = requests.post(
+    resp = session.post(
         url=url,
         json={
             'ref': 'refs/heads/main',
@@ -636,8 +646,9 @@ def get_github_workflow_runs(owner=None, repository_name=None, t_utc=None, token
     headers = {'Accept': 'application/vnd.github.v3+json'}
     if token:
         headers['Authorization'] = 'Bearer ' + token
-    workflow_runs = requests.get(url=workflow_runs_url, verify=False,
-                                 headers=headers)
+    # workflow_runs = requests.get(url=workflow_runs_url, verify=False,
+    #                              headers=headers)
+    workflow_runs = session.get(url=workflow_runs_url, verify=False, headers=headers)
     if workflow_runs.status_code != 200:
         return None
     workflow_runs_json = json.loads(workflow_runs.text)
@@ -648,8 +659,9 @@ def get_github_workflow_jobs(jobs_url=None, token=None):
     headers = {'Accept': 'application/vnd.github.v3+json'}
     if token:
         headers['Authorization'] = 'Bearer ' + token
-    jobs = requests.get(url=jobs_url, verify=False,
-                        headers=headers)
+    # jobs = requests.get(url=jobs_url, verify=False,
+    #                     headers=headers)
+    jobs = session.get(url=jobs_url, verify=False, headers=headers)
     if jobs.status_code == 200:
         return json.loads(jobs.text)
     else:
@@ -672,7 +684,8 @@ def load_module_name_mapping():
     module_mapping_url = os.getenv('MODULE_MAPPING_URL')
     module_mapping = {}
     if module_mapping_url:
-        resp = requests.get(module_mapping_url)
+        # resp = requests.get(module_mapping_url)
+        resp = session.get(module_mapping_url)
         module_mapping = json.loads(resp.text)
     module_name_mapping_path = os.path.join(
         str(Path.home()), 'NaaVRE', 'module_name_mapping.json')
