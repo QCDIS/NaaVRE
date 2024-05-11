@@ -8,6 +8,7 @@ import requests
 import yaml
 from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
+from slugify import slugify
 from tornado import web
 
 from jupyterlab_vre.database.catalog import Catalog
@@ -77,11 +78,7 @@ class ExportWorkflowHandler(APIHandler):
         template = template_env.get_template('workflow_template_v2.jinja2')
         if cell:
             if 'JUPYTERHUB_USER' in os.environ:
-                workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(',
-                                                                                                       '-').replace(')',
-                                                                                                                    '-').replace(
-                    '.', '-').replace('@',
-                                      '-at-').strip()
+                workflow_name = 'n-a-a-vre-' + slugify(os.environ['JUPYTERHUB_USER'])
 
             template.stream(
                 vlab_slug=vlab_slug,
@@ -132,9 +129,7 @@ class ExecuteWorkflowHandler(APIHandler):
         template = template_env.get_template('workflow_template_v2.jinja2')
 
         if 'JUPYTERHUB_USER' in os.environ:
-            workflow_name = 'n-a-a-vre-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(
-                ')', '-').replace('.', '-').replace('@',
-                                                    '-at-').strip()
+            workflow_name = 'n-a-a-vre-' + slugify(os.environ['JUPYTERHUB_USER'])
         template = template.render(
             vlab_slug=vlab_slug,
             deps_dag=deps_dag,
@@ -157,13 +152,12 @@ class ExecuteWorkflowHandler(APIHandler):
 
         try:
             access_token = os.environ['NAAVRE_API_TOKEN']
-            vre_api_verify_ssl = os.getenv('VRE_API_VERIFY_SSL', 'true')
+            vre_api_verify_ssl = (os.getenv('VRE_API_VERIFY_SSL', 'true').lower() == 'true')
             logger.info('Workflow submission request: ' + str(json.dumps(req_body, indent=2)))
-            session = requests.Session()
-            session.verify = vre_api_verify_ssl
 
             resp = requests.post(
                 f"{api_endpoint}/api/workflows/submit/",
+                verify=vre_api_verify_ssl,
                 data=json.dumps(req_body),
                 headers={
                     'Authorization': f"Token {access_token}",
@@ -197,9 +191,11 @@ class ExecuteWorkflowHandler(APIHandler):
         self.check_environment_variables()
         api_endpoint = os.getenv('API_ENDPOINT')
         access_token = os.environ['NAAVRE_API_TOKEN']
+        vre_api_verify_ssl = (os.getenv('VRE_API_VERIFY_SSL', 'true').lower() == 'true')
         # This is a bug. If we don't do this, the workflow status is not updated.
         resp = requests.get(
             f"{api_endpoint}/api/workflows/",
+            verify=vre_api_verify_ssl,
             headers={
                 'Authorization': f"Token {access_token}",
                 'Content-Type': 'application/json'
@@ -215,6 +211,7 @@ class ExecuteWorkflowHandler(APIHandler):
         sleep(0.3)
         resp = requests.get(
             f"{api_endpoint}/api/workflows/{workflow_id}/",
+            verify=vre_api_verify_ssl,
             headers={
                 'Authorization': f"Token {access_token}",
                 'Content-Type': 'application/json'

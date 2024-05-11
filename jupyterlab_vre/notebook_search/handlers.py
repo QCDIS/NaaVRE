@@ -7,6 +7,7 @@ from pathlib import Path
 
 import requests
 from notebook.base.handlers import APIHandler
+from slugify import slugify
 from tornado import web
 
 from jupyterlab_vre.database.catalog import Catalog
@@ -15,10 +16,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 if 'JUPYTERHUB_USER' in os.environ:
-    client_id = 'NaaVRE_' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace(
-        '.', '-').replace('@',
-                          '-at-').strip()
-
+    client_id = 'NaaVRE_' + slugify(os.environ['JUPYTERHUB_USER'])
 
 ################################################################################
 
