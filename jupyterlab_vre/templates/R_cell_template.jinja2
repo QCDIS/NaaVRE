@@ -4,6 +4,7 @@ setwd('/app')
 
 library(optparse)
 library(jsonlite)
+
 {% for dep in deps%}
 {{ dep }}
 {% endfor %}
@@ -72,10 +73,8 @@ var_serialization <- function(var){
 {% for in_var in cell.all_inputs|sort %}
 
 var = opt${{ in_var }}
-if (is.null(var) || var == NA || var == ""){
-    print("Variable opt${{ in_var }} is null")
-    exit(1)
-}
+var_len = length(var)
+print(paste("Variable {{ in_var }} has length", var_len))
 
 {% if types[in_var] == list  or types[in_var] == 'list' %}
 print("------------------------Running var_serialization for {{ in_var }}-----------------------")
