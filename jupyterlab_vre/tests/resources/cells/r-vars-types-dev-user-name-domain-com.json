@@ -1,8 +1,8 @@
 {
     "all_inputs": [],
     "base_image": {
-        "build": "ghcr.io/qcdis/naavre/naavre-cell-build-r:v0.10",
-        "runtime": "ghcr.io/qcdis/naavre/naavre-cell-runtime-r:v0.10"
+        "build": "ghcr.io/qcdis/naavre/naavre-cell-build-r:v0.11",
+        "runtime": "ghcr.io/qcdis/naavre/naavre-cell-runtime-r:v0.11"
     },
     "chart_obj": {
         "hovered": {},
@@ -63,11 +63,11 @@
                     "og_node_id": "49eea50",
                     "outputs": [
                         "var_float",
-                        "var_int",
-                        "var_string_with_comment",
-                        "var_list_int",
                         "var_list_str",
-                        "var_string"
+                        "var_list_int",
+                        "var_string_with_comment",
+                        "var_string",
+                        "var_int"
                     ],
                     "params": [],
                     "title": "R-vars-types-dev-user-name-domain-com",
@@ -79,15 +79,9 @@
                             "type": "datatype"
                         },
                         {
-                            "color": "#aad279",
+                            "color": "#6c89e0",
                             "direction": "output",
-                            "name": "var_int",
-                            "type": "datatype"
-                        },
-                        {
-                            "color": "#87c0c5",
-                            "direction": "output",
-                            "name": "var_string_with_comment",
+                            "name": "var_list_str",
                             "type": "datatype"
                         },
                         {
@@ -97,15 +91,21 @@
                             "type": "datatype"
                         },
                         {
-                            "color": "#6c89e0",
+                            "color": "#87c0c5",
                             "direction": "output",
-                            "name": "var_list_str",
+                            "name": "var_string_with_comment",
                             "type": "datatype"
                         },
                         {
                             "color": "#98e06c",
                             "direction": "output",
                             "name": "var_string",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#aad279",
+                            "direction": "output",
+                            "name": "var_int",
                             "type": "datatype"
                         }
                     ]
@@ -122,7 +122,13 @@
     },
     "confs": {},
     "container_source": "",
-    "dependencies": [],
+    "dependencies": [
+        {
+            "asname": "",
+            "module": "",
+            "name": "jsonlite"
+        }
+    ],
     "inputs": [],
     "kernel": "IRkernel",
     "node_id": "49eea50",
@@ -130,7 +136,7 @@
         "cells": [
             {
                 "cell_type": "code",
-                "execution_count": 1,
+                "execution_count": 4,
                 "id": "62acca7c-1f91-4266-bb7e-23d85a3d7157",
                 "metadata": {},
                 "outputs": [
@@ -181,5 +187,6 @@
         "var_list_str": "list",
         "var_string": "str",
         "var_string_with_comment": "str"
-    }
+    },
+    "skip_exec": true
 }

@@ -6,11 +6,11 @@
     },
     "scale": 1,
     "nodes": {
-      "f67a013d-f21b-40d8-9cd0-b673a73a39ac": {
-        "id": "f67a013d-f21b-40d8-9cd0-b673a73a39ac",
+      "78a78eb1-f65b-4285-a7d3-4d417a98fba4": {
+        "id": "78a78eb1-f65b-4285-a7d3-4d417a98fba4",
         "position": {
-          "x": 429.75,
-          "y": 96
+          "x": 347.41668701171875,
+          "y": 286
         },
         "orientation": 0,
         "type": "input-output",
@@ -26,11 +26,11 @@
               "y": 14
             }
           },
-          "var_int": {
+          "var_string": {
             "properties": {
-              "color": "#aad279"
+              "color": "#98e06c"
             },
-            "id": "var_int",
+            "id": "var_string",
             "type": "right",
             "position": {
               "x": 197.5,
@@ -59,22 +59,22 @@
               "y": 98
             }
           },
-          "var_list_str": {
+          "var_int": {
             "properties": {
-              "color": "#6c89e0"
+              "color": "#aad279"
             },
-            "id": "var_list_str",
+            "id": "var_int",
             "type": "right",
             "position": {
               "x": 197.5,
               "y": 126
             }
           },
-          "var_string": {
+          "var_list_str": {
             "properties": {
-              "color": "#98e06c"
+              "color": "#6c89e0"
             },
-            "id": "var_string",
+            "id": "var_list_str",
             "type": "right",
             "position": {
               "x": 197.5,
@@ -92,10 +92,10 @@
               "color": "#53ac8b"
             },
             {
-              "name": "var_int",
+              "name": "var_string",
               "direction": "output",
               "type": "datatype",
-              "color": "#aad279"
+              "color": "#98e06c"
             },
             {
               "name": "var_string_with_comment",
@@ -110,27 +110,27 @@
               "color": "#2d4ed2"
             },
             {
+              "name": "var_int",
+              "direction": "output",
+              "type": "datatype",
+              "color": "#aad279"
+            },
+            {
               "name": "var_list_str",
               "direction": "output",
               "type": "datatype",
               "color": "#6c89e0"
-            },
-            {
-              "name": "var_string",
-              "direction": "output",
-              "type": "datatype",
-              "color": "#98e06c"
             }
           ],
           "params": [],
           "inputs": [],
           "outputs": [
             "var_float",
-            "var_int",
+            "var_string",
             "var_string_with_comment",
             "var_list_int",
-            "var_list_str",
-            "var_string"
+            "var_int",
+            "var_list_str"
           ],
           "og_node_id": "49eea50"
         },
@@ -139,11 +139,11 @@
           "height": 150
         }
       },
-      "f05472bd-085b-422a-ae2d-13e111515e8a": {
-        "id": "f05472bd-085b-422a-ae2d-13e111515e8a",
+      "f67fecfa-2f1f-4e2c-bf05-df7f1415f209": {
+        "id": "f67fecfa-2f1f-4e2c-bf05-df7f1415f209",
         "position": {
-          "x": 916.75,
-          "y": 102
+          "x": 904.4166870117188,
+          "y": 270
         },
         "orientation": 0,
         "type": "input-output",
@@ -159,11 +159,11 @@
               "y": 14
             }
           },
-          "var_int": {
+          "var_string": {
             "properties": {
-              "color": "#aad279"
+              "color": "#98e06c"
             },
-            "id": "var_int",
+            "id": "var_string",
             "type": "left",
             "position": {
               "x": 50.5,
@@ -192,22 +192,22 @@
               "y": 98
             }
           },
-          "var_list_str": {
+          "var_int": {
             "properties": {
-              "color": "#6c89e0"
+              "color": "#aad279"
             },
-            "id": "var_list_str",
+            "id": "var_int",
             "type": "left",
             "position": {
               "x": 50.5,
               "y": 126
             }
           },
-          "var_string": {
+          "var_list_str": {
             "properties": {
-              "color": "#98e06c"
+              "color": "#6c89e0"
             },
-            "id": "var_string",
+            "id": "var_list_str",
             "type": "left",
             "position": {
               "x": 50.5,
@@ -225,10 +225,10 @@
               "color": "#53ac8b"
             },
             {
-              "name": "var_int",
+              "name": "var_string",
               "direction": "input",
               "type": "datatype",
-              "color": "#aad279"
+              "color": "#98e06c"
             },
             {
               "name": "var_string_with_comment",
@@ -243,16 +243,16 @@
               "color": "#2d4ed2"
             },
             {
+              "name": "var_int",
+              "direction": "input",
+              "type": "datatype",
+              "color": "#aad279"
+            },
+            {
               "name": "var_list_str",
               "direction": "input",
               "type": "datatype",
               "color": "#6c89e0"
-            },
-            {
-              "name": "var_string",
-              "direction": "input",
-              "type": "datatype",
-              "color": "#98e06c"
             }
           ],
           "params": [
@@ -265,14 +265,14 @@
           ],
           "inputs": [
             "var_float",
-            "var_int",
+            "var_string",
             "var_string_with_comment",
             "var_list_int",
-            "var_list_str",
-            "var_string"
+            "var_int",
+            "var_list_str"
           ],
           "outputs": [],
-          "og_node_id": "578cf05"
+          "og_node_id": "afd9aa6"
         },
         "size": {
           "width": 250,
@@ -281,69 +281,69 @@
       }
     },
     "links": {
-      "1cc593f8-0be3-4d6b-b669-fee5f725fe25": {
-        "id": "1cc593f8-0be3-4d6b-b669-fee5f725fe25",
+      "7a27f185-16c9-4ff9-acf5-df05c83b948c": {
+        "id": "7a27f185-16c9-4ff9-acf5-df05c83b948c",
         "from": {
-          "nodeId": "f67a013d-f21b-40d8-9cd0-b673a73a39ac",
-          "portId": "var_string"
-        },
-        "to": {
-          "nodeId": "f05472bd-085b-422a-ae2d-13e111515e8a",
-          "portId": "var_string"
-        }
-      },
-      "eab24f71-4bde-4ffc-9826-2129d7a49763": {
-        "id": "eab24f71-4bde-4ffc-9826-2129d7a49763",
-        "from": {
-          "nodeId": "f67a013d-f21b-40d8-9cd0-b673a73a39ac",
+          "nodeId": "78a78eb1-f65b-4285-a7d3-4d417a98fba4",
           "portId": "var_list_str"
         },
         "to": {
-          "nodeId": "f05472bd-085b-422a-ae2d-13e111515e8a",
+          "nodeId": "f67fecfa-2f1f-4e2c-bf05-df7f1415f209",
           "portId": "var_list_str"
         }
       },
-      "50c2883e-19c8-4121-836f-1e893ada8aac": {
-        "id": "50c2883e-19c8-4121-836f-1e893ada8aac",
+      "db53d131-dfbc-4b1b-8001-1ffda686318a": {
+        "id": "db53d131-dfbc-4b1b-8001-1ffda686318a",
         "from": {
-          "nodeId": "f67a013d-f21b-40d8-9cd0-b673a73a39ac",
-          "portId": "var_list_int"
-        },
-        "to": {
-          "nodeId": "f05472bd-085b-422a-ae2d-13e111515e8a",
-          "portId": "var_list_int"
-        }
-      },
-      "bc60cba2-8766-4e11-98b3-e5ba171a8063": {
-        "id": "bc60cba2-8766-4e11-98b3-e5ba171a8063",
-        "from": {
-          "nodeId": "f67a013d-f21b-40d8-9cd0-b673a73a39ac",
-          "portId": "var_string_with_comment"
-        },
-        "to": {
-          "nodeId": "f05472bd-085b-422a-ae2d-13e111515e8a",
-          "portId": "var_string_with_comment"
-        }
-      },
-      "c4aaf315-d767-4515-a7af-749ce3084416": {
-        "id": "c4aaf315-d767-4515-a7af-749ce3084416",
-        "from": {
-          "nodeId": "f67a013d-f21b-40d8-9cd0-b673a73a39ac",
+          "nodeId": "78a78eb1-f65b-4285-a7d3-4d417a98fba4",
           "portId": "var_int"
         },
         "to": {
-          "nodeId": "f05472bd-085b-422a-ae2d-13e111515e8a",
+          "nodeId": "f67fecfa-2f1f-4e2c-bf05-df7f1415f209",
           "portId": "var_int"
         }
       },
-      "c8fc9769-f342-4ce5-87a6-f1da17d0fcb1": {
-        "id": "c8fc9769-f342-4ce5-87a6-f1da17d0fcb1",
+      "34204297-870c-4c4c-ad13-6d46e6f8f1ab": {
+        "id": "34204297-870c-4c4c-ad13-6d46e6f8f1ab",
         "from": {
-          "nodeId": "f67a013d-f21b-40d8-9cd0-b673a73a39ac",
+          "nodeId": "78a78eb1-f65b-4285-a7d3-4d417a98fba4",
+          "portId": "var_list_int"
+        },
+        "to": {
+          "nodeId": "f67fecfa-2f1f-4e2c-bf05-df7f1415f209",
+          "portId": "var_list_int"
+        }
+      },
+      "a784a6c9-653f-499d-9792-01051e12097e": {
+        "id": "a784a6c9-653f-499d-9792-01051e12097e",
+        "from": {
+          "nodeId": "78a78eb1-f65b-4285-a7d3-4d417a98fba4",
+          "portId": "var_string_with_comment"
+        },
+        "to": {
+          "nodeId": "f67fecfa-2f1f-4e2c-bf05-df7f1415f209",
+          "portId": "var_string_with_comment"
+        }
+      },
+      "8918e8ea-e8d0-4a31-a1ec-70e190930632": {
+        "id": "8918e8ea-e8d0-4a31-a1ec-70e190930632",
+        "from": {
+          "nodeId": "78a78eb1-f65b-4285-a7d3-4d417a98fba4",
+          "portId": "var_string"
+        },
+        "to": {
+          "nodeId": "f67fecfa-2f1f-4e2c-bf05-df7f1415f209",
+          "portId": "var_string"
+        }
+      },
+      "52c4c36b-14a4-486a-9ce8-9fae10433abe": {
+        "id": "52c4c36b-14a4-486a-9ce8-9fae10433abe",
+        "from": {
+          "nodeId": "78a78eb1-f65b-4285-a7d3-4d417a98fba4",
           "portId": "var_float"
         },
         "to": {
-          "nodeId": "f05472bd-085b-422a-ae2d-13e111515e8a",
+          "nodeId": "f67fecfa-2f1f-4e2c-bf05-df7f1415f209",
           "portId": "var_float"
         }
       }
@@ -354,8 +354,8 @@
   "params": {
     "param_float": 1.1,
     "param_int": 1,
-    "param_list_int": "list(1, 2, 3)",
-    "param_list_str": "list(\"list_str\", \"space in elem\", \"3\")",
+    "param_list_int": "[1, 2, 3]",
+    "param_list_str": "[\"list_str\", \"space in elem\", \"3\"]",
     "param_string": "param_string value",
     "param_string_with_comment": "param_string value"
   }

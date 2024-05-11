@@ -635,6 +635,8 @@ def dispatch_github_workflow(owner, repository_name, task_name, files_info, repo
 
 
 def get_github_workflow_runs(owner=None, repository_name=None, t_utc=None, token=None):
+    if repository_name and '.git' in repository_name:
+        repository_name = repository_name.replace('.git', '')
     workflow_runs_url = github_url_repos + '/' + owner + '/' + repository_name + '/actions/runs'
     if t_utc:
         t_start = (t_utc - datetime.timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
