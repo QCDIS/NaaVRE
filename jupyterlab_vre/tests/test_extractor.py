@@ -127,8 +127,6 @@ class TestExtractor(TestCase):
         for notebook_file in notebooks_files:
             cell = extract_cell(notebook_file)
             print(notebook_file)
-            if 'test_types_R.json' not in notebook_file:
-                continue
             if cell:
                 cell = json.loads(cell)
                 for conf_name in (cell['confs']):
