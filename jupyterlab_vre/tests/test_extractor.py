@@ -130,12 +130,11 @@ class TestExtractor(TestCase):
             if cell:
                 cell = json.loads(cell)
                 for conf_name in (cell['confs']):
-                    if 'python' in cell['kernel'].lower():
-                        self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
-                                         'conf_ values should not contain conf_ prefix in '
-                                         'assignment')
-                    elif 'r' in cell['kernel'].lower():
-                        self.assertTrue('conf_' in cell['confs'][conf_name].split('<-')[1],
+                    if '=' in cell['confs'][conf_name]:
+                        assignment_symbol = '='
+                    if '<-' in cell['confs'][conf_name]:
+                        assignment_symbol = '<-'
+                    self.assertTrue('conf_' in cell['confs'][conf_name].split(assignment_symbol)[1],
                                         'conf_ values should contain conf_ prefix in '
                                         'assignment')
                 # All params should have matching values
