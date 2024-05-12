@@ -236,8 +236,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
             notebooks_json_path = os.path.join(base_path, 'notebooks')
             notebooks_files = glob.glob(os.path.join(notebooks_json_path, "*.json"))
             for notebook_file in notebooks_files:
-                if 'test_types_R.json' not in notebook_file:
-                    continue
                 with open(notebook_file, 'r') as file:
                     notebook = json.load(file)
                 file.close()
@@ -266,8 +264,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
         cells_json_path = os.path.join(base_path, 'cells')
         cells_files = os.listdir(cells_json_path)
         for cell_file in cells_files:
-            if 'r-check-var-types-dev-user-name-domain-com' not in cell_file:
-                continue
             cell_path = os.path.join(cells_json_path, cell_file)
             create_cell_and_add_to_cat(cell_path=cell_path)
             response = self.call_cell_handler()
@@ -292,8 +288,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
             self.assertEqual('completed', job['status'], 'Job not completed')
         for workflow_file in workflow_files:
             print('workflow_file: ', workflow_file)
-            if 'test-R-types.json' not in workflow_file:
-                continue
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
