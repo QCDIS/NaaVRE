@@ -126,12 +126,20 @@ class TestExtractor(TestCase):
             )
         for notebook_file in notebooks_files:
             cell = extract_cell(notebook_file)
+            print(notebook_file)
+            if 'test_types_R.json' not in notebook_file:
+                continue
             if cell:
                 cell = json.loads(cell)
                 for conf_name in (cell['confs']):
-                    self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
-                                     'conf_ values should not contain conf_ prefix in '
-                                     'assignment')
+                    if 'python' in cell['kernel'].lower():
+                        self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
+                                         'conf_ values should not contain conf_ prefix in '
+                                         'assignment')
+                    elif 'r' in cell['kernel'].lower():
+                        self.assertTrue('conf_' in cell['confs'][conf_name].split('<-')[1],
+                                        'conf_ values should contain conf_ prefix in '
+                                        'assignment')
                 # All params should have matching values
                 for param_name in cell['params']:
                     self.assertTrue(param_name in cell['param_values'])

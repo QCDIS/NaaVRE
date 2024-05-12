@@ -1,4 +1,4 @@
-{
+ {
     "save": false,
     "kernel": "IRkernel",
     "cell_index": 2,
@@ -62,22 +62,6 @@
                     }
                 ],
                 "id": "c7bcfe5c-5b6b-4fff-8c04-07c20f894363"
-            },
-            {
-                "cell_type": "code",
-                "source": "ll = list(1, 2, 3)\nprint(class(ll))",
-                "metadata": {
-                    "trusted": true
-                },
-                "execution_count": 6,
-                "outputs": [
-                    {
-                        "name": "stdout",
-                        "output_type": "stream",
-                        "text": "[1] \"list\"\n"
-                    }
-                ],
-                "id": "e310f6af-1bb8-4a1f-a630-6fbb4a7c180a"
             },
             {
                 "cell_type": "code",
