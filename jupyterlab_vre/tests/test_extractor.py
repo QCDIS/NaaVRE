@@ -130,8 +130,7 @@ class TestExtractor(TestCase):
             if cell:
                 cell = json.loads(cell)
                 for conf_name in (cell['confs']):
-                    if '=' in cell['confs'][conf_name]:
-                        assignment_symbol = '='
+                    assignment_symbol = '='
                     if '<-' in cell['confs'][conf_name]:
                         assignment_symbol = '<-'
                     self.assertTrue('conf_' in cell['confs'][conf_name].split(assignment_symbol)[1],
