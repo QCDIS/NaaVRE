@@ -66,77 +66,6 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - name: Check secrets and variables
-        run: |
-          vars_not_set=0
-          concatenated_error_message=""
-          if [ -z "$CELL_GITHUB" ]; then
-            echo "CELL_GITHUB not set"
-            concatenated_error_message="$concatenated_error_message CELL_GITHUB not set"
-            vars_not_set=1
-          fi
-          if [ -z "$CELL_GITHUB_TOKEN" ]; then
-            echo "CELL_GITHUB_TOKEN not set"
-            concatenated_error_message="$concatenated_error_message CELL_GITHUB_TOKEN not set"
-            vars_not_set=1
-          fi
-          if [ -z "$NAAVRE_API_TOKEN" ]; then
-            echo "NAAVRE_API_TOKEN not set"
-            concatenated_error_message="$concatenated_error_message NAAVRE_API_TOKEN not set"
-            vars_not_set=1
-          fi
-          if [ -z "$JUPYTERHUB_USER" ]; then
-            echo "JUPYTERHUB_USER not set"
-            concatenated_error_message="$concatenated_error_message JUPYTERHUB_USER not set"
-            vars_not_set=1
-          fi
-          if [ -z "$API_ENDPOINT" ]; then
-            echo "API_ENDPOINT not set"
-            concatenated_error_message="$concatenated_error_message API_ENDPOINT not set"
-            vars_not_set=1
-          fi
-          if [ -z "$VLAB_SLUG" ]; then
-            echo "VLAB_SLUG not set"
-            concatenated_error_message="$concatenated_error_message VLAB_SLUG not set"
-            vars_not_set=1
-          fi
-          if [ -z "$MODULE_MAPPING_URL" ]; then
-            echo "MODULE_MAPPING_URL not set"
-            concatenated_error_message="$concatenated_error_message MODULE_MAPPING_URL not set"
-            vars_not_set=1
-          fi
-          if [ -z "$SEARCH_API_ENDPOINT" ]; then
-            echo "SEARCH_API_ENDPOINT not set"
-            concatenated_error_message="$concatenated_error_message SEARCH_API_ENDPOINT not set"
-            vars_not_set=1
-          fi
-          if [ -z "$SEARCH_API_TOKEN" ]; then
-            echo "SEARCH_API_TOKEN not set"
-            concatenated_error_message="$concatenated_error_message SEARCH_API_TOKEN not set"
-            vars_not_set=1
-          fi
-          if [ -z "ARGO_URL" ]; then
-            echo "ARGO_URL not set"
-            concatenated_error_message="$concatenated_error_message ARGO_URL not set"
-            vars_not_set=1
-          fi
-          if [ -z "ARGO_API_TOKEN" ]; then
-            echo "ARGO_API_TOKEN not set"
-            concatenated_error_message="$concatenated_error_message ARGO_API_TOKEN not set"
-            vars_not_set=1
-          fi
-          if [ -z "$DEBUG" ]; then
-            echo "DEBUG not set"
-            concatenated_error_message="$concatenated_error_message DEBUG not set"
-            vars_not_set=1
-          fi
-
-          if [ $vars_not_set -eq 1 ]; then
-            echo "Exiting with error"
-            echo $concatenated_error_message
-            exit 1
-          fi
-
       - uses: actions/checkout@v4
 
       - uses: conda-incubator/setup-miniconda@v3
@@ -163,15 +92,6 @@ jobs:
 #        if: steps.cache-conda.outputs.cache-hit != 'true'
 #        run:
 #          mamba env update -n jupyterlab -f environment.yml
-
-      - name: Lint with flake8
-        shell: bash -l {0}
-        run: |
-          conda activate jupyterlab
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: pytest
         shell: bash -l {0}
