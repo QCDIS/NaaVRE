@@ -59,7 +59,7 @@ elem
     | 'for' eat? '(' (elem | eat)* ')' eat?
     | 'while' eat? '(' (elem | eat)* ')' eat?
     | 'if' eat? '(' (elem | eat)* ')' eat?
-    | 'else'
+    | eat? 'else' eat? // Added eat? before else to handle comments between if and else
         {
 tok = self._input.LT(-2)
 if self.curlies > 0 and tok.type == self.NL:
