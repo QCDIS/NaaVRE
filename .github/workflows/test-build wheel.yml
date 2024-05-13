@@ -102,7 +102,7 @@ jobs:
           python docker/repo_utils/conf_vl_repos.py  --force=True
           pip install --upgrade build
           mkdir -p /tmp/data
-          pytest  -s --ignore=docker --ignore=cypress --no-header -v --cov --splits 5 --group ${{ github.event.inputs.group }}"
+          pytest  -s --ignore=docker --ignore=cypress --no-header -v
 
       - name: make release
         shell: bash -el {0}

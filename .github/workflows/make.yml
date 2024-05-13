@@ -55,7 +55,7 @@ jobs:
     if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
     strategy:
       matrix:
-        group: [1,2,3,4]
+        group: [1]
     with:
       runs-on: ${{ needs.configure-workflow.outputs.runner }}
 
