@@ -2,6 +2,7 @@ import json
 import os
 import re
 from pathlib import Path
+from time import sleep
 from unittest import TestCase
 
 from jupyterlab_vre.database.catalog import Catalog
@@ -27,6 +28,7 @@ class TestCell(TestCase):
         self.cells_files = os.listdir(self.cells_json_path)
 
     def test_clean_code(self):
+        sleep(5)
         self.assertTrue(True)
         # for cell_file in self.cells_files:
         #     cell_path = os.path.join(self.cells_json_path, cell_file)

@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import uuid
+from time import sleep
 from unittest import TestCase
 
 import nbformat as nb
@@ -120,6 +121,7 @@ class TestExtractor(TestCase):
         }
 
     def test_extract_cell(self):
+        sleep(5)
         self.assertTrue(True)
         # notebooks_json_path = os.path.join(base_path, 'notebooks')
         # notebooks_files = glob.glob(

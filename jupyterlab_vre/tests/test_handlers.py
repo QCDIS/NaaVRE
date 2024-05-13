@@ -108,6 +108,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
         load_module_names_mapping()
 
     def test_search_handler(self):
+        sleep(5)
         self.assertTrue(True)
         # with mock.patch.object(NotebookSearchHandler, 'get_secure_cookie') as m:
         #     m.return_value = 'cookie'
@@ -117,6 +118,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
         #     self.assertIsNotNone(json_response)
 
     def test_search_rating_handler(self):
+        sleep(5)
         self.assertTrue(True)
         # with mock.patch.object(NotebookSearchRatingHandler, 'get_secure_cookie') as m:
         #     m.return_value = 'cookie'
@@ -130,6 +132,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
         #     self.assertEqual(response.code, 200)
 
     def test_notebook_download_handler(self):
+        sleep(5)
         self.assertTrue(True)
         # with mock.patch.object(NotebookSearchRatingHandler, 'get_secure_cookie') as m:
         #     m.return_value = 'cookie'
@@ -138,6 +141,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
         #     self.assertEqual(response.code, 200)
 
     def test_cells_handler(self):
+        sleep(5)
         self.assertTrue(True)
         # with mock.patch.object(CellsHandler, 'get_secure_cookie') as m:
         #     m.return_value = 'cookie'
@@ -235,6 +239,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
         #         self.assertEqual('success', cell['job']['conclusion'], 'Job not successful')
 
     def test_extractor_handler(self):
+        sleep(5)
         self.assertTrue(True)
         # with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
         #     m.return_value = 'cookie'
@@ -253,6 +258,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
         #         print('cell: ', cell)
 
     def test_execute_workflow_handler(self):
+        sleep(5)
         self.assertTrue(True)
         # workflow_path = os.path.join(base_path, 'workflows', 'NaaVRE')
         # workflow_files = os.listdir(workflow_path)
@@ -310,6 +316,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
         return response
 
     def test_files_updated(self):
+        sleep(5)
         self.assertTrue(True)
         # with mock.patch.object(CellsHandler, 'get_secure_cookie') as m:
         #     m.return_value = 'cookie'
