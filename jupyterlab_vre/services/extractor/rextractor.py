@@ -7,13 +7,6 @@ import rpy2.robjects as robjects
 import rpy2.robjects.packages as rpackages
 from rpy2.robjects.packages import importr
 
-# Import ANTLR R parser
-from .parseR.parsing import parse_text
-from .parseR.ExtractImports import ExtractImports
-from .parseR.ExtractConfigs import ExtractConfigs
-from .parseR.ExtractParams import ExtractParams
-from .parseR.ExtractNames import ExtractNames
-
 from .extractor import Extractor
 
 
@@ -119,6 +112,7 @@ class RExtractor(Extractor):
     def __init__(self, notebook, cell_source):
         self.sources = [nbcell.source for nbcell in notebook.cells if
                         nbcell.cell_type == 'code' and len(nbcell.source) > 0]
+
         self.imports = self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
         self.global_params = self.__extract_params(self.sources)
@@ -130,7 +124,6 @@ class RExtractor(Extractor):
 
     def __extract_imports(self, sources):
         imports = {}
-        my_imports = {}
         for s in sources:
             packages = []
 
@@ -162,25 +155,10 @@ class RExtractor(Extractor):
                     'asname': '',
                     'module': ''
                 }
-
-            ''' Approach 3: AST ANTLR parser
-            '''
-            tree = parse_text(s)
-            visitor = ExtractImports()
-            output = visitor.visit(tree)
-
-            for pkg in output:
-                my_imports[pkg] = {
-                    'name': pkg,
-                    'asname': '',
-                    'module': ''
-                }
-
         return imports
 
     def __extract_configurations(self, sources):
         configurations = {}
-        my_configurations = {}
         for s in sources:
             parsed_expr = base.parse(text=s, keep_source=True)
             parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
@@ -202,27 +180,17 @@ class RExtractor(Extractor):
                     if len(matches) > 0 and variable not in configurations:
                         configurations[variable] = line
                         break
-
-            ''' AST ANTLR parser
-            '''
-            tree = parse_text(s)
-            visitor = ExtractConfigs()
-            output = visitor.visit(tree)
-            for o in output:
-                my_configurations[o] = output[o]
-
         return configurations
 
     def __extract_params(self, sources):  # check source https://adv-r.hadley.nz/expressions.html)
         params = {}
-        my_params = {}
         for s in sources:
             lines = s.splitlines()
 
             '''Approach 1: Naive way
             Find all variable assignments with a prefix of "param"'''
             # pattern = r"param_[a-zA-Z0-9_]{0,}"
-            # matches = re.findall(pattern, s) 
+            # matches = re.findall(pattern, s)
             # Extract the variable names from the matches
             # for match in matches:
             # params.add(match)
@@ -248,19 +216,6 @@ class RExtractor(Extractor):
                     'type': None,
                     'value': param_value,
                 }
-
-            ''' Approach 3: AST ANTLR parser
-            '''
-            tree = parse_text(s)
-            visitor = ExtractParams()
-            output = visitor.visit(tree)
-            for param in output:
-                my_params[param] = {
-                    'name': param,
-                    'type': output[param]['type'],
-                    'value': output[param]['val']
-                }
-
         return params
 
     def infer_cell_outputs(self):
@@ -286,7 +241,7 @@ class RExtractor(Extractor):
         }
 
     def infer_cell_dependencies(self, confs):
-        # TODO: check this code, you have removed logic. 
+        # TODO: check this code, you have removed logic.
         # we probably like to only use dependencies that are necessary to execute the cell
         # however this is challenging in R as functions are non-scoped
         dependencies = []
@@ -373,7 +328,7 @@ class RExtractor(Extractor):
                 c = str(my_expr[0])
                 variable = my_expr[1]
 
-                # Check if assignment. 
+                # Check if assignment.
                 if (c == "<-" or c == "="):
                     if isinstance(my_expr[1], rinterface.SexpSymbol):
                         result.add(str(variable))
@@ -408,7 +363,7 @@ class RExtractor(Extractor):
         assignment_variables = self.assignment_variables(cell_source)
         undef_vars = set(cell_names).difference(set(assignment_variables))
 
-        # Approach 2: (TODO) dynamic analysis approach. this is complex for R as functions 
+        # Approach 2: (TODO) dynamic analysis approach. this is complex for R as functions
         # as they are not scoped (which is the case in python). As such, we might have to include
         # all the libraries to make sure that those functions work
 
