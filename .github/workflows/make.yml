@@ -31,7 +31,7 @@ jobs:
           fallback-runner: ubuntu-latest
           github-token: ${{ secrets.RUNNER_ACCESS_TOKEN }}
   check_secrets_and_variables:
-    ues: ./.github/workflows/check_secrets_and_variables.yml
+    uses: ./.github/workflows/check_secrets_and_variables.yml
     needs: [configure-workflow]
     with:
       runs-on: ${{ needs.configure-workflow.outputs.runner }}
