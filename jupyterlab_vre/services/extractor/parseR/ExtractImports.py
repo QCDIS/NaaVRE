@@ -13,7 +13,8 @@ class ExtractImports(RVisitor):
         # Check function call of library or require functions indicating an import.
         fun = self.visit(ctx.expr())
         if fun == "library" or fun == "require":
-            self.imports[self.visit(ctx.sublist())] = self.visit(ctx.sublist())
+            lib = self.visit(ctx.sublist()).strip('"')
+            self.imports[lib] = lib
         return None
     
     def visitId(self, ctx:RParser.IdContext):

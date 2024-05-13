@@ -130,6 +130,7 @@ class RExtractor(Extractor):
 
     def __extract_imports(self, sources):
         imports = {}
+        my_imports = {}
         for s in sources:
             packages = []
 
@@ -161,10 +162,25 @@ class RExtractor(Extractor):
                     'asname': '',
                     'module': ''
                 }
+
+            ''' Approach 3: AST ANTLR parser
+            '''
+            tree = parse_text(s)
+            visitor = ExtractImports()
+            output = visitor.visit(tree)
+
+            for pkg in output:
+                my_imports[pkg] = {
+                    'name': pkg,
+                    'asname': '',
+                    'module': ''
+                }
+
         return imports
 
     def __extract_configurations(self, sources):
         configurations = {}
+        my_configurations = {}
         for s in sources:
             parsed_expr = base.parse(text=s, keep_source=True)
             parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
@@ -186,10 +202,20 @@ class RExtractor(Extractor):
                     if len(matches) > 0 and variable not in configurations:
                         configurations[variable] = line
                         break
+
+            ''' AST ANTLR parser
+            '''
+            tree = parse_text(s)
+            visitor = ExtractConfigs()
+            output = visitor.visit(tree)
+            for o in output:
+                my_configurations[o] = output[o]
+
         return configurations
 
     def __extract_params(self, sources):  # check source https://adv-r.hadley.nz/expressions.html)
         params = {}
+        my_params = {}
         for s in sources:
             lines = s.splitlines()
 
@@ -222,6 +248,20 @@ class RExtractor(Extractor):
                     'type': None,
                     'value': param_value,
                 }
+
+            ''' Approach 3: AST ANTLR parser
+            '''
+            tree = parse_text(s)
+            visitor = ExtractParams()
+            output = visitor.visit(tree)
+            for param in output:
+                print(param)
+                my_params[param] = {
+                    'name': param,
+                    'type': output[param]['type'],
+                    'value': output[param]['val']
+                }
+
         return params
 
     def infer_cell_outputs(self):
