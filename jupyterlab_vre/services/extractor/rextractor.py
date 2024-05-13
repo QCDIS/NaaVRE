@@ -255,7 +255,6 @@ class RExtractor(Extractor):
             visitor = ExtractParams()
             output = visitor.visit(tree)
             for param in output:
-                print(param)
                 my_params[param] = {
                     'name': param,
                     'type': output[param]['type'],
