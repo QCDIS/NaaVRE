@@ -9,6 +9,8 @@ from rpy2.robjects.packages import importr
 
 from .extractor import Extractor
 
+from .parseR.parsing import parse_text
+from .parseR.Visitors import *
 
 # Create an R environment
 r_env = robjects.globalenv
@@ -155,6 +157,19 @@ class RExtractor(Extractor):
                     'asname': '',
                     'module': ''
                 }
+
+            '''Approach 3: AST parsing'''
+            # tree = parse_text(s)
+            # visitor = ExtractImports()
+            # output = visitor.visit(tree)
+            #
+            # for o in output:
+            #     imports[o] = {
+            #         'name': o,
+            #         'asname': '',
+            #         'module': ''
+            #     }
+
         return imports
 
     def __extract_configurations(self, sources):
@@ -180,6 +195,15 @@ class RExtractor(Extractor):
                     if len(matches) > 0 and variable not in configurations:
                         configurations[variable] = line
                         break
+
+            '''AST parsing'''
+            # tree = parse_text(s)
+            # visitor = ExtractConfigs()
+            # output = visitor.visit(tree)
+            #
+            # for o in output:
+            #     configurations[o] = output[o]
+
         return configurations
 
     def __extract_params(self, sources):  # check source https://adv-r.hadley.nz/expressions.html)
@@ -216,6 +240,19 @@ class RExtractor(Extractor):
                     'type': None,
                     'value': param_value,
                 }
+
+            '''AST parsing'''
+            # tree = parse_text(s)
+            # visitor = ExtractParams()
+            # output = visitor.visit(tree)
+            #
+            # for o in output:
+            #     params[o] = {
+            #         'name': o,
+            #         'type': output[o]['type'],
+            #         'value': output[o]['val']
+            #     }
+
         return params
 
     def infer_cell_outputs(self):
@@ -232,6 +269,14 @@ class RExtractor(Extractor):
 
     def infer_cell_inputs(self):
         cell_undefined = self.__extract_cell_undefined(self.cell_source)
+
+        '''AST parsing'''
+        # tree = parse_text(self.cell_source)
+        # visitor = ExtractDefs()
+        # defs = visitor.visit(tree)
+        # visitor = ExtractInputs(defs)
+        # inputs = visitor.visit(tree)
+
         return {
             und: properties
             for und, properties in cell_undefined.items()
