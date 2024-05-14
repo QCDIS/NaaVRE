@@ -69,11 +69,19 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
+    - name: Truncate the version
+      id: truncate
+      run: echo "::set-output name=truncated::$(echo ${steps.get_version.outputs.version:0:10})"
+
+    - name: Use truncated version
+      run: echo ${{ steps.truncate.outputs.truncated }}
+
+
     - name: Build docker
       uses: docker/build-push-action@v5
       with:
         context: docker/${{ inputs.docker_folder }}
         push: ${{ inputs.push }}
-        tags: qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }},qcdis/${{ inputs.tag }}:latest
+        tags: qcdis/${{ inputs.tag }}:${{ steps.truncate.outputs.truncated }},qcdis/${{ inputs.tag }}:latest
         cache-from: type=gha
         cache-to: type=gha,mode=min
