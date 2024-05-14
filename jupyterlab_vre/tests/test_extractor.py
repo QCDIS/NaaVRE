@@ -133,9 +133,9 @@ class TestExtractor(TestCase):
                     assignment_symbol = '='
                     if '<-' in cell['confs'][conf_name]:
                         assignment_symbol = '<-'
-                    self.assertTrue('conf_' in cell['confs'][conf_name].split(assignment_symbol)[1],
-                                        'conf_ values should contain conf_ prefix in '
-                                        'assignment')
+                    self.assertFalse('conf_' in cell['confs'][conf_name].split(assignment_symbol)[1],
+                                     'conf_ values should not contain conf_ prefix in '
+                                     'assignment')
                 # All params should have matching values
                 for param_name in cell['params']:
                     self.assertTrue(param_name in cell['param_values'])
