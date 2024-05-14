@@ -78,8 +78,8 @@ jobs:
         else
           echo "::set-output name=version::$version"
         fi
-
-    - name: Use the result
+  
+    - name: Use the resultK
       run: echo "The version is: ${{ steps.check_and_truncate.outputs.version }}"
 
 
