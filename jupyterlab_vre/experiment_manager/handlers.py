@@ -152,13 +152,12 @@ class ExecuteWorkflowHandler(APIHandler):
 
         try:
             access_token = os.environ['NAAVRE_API_TOKEN']
-            vre_api_verify_ssl = os.getenv('VRE_API_VERIFY_SSL', 'true')
+            vre_api_verify_ssl = (os.getenv('VRE_API_VERIFY_SSL', 'true').lower() == 'true')
             logger.info('Workflow submission request: ' + str(json.dumps(req_body, indent=2)))
-            session = requests.Session()
-            session.verify = vre_api_verify_ssl
 
             resp = requests.post(
                 f"{api_endpoint}/api/workflows/submit/",
+                verify=vre_api_verify_ssl,
                 data=json.dumps(req_body),
                 headers={
                     'Authorization': f"Token {access_token}",
@@ -192,9 +191,11 @@ class ExecuteWorkflowHandler(APIHandler):
         self.check_environment_variables()
         api_endpoint = os.getenv('API_ENDPOINT')
         access_token = os.environ['NAAVRE_API_TOKEN']
+        vre_api_verify_ssl = (os.getenv('VRE_API_VERIFY_SSL', 'true').lower() == 'true')
         # This is a bug. If we don't do this, the workflow status is not updated.
         resp = requests.get(
             f"{api_endpoint}/api/workflows/",
+            verify=vre_api_verify_ssl,
             headers={
                 'Authorization': f"Token {access_token}",
                 'Content-Type': 'application/json'
@@ -210,6 +211,7 @@ class ExecuteWorkflowHandler(APIHandler):
         sleep(0.3)
         resp = requests.get(
             f"{api_endpoint}/api/workflows/{workflow_id}/",
+            verify=vre_api_verify_ssl,
             headers={
                 'Authorization': f"Token {access_token}",
                 'Content-Type': 'application/json'

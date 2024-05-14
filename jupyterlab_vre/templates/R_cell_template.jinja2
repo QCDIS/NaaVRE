@@ -8,7 +8,6 @@ library(jsonlite)
 {{ dep }}
 {% endfor %}
 
-
 option_list = list(
 
 {% for in_var in cell.all_inputs|sort %}
@@ -58,8 +57,6 @@ opt = parse_args(OptionParser(option_list=option_list))
 
 
 {{ cell.original_source }}
-
-
 
 {% if cell.outputs|length > 0 %}
 # capturing outputs

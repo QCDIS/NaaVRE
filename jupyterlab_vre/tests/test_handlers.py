@@ -29,7 +29,6 @@ elif os.path.exists('jupyterlab_vre/tests/resources/'):
 
 cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
 
-
 def delete_text(file_path, text_to_delete):
     # Read the file
     with open(file_path, 'r') as file:
