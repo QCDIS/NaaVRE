@@ -4,6 +4,7 @@ import logging
 import os
 import uuid
 from unittest import TestCase
+import pytest
 
 import nbformat as nb
 from slugify import slugify
@@ -119,6 +120,7 @@ class TestExtractor(TestCase):
         'param_string_with_comment': 'param_string value',
         }
 
+    @pytest.mark.timeout(60)
     def test_extract_cell(self):
         notebooks_json_path = os.path.join(base_path, 'notebooks')
         notebooks_files = glob.glob(
