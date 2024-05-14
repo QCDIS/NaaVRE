@@ -79,6 +79,10 @@ jobs:
           echo "::set-output name=version::$version"
         fi
 
+    - name: Use the result
+      run: echo "The version is: ${{ steps.check_and_truncate.outputs.version }}"
+
+
     - name: Build docker
       uses: docker/build-push-action@v5
       with:
