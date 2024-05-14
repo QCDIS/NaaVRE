@@ -80,7 +80,9 @@ jobs:
         fi
 
     - name: Use the result
-      run: echo "The version is: ${{ steps.check_and_truncate.outputs.version }}"
+      shell: bash -l {0}
+      run: |
+        echo "The version is: ${{ steps.check_and_truncate.outputs.version }}"
 
 
     - name: Build docker
