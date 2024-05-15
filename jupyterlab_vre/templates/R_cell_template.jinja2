@@ -4,6 +4,7 @@ setwd('/app')
 
 library(optparse)
 library(jsonlite)
+
 {% for dep in deps%}
 {{ dep }}
 {% endfor %}
@@ -32,35 +33,72 @@ option_list = list(
 {% endfor %}
 
 )
+print("------------------Option list------------------")
+print(option_list)
+
 
 # set input parameters accordingly
 opt = parse_args(OptionParser(option_list=option_list))
 
-{% for in_var in cell.inputs|sort %}
+
+
+var_serialization <- function(var){
+    if (is.null(var)){
+        print("Variable is null")
+        exit(1)
+    }
+    tryCatch(
+        {
+            var <- fromJSON(var)
+            print("Variable deserialized")
+            return(var)
+        },
+        error=function(e) {
+            print("Error while deserializing the variable")
+            print(var)
+            var <- gsub("'", '"', var)
+            var <- fromJSON(var)
+            print("Variable deserialized")
+            return(var)
+        },
+        warning=function(w) {
+            print("Warning while deserializing the variable")
+            var <- gsub("'", '"', var)
+            var <- fromJSON(var)
+            print("Variable deserialized")
+            return(var)
+        }
+    )
+}
+{% for in_var in cell.all_inputs|sort %}
+
+var = opt${{ in_var }}
+var_len = length(var)
+print(paste("Variable {{ in_var }} has length", var_len))
+
 {% if types[in_var] == list  or types[in_var] == 'list' %}
-{{ in_var }} = fromJSON(opt${{ in_var }})
+print("------------------------Running var_serialization for {{ in_var }}-----------------------")
+print(opt${{ in_var }})
+{{ in_var }} = var_serialization(opt${{ in_var }})
+print("---------------------------------------------------------------------------------")
+
 {% elif types[in_var] == str or  types[in_var] == 'str' %}
-{{ in_var }} <- gsub('"', '', opt${{ in_var }})
+{{ in_var }} <- gsub("\"", "", opt${{ in_var }})
 {% else %}
 {{ in_var }} = opt${{ in_var }}
 {% endif %}
 {% endfor %}
 
-{% for param in cell.params|sort %}
-{{ param }} = opt${{ param }}
-{% endfor %}
-
-
 {% for c in confs %}
 {{ c }}
 {% endfor %}
 
-
+print("Running the cell")
 {{ cell.original_source }}
-
 {% if cell.outputs|length > 0 %}
 # capturing outputs
 {% for out in cell.outputs %}
+print('Serialization of {{ out }}')
 file <- file(paste0('/tmp/{{out}}_', id, '.json'))
 writeLines(toJSON({{out}}, auto_unbox=TRUE), file)
 close(file)
