@@ -12,6 +12,7 @@ spec:
         name: workdir
       spec:
         accessModes: [ "ReadWriteMany" ]
+        persistentVolumeReclaimPolicy: Delete
         resources:
           requests:
             storage: {{ workdir_storage_size }}Gi
@@ -19,7 +20,7 @@ spec:
       parameters:
       {% for p, value in global_params.items() %}
       - name: {{ p }}
-        value: {{ value }}
+        value:  "{{ value }}"
       {% endfor %}
     templates:
     - name: {{ workflow_name }}
@@ -133,7 +134,7 @@ spec:
             {% for d in deps_dag[nid] %}
             {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
             {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}
-            {% set stdinname_base = stdinname.split('_')[0] %}
+            {% set stdinname_base = stdinname.split('_')[:-1]|join('_') %}
             --{{ stdinname_base }} '{{ '{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}' }}'
             {% endfor %}
             {% for p in params %}
@@ -154,7 +155,7 @@ spec:
             {% for d in deps_dag[nid] %}
             {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
             {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}
-            {% set stdinname_base = stdinname.split('_')[0] %}
+            {% set stdinname_base = stdinname.split('_')[:-1]|join('_') %}
             --{{ stdinname_base }} '{{ '{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}' }}'
             {% endfor %}
             {% for p in params %}
@@ -172,11 +173,11 @@ spec:
             {% for d in deps_dag[nid] %}
             {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
             {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}
-            {% set stdinname_base = stdinname.split('_')[0] %}
+            {% set stdinname_base = stdinname.split('_')[:-1]|join('_') %}
             --{{ stdinname_base }} '{{ '{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}' }}'
             {% endfor %}
             {% for p in params %}
-            --{{ p }} '{{ '{{workflow.parameters.' }}{{ p }}{{ '}}' }}'
+            --{{ p }} {{ '"{{workflow.parameters.' }}{{ p }}{{ '}}"' }}
             {% endfor %}
             --id {{' '}}{{cells[nid]['node_id']}}{{''}}{{";"}}
         {% elif cells[nid]['kernel'] == 'IRkernel' %}
@@ -184,11 +185,11 @@ spec:
             {% for d in deps_dag[nid] %}
             {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
             {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}
-            {% set stdinname_base = stdinname.split('_')[0] %}
+            {% set stdinname_base = stdinname.split('_')[:-1]|join('_') %}
             --{{ stdinname_base }} '{{ '{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}' }}'
             {% endfor %}
             {% for p in params %}
-            --{{ p }} '{{ '{{workflow.parameters.' }}{{ p }}{{ '}}' }}'
+            --{{ p }} {{ '"{{workflow.parameters.' }}{{ p }}{{ '}}"' }}
             {% endfor %}
             --id {{' '}}{{cells[nid]['node_id']}}{{''}}{{";"}}
         {% endif %}
