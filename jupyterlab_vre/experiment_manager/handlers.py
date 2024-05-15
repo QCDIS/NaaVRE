@@ -35,6 +35,15 @@ def write_workflow_to_file(workflow):
         f.close()
 
 
+def write_argo_workflow_to_file(workflow):
+    Path('/tmp/workflow_cells/argo_workflows').mkdir(parents=True, exist_ok=True)
+    # Generate random file name
+    random_file_name = os.urandom(8).hex()
+    with open('/tmp/workflow_cells/argo_workflows/' + random_file_name + '.yaml', 'w') as f:
+        f.write(yaml.dump(workflow))
+        f.close()
+
+
 class ExportWorkflowHandler(APIHandler):
 
     @web.authenticated
@@ -127,7 +136,7 @@ class ExecuteWorkflowHandler(APIHandler):
         template_env = Environment(
             loader=loader, trim_blocks=True, lstrip_blocks=True)
         template = template_env.get_template('workflow_template_v2.jinja2')
-
+        workflow_name = 'n-a-a-vre'
         if 'JUPYTERHUB_USER' in os.environ:
             workflow_name = 'n-a-a-vre-' + slugify(os.environ['JUPYTERHUB_USER'])
         template = template.render(
@@ -142,7 +151,8 @@ class ExecuteWorkflowHandler(APIHandler):
             workdir_storage_size=get_workdir_storage_size(),
         )
         workflow_doc = yaml.safe_load(template)
-
+        if os.getenv('DEBUG'):
+            write_argo_workflow_to_file(workflow_doc)
         req_body = {
             "vlab": vlab_slug,
             "workflow_payload": {
