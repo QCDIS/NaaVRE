@@ -1,0 +1,145 @@
+{
+    "all_inputs": [
+        "done"
+    ],
+    "base_image": {
+        "build": "ghcr.io/qcdis/naavre/naavre-cell-build-python:v0.9",
+        "runtime": "ghcr.io/qcdis/naavre/naavre-cell-runtime-python:v0.9"
+    },
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "f6ede9d": {
+                "id": "f6ede9d",
+                "ports": {
+                    "done": {
+                        "id": "done",
+                        "properties": {
+                            "color": "#ac8a53"
+                        },
+                        "type": "left"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "inputs": [
+                        "done"
+                    ],
+                    "og_node_id": "f6ede9d",
+                    "outputs": [],
+                    "params": [
+                        "param_string",
+                        "param_string_with_comment",
+                        "param_int",
+                        "param_float",
+                        "param_list_int",
+                        "param_list_str"
+                    ],
+                    "title": "Assert-vars-dev-user-name-domain-com",
+                    "vars": [
+                        {
+                            "color": "#ac8a53",
+                            "direction": "input",
+                            "name": "done",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {
+        "conf_float": "conf_float = 1.1",
+        "conf_int": "conf_int = 1",
+        "conf_list_int": "conf_list_int = [1, 2, 3]",
+        "conf_list_str": "conf_list_str = [\"list_str\", \"space in elem\", \"3\"]",
+        "conf_string": "conf_string = 'param_string value'",
+        "conf_string_with_comment": "conf_string_with_comment = 'param_string value'  # comment"
+    },
+    "container_source": "",
+    "dependencies": [],
+    "inputs": [
+        "done"
+    ],
+    "kernel": "ipython",
+    "node_id": "f6ede9d",
+    "notebook_dict": {
+        "cells": [
+            {
+                "cell_type": "code",
+                "execution_count": 6,
+                "id": "4714702e-978b-4b4c-bd6c-d3e720bad65c",
+                "metadata": {},
+                "outputs": [
+                    {
+                        "name": "stdout",
+                        "output_type": "stream",
+                        "text": "True\nAll variables are the same.\n"
+                    }
+                ],
+                "source": "# Assert vars \nprint(done)\n\ncheck_string = 'param_string value'\ncheck_string_with_comment = 'param_string value'  # comment\ncheck_int = 1\ncheck_float = 1.1\ncheck_list_int = [1, 2, 3]\ncheck_list_str = [\"list_str\", \"space in elem\", \"3\"]\n\nassert conf_string == check_string\nassert conf_string_with_comment == check_string_with_comment\nassert conf_int == check_int\nassert conf_float == check_float\nassert conf_list_int == check_list_int\nassert conf_list_str == check_list_str\n\n\nassert param_string == check_string\nassert param_string_with_comment == check_string_with_comment\nassert param_int == check_int\nassert param_float == check_float\nassert param_list_int == check_list_int\nassert param_list_str == check_list_str\n\nprint(\"All variables are the same.\")"
+            }
+        ],
+        "metadata": {
+            "kernelspec": {
+                "display_name": "python3",
+                "language": "python3",
+                "name": "python3"
+            },
+            "language_info": {
+                "codemirror_mode": {
+                    "name": "ipython",
+                    "version": 3
+                },
+                "file_extension": ".py",
+                "mimetype": "text/x-python",
+                "name": "python",
+                "nbconvert_exporter": "python",
+                "pygments_lexer": "ipython3",
+                "version": "3.11.8"
+            }
+        },
+        "nbformat": 4,
+        "nbformat_minor": 5
+    },
+    "original_source": "conf_string = 'param_string value'\nconf_string_with_comment = 'param_string value'  # comment\nconf_int = 1\nconf_float = 1.1\nconf_list_int = [1, 2, 3]\nconf_list_str = [\"list_str\", \"space in elem\", \"3\"]\nprint(done)\n\ncheck_string = 'param_string value'\ncheck_string_with_comment = 'param_string value'  # comment\ncheck_int = 1\ncheck_float = 1.1\ncheck_list_int = [1, 2, 3]\ncheck_list_str = [\"list_str\", \"space in elem\", \"3\"]\n\nassert conf_string == check_string\nassert conf_string_with_comment == check_string_with_comment\nassert conf_int == check_int\nassert conf_float == check_float\nassert conf_list_int == check_list_int\nassert conf_list_str == check_list_str\n\n\nassert param_string == check_string\nassert param_string_with_comment == check_string_with_comment\nassert param_int == check_int\nassert param_float == check_float\nassert param_list_int == check_list_int\nassert param_list_str == check_list_str\n\nprint(\"All variables are the same.\")",
+    "outputs": [],
+    "param_values": {
+        "param_float": "1.1",
+        "param_int": "1",
+        "param_list_int": "[1, 2, 3]",
+        "param_list_str": "['list_str', 'space in elem', '3']",
+        "param_string": "param_string value",
+        "param_string_with_comment": "param_string value"
+    },
+    "params": [
+        "param_string",
+        "param_string_with_comment",
+        "param_int",
+        "param_float",
+        "param_list_int",
+        "param_list_str"
+    ],
+    "task_name": "assert-vars-dev-user-name-domain-com",
+    "title": "Assert-vars-dev-user-name-domain-com",
+    "types": {
+        "done": "str",
+        "param_float": "float",
+        "param_int": "int",
+        "param_list_int": "list",
+        "param_list_str": "list",
+        "param_string": "str",
+        "param_string_with_comment": "str"
+    },"skip_exec": true
+}

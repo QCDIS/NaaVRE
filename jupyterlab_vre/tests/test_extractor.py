@@ -126,10 +126,14 @@ class TestExtractor(TestCase):
             )
         for notebook_file in notebooks_files:
             cell = extract_cell(notebook_file)
+            print(notebook_file)
             if cell:
                 cell = json.loads(cell)
                 for conf_name in (cell['confs']):
-                    self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
+                    assignment_symbol = '='
+                    if '<-' in cell['confs'][conf_name]:
+                        assignment_symbol = '<-'
+                    self.assertFalse('conf_' in cell['confs'][conf_name].split(assignment_symbol)[1],
                                      'conf_ values should not contain conf_ prefix in '
                                      'assignment')
                 # All params should have matching values

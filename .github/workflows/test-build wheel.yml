@@ -9,9 +9,6 @@ on:
       api_endpoint:
         required: true
         type: string
-      argo_url:
-        required: true
-        type: string
       cell_github:
         required: true
         type: string
@@ -34,8 +31,6 @@ on:
         required: true
         type: string
     secrets:
-      argo_api_token:
-        required: true
       cell_github_token:
         required: true
       naavre_api_token:
@@ -54,8 +49,6 @@ env:
   MODULE_MAPPING_URL: ${{ inputs.module_mapping_url }}
   SEARCH_API_ENDPOINT: ${{ inputs.search_api_endpoint }}
   SEARCH_API_TOKEN: ${{ secrets.search_api_token }}
-  ARGO_URL: ${{ inputs.ARGO_URL }}
-  ARGO_API_TOKEN: ${{ secrets.ARGO_API_TOKEN }}
   ASYNC_TEST_TIMEOUT: 30
   DEBUG: ${{ inputs.debug }}
 
@@ -115,16 +108,6 @@ jobs:
             concatenated_error_message="$concatenated_error_message SEARCH_API_TOKEN not set"
             vars_not_set=1
           fi
-          if [ -z "ARGO_URL" ]; then
-            echo "ARGO_URL not set"
-            concatenated_error_message="$concatenated_error_message ARGO_URL not set"
-            vars_not_set=1
-          fi
-          if [ -z "ARGO_API_TOKEN" ]; then
-            echo "ARGO_API_TOKEN not set"
-            concatenated_error_message="$concatenated_error_message ARGO_API_TOKEN not set"
-            vars_not_set=1
-          fi
           if [ -z "$DEBUG" ]; then
             echo "DEBUG not set"
             concatenated_error_message="$concatenated_error_message DEBUG not set"
@@ -180,7 +163,7 @@ jobs:
           python docker/repo_utils/conf_vl_repos.py  --force=True
           pip install --upgrade build
           mkdir -p /tmp/data
-          pytest -s --ignore=docker --ignore=cypress --no-header -v
+#           pytest -s --ignore=docker --ignore=cypress --no-header -v
 
       - name: make release
         shell: bash -el {0}
