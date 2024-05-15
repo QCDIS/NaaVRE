@@ -20,7 +20,7 @@ spec:
       parameters:
       {% for p, value in global_params.items() %}
       - name: {{ p }}
-        value: '{{ value }}'
+        value:  "{{ value }}"
       {% endfor %}
     templates:
     - name: {{ workflow_name }}
@@ -177,7 +177,7 @@ spec:
             --{{ stdinname_base }} '{{ '{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}' }}'
             {% endfor %}
             {% for p in params %}
-            --{{ p }} '{{ '{{workflow.parameters.' }}{{ p }}{{ '}}' }}'
+            --{{ p }} {{ '"{{workflow.parameters.' }}{{ p }}{{ '}}"' }}
             {% endfor %}
             --id {{' '}}{{cells[nid]['node_id']}}{{''}}{{";"}}
         {% elif cells[nid]['kernel'] == 'IRkernel' %}
@@ -189,7 +189,7 @@ spec:
             --{{ stdinname_base }} '{{ '{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}' }}'
             {% endfor %}
             {% for p in params %}
-            --{{ p }} '{{ '{{workflow.parameters.' }}{{ p }}{{ '}}' }}'
+            --{{ p }} {{ '"{{workflow.parameters.' }}{{ p }}{{ '}}"' }}
             {% endfor %}
             --id {{' '}}{{cells[nid]['node_id']}}{{''}}{{";"}}
         {% endif %}

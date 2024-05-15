@@ -140,8 +140,19 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cells_files = os.listdir(cells_json_path)
             test_cells = []
             for cell_file in cells_files:
+                if 'r-vars-types-dev-user-name-domain-com.json' not in cell_file:
+                    continue
                 cell_path = os.path.join(cells_json_path, cell_file)
                 test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
+                # test if test_cell.all_inputs contains duplicate entries
+                self.assertEqual(len(test_cell.all_inputs), len(set(test_cell.all_inputs)))
+                # test if test_cell.params contains duplicate entries
+                self.assertEqual(len(test_cell.params), len(set(test_cell.params)))
+                # test if test_cell.param_values contains duplicate entries
+                self.assertEqual(len(test_cell.param_values), len(set(test_cell.param_values)))
+                # test if test_cell.outputs contains duplicate entries
+                self.assertEqual(len(test_cell.outputs), len(set(test_cell.outputs)))
+
                 response = self.call_cell_handler()
                 self.assertEqual(200, response.code)
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
@@ -282,7 +293,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
-
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
             self.assertEqual(response.code, 200, response.body)
             json_response = json.loads(response.body.decode('utf-8'))

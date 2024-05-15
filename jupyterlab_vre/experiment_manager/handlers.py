@@ -34,6 +34,14 @@ def write_workflow_to_file(workflow):
         f.write(json.dumps(workflow, indent=2))
         f.close()
 
+def write_argo_workflow_to_file(workflow):
+    Path('/tmp/workflow_cells/argo_workflows').mkdir(parents=True, exist_ok=True)
+    # Generate random file name
+    random_file_name = os.urandom(8).hex()
+    with open('/tmp/workflow_cells/argo_workflows/' + random_file_name + '.yaml', 'w') as f:
+        f.write(yaml.dump(workflow))
+        f.close()
+
 
 def write_argo_workflow_to_file(workflow):
     Path('/tmp/workflow_cells/argo_workflows').mkdir(parents=True, exist_ok=True)

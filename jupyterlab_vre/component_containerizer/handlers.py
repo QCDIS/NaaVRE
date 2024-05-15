@@ -540,6 +540,8 @@ class CellsHandler(APIHandler, Catalog):
             repository=gh_repository,
             files_info=files_info,
             )
+        if not image_version:
+            raise Exception('Error! image_version not set')
         wf_id = str(uuid.uuid4())
 
         if os.getenv('DEBUG') and os.getenv('DEBUG').lower() == 'true':
@@ -609,6 +611,8 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
                 files_updated = True
             if f_type == 'cell':
                 code_content_hash = local_hash
+    if not code_content_hash:
+        logger.warning('code_content_hash not set')
     return files_updated, code_content_hash
 
 
