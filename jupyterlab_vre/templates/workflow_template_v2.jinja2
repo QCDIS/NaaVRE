@@ -12,6 +12,7 @@ spec:
         name: workdir
       spec:
         accessModes: [ "ReadWriteMany" ]
+        persistentVolumeReclaimPolicy: Delete
         resources:
           requests:
             storage: {{ workdir_storage_size }}Gi
