@@ -44,10 +44,8 @@ jobs:
       module_mapping_url: ${{ vars.MODULE_MAPPING_URL }}
       search_api_endpoint: ${{ vars.SEARCH_API_ENDPOINT }}
       registry_url: ${{ vars.REGISTRY_URL }}
-      argo_url: ${{ vars.ARGO_URL }}
       debug: ${{ vars.DEBUG }}
     secrets:
-      argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
       cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
       naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
       search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
