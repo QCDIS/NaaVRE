@@ -15,7 +15,7 @@ on:
       debug:
         required: true
         type: string
-      group:
+      context:
         required: true
         type: string
       jupyterhub_user:
@@ -75,10 +75,10 @@ jobs:
           activate-environment: jupyterlab
           use-mamba: true
 
-      - name: print group
+      - name: print context
         shell: bash -l {0}
         run: |
-          echo ${{ matrix.group }}
+          echo ${{ matrix.context }}
 
       - name: Cache Conda environment
         uses: actions/cache@v4
