@@ -399,7 +399,10 @@ class RExtractor(Extractor):
         resolved_configurations = {}
         max_depth = 50
         for k, assignment in configurations.items():
-            while 'conf_' in assignment.split('=')[1]:
+            assignment_symbol = '='
+            if '<-' in assignment:
+                assignment_symbol = '<-'
+            while 'conf_' in assignment.split(assignment_symbol)[1]:
                 max_depth -= 1
                 for conf_name, replacing_assignment in configurations.items():
                     if conf_name in assignment.split('=')[1]:
