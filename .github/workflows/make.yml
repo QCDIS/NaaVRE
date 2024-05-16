@@ -85,7 +85,7 @@ jobs:
 
   make-release:
     uses: ./.github/workflows/make-release.yml
-    needs: [configure-workflow,call-pytest]
+    needs: [configure-workflow,call-pytest,lint,check_secrets_and_variables]
     if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
     with:
       runs-on: ${{ needs.configure-workflow.outputs.runner }}
