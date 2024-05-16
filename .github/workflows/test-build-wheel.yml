@@ -78,7 +78,7 @@ jobs:
       - name: print group
         shell: bash -l {0}
         run: |
-          echo ${{ group }}
+          echo ${{ inputs.group }}
 
       - name: Cache Conda environment
         uses: actions/cache@v4
