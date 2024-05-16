@@ -61,7 +61,7 @@ jobs:
       runs-on: ${{ needs.configure-workflow.outputs.runner }}
 
   call-pytest:
-    uses: ./.github/workflows/test-build-wheel.yml
+    uses: ./.github/workflows/run-tests.yml
     needs: [configure-workflow]
     if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
 #     strategy:

@@ -1,4 +1,4 @@
-name: Build wheel
+name: Run tests
 
 on:
   workflow_call:
@@ -104,21 +104,3 @@ jobs:
           pip install --upgrade build
           mkdir -p /tmp/data
           pytest  -s --ignore=docker --ignore=cypress --no-header -v
-
-      - name: make release
-        shell: bash -el {0}
-        run: make release
-
-      - name: 'Upload wheel artifact'
-        uses: actions/upload-artifact@v3
-        with:
-          name: jupyterlab_vre
-          path: dist/jupyterlab_vre-0.1.0-py3-none-any.whl
-
-      - name: Print conda environment
-        shell: bash -el {0}
-        run: conda env export
-
-      - name: Print conda yarn.lock
-        shell: bash -el {0}
-        run: cat yarn.lock
