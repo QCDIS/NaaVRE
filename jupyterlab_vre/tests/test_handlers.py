@@ -315,57 +315,55 @@ class HandlersAPITest(AsyncHTTPTestCase):
         return response
 
     def test_files_updated(self):
-        sleep(5)
-        self.assertTrue(True)
-        # with mock.patch.object(CellsHandler, 'get_secure_cookie') as m:
-        #     m.return_value = 'cookie'
-        #     cells_json_path = os.path.join(base_path, 'cells')
-        #     cells_files = os.listdir(cells_json_path)
-        #     saved_debug_value = os.getenv("DEBUG")
-        #     for cell_file in cells_files:
-        #         cell_path = os.path.join(cells_json_path, cell_file)
-        #
-        #         # Commit cell
-        #         os.environ["DEBUG"] = "False"
-        #         create_cell_and_add_to_cat(cell_path=cell_path)
-        #         response = self.call_cell_handler()
-        #         self.assertEqual(200, response.code)
-        #
-        #         # Commit same cell again
-        #         os.environ["DEBUG"] = "False"
-        #         create_cell_and_add_to_cat(cell_path=cell_path)
-        #         response = self.call_cell_handler()
-        #         self.assertEqual(200, response.code)
-        #         dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
-        #         self.assertFalse(dispatched_github_workflow)
-        #
-        #         # Commit same cell again, forcing update
-        #         os.environ["DEBUG"] = "True"
-        #         create_cell_and_add_to_cat(cell_path=cell_path)
-        #         response = self.call_cell_handler()
-        #         self.assertEqual(200, response.code)
-        #         dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
-        #         self.assertTrue(dispatched_github_workflow)
-        #
-        #         # Commit modified cell
-        #         _, new_cell = create_cell_and_add_to_cat(cell_path=cell_path)
-        #         new_cell['original_source'] += f'\na = {random.random()}'
-        #         with open(cell_path, 'r') as f:
-        #             saved_cell_text = f.read()
-        #         try:
-        #             with open(cell_path, 'w') as file:
-        #                 json.dump(new_cell, file, indent=2)
-        #             os.environ["DEBUG"] = "False"
-        #             create_cell_and_add_to_cat(cell_path=cell_path)
-        #             response = self.call_cell_handler()
-        #             self.assertEqual(200, response.code)
-        #             dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
-        #             self.assertTrue(dispatched_github_workflow)
-        #         finally:
-        #             with open(cell_path, 'w') as f:
-        #                 f.write(saved_cell_text)
-        #
-        # if saved_debug_value is not None:
-        #     os.environ["DEBUG"] = saved_debug_value
-        # else:
-        #     del os.environ["DEBUG"]
+        with mock.patch.object(CellsHandler, 'get_secure_cookie') as m:
+            m.return_value = 'cookie'
+            cells_json_path = os.path.join(base_path, 'cells')
+            cells_files = os.listdir(cells_json_path)
+            saved_debug_value = os.getenv("DEBUG")
+            for cell_file in cells_files:
+                cell_path = os.path.join(cells_json_path, cell_file)
+
+                # Commit cell
+                os.environ["DEBUG"] = "False"
+                create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+
+                # Commit same cell again
+                os.environ["DEBUG"] = "False"
+                create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+                dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                self.assertFalse(dispatched_github_workflow)
+
+                # Commit same cell again, forcing update
+                os.environ["DEBUG"] = "True"
+                create_cell_and_add_to_cat(cell_path=cell_path)
+                response = self.call_cell_handler()
+                self.assertEqual(200, response.code)
+                dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                self.assertTrue(dispatched_github_workflow)
+
+                # Commit modified cell
+                _, new_cell = create_cell_and_add_to_cat(cell_path=cell_path)
+                new_cell['original_source'] += f'\na = {random.random()}'
+                with open(cell_path, 'r') as f:
+                    saved_cell_text = f.read()
+                try:
+                    with open(cell_path, 'w') as file:
+                        json.dump(new_cell, file, indent=2)
+                    os.environ["DEBUG"] = "False"
+                    create_cell_and_add_to_cat(cell_path=cell_path)
+                    response = self.call_cell_handler()
+                    self.assertEqual(200, response.code)
+                    dispatched_github_workflow = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+                    self.assertTrue(dispatched_github_workflow)
+                finally:
+                    with open(cell_path, 'w') as f:
+                        f.write(saved_cell_text)
+
+        if saved_debug_value is not None:
+            os.environ["DEBUG"] = saved_debug_value
+        else:
+            del os.environ["DEBUG"]

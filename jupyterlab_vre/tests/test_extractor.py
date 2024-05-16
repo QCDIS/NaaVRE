@@ -120,33 +120,36 @@ class TestExtractor(TestCase):
         'param_string_with_comment': 'param_string value',
         }
 
+
     def test_extract_cell(self):
-        sleep(5)
-        self.assertTrue(True)
-        # notebooks_json_path = os.path.join(base_path, 'notebooks')
-        # notebooks_files = glob.glob(
-        #     os.path.join(notebooks_json_path, "*.json")
-        #     )
-        # for notebook_file in notebooks_files:
-        #     cell = extract_cell(notebook_file)
-        #     if cell:
-        #         cell = json.loads(cell)
-        #         for conf_name in (cell['confs']):
-        #             self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
-        #                              'conf_ values should not contain conf_ prefix in '
-        #                              'assignment')
-        #         # All params should have matching values
-        #         for param_name in cell['params']:
-        #             self.assertTrue(param_name in cell['param_values'])
-        #
-        #         # For notebook_file test_param_values_*.json, extracted params
-        #         # should match with self.param_values_ref
-        #         if (os.path.basename(notebook_file) in
-        #                 ['test_param_values_Python.json',
-        #                  'test_param_values_R.json',
-        #                  ]):
-        #             for param_name in cell['params']:
-        #                 self.assertTrue(
-        #                     cell['param_values'][param_name] ==
-        #                     self.param_values_ref[param_name]
-        #                     )
+        notebooks_json_path = os.path.join(base_path, 'notebooks')
+        notebooks_files = glob.glob(
+            os.path.join(notebooks_json_path, "*.json")
+            )
+        for notebook_file in notebooks_files:
+            cell = extract_cell(notebook_file)
+            print(notebook_file)
+            if cell:
+                cell = json.loads(cell)
+                for conf_name in (cell['confs']):
+                    assignment_symbol = '='
+                    if '<-' in cell['confs'][conf_name]:
+                        assignment_symbol = '<-'
+                    self.assertFalse('conf_' in cell['confs'][conf_name].split(assignment_symbol)[1],
+                                     'conf_ values should not contain conf_ prefix in '
+                                     'assignment')
+                # All params should have matching values
+                for param_name in cell['params']:
+                    self.assertTrue(param_name in cell['param_values'])
+
+                # For notebook_file test_param_values_*.json, extracted params
+                # should match with self.param_values_ref
+                if (os.path.basename(notebook_file) in
+                        ['test_param_values_Python.json',
+                         'test_param_values_R.json',
+                         ]):
+                    for param_name in cell['params']:
+                        self.assertTrue(
+                            cell['param_values'][param_name] ==
+                            self.param_values_ref[param_name]
+                            )
