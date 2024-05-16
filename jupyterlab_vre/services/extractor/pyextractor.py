@@ -10,6 +10,30 @@ from pytype.tools.annotate_ast import annotate_ast
 from .extractor import Extractor
 
 
+class PyConfAssignmentTransformer(ast.NodeTransformer):
+
+    def __init__(self, configurations):
+        # get the 'value' side of configuration assignments
+        self.conf_values = {
+            k: ast.parse(v).body[0].value
+            for k, v in configurations.items()
+            }
+
+    def visit_Assign(self, node):
+        # visit the 'value' side of assignments (*<node.targets> = node.value)
+        node.value = self.generic_visit(node.value)
+        return node
+
+    def visit_Name(self, node):
+        # replace variable names starting with 'conf_' by their value
+        if not node.id.startswith('conf_'):
+            return node
+        if node.id not in self.conf_values:
+            raise ValueError(f'{node.id} is not defined')
+        # Recursively call self.visit() to replace names in dropped-in values
+        return self.visit(self.conf_values[node.id])
+
+
 class PyExtractor(Extractor):
     sources: list
     imports: dict
@@ -248,16 +272,11 @@ class PyExtractor(Extractor):
         return confs
 
     def __resolve_configurations(self, configurations):
-        resolved_configurations = {}
-        for k, assignment in configurations.items():
-            while 'conf_' in assignment.split('=')[1]:
-                for conf_name, replacing_assignment in configurations.items():
-                    if conf_name in assignment.split('=')[1]:
-                        assignment = assignment.replace(
-                            conf_name,
-                            replacing_assignment.split('=')[1],
-                            )
-                resolved_configurations[k] = assignment
+        assignment_transformer = PyConfAssignmentTransformer(configurations)
+        resolved_configurations = {
+            k: ast.unparse(assignment_transformer.visit(ast.parse(v)))
+            for k, v in configurations.items()
+            }
         configurations.update(resolved_configurations)
         return configurations
 
