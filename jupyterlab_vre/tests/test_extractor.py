@@ -28,12 +28,12 @@ def create_cell(payload_path=None):
 
     cell_index = payload['cell_index']
     notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-    if payload['kernel'] == "IRkernel":
-        extractor = RExtractor(notebook)
-    else:
-        extractor = PyExtractor(notebook)
-
     source = notebook.cells[cell_index].source
+    if payload['kernel'] == "IRkernel":
+        extractor = RExtractor(notebook, source)
+    else:
+        extractor = PyExtractor(notebook, source)
+
     title = source.partition('\n')[0]
     title = slugify(title) if title and title[
         0] == "#" else "Untitled"
@@ -50,11 +50,11 @@ def create_cell(payload_path=None):
     # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(
     # source)'
     if notebook.cells[cell_index].cell_type == 'code':
-        ins = extractor.infer_cell_inputs(source)
-        outs = extractor.infer_cell_outputs(source)
+        ins = extractor.infer_cell_inputs()
+        outs = extractor.infer_cell_outputs()
 
-        confs = extractor.extract_cell_conf_ref(source)
-        dependencies = extractor.infer_cell_dependencies(source, confs)
+        confs = extractor.extract_cell_conf_ref()
+        dependencies = extractor.infer_cell_dependencies(confs)
 
     node_id = str(uuid.uuid4())[:7]
     cell = Cell(
@@ -126,10 +126,14 @@ class TestExtractor(TestCase):
             )
         for notebook_file in notebooks_files:
             cell = extract_cell(notebook_file)
+            print(notebook_file)
             if cell:
                 cell = json.loads(cell)
                 for conf_name in (cell['confs']):
-                    self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
+                    assignment_symbol = '='
+                    if '<-' in cell['confs'][conf_name]:
+                        assignment_symbol = '<-'
+                    self.assertFalse('conf_' in cell['confs'][conf_name].split(assignment_symbol)[1],
                                      'conf_ values should not contain conf_ prefix in '
                                      'assignment')
                 # All params should have matching values
