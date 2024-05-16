@@ -102,7 +102,9 @@ jobs:
         run: make release
 
       - name: print group
-        run: echo ${{ github.event.inputs.group }}"
+        shell: bash -l {0}
+        run: |
+            echo ${{ github.event.inputs.group }}"
 
       - name: 'Upload wheel artifact'
         uses: actions/upload-artifact@v3
