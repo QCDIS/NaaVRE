@@ -1,3 +1,4 @@
+import ast
 import glob
 import json
 import logging
@@ -76,6 +77,11 @@ def create_cell(payload_path=None):
         cell.add_params(params)
         cell.add_param_values(params)
 
+    # Add metadata for tests
+    cell.test_meta = {
+        'extractor_name': extractor.__class__.__name__,
+        }
+
     return cell
 
 
@@ -109,6 +115,20 @@ def extract_cell(payload_path):
     return None
 
 
+class PyAssertNoConfInAssign(ast.NodeVisitor):
+
+    def __init__(self, msg):
+        self.msg = msg
+
+    def visit_Assign(self, node):
+        # visit the 'value' side of assignments (*<node.targets> = node.value)
+        self.generic_visit(node.value)
+
+    def visit_Name(self, node):
+        # return if a variable named conf_* is found
+        assert not node.id.startswith('conf_'), self.msg
+
+
 class TestExtractor(TestCase):
 
     # Reference parameter values for `test_param_values_*.json`
@@ -131,14 +151,18 @@ class TestExtractor(TestCase):
             print(notebook_file)
             if cell:
                 cell = json.loads(cell)
-                for conf_name in (cell['confs']):
+                for conf_name, conf_value in cell['confs'].items():
                     assignment_symbol = '='
-                    if '<-' in cell['confs'][conf_name]:
+                    if '<-' in conf_value:
                         assignment_symbol = '<-'
-                    self.assertFalse('conf_' in cell['confs'][conf_name].split(assignment_symbol)[1],
-                                     'conf_ values should not contain conf_ prefix in '
-                                     'assignment')
-                # All params should have matching values
+                    msg = ('conf_ values should not contain conf_ prefix '
+                           'in assignment')
+                    if cell['test_meta']['extractor_name'] == 'PyExtractor':
+                        PyAssertNoConfInAssign(msg).visit(ast.parse(conf_value))
+                    else:
+                        self.assertFalse(
+                            'conf_' in conf_value.split(assignment_symbol)[1],
+                            msg)
                 for param_name in cell['params']:
                     self.assertTrue(param_name in cell['param_values'])
 
