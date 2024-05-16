@@ -15,6 +15,9 @@ on:
       debug:
         required: true
         type: string
+      group:
+        required: true
+        type: integer
       jupyterhub_user:
         required: true
         type: string
@@ -72,6 +75,11 @@ jobs:
           activate-environment: jupyterlab
           use-mamba: true
 
+      - name: print group
+        shell: bash -l {0}
+        run: |
+          echo ${{ matrix.group }}
+
       - name: Cache Conda environment
         uses: actions/cache@v4
         with:
@@ -101,10 +109,7 @@ jobs:
         shell: bash -el {0}
         run: make release
 
-      - name: print group
-        shell: bash -l {0}
-        run: |
-          echo ${{ github.event.inputs.group }}
+
 
       - name: 'Upload wheel artifact'
         uses: actions/upload-artifact@v3

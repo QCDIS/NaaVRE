@@ -77,6 +77,7 @@ jobs:
       search_api_endpoint: ${{ vars.SEARCH_API_ENDPOINT }}
       registry_url: ${{ vars.REGISTRY_URL }}
       debug: ${{ vars.DEBUG }}
+      group: ${{ matrix.group }}
     secrets:
       cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
       naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
