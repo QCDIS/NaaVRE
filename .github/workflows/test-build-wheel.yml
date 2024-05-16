@@ -54,7 +54,7 @@ env:
 
 
 jobs:
-  build-linux:
+  build-wheel:
     runs-on: ${{ inputs.runs-on }}
     strategy:
       fail-fast: true
