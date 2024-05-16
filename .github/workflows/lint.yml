@@ -36,16 +36,16 @@ jobs:
             conda-environment-${{ runner.os }}-
         id: cache-conda
 
-# #      - name: Update environment
-# #        if: steps.cache-conda.outputs.cache-hit != 'true'
-# #        run:
-# #          mamba env update -n jupyterlab -f environment.yml
-#
-#       - name: Lint with flake8
-#         shell: bash -l {0}
-#         run: |
-#           conda activate jupyterlab
-#           # stop the build if there are Python syntax errors or undefined names
-#           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-#           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-#           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+#      - name: Update environment
+#        if: steps.cache-conda.outputs.cache-hit != 'true'
+#        run:
+#          mamba env update -n jupyterlab -f environment.yml
+
+      - name: Lint with flake8
+        shell: bash -l {0}
+        run: |
+          conda activate jupyterlab
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
