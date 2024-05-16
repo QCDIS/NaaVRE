@@ -17,7 +17,7 @@ on:
         type: string
       group:
         required: true
-        type: integer
+        type: string
       jupyterhub_user:
         required: true
         type: string
