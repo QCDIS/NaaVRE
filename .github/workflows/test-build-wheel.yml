@@ -15,9 +15,9 @@ on:
       debug:
         required: true
         type: string
-      group:
-        required: true
-        type: string
+#       group:
+#         required: true
+#         type: string
       jupyterhub_user:
         required: true
         type: string
@@ -103,7 +103,7 @@ jobs:
           python docker/repo_utils/conf_vl_repos.py  --force=True
           pip install --upgrade build
           mkdir -p /tmp/data
-          pytest  -s --ignore=docker --ignore=cypress --no-header -v --cov --splits 2 --group ${{ inputs.group }}
+          pytest  -s --ignore=docker --ignore=cypress --no-header -v
 
       - name: make release
         shell: bash -el {0}
