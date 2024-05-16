@@ -15,9 +15,6 @@ on:
       debug:
         required: true
         type: string
-      group:
-        required: true
-        type: string
       jupyterhub_user:
         required: true
         type: string
