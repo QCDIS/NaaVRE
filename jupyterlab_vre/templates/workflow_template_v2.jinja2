@@ -37,7 +37,6 @@ spec:
           dependencies: [{{ task_name }}]
           template: {{ task_name }}-server-tmp
         {% endif %} #}
-    
         - name: {{ task_name }}
           {% if deps_dag[nid]|length > 0 %}
           dependencies: [{% for d in deps_dag[nid] %} {{ d['task_name'] }}{% if not loop.last %},{% endif %} {% endfor %}]
