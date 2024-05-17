@@ -140,8 +140,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cells_files = os.listdir(cells_json_path)
             test_cells = []
             for cell_file in cells_files:
-                if 'r-vars-types-dev-user-name-domain-com.json' not in cell_file:
-                    continue
                 cell_path = os.path.join(cells_json_path, cell_file)
                 test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
                 # test if test_cell.all_inputs contains duplicate entries
