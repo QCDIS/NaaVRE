@@ -101,6 +101,7 @@ expr
     | 'NaN' # nan
     | 'TRUE' # true
     | 'FALSE' # false
+    | '.' # dot // Temp fix for bquote().
     ;
 
 exprlist

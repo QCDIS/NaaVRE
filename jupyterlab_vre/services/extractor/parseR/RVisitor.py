@@ -44,6 +44,11 @@ class RVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by RParser#dot.
+    def visitDot(self, ctx:RParser.DotContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by RParser#addsub.
     def visitAddsub(self, ctx:RParser.AddsubContext):
         return self.visitChildren(ctx)

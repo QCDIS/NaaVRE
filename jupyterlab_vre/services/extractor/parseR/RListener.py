@@ -71,6 +71,15 @@ class RListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by RParser#dot.
+    def enterDot(self, ctx:RParser.DotContext):
+        pass
+
+    # Exit a parse tree produced by RParser#dot.
+    def exitDot(self, ctx:RParser.DotContext):
+        pass
+
+
     # Enter a parse tree produced by RParser#addsub.
     def enterAddsub(self, ctx:RParser.AddsubContext):
         pass
