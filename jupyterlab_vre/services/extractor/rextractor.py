@@ -114,6 +114,9 @@ class RExtractor(Extractor):
     def __init__(self, notebook, cell_source):
         self.sources = [nbcell.source for nbcell in notebook.cells if
                         nbcell.cell_type == 'code' and len(nbcell.source) > 0]
+        self.notebook_names = self.__extract_cell_names(
+            '\n'.join(self.sources)
+        )
 
         self.imports = self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
@@ -175,92 +178,92 @@ class RExtractor(Extractor):
     def __extract_configurations(self, sources):
         configurations = {}
         for s in sources:
-            parsed_expr = base.parse(text=s, keep_source=True)
-            parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
-            lines = s.splitlines()
-
-            # loop through all assignment variables
-            assignment_variables = self.assignment_variables(s)
-            for variable in assignment_variables:
-
-                # the prefix should be 'conf'
-                if not (variable.split("_")[0] == "conf"):
-                    continue
-
-                # find the line of the assignment. (TODO) this approach assumes that there is only one expression in one line.
-                # this might not work when we have something like: a <- 3; b = 7
-                for line in lines:
-                    matches = re.findall(r'{}\s*(=|<-)'.format(variable), line)
-
-                    if len(matches) > 0 and variable not in configurations:
-                        configurations[variable] = line
-                        break
+            # parsed_expr = base.parse(text=s, keep_source=True)
+            # parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
+            # lines = s.splitlines()
+            #
+            # # loop through all assignment variables
+            # assignment_variables = self.assignment_variables(s)
+            # for variable in assignment_variables:
+            #
+            #     # the prefix should be 'conf'
+            #     if not (variable.split("_")[0] == "conf"):
+            #         continue
+            #
+            #     # find the line of the assignment. (TODO) this approach assumes that there is only one expression in one line.
+            #     # this might not work when we have something like: a <- 3; b = 7
+            #     for line in lines:
+            #         matches = re.findall(r'{}\s*(=|<-)'.format(variable), line)
+            #
+            #         if len(matches) > 0 and variable not in configurations:
+            #             configurations[variable] = line
+            #             break
 
             '''AST parsing'''
-            # tree = parse_text(s)
-            # visitor = ExtractConfigs()
-            # output = visitor.visit(tree)
-            #
-            # for o in output:
-            #     configurations[o] = output[o]
+            tree = parse_text(s)
+            visitor = ExtractConfigs()
+            output = visitor.visit(tree)
+
+            for o in output:
+                configurations[o] = output[o]
 
         return configurations
 
     def __extract_params(self, sources):  # check source https://adv-r.hadley.nz/expressions.html)
         params = {}
         for s in sources:
-            lines = s.splitlines()
+        #     lines = s.splitlines()
 
-            '''Approach 1: Naive way
-            Find all variable assignments with a prefix of "param"'''
+            # '''Approach 1: Naive way
+            # Find all variable assignments with a prefix of "param"'''
             # pattern = r"param_[a-zA-Z0-9_]{0,}"
             # matches = re.findall(pattern, s)
             # Extract the variable names from the matches
             # for match in matches:
             # params.add(match)
 
-            '''Approach 2: Look at the AST'''
-            assignment_variables = self.assignment_variables(s)
-            for variable in assignment_variables:
-
-                # the prefix should be 'param'
-                if not (variable.split("_")[0] == "param"):
-                    continue
-
-                # find the line of the assignment. (TODO) this approach assumes that there is only one expression in one line.
-                # this might not work when we have something like: a <- 3; b = 7
-                param_value = ''
-                for line in lines:
-                    m = re.match(r'{}\s*(?:=|<-)(.*?)\s*(#.*?)?$'.format(variable), line)
-                    if m:
-                        param_value = m.group(1).strip(" \"' ")
-
-                params[variable] = {
-                    'name': variable,
-                    'type': None,
-                    'value': param_value,
-                }
-
-            '''AST parsing'''
-            # tree = parse_text(s)
-            # visitor = ExtractParams()
-            # output = visitor.visit(tree)
+            # '''Approach 2: Look at the AST'''
+            # assignment_variables = self.assignment_variables(s)
+            # for variable in assignment_variables:
             #
-            # for o in output:
-            #     params[o] = {
-            #         'name': o,
-            #         'type': output[o]['type'],
-            #         'value': output[o]['val']
+            #     # the prefix should be 'param'
+            #     if not (variable.split("_")[0] == "param"):
+            #         continue
+            #
+            #     # find the line of the assignment. (TODO) this approach assumes that there is only one expression in one line.
+            #     # this might not work when we have something like: a <- 3; b = 7
+            #     param_value = ''
+            #     for line in lines:
+            #         m = re.match(r'{}\s*(?:=|<-)(.*?)\s*(#.*?)?$'.format(variable), line)
+            #         if m:
+            #             param_value = m.group(1).strip(" \"' ")
+            #
+            #     params[variable] = {
+            #         'name': variable,
+            #         'type': self.notebook_names[variable]['type'],
+            #         'value': param_value,
             #     }
+            '''AST parsing'''
+            tree = parse_text(s)
+            visitor = ExtractParams()
+            output = visitor.visit(tree)
+
+            for o in output:
+                params[o] = {
+                    'name': o,
+                    'type': self.notebook_names[o]['type'],
+                    'value': output[o]['val']
+                }
 
         return params
 
     def infer_cell_outputs(self):
         cell_names = self.__extract_cell_names(self.cell_source)
+        cell_undef = self.__extract_cell_undefined(self.cell_source)
         return {
             name: properties
             for name, properties in cell_names.items()
-            if name not in self.__extract_cell_undefined(self.cell_source)
+            if name not in cell_undef
                and name not in self.imports
                and name in self.undefined
                and name not in self.configurations
@@ -329,37 +332,40 @@ class RExtractor(Extractor):
         return result
 
     def __extract_cell_names(self, cell_source):
-        parsed_r = robjects.r['parse'](text=cell_source)
-        vars_r = robjects.r['all.vars'](parsed_r)
-
-        # Challenge 1: Function Parameters
-        function_parameters = self.get_function_parameters(cell_source)
-        vars_r = list(filter(lambda x: x not in function_parameters, vars_r))
-
-        # Challenge 2: Built-in Constants
-        built_in_cons = ["T", "F", "pi", "is.numeric", "mu", "round"]
-        vars_r = list(filter(lambda x: x not in built_in_cons, vars_r))
-
-        # Challenge 3: Iterator Variables
-        iterator_variables = self.get_iterator_variables(cell_source)
-        vars_r = list(filter(lambda x: x not in iterator_variables, vars_r))
-
-        # Challenge 4: Apply built-in functions
-        # MANUALLY SOLVED
-
-        # Challenge 5: Libraries
-        vars_r = list(filter(lambda x: x not in self.imports, vars_r))
-
-        # Challenge 6: Variable-based data access
-        # MANUALLY SOLVED
-
-        vars_r = {
-            name: {
-                'name': name,
-                'type': None,
-            }
-            for name in vars_r
-        }
+        # parsed_r = robjects.r['parse'](text=cell_source)
+        # vars_r = robjects.r['all.vars'](parsed_r)
+        #
+        # # Challenge 1: Function Parameters
+        # function_parameters = self.get_function_parameters(cell_source)
+        # vars_r = list(filter(lambda x: x not in function_parameters, vars_r))
+        #
+        # # Challenge 2: Built-in Constants
+        # built_in_cons = ["T", "F", "pi", "is.numeric", "mu", "round"]
+        # vars_r = list(filter(lambda x: x not in built_in_cons, vars_r))
+        #
+        # # Challenge 3: Iterator Variables
+        # iterator_variables = self.get_iterator_variables(cell_source)
+        # vars_r = list(filter(lambda x: x not in iterator_variables, vars_r))
+        #
+        # # Challenge 4: Apply built-in functions
+        # # MANUALLY SOLVED
+        #
+        # # Challenge 5: Libraries
+        # vars_r = list(filter(lambda x: x not in self.imports, vars_r))
+        #
+        # # Challenge 6: Variable-based data access
+        # # MANUALLY SOLVED
+        #
+        # vars_r = {
+        #     name: {
+        #         'name': name,
+        #         'type': None,
+        #     }
+        #     for name in vars_r
+        # }
+        tree = parse_text(cell_source)
+        visitor = ExtractNames()
+        vars_r = visitor.visit(tree)
 
         return vars_r
 
@@ -404,20 +410,36 @@ class RExtractor(Extractor):
 
     def __extract_cell_undefined(self, cell_source):
         # Approach 1: get all vars and substract the ones with the approach as in
-        cell_names = self.__extract_cell_names(cell_source)
-        assignment_variables = self.assignment_variables(cell_source)
-        undef_vars = set(cell_names).difference(set(assignment_variables))
+        # cell_names = self.__extract_cell_names(cell_source)
+        # assignment_variables = self.assignment_variables(cell_source)
+        # undef_vars = set(cell_names).difference(set(assignment_variables))
 
         # Approach 2: (TODO) dynamic analysis approach. this is complex for R as functions
         # as they are not scoped (which is the case in python). As such, we might have to include
         # all the libraries to make sure that those functions work
 
+        # undef_vars = {
+        #     name: {
+        #         'name': name,
+        #         'type': None,
+        #     }
+        #     for name in undef_vars
+        # }
+        #
+        # return undef_vars
+
+        tree = parse_text(cell_source)
+        visitor = ExtractDefined()
+        defs = visitor.visit(tree)
+        visitor = ExtractUndefined(defs)
+        undefs = visitor.visit(tree)
+
         undef_vars = {
             name: {
                 'name': name,
-                'type': None,
+                'type': self.notebook_names[name]['type'],
             }
-            for name in undef_vars
+            for name in undefs
         }
 
         return undef_vars
