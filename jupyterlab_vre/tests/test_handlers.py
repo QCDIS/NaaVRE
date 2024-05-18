@@ -263,6 +263,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cat_repositories = Catalog.get_repositories()
             repo = cat_repositories[0]
             repo_token = repo['token']
+
             owner, repository_name = repo['url'].removeprefix('https://github.com/').split('/')
             job = wait_for_job(
                 wf_id=git_wf_id,
