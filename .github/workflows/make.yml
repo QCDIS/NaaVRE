@@ -31,9 +31,61 @@ jobs:
           fallback-runner: ubuntu-latest
           github-token: ${{ secrets.RUNNER_ACCESS_TOKEN }}
 
-  call-pytest:
-    uses: ./.github/workflows/test-build wheel.yml
+  check_secrets_and_variables:
+    uses: ./.github/workflows/check_secrets_and_variables.yml
     needs: [configure-workflow]
+    with:
+      runs-on: ${{ needs.configure-workflow.outputs.runner }}
+      jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}
+      vlab_slug: ${{ vars.VLAB_SLUG }}
+      cell_github: ${{ vars.CELL_GITHUB }}
+      api_endpoint: ${{ vars.API_ENDPOINT }}
+      module_mapping_url: ${{ vars.MODULE_MAPPING_URL }}
+      search_api_endpoint: ${{ vars.SEARCH_API_ENDPOINT }}
+      registry_url: ${{ vars.REGISTRY_URL }}
+      argo_url: ${{ vars.ARGO_URL }}
+      debug: ${{ vars.DEBUG }}
+    secrets:
+      argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
+      cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
+      naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
+      search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
+  lint:
+    uses: ./.github/workflows/lint.yml
+    needs: [configure-workflow]
+    if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
+    strategy:
+      matrix:
+        group: [1]
+    with:
+      runs-on: ${{ needs.configure-workflow.outputs.runner }}
+
+  call-pytest:
+    uses: ./.github/workflows/run-tests.yml
+    needs: [configure-workflow]
+    if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
+#     strategy:
+#       matrix:
+#         group: ["1","2"]
+    with:
+      runs-on: ${{ needs.configure-workflow.outputs.runner }}
+      jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}
+      vlab_slug: ${{ vars.VLAB_SLUG }}
+      cell_github: ${{ vars.CELL_GITHUB }}
+      api_endpoint: ${{ vars.API_ENDPOINT }}
+      module_mapping_url: ${{ vars.MODULE_MAPPING_URL }}
+      search_api_endpoint: ${{ vars.SEARCH_API_ENDPOINT }}
+      registry_url: ${{ vars.REGISTRY_URL }}
+      debug: ${{ vars.DEBUG }}
+#       group: ${{ matrix.group }}
+    secrets:
+      cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
+      naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
+      search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
+
+  make-release:
+    uses: ./.github/workflows/make-release.yml
+    needs: [configure-workflow,call-pytest,lint,check_secrets_and_variables]
     if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
     with:
       runs-on: ${{ needs.configure-workflow.outputs.runner }}
@@ -51,7 +103,7 @@ jobs:
       search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
 
   call-build-container-vanilla:
-    needs: [call-pytest]
+    needs: [make-release]
     uses: ./.github/workflows/build-container.yml
     with:
       wheel_artifact_name: jupyterlab_vre
