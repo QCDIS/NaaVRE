@@ -328,8 +328,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cells_files = os.listdir(cells_json_path)
             saved_debug_value = os.getenv("DEBUG")
             for cell_file in cells_files:
+                print('cell_file: ', cell_file)
                 cell_path = os.path.join(cells_json_path, cell_file)
-
                 # Commit cell
                 os.environ["DEBUG"] = "False"
                 create_cell_and_add_to_cat(cell_path=cell_path)
