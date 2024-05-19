@@ -32,7 +32,8 @@ from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
 from jupyterlab_vre.services.extractor.extractor import DummyExtractor
 from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
 from jupyterlab_vre.services.extractor.rextractor import RExtractor
-from jupyterlab_vre.services.extractor.headerextractor import HeaderExtractor
+from jupyterlab_vre.services.extractor.pyheaderextractor import PyHeaderExtractor
+from jupyterlab_vre.services.extractor.rheaderextractor import RHeaderExtractor
 
 logger = logging.getLogger(__name__)
 
@@ -131,7 +132,10 @@ class ExtractorHandler(APIHandler, Catalog):
         else:
             # extractor based on the cell header
             try:
-                extractor = HeaderExtractor(notebook, source)
+                if 'python' in kernel.lower():
+                    extractor = PyHeaderExtractor(notebook, source)
+                elif 'r' in kernel.lower():
+                    extractor = RHeaderExtractor(notebook, source)
             except jsonschema.ValidationError as e:
                 self.set_status(400, f"Invalid cell header")
                 self.write(
@@ -143,7 +147,10 @@ class ExtractorHandler(APIHandler, Catalog):
                 )
                 self.flush()
                 return
-
+            params = extractor.params
+            inputs = extractor.ins
+            outputs = extractor.outs
+            confs = extractor.confs
             # Extractor based on code analysis. Used if the cell has no header,
             # or if some values are not specified in the header
             if not extractor.is_complete():
@@ -533,6 +540,8 @@ class CellsHandler(APIHandler, Catalog):
             repository=gh_repository,
             files_info=files_info,
             )
+        if not image_version:
+            raise Exception('Error! image_version not set')
         wf_id = str(uuid.uuid4())
 
         if os.getenv('DEBUG') and os.getenv('DEBUG').lower() == 'true':
@@ -602,6 +611,8 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
                 files_updated = True
             if f_type == 'cell':
                 code_content_hash = local_hash
+    if not code_content_hash:
+        logger.warning('code_content_hash not set')
     return files_updated, code_content_hash
 
 
@@ -628,6 +639,8 @@ def dispatch_github_workflow(owner, repository_name, task_name, files_info, repo
 
 
 def get_github_workflow_runs(owner=None, repository_name=None, t_utc=None, token=None):
+    if repository_name and '.git' in repository_name:
+        repository_name = repository_name.replace('.git', '')
     workflow_runs_url = github_url_repos + '/' + owner + '/' + repository_name + '/actions/runs'
     if t_utc:
         t_start = (t_utc - datetime.timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
