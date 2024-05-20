@@ -29,6 +29,7 @@ elif os.path.exists('jupyterlab_vre/tests/resources/'):
 
 cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
 
+
 def delete_text(file_path, text_to_delete):
     # Read the file
     with open(file_path, 'r') as file:
@@ -84,7 +85,6 @@ def wait_for_api_resource(github=None):
 
 
 class HandlersAPITest(AsyncHTTPTestCase):
-
     os.environ["ASYNC_TEST_TIMEOUT"] = "120"
 
     def get_app(self):
@@ -255,8 +255,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
         cells_files = os.listdir(cells_json_path)
         for workflow_file in workflow_files:
             print('workflow_file: ', workflow_file)
-            if 'test_py_workflow' not in workflow_file:
-                continue
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
@@ -265,13 +263,12 @@ class HandlersAPITest(AsyncHTTPTestCase):
             for cell_id in cells:
                 cell_title = cells[cell_id]['properties']['title']
                 for cell_file in cells_files:
-                    cell_path  =os.path.join(cells_json_path, cell_file)
+                    cell_path = os.path.join(cells_json_path, cell_file)
                     with open(cell_path, 'r') as read_file:
                         cell = json.load(read_file)
                     if cell['title'] == cell_title:
                         cell_paths.add(cell_path)
             self.add_cells_to_cat(cell_paths=cell_paths)
-
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
             self.assertEqual(response.code, 200, response.body)
             json_response = json.loads(response.body.decode('utf-8'))
@@ -369,6 +366,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
         wf_ids_and_creation_utc = []
         for cell_path in cell_paths:
             create_cell_and_add_to_cat(cell_path=cell_path)
+            sleep(1)
             response = self.call_cell_handler()
             entry = {'wf_creation_utc': datetime.datetime.now(tz=datetime.timezone.utc)}
             self.assertEqual(200, response.code)
@@ -392,4 +390,3 @@ class HandlersAPITest(AsyncHTTPTestCase):
             )
             self.assertIsNotNone(job, 'Job not found')
             self.assertEqual('completed', job['status'], 'Job not completed')
-
