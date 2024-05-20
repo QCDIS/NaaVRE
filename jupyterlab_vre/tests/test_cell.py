@@ -2,6 +2,7 @@ import json
 import os
 import re
 from pathlib import Path
+from time import sleep
 from unittest import TestCase
 
 from jupyterlab_vre.database.catalog import Catalog

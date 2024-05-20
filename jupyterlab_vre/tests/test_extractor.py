@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import uuid
+from time import sleep
 from unittest import TestCase
 
 import nbformat as nb
@@ -109,7 +110,6 @@ def extract_cell(payload_path):
 
 
 class TestExtractor(TestCase):
-
     # Reference parameter values for `test_param_values_*.json`
     param_values_ref = {
         'param_float': '1.1',
@@ -117,13 +117,13 @@ class TestExtractor(TestCase):
         'param_list': '[1, 2, 3]',
         'param_string': 'param_string value',
         'param_string_with_comment': 'param_string value',
-        }
+    }
 
     def test_extract_cell(self):
         notebooks_json_path = os.path.join(base_path, 'notebooks')
         notebooks_files = glob.glob(
             os.path.join(notebooks_json_path, "*.json")
-            )
+        )
         for notebook_file in notebooks_files:
             cell = extract_cell(notebook_file)
             print(notebook_file)
@@ -150,4 +150,4 @@ class TestExtractor(TestCase):
                         self.assertTrue(
                             cell['param_values'][param_name] ==
                             self.param_values_ref[param_name]
-                            )
+                        )
