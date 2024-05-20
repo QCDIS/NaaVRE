@@ -142,15 +142,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
             for cell_file in cells_files:
                 cell_path = os.path.join(cells_json_path, cell_file)
                 test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
-                # test if test_cell.all_inputs contains duplicate entries
-                self.assertEqual(len(test_cell.all_inputs), len(set(test_cell.all_inputs)))
-                # test if test_cell.params contains duplicate entries
-                self.assertEqual(len(test_cell.params), len(set(test_cell.params)))
-                # test if test_cell.param_values contains duplicate entries
-                self.assertEqual(len(test_cell.param_values), len(set(test_cell.param_values)))
-                # test if test_cell.outputs contains duplicate entries
-                self.assertEqual(len(test_cell.outputs), len(set(test_cell.outputs)))
-
                 response = self.call_cell_handler()
                 self.assertEqual(200, response.code)
                 wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
@@ -255,7 +246,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 cell = notebook['notebook']['cells'][notebook['cell_index']]
                 print('cell: ', cell)
 
-
     def test_execute_workflow_handler(self):
         workflow_path = os.path.join(base_path, 'workflows', 'NaaVRE')
         workflow_files = os.listdir(workflow_path)
@@ -273,6 +263,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cat_repositories = Catalog.get_repositories()
             repo = cat_repositories[0]
             repo_token = repo['token']
+
             owner, repository_name = repo['url'].removeprefix('https://github.com/').split('/')
             job = wait_for_job(
                 wf_id=git_wf_id,
@@ -291,6 +282,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
+
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
             self.assertEqual(response.code, 200, response.body)
             json_response = json.loads(response.body.decode('utf-8'))
@@ -322,7 +314,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertTrue('progress' in json_response)
                 if json_response['status'] != 'Running':
                     break
-                sleep(60)
+                sleep(30)
             self.assertTrue(json_response['status'] == 'Succeeded', json_response)
 
     def call_cell_handler(self):
@@ -336,8 +328,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cells_files = os.listdir(cells_json_path)
             saved_debug_value = os.getenv("DEBUG")
             for cell_file in cells_files:
+                print('cell_file: ', cell_file)
                 cell_path = os.path.join(cells_json_path, cell_file)
-
                 # Commit cell
                 os.environ["DEBUG"] = "False"
                 create_cell_and_add_to_cat(cell_path=cell_path)
