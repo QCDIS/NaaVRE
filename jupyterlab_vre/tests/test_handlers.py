@@ -29,7 +29,6 @@ elif os.path.exists('jupyterlab_vre/tests/resources/'):
 
 cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
 
-
 def delete_text(file_path, text_to_delete):
     # Read the file
     with open(file_path, 'r') as file:
@@ -258,7 +257,26 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cell_path = os.path.join(cells_json_path, cell_file)
             create_cell_and_add_to_cat(cell_path=cell_path)
             response = self.call_cell_handler()
+            wf_creation_utc = datetime.datetime.now(tz=datetime.timezone.utc)
             self.assertEqual(200, response.code)
+            git_wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
+            cat_repositories = Catalog.get_repositories()
+            repo = cat_repositories[0]
+            repo_token = repo['token']
+
+            owner, repository_name = repo['url'].removeprefix('https://github.com/').split('/')
+            job = wait_for_job(
+                wf_id=git_wf_id,
+                wf_creation_utc=wf_creation_utc,
+                owner=owner,
+                repository_name=repository_name,
+                token=repo_token,
+                job_id=None,
+                timeout=300,
+                wait_for_completion=True,
+            )
+            self.assertIsNotNone(job, 'Job not found')
+            self.assertEqual('completed', job['status'], 'Job not completed')
         for workflow_file in workflow_files:
             print('workflow_file: ', workflow_file)
             workflow_file_path = os.path.join(workflow_path, workflow_file)
@@ -296,7 +314,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertTrue('progress' in json_response)
                 if json_response['status'] != 'Running':
                     break
-                sleep(60)
+                sleep(30)
             self.assertTrue(json_response['status'] == 'Succeeded', json_response)
 
     def call_cell_handler(self):
@@ -310,8 +328,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cells_files = os.listdir(cells_json_path)
             saved_debug_value = os.getenv("DEBUG")
             for cell_file in cells_files:
+                print('cell_file: ', cell_file)
                 cell_path = os.path.join(cells_json_path, cell_file)
-
                 # Commit cell
                 os.environ["DEBUG"] = "False"
                 create_cell_and_add_to_cat(cell_path=cell_path)

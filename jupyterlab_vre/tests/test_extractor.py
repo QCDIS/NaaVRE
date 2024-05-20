@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import uuid
+from time import sleep
 from unittest import TestCase
 
 import nbformat as nb
@@ -109,7 +110,6 @@ def extract_cell(payload_path):
 
 
 class TestExtractor(TestCase):
-
     # Reference parameter values for `test_param_values_*.json`
     param_values_ref = {
         'param_float': '1.1',
@@ -117,19 +117,23 @@ class TestExtractor(TestCase):
         'param_list': '[1, 2, 3]',
         'param_string': 'param_string value',
         'param_string_with_comment': 'param_string value',
-        }
+    }
 
     def test_extract_cell(self):
         notebooks_json_path = os.path.join(base_path, 'notebooks')
         notebooks_files = glob.glob(
             os.path.join(notebooks_json_path, "*.json")
-            )
+        )
         for notebook_file in notebooks_files:
             cell = extract_cell(notebook_file)
+            print(notebook_file)
             if cell:
                 cell = json.loads(cell)
                 for conf_name in (cell['confs']):
-                    self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
+                    assignment_symbol = '='
+                    if '<-' in cell['confs'][conf_name]:
+                        assignment_symbol = '<-'
+                    self.assertFalse('conf_' in cell['confs'][conf_name].split(assignment_symbol)[1],
                                      'conf_ values should not contain conf_ prefix in '
                                      'assignment')
                 # All params should have matching values
@@ -146,4 +150,4 @@ class TestExtractor(TestCase):
                         self.assertTrue(
                             cell['param_values'][param_name] ==
                             self.param_values_ref[param_name]
-                            )
+                        )
