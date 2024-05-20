@@ -86,11 +86,6 @@ spec:
         {% endfor %}
       {% endif %}
       outputs:
-      {% if 'visualize-' in cells[nid]['task_name']%}
-        artifacts:
-          - name: {{ task_name }}-output-html
-            path: /tmp/data/{{ task_name }}-output.html
-      {% endif %}
         parameters:
         {% for p in ports %}
         {% if ports[p]['type'] == 'right' %}

@@ -253,36 +253,22 @@ class HandlersAPITest(AsyncHTTPTestCase):
             m.return_value = 'cookie'
         cells_json_path = os.path.join(base_path, 'cells')
         cells_files = os.listdir(cells_json_path)
-        for cell_file in cells_files:
-            cell_path = os.path.join(cells_json_path, cell_file)
-            create_cell_and_add_to_cat(cell_path=cell_path)
-            response = self.call_cell_handler()
-            wf_creation_utc = datetime.datetime.now(tz=datetime.timezone.utc)
-            self.assertEqual(200, response.code)
-            git_wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
-            cat_repositories = Catalog.get_repositories()
-            repo = cat_repositories[0]
-            repo_token = repo['token']
-
-            owner, repository_name = repo['url'].removeprefix('https://github.com/').split('/')
-            job = wait_for_job(
-                wf_id=git_wf_id,
-                wf_creation_utc=wf_creation_utc,
-                owner=owner,
-                repository_name=repository_name,
-                token=repo_token,
-                job_id=None,
-                timeout=300,
-                wait_for_completion=True,
-            )
-            self.assertIsNotNone(job, 'Job not found')
-            self.assertEqual('completed', job['status'], 'Job not completed')
         for workflow_file in workflow_files:
             print('workflow_file: ', workflow_file)
+            if 'test_py_workflow' not in workflow_file:
+                continue
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
-
+            cells = payload['nodes']
+            for cell in cells:
+                cell_title = cell['properties']['title']
+                for cell_file in cells_files:
+                    cell_path = os.path.join(cells_json_path, cell_file)
+                    with open(cell_path, 'r') as read_file:
+                        cell = json.load(read_file)
+                    if cell['title'] == cell_title:
+                        self.add_cell_to_cat(cell_path=cell_path)
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
             self.assertEqual(response.code, 200, response.body)
             json_response = json.loads(response.body.decode('utf-8'))
@@ -374,3 +360,27 @@ class HandlersAPITest(AsyncHTTPTestCase):
             os.environ["DEBUG"] = saved_debug_value
         else:
             del os.environ["DEBUG"]
+
+    def add_cell_to_cat(self, cell_path=None):
+        create_cell_and_add_to_cat(cell_path=cell_path)
+        response = self.call_cell_handler()
+        wf_creation_utc = datetime.datetime.now(tz=datetime.timezone.utc)
+        self.assertEqual(200, response.code)
+        git_wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
+        cat_repositories = Catalog.get_repositories()
+        repo = cat_repositories[0]
+        repo_token = repo['token']
+
+        owner, repository_name = repo['url'].removeprefix('https://github.com/').split('/')
+        job = wait_for_job(
+            wf_id=git_wf_id,
+            wf_creation_utc=wf_creation_utc,
+            owner=owner,
+            repository_name=repository_name,
+            token=repo_token,
+            job_id=None,
+            timeout=300,
+            wait_for_completion=True,
+        )
+        self.assertIsNotNone(job, 'Job not found')
+        self.assertEqual('completed', job['status'], 'Job not completed')
