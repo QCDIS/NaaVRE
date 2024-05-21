@@ -268,7 +268,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                         cell = json.load(read_file)
                     if cell['title'] == cell_title:
                         cell_paths.add(cell_path)
-            self.add_cells_to_cat(cell_paths=cell_paths)
+            self.add_cells_to_cat(cell_paths=cell_paths, debug=False)
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
             self.assertEqual(response.code, 200, response.body)
             json_response = json.loads(response.body.decode('utf-8'))
@@ -361,16 +361,16 @@ class HandlersAPITest(AsyncHTTPTestCase):
         else:
             del os.environ["DEBUG"]
 
-    def add_cells_to_cat(self, cell_paths=None):
-        os.environ["DEBUG"] = "True"
+    def add_cells_to_cat(self, cell_paths=None, debug=None):
+        os.environ["DEBUG"] = str(debug)
         wf_ids_and_creation_utc = []
         for cell_path in cell_paths:
             create_cell_and_add_to_cat(cell_path=cell_path)
-            sleep(1)
             response = self.call_cell_handler()
             entry = {'wf_creation_utc': datetime.datetime.now(tz=datetime.timezone.utc)}
             self.assertEqual(200, response.code)
             entry['wf_id'] = json.loads(response.body.decode('utf-8'))['wf_id']
+            entry['dispatched_github_workflow'] = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
             wf_ids_and_creation_utc.append(entry)
         cat_repositories = Catalog.get_repositories()
         repo = cat_repositories[0]
@@ -378,15 +378,16 @@ class HandlersAPITest(AsyncHTTPTestCase):
 
         owner, repository_name = repo['url'].removeprefix('https://github.com/').split('/')
         for entry in wf_ids_and_creation_utc:
-            job = wait_for_job(
-                wf_id=entry['wf_id'],
-                wf_creation_utc=entry['wf_creation_utc'],
-                owner=owner,
-                repository_name=repository_name,
-                token=repo_token,
-                job_id=None,
-                timeout=300,
-                wait_for_completion=True,
-            )
-            self.assertIsNotNone(job, 'Job not found')
-            self.assertEqual('completed', job['status'], 'Job not completed')
+            if entry['dispatched_github_workflow']:
+                job = wait_for_job(
+                    wf_id=entry['wf_id'],
+                    wf_creation_utc=entry['wf_creation_utc'],
+                    owner=owner,
+                    repository_name=repository_name,
+                    token=repo_token,
+                    job_id=None,
+                    timeout=300,
+                    wait_for_completion=True,
+                )
+                self.assertIsNotNone(job, 'Job not found')
+                self.assertEqual('completed', job['status'], 'Job not completed')
