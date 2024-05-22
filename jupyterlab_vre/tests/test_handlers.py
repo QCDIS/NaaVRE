@@ -29,6 +29,7 @@ elif os.path.exists('jupyterlab_vre/tests/resources/'):
 
 cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
 
+
 def delete_text(file_path, text_to_delete):
     # Read the file
     with open(file_path, 'r') as file:
@@ -84,7 +85,6 @@ def wait_for_api_resource(github=None):
 
 
 class HandlersAPITest(AsyncHTTPTestCase):
-
     os.environ["ASYNC_TEST_TIMEOUT"] = "120"
 
     def get_app(self):
@@ -254,7 +254,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertIsNotNone(json_response)
                 cell = notebook['notebook']['cells'][notebook['cell_index']]
                 print('cell: ', cell)
-
 
     def test_execute_workflow_handler(self):
         workflow_path = os.path.join(base_path, 'workflows', 'NaaVRE')
