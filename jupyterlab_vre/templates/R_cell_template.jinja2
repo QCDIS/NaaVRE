@@ -1,7 +1,4 @@
 setwd('/app')
-
-# retrieve input parameters
-
 library(optparse)
 library(jsonlite)
 
@@ -9,6 +6,8 @@ library(jsonlite)
 {{ dep }}
 {% endfor %}
 
+
+print('option_list')
 option_list = list(
 
 {% for in_var in cell.all_inputs|sort %}
@@ -31,16 +30,10 @@ option_list = list(
 {% endif %}
 {{ option }}
 {% endfor %}
-
 )
-print("------------------Option list------------------")
-print(option_list)
 
 
-# set input parameters accordingly
 opt = parse_args(OptionParser(option_list=option_list))
-
-
 
 var_serialization <- function(var){
     if (is.null(var)){
@@ -70,9 +63,11 @@ var_serialization <- function(var){
         }
     )
 }
-{% for in_var in cell.all_inputs|sort %}
 
+{% for in_var in cell.all_inputs|sort %}
+print("Retrieving {{ in_var }}")
 var = opt${{ in_var }}
+print(var)
 var_len = length(var)
 print(paste("Variable {{ in_var }} has length", var_len))
 
