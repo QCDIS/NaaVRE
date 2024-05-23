@@ -20,7 +20,7 @@ spec:
       parameters:
       {% for p, value in global_params.items() %}
       - name: {{ p }}
-        value:  "{{ value }}"
+        value:  "{{ value | replace('"', "'") }}"
       {% endfor %}
     templates:
     - name: {{ workflow_name }}
@@ -37,7 +37,6 @@ spec:
           dependencies: [{{ task_name }}]
           template: {{ task_name }}-server-tmp
         {% endif %} #}
-    
         - name: {{ task_name }}
           {% if deps_dag[nid]|length > 0 %}
           dependencies: [{% for d in deps_dag[nid] %} {{ d['task_name'] }}{% if not loop.last %},{% endif %} {% endfor %}]
@@ -155,6 +154,9 @@ spec:
       container:
         image: "{{ image_repo }}/{{ cells[nid]['task_name'] }}:{{ cells[nid]['image_version'] }}"
         imagePullPolicy: Always
+        volumeMounts:
+        - name: workdir
+          mountPath: /tmp/data
         command: ["/bin/bash", "-c"]
         args:
         {% if 'visualize-' in cells[nid]['task_name']%}
