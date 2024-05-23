@@ -3,9 +3,11 @@ import json
 import logging
 import os
 import uuid
+from time import sleep
 from unittest import TestCase
 
 import nbformat as nb
+from slugify import slugify
 
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
@@ -27,22 +29,18 @@ def create_cell(payload_path=None):
 
     cell_index = payload['cell_index']
     notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
-    if payload['kernel'] == "IRkernel":
-        extractor = RExtractor(notebook)
-    else:
-        extractor = PyExtractor(notebook)
-
     source = notebook.cells[cell_index].source
+    if payload['kernel'] == "IRkernel":
+        extractor = RExtractor(notebook, source)
+    else:
+        extractor = PyExtractor(notebook, source)
+
     title = source.partition('\n')[0]
-    title = title.replace('#', '').replace(
-        '_', '-').replace('(', '-').replace(')', '-').replace('.', '-').strip() if title and title[
+    title = slugify(title) if title and title[
         0] == "#" else "Untitled"
 
     if 'JUPYTERHUB_USER' in os.environ:
-        title += '-' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace('.',
-                                                                                                                   '-').replace(
-            '@',
-            '-at-').strip()
+        title += '-' + slugify(os.environ['JUPYTERHUB_USER'])
 
     ins = {}
     outs = {}
@@ -53,17 +51,17 @@ def create_cell(payload_path=None):
     # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infere_cell_inputs(
     # source)'
     if notebook.cells[cell_index].cell_type == 'code':
-        ins = extractor.infer_cell_inputs(source)
-        outs = extractor.infer_cell_outputs(source)
+        ins = extractor.infer_cell_inputs()
+        outs = extractor.infer_cell_outputs()
 
-        confs = extractor.extract_cell_conf_ref(source)
-        dependencies = extractor.infer_cell_dependencies(source, confs)
+        confs = extractor.extract_cell_conf_ref()
+        dependencies = extractor.infer_cell_dependencies(confs)
 
     node_id = str(uuid.uuid4())[:7]
     cell = Cell(
         node_id=node_id,
         title=title,
-        task_name=title.lower().replace(' ', '-'),
+        task_name=slugify(title.lower()),
         original_source=source,
         inputs=ins,
         outputs=outs,
@@ -92,7 +90,6 @@ def extract_cell(payload_path):
             cell.inputs,
             cell.outputs,
             cell.params,
-            cell.dependencies
         )
 
         chart = {
@@ -113,7 +110,6 @@ def extract_cell(payload_path):
 
 
 class TestExtractor(TestCase):
-
     # Reference parameter values for `test_param_values_*.json`
     param_values_ref = {
         'param_float': '1.1',
@@ -121,19 +117,23 @@ class TestExtractor(TestCase):
         'param_list': '[1, 2, 3]',
         'param_string': 'param_string value',
         'param_string_with_comment': 'param_string value',
-        }
+    }
 
     def test_extract_cell(self):
         notebooks_json_path = os.path.join(base_path, 'notebooks')
         notebooks_files = glob.glob(
             os.path.join(notebooks_json_path, "*.json")
-            )
+        )
         for notebook_file in notebooks_files:
             cell = extract_cell(notebook_file)
+            print(notebook_file)
             if cell:
                 cell = json.loads(cell)
                 for conf_name in (cell['confs']):
-                    self.assertFalse('conf_' in cell['confs'][conf_name].split('=')[1],
+                    assignment_symbol = '='
+                    if '<-' in cell['confs'][conf_name]:
+                        assignment_symbol = '<-'
+                    self.assertFalse('conf_' in cell['confs'][conf_name].split(assignment_symbol)[1],
                                      'conf_ values should not contain conf_ prefix in '
                                      'assignment')
                 # All params should have matching values
@@ -150,4 +150,4 @@ class TestExtractor(TestCase):
                         self.assertTrue(
                             cell['param_values'][param_name] ==
                             self.param_values_ref[param_name]
-                            )
+                        )

@@ -5,6 +5,7 @@
 {% endif %}
 
 import argparse
+import json
 arg_parser = argparse.ArgumentParser()
 
 arg_parser.add_argument('--id', action='store', type=str, required=True, dest='id')
@@ -19,7 +20,11 @@ arg_parser.add_argument('--{{ in_var }}', action='store', type={{ types[in_var] 
 {% endfor %}
 
 {% for param in cell.params|sort %}
+{% if types[param] == list  or types[param] == 'list' %}
+arg_parser.add_argument('--{{ param }}', action='store', type=str, required=True, dest='{{ param }}')
+{% else %}
 arg_parser.add_argument('--{{ param }}', action='store', type={{ types[param] }}, required=True, dest='{{ param }}')
+{% endif %}
 {% endfor %}
 
 args = arg_parser.parse_args()
@@ -29,7 +34,6 @@ id = args.id
 
 {% for in_var in cell.inputs|sort %}
 {% if types[in_var] == list  or types[in_var] == 'list' %}
-import json
 {{ in_var }} = json.loads(args.{{ in_var }})
 {% elif types[in_var] == str or  types[in_var] == 'str' %}
 {{ in_var }} = args.{{ in_var }}.replace('"','')
@@ -39,7 +43,24 @@ import json
 {% endfor %}
 
 {% for param in cell.params|sort %}
+{% if types[param] == list  or types[param] == 'list' %}
+print(args.{{ param }})
+print(type(args.{{ param }}))
+try:
+    {{ param }} = json.loads(args.{{ param }})
+except Exception as e:
+    if e.__class__.__name__ == 'JSONDecodeError':
+        import ast
+        {{ param }} = ast.literal_eval(args.{{ param }}.replace('[','["').replace(',','","').replace('" ','"').replace(']','"]').replace("'",""))
+    else:
+        raise e
+{% elif types[param] == dict  or types[param] == 'dict' %}
+{{ param }} = json.loads(args.{{ param }})
+{% elif types[param] == str or  types[param] == 'str' %}
+{{ param }} = args.{{ param }}.replace('"','')
+{% else %}
 {{ param }} = args.{{ param }}
+{% endif %}
 {% endfor %}
 
 {% for c in confs %}
@@ -52,10 +73,8 @@ import json
 {{ cell.original_source }}
 
 {% if cell.outputs|length > 0 %}
-import json
 {% for out in cell.outputs %}
-filename = "/tmp/{{out}}_" + id + ".json"
-file_{{out}} = open(filename, "w")
+file_{{out}} = open("/tmp/{{out}}_" + id + ".json", "w")
 file_{{out}}.write(json.dumps({{out}}))
 file_{{out}}.close()
 {% endfor %}

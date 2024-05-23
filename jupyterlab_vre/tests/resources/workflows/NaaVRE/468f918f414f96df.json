@@ -60,10 +60,7 @@
             "rolling_mean_temp_str",
             "temperature_data_str"
           ],
-          "og_node_id": "7b4271d",
-          "deps": [
-            ""
-          ]
+          "og_node_id": "7b4271d"
         },
         "size": {
           "width": 250,
@@ -124,10 +121,7 @@
             "temperature_data_str"
           ],
           "outputs": [],
-          "og_node_id": "dd373f8",
-          "deps": [
-            ""
-          ]
+          "og_node_id": "dd373f8"
         },
         "size": {
           "width": 250,

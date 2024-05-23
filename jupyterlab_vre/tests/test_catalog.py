@@ -1,10 +1,8 @@
 import os
 from unittest import TestCase
+
 from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.tests.test_handlers import create_cell_and_add_to_cat
-
-
-# from jupyterlab_vre.storage.catalog import Catalog
 
 
 class TestCatalog(TestCase):
@@ -80,9 +78,3 @@ class TestCatalog(TestCase):
             Catalog.delete_all_cells()
             all_cells = Catalog.get_all_cells()
             self.assertEqual(len(all_cells), 0)
-
-
-
-
-
-

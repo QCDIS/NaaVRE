@@ -2,6 +2,8 @@ import json
 import logging
 import re
 
+from slugify import slugify
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -46,10 +48,8 @@ class Cell:
             image_version=None
     ) -> None:
 
-        self.title = title.strip().replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                                   '-at-').strip()
-        self.task_name = task_name.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                                   '-at-').strip()
+        self.title = slugify(title.strip())
+        self.task_name = slugify(task_name)
         self.original_source = original_source
         self.types = dict()
         self.add_inputs(inputs)
@@ -131,13 +131,10 @@ class Cell:
         self.original_source = "\n".join(lines)
 
     def clean_task_name(self):
-        self.task_name = self.task_name.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace(
-            '@',
-            '-at-').strip()
+        self.task_name = slugify(self.task_name)
 
     def clean_title(self):
-        self.title = self.title.replace('_', '-').replace('(', '-').replace(')', '-').replace('.', '-').replace('@',
-                                                                                                                '-at-').strip()
+        self.title = slugify(self.title)
 
     def integrate_configuration(self):
         lines = self.original_source.splitlines()

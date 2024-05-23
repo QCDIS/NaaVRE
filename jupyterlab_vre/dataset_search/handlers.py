@@ -1,12 +1,12 @@
 import json
 import logging
 import os
-import time
 from builtins import print
 from pathlib import Path
 
 import requests
 from notebook.base.handlers import APIHandler
+from slugify import slugify
 from tornado import web
 
 from jupyterlab_vre.database.catalog import Catalog
@@ -15,9 +15,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 if 'JUPYTERHUB_USER' in os.environ:
-    client_id = 'NaaVRE_' + os.environ['JUPYTERHUB_USER'].replace('_', '-').replace('(', '-').replace(')', '-').replace(
-        '.', '-').replace('@',
-                          '-at-').strip()
+    client_id = 'NaaVRE_' + slugify(os.environ['JUPYTERHUB_USER'])
 
 
 ################################################################################
@@ -36,8 +34,10 @@ class DatasetSearchHandler(APIHandler):
         self.check_environment_variables()
         access_token = os.environ['NAAVRE_API_TOKEN']
         api_endpoint = os.getenv('API_ENDPOINT')
+        vre_api_verify_ssl = (os.getenv('VRE_API_VERIFY_SSL', 'true').lower() == 'true')
         resp = requests.get(
             f"{api_endpoint}/api/dataprods/",
+            verify=vre_api_verify_ssl,
             headers={
                 'Authorization': f"Token {access_token}",
                 'Content-Type': 'application/json'

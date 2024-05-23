@@ -125,11 +125,6 @@ Then run the tests as described in the [Testing](#testing) section.
 This will case all cells in the `test/resources/cells` folder to be dockerized. Next all the workflows in the 
 `test/resources/workflows/NaaVRE` folder will be submitted to the Argo Workflow engine.
 
-
-
-
-
-
 ## Troubleshooting
 
 When running make install-backend, if the following error occurs:
@@ -158,102 +153,12 @@ conda env update --file environment.yml
 
 ## Docker 
 
-```commandline
-docker run -it -p 8888:8888 --env-file ~/Downloads/notbooks/docker_VARS qcdis/n-a-a-vre-laserfarm /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative"
-```
-
-
-# Argo Workflows
-
-## Generate Token
+### Build the docker image
 
 ```shell
-kubectl apply -f - <<EOF
-kind: Role
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: vre-api
-  namespace: argo
-rules:
-  - verbs:
-      - get
-      - watch
-      - patch
-    apiGroups:
-      - ''
-    resources:
-      - pods
-  - verbs:
-      - get
-      - watch
-    apiGroups:
-      - ''
-    resources:
-      - pods/log
-  - verbs:
-      - create
-    apiGroups:
-      - ''
-    resources:
-      - pods/exec
-  - verbs:
-      - list
-      - watch
-      - create
-      - get
-      - update
-      - delete
-    apiGroups:
-      - argoproj.io
-    resources:
-      - workflowtasksets
-      - workflowartifactgctasks
-      - workflowtemplates
-      - workflows
-  - verbs:
-      - patch
-    apiGroups:
-      - argoproj.io
-    resources:
-      - workflowtasksets/status
-      - workflowartifactgctasks/status
-      - workflows/status
-EOF
+docker build -t n-a-a-vre .
 ```
-
-```shell
-kubectl create sa vre-api -n argo
-```
-
-```shell
-kubectl create rolebinding vre-api --role=vre-api --serviceaccount=argo:vre-api -n argo
-```
-
-```shell
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Secret
-metadata:
-  namespace: argo
-  name: vre-api.service-account-token
-  annotations:
-    kubernetes.io/service-account.name: vre-api
-type: kubernetes.io/service-account-token
-EOF
-```
-
-```shell
-ARGO_TOKEN="Bearer $(kubectl get secret vre-api.service-account-token -n argo -o=jsonpath='{.data.token}' | base64 --decode)"
-```
-
-```shell
-echo -n $ARGO_TOKEN | base64 -w 0
-```
-
-
-
-# Cypress
 
 ```commandline
-docker run -it -v $PWD:/e2e -w /e2e cypress/included:12.17.2
+docker run -it -p 8888:8888 --env-file ~/Downloads/notbooks/docker_VARS n-a-a-vre /bin/bash -c "source /venv/bin/activate && /tmp/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative"
 ```

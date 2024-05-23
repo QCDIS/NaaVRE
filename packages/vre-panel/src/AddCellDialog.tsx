@@ -27,6 +27,7 @@ const DefaultState: IState = {
     loading: true
 }
 
+
 export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
 
     state = DefaultState;
@@ -40,16 +41,13 @@ export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
             const sessionContext = this.props.notebook.context.sessionContext;
             const kernelObject = sessionContext?.session?.kernel; // https://jupyterlab.readthedocs.io/en/stable/api/interfaces/services.kernel.ikernelconnection-1.html#serversettings
             const kernel = (await kernelObject.info).implementation;
-
             await requestAPI<any>('containerizer/addcell', {
                 body: JSON.stringify({
                     kernel
                 }),
                 method: 'POST'
             });
-
             this.setState({ loading: false });
-
         } catch (error) {
             console.log(error);
             alert('Error creating  cell : ' + String(error).replace('{"message": "Unknown HTTP Error"}', ''));
@@ -57,10 +55,8 @@ export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
     }
 
     render(): React.ReactElement {
-
         return (
             <ThemeProvider theme={theme}>
-                
                 <p className='section-header'>Create Cell</p>
                 <CatalogBody>
                 {!this.state.loading ? (

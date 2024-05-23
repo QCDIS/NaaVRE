@@ -19,10 +19,6 @@ on:
         required: true
         type: boolean
     secrets:
-      gitlab_username:
-        required: true
-      gitlab_password:
-        required: true
       docker_username:
         required: true
       docker_password:
@@ -30,7 +26,6 @@ on:
 env:
   DOCKER_FOLDER:  ${{ inputs.docker_folder }}
   TAG:  ${{ inputs.tag }}
-  GITLAB_IMAGE_ID: "registry.gitlab.com/qcd1/registry/"
   DOCKERHUB_IMAGE_ID: "qcdis/"
 
 jobs:
@@ -44,7 +39,7 @@ jobs:
       with:
         name: ${{ inputs.wheel_artifact_name }}
         path: docker/${{ inputs.docker_folder }}
-    - uses: mikefarah/yq@v4.40.5
+    - uses: mikefarah/yq@v4.44.1
 
     - name: add whl and start files
       run: |
@@ -74,11 +69,21 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
+    - name: Check and truncate version
+      id: check_and_truncate
+      run: |
+        version=${{ steps.get_version.outputs.version }}
+        if [ ${#version} -gt 10 ]; then
+          echo "::set-output name=version::${version:0:10}"
+        else
+          echo "::set-output name=version::$version"
+        fi
+
     - name: Build docker
       uses: docker/build-push-action@v5
       with:
         context: docker/${{ inputs.docker_folder }}
         push: ${{ inputs.push }}
-        tags: qcdis/${{ inputs.tag }}:${{ steps.get_version.outputs.version }},qcdis/${{ inputs.tag }}:latest
+        tags: qcdis/${{ inputs.tag }}:${{ steps.check_and_truncate.outputs.version }},qcdis/${{ inputs.tag }}:latest
         cache-from: type=gha
         cache-to: type=gha,mode=min
