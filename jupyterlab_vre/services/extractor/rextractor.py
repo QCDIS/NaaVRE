@@ -180,7 +180,7 @@ class RExtractor(Extractor):
                     if len(matches) > 0 and variable not in configurations:
                         configurations[variable] = line
                         break
-        return configurations
+        return self.__resolve_configurations(configurations)
 
     def __extract_params(self, sources):  # check source https://adv-r.hadley.nz/expressions.html)
         params = {}
@@ -397,8 +397,13 @@ class RExtractor(Extractor):
 
     def __resolve_configurations(self, configurations):
         resolved_configurations = {}
+        max_depth = 50
         for k, assignment in configurations.items():
-            while 'conf_' in assignment.split('=')[1]:
+            assignment_symbol = '='
+            if '<-' in assignment:
+                assignment_symbol = '<-'
+            while 'conf_' in assignment.split(assignment_symbol)[1]:
+                max_depth -= 1
                 for conf_name, replacing_assignment in configurations.items():
                     if conf_name in assignment.split('=')[1]:
                         assignment = assignment.replace(
@@ -406,6 +411,9 @@ class RExtractor(Extractor):
                             replacing_assignment.split('=')[1],
                             )
                 resolved_configurations[k] = assignment
+                if max_depth <= 0:
+                    raise RuntimeError('maximum depth exceeded while '
+                                       'resolving configuration')
         configurations.update(resolved_configurations)
         return configurations
 

@@ -47,6 +47,7 @@ dependencies:
   - cmake=3.28.3
   - jupyter-collaboration=1.1.0
   - pytest=8.0.2
+  - pytest-timeout=2.3.1
   - flake8=7.0.0
   - r-optparse=1.7.4
   - webdavclient3=3.14.5
