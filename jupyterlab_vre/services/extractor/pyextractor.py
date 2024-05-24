@@ -7,15 +7,17 @@ from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
 from pytype import config as pytype_config
 from pytype.tools.annotate_ast import annotate_ast
 
+from .extractor import Extractor
 
-class PyExtractor:
+
+class PyExtractor(Extractor):
     sources: list
     imports: dict
     configurations: dict
     global_params: dict
     undefined: dict
 
-    def __init__(self, notebook):
+    def __init__(self, notebook, cell_source):
         # If cell_type is code and not starting with '!'
         self.sources = [nbcell.source for nbcell in notebook.cells if
                         nbcell.cell_type == 'code' and len(nbcell.source) > 0 and nbcell.source[0] != '!']
@@ -29,6 +31,8 @@ class PyExtractor:
         self.undefined = dict()
         for source in self.sources:
             self.undefined.update(self.__extract_cell_undefined(source))
+
+        super().__init__(notebook, cell_source)
 
     def __extract_imports(self, sources):
         imports = {}
@@ -91,20 +95,20 @@ class PyExtractor:
                         }
         return params
 
-    def infer_cell_outputs(self, cell_source):
-        cell_names = self.__extract_cell_names(cell_source)
+    def infer_cell_outputs(self):
+        cell_names = self.__extract_cell_names(self.cell_source)
         return {
             name: properties
             for name, properties in cell_names.items()
-            if name not in self.__extract_cell_undefined(cell_source)
+            if name not in self.__extract_cell_undefined(self.cell_source)
                and name not in self.imports
                and name in self.undefined
                and name not in self.configurations
                and name not in self.global_params
         }
 
-    def infer_cell_inputs(self, cell_source):
-        cell_undefined = self.__extract_cell_undefined(cell_source)
+    def infer_cell_inputs(self):
+        cell_undefined = self.__extract_cell_undefined(self.cell_source)
         return {
             und: properties
             for und, properties in cell_undefined.items()
@@ -113,9 +117,9 @@ class PyExtractor:
                and und not in self.global_params
         }
 
-    def infer_cell_dependencies(self, cell_source, confs):
+    def infer_cell_dependencies(self, confs):
         dependencies = []
-        names = self.__extract_cell_names(cell_source)
+        names = self.__extract_cell_names(self.cell_source)
 
         for ck in confs:
             names.update(self.__extract_cell_names(confs[ck]))
@@ -201,7 +205,6 @@ class PyExtractor:
         return names
 
     def __extract_cell_undefined(self, cell_source):
-
         flakes_stdout = StreamList()
         flakes_stderr = StreamList()
         rep = pyflakes_reporter.Reporter(
@@ -235,9 +238,9 @@ class PyExtractor:
                 params[u] = self.global_params[u]
         return params
 
-    def extract_cell_conf_ref(self, cell_source):
+    def extract_cell_conf_ref(self):
         confs = {}
-        cell_unds = self.__extract_cell_undefined(cell_source)
+        cell_unds = self.__extract_cell_undefined(self.cell_source)
         conf_unds = [und for und in cell_unds if und in self.configurations]
         for u in conf_unds:
             if u not in confs:
@@ -245,22 +248,16 @@ class PyExtractor:
         return confs
 
     def __resolve_configurations(self, configurations):
-        confs_in_assignment = {}
         resolved_configurations = {}
-        for conf_name in configurations:
-            conf = configurations[conf_name]
-            if 'conf_' in conf.split('=')[1]:
-                confs_in_assignment[conf_name] = conf
-        for conf_name in configurations:
-            for confs_in_assignment_name in confs_in_assignment:
-                if conf_name in confs_in_assignment[
-                    confs_in_assignment_name] and conf_name not in resolved_configurations:
-                    replace_value = configurations[conf_name].split('=')[1]
-                    if confs_in_assignment_name in resolved_configurations:
-                        new_value = resolved_configurations[confs_in_assignment_name].replace(conf_name, replace_value)
-                    else:
-                        new_value = confs_in_assignment[confs_in_assignment_name].replace(conf_name, replace_value)
-                    resolved_configurations[confs_in_assignment_name] = new_value
+        for k, assignment in configurations.items():
+            while 'conf_' in assignment.split('=')[1]:
+                for conf_name, replacing_assignment in configurations.items():
+                    if conf_name in assignment.split('=')[1]:
+                        assignment = assignment.replace(
+                            conf_name,
+                            replacing_assignment.split('=')[1],
+                            )
+                resolved_configurations[k] = assignment
         configurations.update(resolved_configurations)
         return configurations
 

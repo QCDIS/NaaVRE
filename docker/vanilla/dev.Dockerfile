@@ -3,7 +3,7 @@
 # Build context must be the NaaVRE project root:
 # docker build . --file ./docker/vanilla/dev.Dockerfile -t qcdis/n-a-a-vre
 
-FROM condaforge/mambaforge:23.11.0-0  AS env
+FROM condaforge/mambaforge:24.3.0-0  AS env
 
 RUN conda install -c conda-forge conda-pack mamba
 COPY environment.yml .
@@ -41,7 +41,6 @@ COPY packages/chart-customs/package.json packages/chart-customs/
 COPY packages/components/package.json packages/components/
 COPY packages/core/package.json packages/core/
 COPY packages/experiment-manager/package.json packages/experiment-manager/
-COPY packages/notebook-containerizer/package.json packages/notebook-containerizer/
 COPY packages/notebook-search/package.json packages/notebook-search/
 COPY packages/vre-menu/package.json packages/vre-menu/
 COPY packages/vre-panel/package.json packages/vre-panel/
@@ -69,11 +68,11 @@ RUN jupyter serverextension enable --py jupyterlab_vre --user
 WORKDIR /live/ts
 COPY --chown=$NB_USER:users packages/ packages/
 COPY --chown=$NB_USER:users tsconfig-base.json .
-RUN extensions="chart-customs core notebook-containerizer notebook-search components experiment-manager vre-panel vre-menu"; \
+RUN extensions="chart-customs core notebook-search components experiment-manager vre-panel vre-menu"; \
     for ext in $extensions; do \
       npx lerna run build --scope "@jupyter_vre/$ext"; \
     done
-RUN extensions="chart-customs core notebook-containerizer notebook-search components experiment-manager vre-panel vre-menu"; \
+RUN extensions="chart-customs core notebook-search components experiment-manager vre-panel vre-menu"; \
     for ext in $extensions; do \
       jupyter labextension link --no-build "packages/$ext"; \
     done
