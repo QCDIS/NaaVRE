@@ -85,6 +85,8 @@ export class CellTracker extends React.Component<IProps, IState> {
               'containerizer/baseimagetags',
               { method: 'GET' }
             )
+            // const baseImagesData = {'test':{}}
+            // const baseImagesData = await (await fetch('http://localhost:8000/api/containerizer/baseimagetags/', {method:'GET'})).json()
 
             // Convert object data to an array of objects
             const updatedBaseImages = Object.entries(baseImagesData).map(
