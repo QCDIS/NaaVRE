@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class BackendRelay(APIHandler):
-    API_ENDPOINT: str = os.getenv('API_ENDPOINT', 'https://naavre-dev.minikube.test')
+    API_ENDPOINT: str = os.getenv('API_ENDPOINT', 'https://naavre-dev.minikube.test/vre-api-test')
     VRE_API_VERIFY_SSL: bool = os.getenv('VRE_API_VERIFY_SSL', 'false').lower() == 'true'
     login_url = os.getenv('KEYCLOAK_LOGIN_URL', 'https://naavre-dev.minikube.test/auth/realms/vre/protocol/openid-connect/token')
 
