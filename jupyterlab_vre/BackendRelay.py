@@ -40,7 +40,7 @@ class BackendRelay(APIHandler):
     @tornado.web.authenticated
     async def get(self):
         response = self.get_with_auth()
-        if response.status_code == 401:
+        if response.status_code == 401 or response.status_code == 403:
             try:
                 logger.debug('Trying to login')
                 login_response_body = requests.post(BackendRelay.login_url, headers={'Content-Type': 'application/x-www-form-urlencoded'}, data=urlencode({'client_id': 'myclient', 'grant_type': 'password', 'scope': 'openid', 'username': 'u', 'password': 'u'}), verify=False).json()
