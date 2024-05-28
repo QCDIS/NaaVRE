@@ -64,6 +64,7 @@ spec:
     {% set is_visualizer = nodes[nid]['type'] == 'visualizer' %}
     {% set task_name = nodes[nid]['type'] + "-" + nid[:7] if is_special_node else cells[nid]['task_name'] + "-" + nid[:7] %}
     {% set params = [] if is_special_node else cells[nid]['params'] %}
+    {% set secrets = [] if is_special_node else cells[nid]['secrets'] %}
     {% set ports = nodes[nid]['ports'] %}
     {# {% if 'visualize-' in task_name %}
     - name: {{ task_name }}-server-tmp
@@ -150,6 +151,14 @@ spec:
         volumeMounts:
         - name: workdir
           mountPath: /tmp/data
+        env:
+        {%  for s in secrets %}
+          - name: {{ s }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ k8s_secret_name }}
+                key: {{ s }}
+        {%  endfor %}
         command: ["/bin/bash", "-c"]
         args:
         {% if 'visualize-' in cells[nid]['task_name']%}
