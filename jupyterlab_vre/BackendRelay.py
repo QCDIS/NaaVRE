@@ -35,7 +35,7 @@ class BackendRelay(APIHandler):
 
     def get_with_auth(self):
         url: str = self.convert_url(self.request.uri)
-        return requests.get(url, verify=BackendRelay.VRE_API_VERIFY_SSL, headers={'Authorization': self.access_token})
+        return session.get(url, verify=BackendRelay.VRE_API_VERIFY_SSL, headers={'Authorization': self.access_token})
 
     @tornado.web.authenticated
     async def get(self):
