@@ -60,7 +60,7 @@ class Cell:
         self.add_param_values(params)
         self.add_secrets(secrets)
         self.confs = confs
-        self.all_inputs = list(inputs) + list(params) + list(secrets)
+        self.all_inputs = list(inputs) + list(params)
         self.dependencies = list(sorted(dependencies, key=lambda x: x['name']))
         self.chart_obj = chart_obj
         self.node_id = node_id
