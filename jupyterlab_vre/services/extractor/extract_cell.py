@@ -70,6 +70,7 @@ def extract_cell(notebook, cell_index, kernel):
     cell_identity_dict = {
         'title': title,
         'params': extractor.params,
+        'secrets': extractor.secrets,
         'inputs': extractor.ins,
         'outputs': extractor.outs,
         }
@@ -84,6 +85,7 @@ def extract_cell(notebook, cell_index, kernel):
         inputs=extractor.ins,
         outputs=extractor.outs,
         params={},
+        secrets={},
         confs=extractor.confs,
         dependencies=extractor.dependencies,
         container_source="",
@@ -94,6 +96,8 @@ def extract_cell(notebook, cell_index, kernel):
     extractor.params = extractor.extract_cell_params(cell.original_source)
     cell.add_params(extractor.params)
     cell.add_param_values(extractor.params)
+    extractor.secrets = extractor.extract_cell_secrets(cell.original_source)
+    cell.add_secrets(extractor.secrets)
 
     node = ConverterReactFlowChart.get_node(
         node_id,
@@ -101,6 +105,7 @@ def extract_cell(notebook, cell_index, kernel):
         set(extractor.ins),
         set(extractor.outs),
         extractor.params,
+        extractor.secrets,
         )
 
     chart = {

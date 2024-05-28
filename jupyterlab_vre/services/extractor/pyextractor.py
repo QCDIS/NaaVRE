@@ -39,6 +39,7 @@ class PyExtractor(Extractor):
     imports: dict
     configurations: dict
     global_params: dict
+    global_secrets: dict
     undefined: dict
 
     def __init__(self, notebook, cell_source):
@@ -51,7 +52,8 @@ class PyExtractor(Extractor):
         )
         self.imports = self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
-        self.global_params = self.__extract_params(self.sources)
+        self.global_params = self.__extract_prefixed_var(self.sources, 'param')
+        self.global_secrets = self.__extract_prefixed_var(self.sources, 'secret')
         self.undefined = dict()
         for source in self.sources:
             self.undefined.update(self.__extract_cell_undefined(source))
@@ -92,32 +94,34 @@ class PyExtractor(Extractor):
                             configurations[name] = conf_line
         return self.__resolve_configurations(configurations)
 
-    def __extract_params(self, sources):
-        params = dict()
+    def __extract_prefixed_var(self, sources, prefix):
+        extracted_vars = dict()
         for s in sources:
             lines = s.splitlines()
             tree = ast.parse(s)
             for node in ast.walk(tree):
                 if isinstance(node, ast.Assign) and hasattr(node.targets[0], 'id'):
                     name = node.targets[0].id
-                    prefix = name.split('_')[0]
-                    if prefix == 'param':
-                        param_line = ''
+                    node_prefix = name.split('_')[0]
+                    if node_prefix == prefix:
+                        var_line = ''
                         for line in lines[node.lineno - 1:node.end_lineno]:
-                            param_line += line.strip()
-                        param_value = ast.unparse(node.value)
+                            var_line += line.strip()
+                        var_value = ast.unparse(node.value)
                         try:
                             # remove quotes around strings
-                            param_value = str(ast.literal_eval(param_value))
+                            var_value = str(ast.literal_eval(var_value))
                         except ValueError:
-                            # when param_value can't safely be parsed,
+                            # when var_value can't safely be parsed,
                             pass
-                        params[name] = {
+                        extracted_vars[name] = {
                             'name': name,
                             'type': self.notebook_names[name]['type'],
-                            'value': param_value,
+                            'value': var_value,
                         }
-        return params
+                        if prefix == 'secret':
+                            del extracted_vars[name]['value']
+        return extracted_vars
 
     def infer_cell_outputs(self):
         cell_names = self.__extract_cell_names(self.cell_source)
@@ -129,7 +133,8 @@ class PyExtractor(Extractor):
                and name in self.undefined
                and name not in self.configurations
                and name not in self.global_params
-        }
+               and name not in self.global_secrets
+            }
 
     def infer_cell_inputs(self):
         cell_undefined = self.__extract_cell_undefined(self.cell_source)
@@ -139,7 +144,8 @@ class PyExtractor(Extractor):
             if und not in self.imports
                and und not in self.configurations
                and und not in self.global_params
-        }
+               and und not in self.global_secrets
+            }
 
     def infer_cell_dependencies(self, confs):
         dependencies = []
@@ -261,6 +267,15 @@ class PyExtractor(Extractor):
             if u not in params:
                 params[u] = self.global_params[u]
         return params
+
+    def extract_cell_secrets(self, cell_source):
+        secrets = {}
+        cell_unds = self.__extract_cell_undefined(cell_source)
+        secret_unds = [und for und in cell_unds if und in self.global_secrets]
+        for u in secret_unds:
+            if u not in secrets:
+                secrets[u] = self.global_secrets[u]
+        return secrets
 
     def extract_cell_conf_ref(self):
         confs = {}
