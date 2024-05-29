@@ -165,6 +165,9 @@ export class CellTracker extends React.Component<IProps, IState> {
             this.state.currentCell.params.forEach((el: string) => {
                 typeSelections[el] = (this.getVarType(el) != null)
             })
+            this.state.currentCell.secrets.forEach((el: string) => {
+                typeSelections[el] = (this.getVarType(el) != null)
+            })
             this.setState({ typeSelections: typeSelections })
 
             this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
@@ -356,6 +359,42 @@ export class CellTracker extends React.Component<IProps, IState> {
                                 </div>
                             ) : (<div></div>)
                             }
+                          {this.state.currentCell.secrets.length > 0 ? (
+                            <div>
+                                <p className={'lw-panel-preview'}>Secrets</p>
+                                <TableContainer component={Paper} className={'lw-panel-table'}>
+                                    <Table aria-label="simple table">
+                                        <TableBody>
+                                            {this.state.currentCell.secrets.map((secret: string) => (
+                                              <TableRow key={this.state.currentCell.node_id + "-" + secret}>
+                                                  <TableCell component="th" scope="row">
+                                                      {secret}
+                                                  </TableCell>
+                                                  <TableCell component="th" scope="row">
+                                                      <FormControl fullWidth>
+                                                          <Select
+                                                            labelId="secret-types-select-label"
+                                                            id={this.state.currentCell.node_id + "-" + secret + "-select"}
+                                                            label="Type"
+                                                            value={this.getVarType(secret)}
+                                                            error={this.getVarType(secret) == null}
+                                                            onChange={(event) => { this.typesUpdate(event, secret) }}
+                                                          >
+                                                              <MenuItem value={'int'}>Integer</MenuItem>
+                                                              <MenuItem value={'float'}>Float</MenuItem>
+                                                              <MenuItem value={'str'}>String</MenuItem>
+                                                              <MenuItem value={'list'}>List</MenuItem>
+                                                          </Select>
+                                                      </FormControl>
+                                                  </TableCell>
+                                              </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </div>
+                          ) : (<div></div>)
+                          }
                             {this.state.currentCell.dependencies.length > 0 ? (
                                 <div>
                                     <p className={'lw-panel-preview'}>Dependencies</p>

@@ -20,6 +20,7 @@ class Cell:
     outputs: list
     params: list
     param_values: dict
+    secrets: list
     confs: dict
     dependencies: list
     chart_obj: dict
@@ -38,6 +39,7 @@ class Cell:
             inputs,
             outputs,
             params,
+            secrets,
             confs,
             dependencies,
             container_source,
@@ -56,6 +58,7 @@ class Cell:
         self.add_outputs(outputs)
         self.add_params(params)
         self.add_param_values(params)
+        self.add_secrets(secrets)
         self.confs = confs
         self.all_inputs = list(inputs) + list(params)
         self.dependencies = list(sorted(dependencies, key=lambda x: x['name']))
@@ -94,9 +97,13 @@ class Cell:
             params = self._extract_types(params)
         self.params = params
 
+    def add_secrets(self, secrets):
+        if isinstance(secrets, dict):
+            secrets = self._extract_types(secrets)
+        self.secrets = secrets
+
     def set_image_version(self, image_version):
         self.image_version = image_version
-
 
     def add_param_values(self, params):
         self.param_values = {}
