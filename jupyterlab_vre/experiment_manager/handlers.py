@@ -140,7 +140,11 @@ class ExecuteWorkflowHandler(APIHandler):
             global_params.extend(cell['params'])
 
         try:
-            k8s_secret_name = self.add_secrets_to_k8s(payload['secrets'])
+            secrets = payload.get('secrets')
+            if secrets:
+                k8s_secret_name = self.add_secrets_to_k8s(secrets)
+            else:
+                k8s_secret_name = None
         except Exception as e:
             logger.error(f"Secret creation failed: {e}")
             logger.error(f"api_endpoint: {api_endpoint}")
