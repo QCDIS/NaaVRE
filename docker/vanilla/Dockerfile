@@ -48,6 +48,7 @@ RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
 RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager
 RUN jupyter serverextension enable --py jupyterlab_s3_browser
+RUN jupyter serverextension enable voila
 
 RUN jupyter lab build --debug;
 

@@ -59,5 +59,6 @@ dependencies:
   - awesome-slugify=1.6.5
   - ipywidgets=8.1.2
   - jupyterlab-s3-browser=0.12.0
+  - voila=0.5.7
   - pip:
     - pytype==2023.10.31
