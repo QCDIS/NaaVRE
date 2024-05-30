@@ -17,13 +17,15 @@ logger = logging.getLogger(__name__)
 
 
 class BackendRelay(APIHandler):
-    API_ENDPOINT: str = os.getenv('API_ENDPOINT', 'https://naavre-dev.minikube.test/vre-api-test')
+    # API_ENDPOINT: str = os.getenv('API_ENDPOINT', 'https://naavre-dev.minikube.test/vre-api-test')
+    API_ENDPOINT: str = 'http://localhost:8000'
     VRE_API_VERIFY_SSL: bool = os.getenv('VRE_API_VERIFY_SSL', 'false').lower() == 'true'
+
     # login_url = os.getenv('KEYCLOAK_LOGIN_URL', 'https://naavre-dev.minikube.test/auth/realms/vre/protocol/openid-connect/token')
 
     def __init__(self, application, request):
         super().__init__(application, request)
-        self.access_token: str = '802b9d17ed424c44a9249d4724ce9b17049f6894'
+        self.access_token: str = os.getenv('AUTHORIZATION')
         # self.access_token: str = ''
         self.refresh_token: str = ''
 
@@ -31,11 +33,12 @@ class BackendRelay(APIHandler):
     def convert_url(rel_url: str) -> str:
         return f'{BackendRelay.API_ENDPOINT}/api/{rel_url[len("/vre/"):]}'
 
-    def error_in_json(self, url: str, status_code: int, error_message: str = 'Unknown error') -> dict[str, any]:
+    @staticmethod
+    def error_in_json(url: str, status_code: int, error_message: str = 'Unknown error') -> dict[str, any]:
         return {'url': url, 'sta': status_code, 'msg': error_message}
 
     def get_with_auth(self, url: str):
-        return session.get(url, verify=BackendRelay.VRE_API_VERIFY_SSL, headers={'Authorization': f'Token {self.access_token}'})
+        return session.get(url, verify=BackendRelay.VRE_API_VERIFY_SSL, headers={'Authorization': f'{self.access_token}'})
         # return session.get(url, verify=BackendRelay.VRE_API_VERIFY_SSL, headers={})
 
     @tornado.web.authenticated
@@ -56,4 +59,4 @@ class BackendRelay(APIHandler):
         if response.status_code == 200:
             return self.write(response.json())
         self.set_status(response.status_code)
-        self.write(self.error_in_json(url, response.status_code))
+        self.write(BackendRelay.error_in_json(url, response.status_code))
