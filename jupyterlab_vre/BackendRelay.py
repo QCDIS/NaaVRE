@@ -3,9 +3,7 @@ import tornado.web
 import requests.adapters
 import urllib3
 import logging
-from urllib.parse import urlencode
 from notebook.base.handlers import APIHandler
-from requests import RequestException
 
 # customized requests.Session [w/ auto retry]
 session = requests.Session()
@@ -17,18 +15,12 @@ logger = logging.getLogger(__name__)
 
 
 class BackendRelay(APIHandler):
-    API_ENDPOINT: str = os.getenv('API_ENDPOINT', 'https://naavre-dev.minikube.test/vre-api-test')
-    # API_ENDPOINT: str = 'https://naavre-dev.minikube.test/vre-api-test'
-    # API_ENDPOINT: str = 'http://localhost:8000'
+    API_ENDPOINT: str = os.getenv('API_ENDPOINT')
     VRE_API_VERIFY_SSL: bool = os.getenv('VRE_API_VERIFY_SSL', 'false').lower() == 'true'
-
-    # login_url = os.getenv('KEYCLOAK_LOGIN_URL', 'https://naavre-dev.minikube.test/auth/realms/vre/protocol/openid-connect/token')
+    NAAVRE_API_TOKEN: str = os.getenv('NAAVRE_API_TOKEN')
 
     def __init__(self, application, request):
         super().__init__(application, request)
-        self.access_token: str = os.getenv("NAAVRE_API_TOKEN")
-        # self.access_token: str = ''
-        self.refresh_token: str = ''
 
     @staticmethod
     def convert_url(rel_url: str) -> str:
@@ -39,24 +31,12 @@ class BackendRelay(APIHandler):
         return {'url': url, 'sta': status_code, 'msg': error_message}
 
     def get_with_auth(self, url: str):
-        return session.get(url, verify=BackendRelay.VRE_API_VERIFY_SSL, headers={'Authorization': f'Token {self.access_token}'})
-        # return session.get(url, verify=BackendRelay.VRE_API_VERIFY_SSL, headers={})
+        return session.get(url, verify=BackendRelay.VRE_API_VERIFY_SSL, headers={'Authorization': f'Token {BackendRelay.NAAVRE_API_TOKEN}'})
 
     @tornado.web.authenticated
     async def get(self):
         url: str = BackendRelay.convert_url(self.request.uri)
         response = self.get_with_auth(url)
-        # if response.status_code == 401 or response.status_code == 403:
-        #     try:
-        #         logger.debug('Trying to login')
-        #         # login_response_body = requests.post(BackendRelay.login_url, headers={'Content-Type': 'application/x-www-form-urlencoded'}, data=urlencode({'client_id': 'myclient', 'grant_type': 'password', 'scope': 'openid', 'username': 'u', 'password': 'u'}), verify=False).json()
-        #         response = self.get_with_auth()
-        #     except RequestException as e:
-        #         err_msg = 'Backend login error'
-        #         self.set_status(e.response.status_code)
-        #         self.write(self.error_in_json(e.request.url, e.response.status_code, err_msg))
-        #         logger.error(err_msg)
-        #         return
         if response.status_code == 200:
             return self.write(response.json())
         self.set_status(response.status_code)
