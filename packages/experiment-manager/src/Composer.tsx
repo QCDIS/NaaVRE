@@ -69,7 +69,7 @@ export class Composer extends React.Component<IProps, IState> {
           isCellInWorkspace={this.handleIsCellInWorkspace}
         />
       ) as Dialog.IBodyWidget<any>,
-      buttons: []
+      buttons: [Dialog.okButton({ label: 'Close' })]
     };
   }
 
@@ -81,7 +81,7 @@ export class Composer extends React.Component<IProps, IState> {
           chart={this.state.chart}
         />
       ) as Dialog.IBodyWidget<any>,
-      buttons: []
+      buttons: [Dialog.okButton({ label: 'Close' })]
     };
   }
 
