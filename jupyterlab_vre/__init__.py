@@ -9,6 +9,7 @@ from .experiment_manager.handlers import ExportWorkflowHandler, ExecuteWorkflowH
 from .handlers import CatalogGetAllHandler
 from .notebook_search.handlers import NotebookSearchHandler, NotebookSearchRatingHandler, NotebookDownloadHandler, \
     NotebookSeachHistoryHandler, NotebookSourceHandler
+from .type_detector.handlers import TypeDetectorHandler
 from .registries.handlers import RegistriesHandler
 from .repositories.handlers import RepositoriesHandler
 
@@ -25,6 +26,7 @@ def load_jupyter_server_extension(lab_app):
     lab_app.web_app.add_handlers(host_pattern, [
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/datasetdownloadhandler'), DatasetDownloadHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/datasetsearch'), DatasetSearchHandler),
+        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/typedetector'), TypeDetectorHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebooksearch'), NotebookSearchHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebookdownloadhandler'), NotebookDownloadHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebooksourcehandler'), NotebookSourceHandler),
