@@ -213,6 +213,9 @@ class ExtractParams(RVisitor):
 
     def visitInt(self, ctx: RParser.IntContext):
         val = ctx.INT().getText()
+        # check if L suffix is present
+        if val[-1] == "L":
+            val = val[:-1]
         return int(val)
 
     def visitFloat(self, ctx: RParser.FloatContext):
