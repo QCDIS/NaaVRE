@@ -6,6 +6,9 @@ library(jsonlite)
 {{ dep }}
 {% endfor %}
 
+{%  for secret in cell.secrets|sort %}
+{{ secret }} = Sys.getenv('{{ secret }}')
+{% endfor %}
 
 print('option_list')
 option_list = list(
