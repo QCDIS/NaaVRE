@@ -124,6 +124,7 @@ class ExtractUndefined(RVisitor):
         return self.undefined
 
     def visitAssign(self, ctx: RParser.AssignContext):
+        self.visitChildren(ctx)
         return None
 
     def visitCall(self, ctx: RParser.CallContext):
