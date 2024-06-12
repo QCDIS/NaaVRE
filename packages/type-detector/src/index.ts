@@ -82,21 +82,19 @@ export class NotebookSearchExtension implements DocumentRegistry.IWidgetExtensio
                 });
                 console.log(extractedCell);
 
-                // Call handler to send the contents of the cell to the type detector
-                const resp = await requestAPI<any>('typedetector', {
-                    body: JSON.stringify({
-                        cell: extractedCell
-                    }),
-                    method: 'POST'
-                })
-                console.log(resp);
+                const types = extractedCell['types'];
+                let source: string = "";
+
+                for (const key in types) {
+                    source += `\ntypeof(${key})`;
+                }
                 
                 // Send original source code to kernel
                 kernel.requestExecute({ code: cellContent });
 
                 // Send code with typeof() for each variable and retrieve responses.
-                const future = kernel.requestExecute({ code: resp['source'] });
-                const vars = resp['vars'];
+                const future = kernel.requestExecute({ code: source });
+                let vars = Object.keys(types);
                 
                 future.onIOPub = (msg) => {
                     if (msg.header.msg_type === 'execute_result') {
@@ -125,7 +123,6 @@ export class NotebookSearchExtension implements DocumentRegistry.IWidgetExtensio
                 };
 
                 future.onReply = (msg) => {
-                    console.log('Reply:', msg);
                     // If status is 'ok' or 'aborted', then return button
                     if (msg.content.status as string === 'aborted' || msg.content.status as string === 'ok') {
                         button.innerHTML = '<span class="jp-ToolbarButtonComponent-label">Execute Type Detector</span>';
