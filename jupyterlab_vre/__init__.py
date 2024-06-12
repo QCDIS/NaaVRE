@@ -33,10 +33,10 @@ def load_jupyter_server_extension(lab_app):
          NotebookSeachHistoryHandler),
         (
         url_path_join(lab_app.web_app.settings['base_url'], r'/vre/notebooksearchrating'), NotebookSearchRatingHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/extract'), ExtractorHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/types'), TypesHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/baseimage'), BaseImageHandler),
-        (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/addcell'), CellsHandler),
+        # (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/extract'), ExtractorHandler),
+        # (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/types'), TypesHandler),
+        # (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/baseimage'), BaseImageHandler),
+        # (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/addcell'), CellsHandler),
         # (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/containerizer/baseimagetags'), BaseImageTagsHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/catalog/cells/all'), CatalogGetAllHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/expmanager/export'), ExportWorkflowHandler),
@@ -44,9 +44,15 @@ def load_jupyter_server_extension(lab_app):
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/repositories/?'), RepositoriesHandler),
         (url_path_join(lab_app.web_app.settings['base_url'], r'/vre/registries/?'), RegistriesHandler)
     ])
-    base_url = lab_app.web_app.settings['base_url']
+    base_url: str = lab_app.web_app.settings['base_url']
+    common_prefix: str = 'vre'
+    containerizer_prefix: str = 'containerizer'
     lab_app.web_app.add_handlers(host_pattern, [
-        (url_path_join(base_url, r'/vre/containerizer/baseimagetags'), BackendRelay),
+        (url_path_join(base_url, fr'/{common_prefix}/{containerizer_prefix}/extract'), BackendRelay),
+        (url_path_join(base_url, fr'/{common_prefix}/{containerizer_prefix}/baseimagetags'), BackendRelay),
+        (url_path_join(base_url, fr'/{common_prefix}/{containerizer_prefix}/types'), BackendRelay),
+        (url_path_join(base_url, fr'/{common_prefix}/{containerizer_prefix}/baseimage'), BackendRelay),
+        (url_path_join(base_url, fr'/{common_prefix}/{containerizer_prefix}/addcell'), BackendRelay),
     ])
 
     lab_app.log.info("Registered NaaVRRE extension at URL path /vre")
