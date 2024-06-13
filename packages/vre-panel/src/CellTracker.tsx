@@ -12,6 +12,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { Button, FormControl, MenuItem, Select, TableBody, TextField, ThemeProvider } from "@material-ui/core";
 import { Autocomplete, LinearProgress, Alert, Box } from '@mui/material';
+import { IOutputAreaModel } from '@jupyterlab/outputarea';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { AddCellDialog } from './AddCellDialog';
 
 interface IProps {
@@ -232,6 +234,160 @@ export class CellTracker extends React.Component<IProps, IState> {
         return kernel
     }
 
+
+    typeDetection = async() => {
+        this.setState({loading: true});
+        const panel = this.props.notebook;
+    
+        try {
+            // Get contents of currently selected cell
+            const currentCell = panel.content.activeCell;
+            if (!currentCell) {
+                console.log('No cell selected');
+                return;
+            } else if (currentCell.model.type !== 'code') {
+                console.log('Selected cell is not a code cell');
+                return;
+            }
+    
+            // Clear output of currently selected cell
+            const cell = panel.content.activeCell;
+            const codeCell = cell as Cell & { model: { outputs: IOutputAreaModel } };
+            codeCell.model.outputs.clear();
+    
+            // Get kernel
+            const kernel = panel.sessionContext.session?.kernel;
+            if (!kernel) {
+                console.log('No kernel found');
+                return;
+            }
+            
+            // Get original source code
+            const cellContent = currentCell.model.value.text;
+    
+            // Based on types, create a source code with typeof() for each variable
+            const extractedCell = this.state.currentCell;
+            const types = extractedCell['types'];
+            let source: string = "";
+    
+            for (const key in types) {
+                source += `\ntypeof(${key})`;
+            }
+    
+            // Send original source code to kernel
+            await kernel.requestExecute({ code: cellContent }).done;
+    
+            // Send code with typeof() for each variable and retrieve responses.
+            const future = kernel.requestExecute({ code: source });
+            let vars = Object.keys(types);
+            let detectedTypes: { [key: string]: string } = {};
+    
+            future.onIOPub = (msg) => {
+                if (msg.header.msg_type === 'execute_result') {
+                    console.log('Execution Result:', msg.content);
+                } else if (msg.header.msg_type === 'display_data') {
+                    console.log('Display Data:', msg.content);
+
+                    let typeString = ("data" in msg.content ? msg.content.data['text/html'] : "No data found") as string;
+                    
+                    // Remove single/double quotes
+                    typeString = typeString.replace(/['"]/g, '');
+                    const varName = vars[0];
+
+                    let detectedType = null;
+                    if (typeString === 'integer') {
+                        detectedType = 'int';
+                    } else if (typeString === 'str') {
+                        detectedType = 'str';
+                    } else if (typeString === 'double') {
+                        detectedType = 'float';
+                    } else if (typeString === 'list') {
+                        detectedType = 'list';
+                    } else {
+                        detectedType = types[varName];
+                    }
+    
+                    detectedTypes[varName] = detectedType;
+
+                    // Write the content of the message to the output area of the cell
+                    const output = {
+                        output_type: 'display_data',
+                        data: {
+                            'text/plain': vars[0] + ': ' + ("data" in msg.content ? msg.content.data['text/html'] : "No data found"),
+                        },
+                        metadata: {}
+                    }
+
+                    codeCell.model.outputs.add(output);
+                    vars.shift();
+                } else if (msg.header.msg_type === 'stream') {
+                    console.log('Stream:', msg);
+                } else if (msg.header.msg_type === 'error') {
+                    const output = {
+                        output_type: 'display_data',
+                        data: {
+                            'text/plain': "evalue" in msg.content ? msg.content.evalue : "No data found",
+                        },
+                        metadata: {}
+                    }
+                    codeCell.model.outputs.add(output);
+                    console.error('Error:', msg.content);
+                }
+            };
+    
+            future.onReply = (msg) => {
+                if (msg.content.status as string === 'aborted' || msg.content.status as string === 'ok') {
+                    // Update the state with the detected types
+                    const newTypes = { ...this.state.currentCell.types, ...detectedTypes };
+                    const updatedCell = { ...this.state.currentCell, types: newTypes };
+    
+                    let typeSelections: { [type: string]: boolean } = {}
+
+                    updatedCell.inputs.forEach((el: string) => {
+                        typeSelections[el] = (newTypes[el] != null)
+                    })
+    
+                    updatedCell.outputs.forEach((el: string) => {
+                        typeSelections[el] = (newTypes[el] != null)
+                    })
+    
+                    updatedCell.params.forEach((el: string) => {
+                        typeSelections[el] = (newTypes[el] != null)
+                    })
+
+                    this.setState({
+                        currentCell: updatedCell,
+                        typeSelections: typeSelections,
+                    });
+
+                    console.log(this.state)
+
+                    console.log('Detected Types:', detectedTypes);
+                }
+    
+                // Report that type detection was aborted
+                if (msg.content.status as string === 'aborted') {
+                    const output = {
+                        output_type: 'display_data',
+                        data: {
+                            'text/plain': 'Type detection was aborted',
+                        },
+                        metadata: {}
+                    };
+    
+                    codeCell.model.outputs.add(output);
+                }
+            };
+    
+            console.log(future);
+            console.log(extractedCell);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            this.setState({loading: false});
+        }
+    };
+
     render() {
         return (
             <ThemeProvider theme={theme}>
@@ -420,6 +576,21 @@ export class CellTracker extends React.Component<IProps, IState> {
                             color="primary"
                             disabled={!this.allTypesSelected() || !this.state.baseImageSelected || this.state.loading}>
                             Create
+                        </Button>
+                    </div>
+                    <div>
+                        <Button
+                            variant='contained'
+                            className={'lw-panel-button'}
+                            onClick={this.typeDetection}
+                            color='primary'
+                            disabled={!this.state.currentCell || this.state.loading}
+                        >
+                            {this.state.loading ? (
+                                <CircularProgress size={24} color="inherit" />
+                            ) : (
+                                'Type Detector'
+                            )}
                         </Button>
                     </div>
                 </div>
