@@ -75,7 +75,7 @@ def create_cell_and_add_to_cat(cell_path=None):
         cell['node_id'],
         cell['kernel'],
         notebook_dict,
-        )
+    )
     test_cell.types = cell['types']
     test_cell.base_image = cell['base_image']
     Catalog.editor_buffer = test_cell
@@ -352,12 +352,23 @@ class HandlersAPITest(AsyncHTTPTestCase):
 
                 # Commit modified cell
                 _, new_cell = create_cell_and_add_to_cat(cell_path=cell_path)
-                new_cell['original_source'] += f'\na = {random.random()}'
+                new_line = f'a = {random.random()}'
+                new_cell['original_source'] += '\n' + new_line
+                if 'notebook_dict' in new_cell and 'cells' in new_cell['notebook_dict']:
+                    new_cell['notebook_dict']['cells'][0]['source'] += '\n' + new_line
                 with open(cell_path, 'r') as f:
                     saved_cell_text = f.read()
                 try:
                     with open(cell_path, 'w') as file:
                         json.dump(new_cell, file, indent=2)
+                    file.close()
+                    with open(cell_path, 'r') as f:
+                        modified_cell_text = f.read()
+                    file.close()
+                    self.assertNotEqual(saved_cell_text, modified_cell_text)
+                    modified_cell_json = json.loads(modified_cell_text)
+                    # check if modified_cell_text continents new_line
+                    self.assertTrue(new_line in modified_cell_json['original_source'])
                     os.environ["DEBUG"] = "False"
                     create_cell_and_add_to_cat(cell_path=cell_path)
                     response = self.call_cell_handler()
@@ -367,6 +378,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 finally:
                     with open(cell_path, 'w') as f:
                         f.write(saved_cell_text)
+                    f.close()
 
         if saved_debug_value is not None:
             os.environ["DEBUG"] = saved_debug_value
