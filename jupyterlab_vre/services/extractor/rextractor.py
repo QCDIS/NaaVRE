@@ -107,6 +107,7 @@ class RExtractor(Extractor):
     imports: dict
     configurations: dict
     global_params: dict
+    global_secrets: dict
     undefined: dict
 
     def __init__(self, notebook, cell_source):
@@ -115,7 +116,8 @@ class RExtractor(Extractor):
 
         self.imports = self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
-        self.global_params = self.__extract_params(self.sources)
+        self.global_params = self.__extract_prefixed_var(self.sources, 'param')
+        self.global_secrets = self.__extract_prefixed_var(self.sources, 'secret')
         self.undefined = dict()
         for source in self.sources:
             self.undefined.update(self.__extract_cell_undefined(source))
@@ -180,43 +182,45 @@ class RExtractor(Extractor):
                     if len(matches) > 0 and variable not in configurations:
                         configurations[variable] = line
                         break
-        return configurations
+        return self.__resolve_configurations(configurations)
 
-    def __extract_params(self, sources):  # check source https://adv-r.hadley.nz/expressions.html)
-        params = {}
+    def __extract_prefixed_var(self, sources, prefix):  # check source https://adv-r.hadley.nz/expressions.html)
+        extracted_vars = {}
         for s in sources:
             lines = s.splitlines()
 
             '''Approach 1: Naive way
-            Find all variable assignments with a prefix of "param"'''
-            # pattern = r"param_[a-zA-Z0-9_]{0,}"
+            Find all variable assignments with a prefix of "{prefix}"'''
+            # pattern = r"prefix_[a-zA-Z0-9_]{0,}"
             # matches = re.findall(pattern, s) 
             # Extract the variable names from the matches
             # for match in matches:
-            # params.add(match)
+            # extracted_vars.add(match)
 
             '''Approach 2: Look at the AST'''
             assignment_variables = self.assignment_variables(s)
             for variable in assignment_variables:
 
-                # the prefix should be 'param'
-                if not (variable.split("_")[0] == "param"):
+                # the prefix should be '{prefix}'
+                if not (variable.split("_")[0] == prefix):
                     continue
 
                 # find the line of the assignment. (TODO) this approach assumes that there is only one expression in one line.
                 # this might not work when we have something like: a <- 3; b = 7
-                param_value = ''
+                var_value = ''
                 for line in lines:
                     m = re.match(r'{}\s*(?:=|<-)(.*?)\s*(#.*?)?$'.format(variable), line)
                     if m:
-                        param_value = m.group(1).strip(" \"' ")
+                        var_value = m.group(1).strip(" \"' ")
 
-                params[variable] = {
+                extracted_vars[variable] = {
                     'name': variable,
                     'type': None,
-                    'value': param_value,
+                    'value': var_value,
                 }
-        return params
+                if prefix == 'secret':
+                    del extracted_vars[variable]['value']
+        return extracted_vars
 
     def infer_cell_outputs(self):
         cell_names = self.__extract_cell_names(self.cell_source)
@@ -228,7 +232,8 @@ class RExtractor(Extractor):
                and name in self.undefined
                and name not in self.configurations
                and name not in self.global_params
-        }
+               and name not in self.global_secrets
+            }
 
     def infer_cell_inputs(self):
         cell_undefined = self.__extract_cell_undefined(self.cell_source)
@@ -238,7 +243,8 @@ class RExtractor(Extractor):
             if und not in self.imports
                and und not in self.configurations
                and und not in self.global_params
-        }
+               and und not in self.global_secrets
+            }
 
     def infer_cell_dependencies(self, confs):
         # TODO: check this code, you have removed logic. 
@@ -386,6 +392,16 @@ class RExtractor(Extractor):
                 params[u] = self.global_params[u]
         return params
 
+    def extract_cell_secrets(self, cell_source):
+        secrets = {}
+        cell_unds = self.__extract_cell_undefined(cell_source)
+        secret_unds = [und for und in cell_unds if und in self.global_secrets]
+        for u in secret_unds:
+            if u not in secrets:
+                secrets[u] = self.global_secrets[u]
+        return secrets
+
+
     def extract_cell_conf_ref(self):
         confs = {}
         cell_unds = self.__extract_cell_undefined(self.cell_source)
@@ -397,8 +413,13 @@ class RExtractor(Extractor):
 
     def __resolve_configurations(self, configurations):
         resolved_configurations = {}
+        max_depth = 50
         for k, assignment in configurations.items():
-            while 'conf_' in assignment.split('=')[1]:
+            assignment_symbol = '='
+            if '<-' in assignment:
+                assignment_symbol = '<-'
+            while 'conf_' in assignment.split(assignment_symbol)[1]:
+                max_depth -= 1
                 for conf_name, replacing_assignment in configurations.items():
                     if conf_name in assignment.split('=')[1]:
                         assignment = assignment.replace(
@@ -406,6 +427,9 @@ class RExtractor(Extractor):
                             replacing_assignment.split('=')[1],
                             )
                 resolved_configurations[k] = assignment
+                if max_depth <= 0:
+                    raise RuntimeError('maximum depth exceeded while '
+                                       'resolving configuration')
         configurations.update(resolved_configurations)
         return configurations
 

@@ -1,3 +1,4 @@
+import base64
 import json
 import logging
 import os
@@ -103,6 +104,7 @@ class ExportWorkflowHandler(APIHandler):
                 cells=cells,
                 nodes=nodes,
                 global_params=global_params,
+                k8s_secret_name='ext-workflow-secret',
                 image_repo=image_repo,
                 workflow_name=workflow_name,
                 workflow_service_account=get_workflow_service_account(),
@@ -137,6 +139,22 @@ class ExecuteWorkflowHandler(APIHandler):
         for _nid, cell in cells.items():
             global_params.extend(cell['params'])
 
+        try:
+            secrets = payload.get('secrets')
+            if secrets:
+                k8s_secret_name = self.add_secrets_to_k8s(secrets)
+            else:
+                k8s_secret_name = None
+        except Exception as e:
+            logger.error(f"Secret creation failed: {e}")
+            logger.error(f"api_endpoint: {api_endpoint}")
+            logger.error(f"vre_api_verify_ssl: {self.vre_api_verify_ssl}")
+            self.set_status(400)
+            self.write(f"Secret creation failed: {e}")
+            self.write_error(f"Secret creation failed: {e}")
+            self.flush()
+            return
+
         registry_credentials = Catalog.get_registry_credentials()
 
         image_repo = registry_credentials[0]['url']
@@ -153,6 +171,7 @@ class ExecuteWorkflowHandler(APIHandler):
             cells=cells,
             nodes=nodes,
             global_params=params,
+            k8s_secret_name=k8s_secret_name,
             image_repo=image_repo,
             workflow_name=workflow_name,
             workflow_service_account=get_workflow_service_account(),
@@ -170,12 +189,11 @@ class ExecuteWorkflowHandler(APIHandler):
 
         try:
             access_token = os.environ['NAAVRE_API_TOKEN']
-            vre_api_verify_ssl = (os.getenv('VRE_API_VERIFY_SSL', 'true').lower() == 'true')
             logger.info('Workflow submission request: ' + str(json.dumps(req_body, indent=2)))
 
             resp = requests.post(
                 f"{api_endpoint}/api/workflows/submit/",
-                verify=vre_api_verify_ssl,
+                verify=self.vre_api_verify_ssl,
                 data=json.dumps(req_body),
                 headers={
                     'Authorization': f"Token {access_token}",
@@ -186,7 +204,7 @@ class ExecuteWorkflowHandler(APIHandler):
         except Exception as e:
             logger.error('Workflow submission failed: ' + str(e))
             logger.error('api_endpoint: ' + str(api_endpoint))
-            logger.error('vre_api_verify_ssl: ' + str(vre_api_verify_ssl))
+            logger.error('vre_api_verify_ssl: ' + str(self.vre_api_verify_ssl))
             self.set_status(400)
             self.write('Workflow submission failed: ' + str(e))
             self.write_error('Workflow submission failed: ' + str(e))
@@ -209,11 +227,10 @@ class ExecuteWorkflowHandler(APIHandler):
         self.check_environment_variables()
         api_endpoint = os.getenv('API_ENDPOINT')
         access_token = os.environ['NAAVRE_API_TOKEN']
-        vre_api_verify_ssl = (os.getenv('VRE_API_VERIFY_SSL', 'true').lower() == 'true')
         # This is a bug. If we don't do this, the workflow status is not updated.
         resp = requests.get(
             f"{api_endpoint}/api/workflows/",
-            verify=vre_api_verify_ssl,
+            verify=self.vre_api_verify_ssl,
             headers={
                 'Authorization': f"Token {access_token}",
                 'Content-Type': 'application/json'
@@ -229,7 +246,7 @@ class ExecuteWorkflowHandler(APIHandler):
         sleep(0.3)
         resp = requests.get(
             f"{api_endpoint}/api/workflows/{workflow_id}/",
-            verify=vre_api_verify_ssl,
+            verify=self.vre_api_verify_ssl,
             headers={
                 'Authorization': f"Token {access_token}",
                 'Content-Type': 'application/json'
@@ -238,6 +255,31 @@ class ExecuteWorkflowHandler(APIHandler):
         self.write(resp.json())
         self.set_status(resp.status_code)
         self.flush()
+
+    @property
+    def vre_api_verify_ssl(self):
+        return os.getenv('VRE_API_VERIFY_SSL', 'true').lower() == 'true'
+
+    def add_secrets_to_k8s(self, secrets):
+        self.check_environment_variables()
+        api_endpoint = os.getenv('API_ENDPOINT')
+        access_token = os.getenv('NAAVRE_API_TOKEN')
+        body = {
+            k: base64.b64encode(v.encode()).decode()
+            for k, v in secrets.items()
+            }
+        resp = requests.post(
+            f"{api_endpoint}/api/workflows/create_secret/",
+            verify=self.vre_api_verify_ssl,
+            headers={
+                'Authorization': f"Token {access_token}",
+                'Content-Type': 'application/json'
+                },
+            data=json.dumps(body),
+            )
+        resp.raise_for_status()
+        secret_name = resp.json()['secretName']
+        return secret_name
 
     def check_environment_variables(self):
         if not os.getenv('API_ENDPOINT'):
