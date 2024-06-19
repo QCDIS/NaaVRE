@@ -4,6 +4,7 @@ export declare type VRECell = {
     title               : string;
     task_name           : string;
     original_source     : string;
+    base_image          : {};
     inputs              : [];
     outputs             : [];
     params              : [];

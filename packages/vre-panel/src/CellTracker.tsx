@@ -28,8 +28,7 @@ interface IState {
     baseImages: any[]
 }
 
-const DefaultState: IState = {
-
+export const DefaultState: IState = {
     loading: false,
     extractorError: '',
     baseImageSelected: false,
@@ -100,13 +99,13 @@ export class CellTracker extends React.Component<IProps, IState> {
 
 
     typesUpdate = async (event: React.ChangeEvent<{ name?: string; value: unknown; }>, port: string) => {
-        await requestAPI<any>('containerizer/types', {
-            body: JSON.stringify({
-                port: port,
-                type: event.target.value
-            }),
-            method: 'POST'
-        });
+        // await requestAPI<any>('containerizer/types', {
+        //     body: JSON.stringify({
+        //         port: port,
+        //         type: event.target.value
+        //     }),
+        //     method: 'POST'
+        // });
 
         let currTypeSelections = this.state.typeSelections
         currTypeSelections[port] = true
@@ -116,17 +115,20 @@ export class CellTracker extends React.Component<IProps, IState> {
             typeSelections: currTypeSelections,
             currentCell: currCurrentCell,
         })
+        console.log(`currentCell: ${JSON.stringify(this.state.currentCell)}`)
     };
 
     baseImageUpdate = async (value: any) => {
         console.log('value: '+value);
-        await requestAPI<any>('containerizer/baseimage', {
-            body: JSON.stringify({
-                image: value
-            }),
-            method: 'POST'
-        });
+        // await requestAPI<any>('containerizer/baseimage', {
+        //     body: JSON.stringify({
+        //         image: value
+        //     }),
+        //     method: 'POST'
+        // });
+        this.state.currentCell.base_image = value
         this.setState({ baseImageSelected: true });
+        console.log(`currentCell: ${JSON.stringify(this.state.currentCell)}`)
     };
 
     extractor = async (notebookModel: INotebookModel, save = false) => {
@@ -147,6 +149,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                 }),
                 method: 'POST'
             });
+            console.log(`Extracted cell: ${JSON.stringify(extractedCell)}`);
             this.setState({
                 currentCell: extractedCell,
                 loading: false,

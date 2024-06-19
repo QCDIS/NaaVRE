@@ -1,4 +1,3 @@
-
 import { requestAPI } from '@jupyter_vre/core';
 import { CircularProgress, styled, ThemeProvider } from '@material-ui/core';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
@@ -6,6 +5,7 @@ import { green } from '@mui/material/colors';
 import * as React from 'react';
 import { theme } from './Theme';
 import { NotebookPanel } from '@jupyterlab/notebook';
+import { DefaultState } from './CellTracker';
 
 
 const CatalogBody = styled('div')({
@@ -23,13 +23,13 @@ interface IState {
     loading: boolean
 }
 
-const DefaultState: IState = {
+const State: IState = {
     loading: true
 }
 
 export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
 
-    state = DefaultState;
+    state = State;
 
     componentDidMount(): void {
         this.createCell()
@@ -37,14 +37,16 @@ export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
 
     createCell = async () => {
         try {
-            const sessionContext = this.props.notebook.context.sessionContext;
-            const kernelObject = sessionContext?.session?.kernel; // https://jupyterlab.readthedocs.io/en/stable/api/interfaces/services.kernel.ikernelconnection-1.html#serversettings
-            const kernel = (await kernelObject.info).implementation;
+            // const sessionContext = this.props.notebook.context.sessionContext;
+            // const kernelObject = sessionContext?.session?.kernel; // https://jupyterlab.readthedocs.io/en/stable/api/interfaces/services.kernel.ikernelconnection-1.html#serversettings
+            // const kernel = (await kernelObject.info).implementation;
 
+            console.log(`Submitting cell: ${JSON.stringify(DefaultState)}`)
             await requestAPI<any>('containerizer/addcell', {
-                body: JSON.stringify({
-                    kernel
-                }),
+                // body: JSON.stringify({
+                //     kernel
+                // }),
+                body: JSON.stringify(DefaultState.currentCell),
                 method: 'POST'
             });
 
