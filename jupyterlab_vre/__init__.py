@@ -9,7 +9,6 @@ from .experiment_manager.handlers import ExportWorkflowHandler, ExecuteWorkflowH
 from .handlers import CatalogGetAllHandler
 from .notebook_search.handlers import NotebookSearchHandler, NotebookSearchRatingHandler, NotebookDownloadHandler, \
     NotebookSeachHistoryHandler, NotebookSourceHandler
-from .type_detector.handlers import TypeDetectorHandler
 from .registries.handlers import RegistriesHandler
 from .repositories.handlers import RepositoriesHandler
 

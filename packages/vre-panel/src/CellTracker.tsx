@@ -261,126 +261,132 @@ export class CellTracker extends React.Component<IProps, IState> {
                 console.log('No kernel found');
                 return;
             }
-            
+    
             // Get original source code
             const cellContent = currentCell.model.value.text;
     
-            // Based on types, create a source code with typeof() for each variable
+            // Retrieve inputs, outputs, and params from extractedCell
             const extractedCell = this.state.currentCell;
             const types = extractedCell['types'];
-            let source: string = "";
+            const inputs = extractedCell['inputs'];
+            const outputs = extractedCell['outputs'];
+            const params = extractedCell['params'];
     
-            for (const key in types) {
-                source += `\ntypeof(${key})`;
-            }
+            // Function to send code to kernel and handle response
+            const sendCodeAndHandleResponse = async (code: string, vars: string[]): Promise<{ [key: string]: string }> => {
+                const future = kernel.requestExecute({ code });
+                let detectedTypes: { [key: string]: string } = {};
     
-            // Send original source code to kernel
-            await kernel.requestExecute({ code: cellContent }).done;
+                return new Promise((resolve, reject) => {
+                    future.onIOPub = (msg) => {
+                        if (msg.header.msg_type === 'execute_result') {
+                            console.log('Execution Result:', msg.content);
+                        } else if (msg.header.msg_type === 'display_data') {
+                            console.log('Display Data:', msg.content);
     
-            // Send code with typeof() for each variable and retrieve responses.
-            const future = kernel.requestExecute({ code: source });
-            let vars = Object.keys(types);
-            let detectedTypes: { [key: string]: string } = {};
+                            let typeString = ("data" in msg.content ? msg.content.data['text/html'] : "No data found") as string;
+                            typeString = typeString.replace(/['"]/g, '');
+                            const varName = vars[0];
     
-            future.onIOPub = (msg) => {
-                if (msg.header.msg_type === 'execute_result') {
-                    console.log('Execution Result:', msg.content);
-                } else if (msg.header.msg_type === 'display_data') {
-                    console.log('Display Data:', msg.content);
-
-                    let typeString = ("data" in msg.content ? msg.content.data['text/html'] : "No data found") as string;
-                    
-                    // Remove single/double quotes
-                    typeString = typeString.replace(/['"]/g, '');
-                    const varName = vars[0];
-
-                    let detectedType = null;
-                    if (typeString === 'integer') {
-                        detectedType = 'int';
-                    } else if (typeString === 'str') {
-                        detectedType = 'str';
-                    } else if (typeString === 'double') {
-                        detectedType = 'float';
-                    } else if (typeString === 'list') {
-                        detectedType = 'list';
-                    } else {
-                        detectedType = types[varName];
-                    }
+                            let detectedType = null;
+                            if (typeString === 'integer') {
+                                detectedType = 'int';
+                            } else if (typeString === 'str') {
+                                detectedType = 'str';
+                            } else if (typeString === 'double') {
+                                detectedType = 'float';
+                            } else if (typeString === 'list') {
+                                detectedType = 'list';
+                            } else {
+                                detectedType = types[varName];
+                            }
     
-                    detectedTypes[varName] = detectedType;
-
-                    // Write the content of the message to the output area of the cell
-                    const output = {
-                        output_type: 'display_data',
-                        data: {
-                            'text/plain': vars[0] + ': ' + ("data" in msg.content ? msg.content.data['text/html'] : "No data found"),
-                        },
-                        metadata: {}
-                    }
-
-                    codeCell.model.outputs.add(output);
-                    vars.shift();
-                } else if (msg.header.msg_type === 'stream') {
-                    console.log('Stream:', msg);
-                } else if (msg.header.msg_type === 'error') {
-                    const output = {
-                        output_type: 'display_data',
-                        data: {
-                            'text/plain': "evalue" in msg.content ? msg.content.evalue : "No data found",
-                        },
-                        metadata: {}
-                    }
-                    codeCell.model.outputs.add(output);
-                    console.error('Error:', msg.content);
-                }
-            };
+                            detectedTypes[varName] = detectedType;
+                        
+                            const output = {
+                                output_type: 'display_data',
+                                data: {
+                                    'text/plain': vars[0] + ': ' + ("data" in msg.content ? msg.content.data['text/html'] : "No data found"),
+                                },
+                                metadata: {}
+                            }
     
-            future.onReply = (msg) => {
-                if (msg.content.status as string === 'aborted' || msg.content.status as string === 'ok') {
-                    // Update the state with the detected types
-                    const newTypes = { ...this.state.currentCell.types, ...detectedTypes };
-                    const updatedCell = { ...this.state.currentCell, types: newTypes };
-    
-                    let typeSelections: { [type: string]: boolean } = {}
-
-                    updatedCell.inputs.forEach((el: string) => {
-                        typeSelections[el] = (newTypes[el] != null)
-                    })
-    
-                    updatedCell.outputs.forEach((el: string) => {
-                        typeSelections[el] = (newTypes[el] != null)
-                    })
-    
-                    updatedCell.params.forEach((el: string) => {
-                        typeSelections[el] = (newTypes[el] != null)
-                    })
-
-                    this.setState({
-                        currentCell: updatedCell,
-                        typeSelections: typeSelections,
-                    });
-
-                    console.log(this.state)
-
-                    console.log('Detected Types:', detectedTypes);
-                }
-    
-                // Report that type detection was aborted
-                if (msg.content.status as string === 'aborted') {
-                    const output = {
-                        output_type: 'display_data',
-                        data: {
-                            'text/plain': 'Type detection was aborted',
-                        },
-                        metadata: {}
+                            codeCell.model.outputs.add(output);
+                            vars.shift();
+                        } else if (msg.header.msg_type === 'stream') {
+                            console.log('Stream:', msg);
+                        } else if (msg.header.msg_type === 'error') {
+                            const output = {
+                                output_type: 'display_data',
+                                data: {
+                                    'text/plain': "evalue" in msg.content ? msg.content.evalue : "No data found",
+                                },
+                                metadata: {}
+                            }
+                            codeCell.model.outputs.add(output);
+                            console.error('Error:', msg.content);
+                            reject(msg.content);
+                        }
                     };
     
-                    codeCell.model.outputs.add(output);
-                }
+                    future.onReply = (msg) => {
+                        if (msg.content.status as string === 'aborted' || msg.content.status as string === 'ok') {
+                            resolve(detectedTypes);
+                        }
+                    };
+                });
             };
+
+            // Create code with typeof() for inputs and params
+            let inputParamSource = "";
+            inputs.forEach(input => {
+                inputParamSource += `\ntypeof(${input})`;
+            });
+            params.forEach(param => {
+                inputParamSource += `\ntypeof(${param})`;
+            });
+            
+            // Send code to check types of inputs and params
+            const detectedInputParamTypes = await sendCodeAndHandleResponse(inputParamSource, [...inputs, ...params]);
+            console.log('Detected Input and Param Types:', detectedInputParamTypes);
     
-            console.log(future);
-            console.log(extractedCell);
+            // Send original source code
+            await kernel.requestExecute({ code: cellContent }).done;
+    
+            // Create code with typeof() for outputs
+            let outputSource = "";
+            outputs.forEach(output => {
+                outputSource += `\ntypeof(${output})`;
+            });
+    
+            // Send code to check types of outputs
+            const detectedOutputTypes = await sendCodeAndHandleResponse(outputSource, [...outputs]);
+            console.log('Detected Output Types:', detectedOutputTypes);
+            
+            // Update the state with the detected types
+            const newTypes = { ...this.state.currentCell.types, ...detectedInputParamTypes, ...detectedOutputTypes };
+            const updatedCell = { ...this.state.currentCell, types: newTypes };
+    
+            let typeSelections: { [key: string]: boolean } = {};;
+    
+            updatedCell.inputs.forEach((el) => {
+                typeSelections[el] = (newTypes[el] != null)
+            });
+    
+            updatedCell.outputs.forEach((el) => {
+                typeSelections[el] = (newTypes[el] != null)
+            });
+    
+            updatedCell.params.forEach((el) => {
+                typeSelections[el] = (newTypes[el] != null)
+            });
+    
+            this.setState({
+                currentCell: updatedCell,
+                typeSelections: typeSelections,
+            });
+    
+            console.log(this.state);
         } catch (error) {
             console.log(error);
         } finally {
