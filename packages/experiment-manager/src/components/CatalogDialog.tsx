@@ -81,7 +81,7 @@ export class CatalogDialog extends React.Component<CatalogDialogProps> {
         const resp = await requestAPI<any>('catalog/cells/all', {
             method: 'GET'
         });
-
+        console.log(`Cells: ${JSON.stringify(resp)}`)
         this.setState({ catalog_elements: resp });
     }
 
