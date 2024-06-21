@@ -1,11 +1,10 @@
-import { requestAPI } from '@jupyter_vre/core';
+import {requestAPI, VRECell} from '@jupyter_vre/core';
 import { CircularProgress, styled, ThemeProvider } from '@material-ui/core';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { green } from '@mui/material/colors';
 import * as React from 'react';
 import { theme } from './Theme';
 import { NotebookPanel } from '@jupyterlab/notebook';
-import { DefaultState } from './CellTracker';
 
 
 const CatalogBody = styled('div')({
@@ -17,6 +16,7 @@ const CatalogBody = styled('div')({
 
 interface AddCellDialogProps {
     notebook: NotebookPanel
+    cell: VRECell
 }
 
 interface IState {
@@ -41,12 +41,12 @@ export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
             // const kernelObject = sessionContext?.session?.kernel; // https://jupyterlab.readthedocs.io/en/stable/api/interfaces/services.kernel.ikernelconnection-1.html#serversettings
             // const kernel = (await kernelObject.info).implementation;
 
-            console.log(`Submitting cell: ${JSON.stringify(DefaultState)}`)
+            console.log(`Submitting cell: ${JSON.stringify(this.props.cell)}`)
             await requestAPI<any>('containerizer/addcell', {
                 // body: JSON.stringify({
                 //     kernel
                 // }),
-                body: JSON.stringify(DefaultState.currentCell),
+                body: JSON.stringify(this.props.cell),
                 method: 'POST'
             });
 

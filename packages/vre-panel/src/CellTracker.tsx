@@ -53,7 +53,7 @@ export class CellTracker extends React.Component<IProps, IState> {
         const AddCellDialogOptions: Partial<Dialog.IOptions<any>> = {
             title: '',
             body: ReactWidget.create(
-                <AddCellDialog notebook={this.props.notebook}/>
+                <AddCellDialog notebook={this.props.notebook} cell={this.state.currentCell}/>
             ) as Dialog.IBodyWidget<any>,
             buttons: []
         };
