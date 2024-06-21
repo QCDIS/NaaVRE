@@ -16,7 +16,8 @@ const CatalogBody = styled('div')({
 })
 
 interface AddCellDialogProps {
-    notebook: NotebookPanel
+    notebook: NotebookPanel,
+    closeDialog: () => void
 }
 
 interface IState {
@@ -27,9 +28,15 @@ const DefaultState: IState = {
     loading: true
 }
 
+
 export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
 
     state = DefaultState;
+
+    handleClose = () => {
+        console.log('closing dialog');
+        this.props.closeDialog();
+    }   
 
     componentDidMount(): void {
         this.createCell()
@@ -73,6 +80,7 @@ export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
                             <p className='cell-submit-text'>
                                 The cell has been successfully created!
                             </p>
+                            
                         </div>
                     </div>
                     ) :
