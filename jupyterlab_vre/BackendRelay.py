@@ -1,3 +1,4 @@
+import json
 import os
 import tornado.web
 import requests.adapters
@@ -44,9 +45,12 @@ class BackendRelay(APIHandler):
 
     def common_response_handler(self, response: requests.Response):
         if response.status_code == 200:
-            return self.write(response.json())
+            ret = response.json()
+            if isinstance(ret, list):
+                ret = json.dumps(ret)
+            return self.write(ret)
         self.set_status(response.status_code)
-        self.write(BackendRelay.error_in_json(response.url, response.status_code))
+        self.write(BackendRelay.error_in_json(response.url, response.status_code, response.text))
 
     @tornado.web.authenticated
     async def get(self):
