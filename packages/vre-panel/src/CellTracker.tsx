@@ -10,11 +10,12 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { Button, FormControl, MenuItem, Select, TableBody, TextField, ThemeProvider } from "@material-ui/core";
+import { Button, FormControl, IconButton, MenuItem, Select, TableBody, TextField, ThemeProvider } from "@material-ui/core";
 import { Autocomplete, LinearProgress, Alert, Box } from '@mui/material';
 import { IOutputAreaModel } from '@jupyterlab/outputarea';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { AddCellDialog } from './AddCellDialog';
+import CloseIcon from '@material-ui/icons/Close';
 
 interface IProps {
     notebook: NotebookPanel;
@@ -273,7 +274,7 @@ export class CellTracker extends React.Component<IProps, IState> {
             const params = extractedCell['params'];
     
             // Function to send code to kernel and handle response
-            const sendCodeAndHandleResponse = async (code: string, vars: string[]): Promise<{ [key: string]: string }> => {
+            const sendCodeToKernel = async (code: string, vars: string[]): Promise<{ [key: string]: string }> => {
                 const future = kernel.requestExecute({ code });
                 let detectedTypes: { [key: string]: string } = {};
     
@@ -325,14 +326,14 @@ export class CellTracker extends React.Component<IProps, IState> {
                             }
                             codeCell.model.outputs.add(output);
                             console.error('Error:', msg.content);
-                            reject(msg.content);
                         }
                     };
     
                     future.onReply = (msg) => {
-                        if (msg.content.status as string === 'aborted' || msg.content.status as string === 'ok') {
+                        if (msg.content.status as string === 'ok') {
                             resolve(detectedTypes);
-                        }
+                        } else if (msg.content.status as string === 'error')
+                            reject(msg.content);
                     };
                 });
             };
@@ -347,7 +348,7 @@ export class CellTracker extends React.Component<IProps, IState> {
             });
             
             // Send code to check types of inputs and params
-            const detectedInputParamTypes = await sendCodeAndHandleResponse(inputParamSource, [...inputs, ...params]);
+            const detectedInputParamTypes = await sendCodeToKernel(inputParamSource, [...inputs, ...params]);
             console.log('Detected Input and Param Types:', detectedInputParamTypes);
     
             // Send original source code
@@ -360,14 +361,14 @@ export class CellTracker extends React.Component<IProps, IState> {
             });
     
             // Send code to check types of outputs
-            const detectedOutputTypes = await sendCodeAndHandleResponse(outputSource, [...outputs]);
+            const detectedOutputTypes = await sendCodeToKernel(outputSource, [...outputs]);
             console.log('Detected Output Types:', detectedOutputTypes);
             
             // Update the state with the detected types
             const newTypes = { ...this.state.currentCell.types, ...detectedInputParamTypes, ...detectedOutputTypes };
             const updatedCell = { ...this.state.currentCell, types: newTypes };
     
-            let typeSelections: { [key: string]: boolean } = {};;
+            let typeSelections: { [key: string]: boolean } = {};
     
             updatedCell.inputs.forEach((el) => {
                 typeSelections[el] = (newTypes[el] != null)
@@ -394,6 +395,24 @@ export class CellTracker extends React.Component<IProps, IState> {
         }
     };
 
+    removeInput = (input: string) => {
+        const updatedInputs = this.state.currentCell.inputs.filter((i: string) => i !== input);
+        const updatedCell = { ...this.state.currentCell, inputs: updatedInputs } as VRECell;
+        this.setState({ currentCell: updatedCell });
+    };
+    
+    removeOutput = (output: string) => {
+        const updatedOutputs = this.state.currentCell.outputs.filter((o: string) => o !== output);
+        const updatedCell = { ...this.state.currentCell, outputs: updatedOutputs } as VRECell;
+        this.setState({ currentCell: updatedCell });
+    };
+    
+    removeParam = (param: string) => {
+        const updatedParams = this.state.currentCell.params.filter((p: string) => p !== param);
+        const updatedCell = { ...this.state.currentCell, params: updatedParams } as VRECell;
+        this.setState({ currentCell: updatedCell });
+    };
+
     render() {
         return (
             <ThemeProvider theme={theme}>
@@ -402,20 +421,20 @@ export class CellTracker extends React.Component<IProps, IState> {
                         <CellPreview ref={this.cellPreviewRef} />
                     </div>
                     {this.state.extractorError && (
-                      <div>
-                          <Alert severity="error" className={'lw-panel-preview'}>
-                              <p>Notebook cannot be analyzed: {this.state.extractorError}</p>
-                          </Alert>
-                      </div>
+                        <div>
+                            <Alert severity="error" className={'lw-panel-preview'}>
+                                <p>Notebook cannot be analyzed: {this.state.extractorError}</p>
+                            </Alert>
+                        </div>
                     )}
                     {(this.state.currentCell != null && !this.state.loading) ? (
-                      <div>
-                          {this.state.currentCell.inputs.length > 0 ? (
-                            <div>
-                                <p className={'lw-panel-preview'}>Inputs</p>
-                                <TableContainer component={Paper} className={'lw-panel-table'}>
-                                    <Table aria-label="simple table">
-                                    <TableBody>
+                        <div>
+                            {this.state.currentCell.inputs.length > 0 ? (
+                                <div>
+                                    <p className={'lw-panel-preview'}>Inputs</p>
+                                    <TableContainer component={Paper} className={'lw-panel-table'}>
+                                        <Table aria-label="simple table">
+                                            <TableBody>
                                                 {this.state.currentCell.inputs.map((input: string) => (
                                                     <TableRow key={this.state.currentCell.node_id + "-" + input}>
                                                         <TableCell component="th" scope="row">
@@ -438,14 +457,21 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                                 </Select>
                                                             </FormControl>
                                                         </TableCell>
+                                                        <TableCell component="th" scope="row">
+                                                            <IconButton
+                                                                aria-label="delete"
+                                                                onClick={() => this.removeInput(input)}
+                                                            >
+                                                                <CloseIcon />
+                                                            </IconButton>
+                                                        </TableCell>
                                                     </TableRow>
                                                 ))}
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
                                 </div>
-                            ) : (<div></div>)
-                            }
+                            ) : (<div></div>)}
                             {this.state.currentCell.outputs.length > 0 ? (
                                 <div>
                                     <p className={'lw-panel-preview'}>Outputs</p>
@@ -474,14 +500,22 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                                 </Select>
                                                             </FormControl>
                                                         </TableCell>
+                                                        
+                                                            <TableCell component="th" scope="row">
+                                                                <IconButton
+                                                                    aria-label="delete"
+                                                                    onClick={() => this.removeOutput(output)}
+                                                                >
+                                                                    <CloseIcon />
+                                                                </IconButton>
+                                                            </TableCell>
                                                     </TableRow>
                                                 ))}
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
                                 </div>
-                            ) : (<div></div>)
-                            }
+                            ) : (<div></div>)}
                             {this.state.currentCell.params.length > 0 ? (
                                 <div>
                                     <p className={'lw-panel-preview'}>Parameters</p>
@@ -491,7 +525,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                 {this.state.currentCell.params.map((param: string) => (
                                                     <TableRow key={this.state.currentCell.node_id + "-" + param}>
                                                         <TableCell component="th" scope="row">
-                                                            {param}
+                                                            <p style={{ fontSize: "1em" }}>{param}</p>
                                                         </TableCell>
                                                         <TableCell component="th" scope="row">
                                                             <FormControl fullWidth>
@@ -510,14 +544,21 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                                 </Select>
                                                             </FormControl>
                                                         </TableCell>
+                                                        <TableCell component="th" scope="row">
+                                                            <IconButton
+                                                                aria-label="delete"
+                                                                onClick={() => this.removeParam(param)}
+                                                            >
+                                                                <CloseIcon />
+                                                            </IconButton>
+                                                        </TableCell>
                                                     </TableRow>
                                                 ))}
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
                                 </div>
-                            ) : (<div></div>)
-                            }
+                            ) : (<div></div>)}
                             {this.state.currentCell.dependencies.length > 0 ? (
                                 <div>
                                     <p className={'lw-panel-preview'}>Dependencies</p>
@@ -539,8 +580,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                         </Table>
                                     </TableContainer>
                                 </div>
-                            ) : (<div></div>)
-                            }
+                            ) : (<div></div>)}
                             <div>
                                 <p className={'lw-panel-preview'}>Base Image</p>
                                 <Autocomplete
