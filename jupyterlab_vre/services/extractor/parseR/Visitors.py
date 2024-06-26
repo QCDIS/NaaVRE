@@ -1,6 +1,7 @@
 from .RVisitor import RVisitor
 from .RParser import RParser
-import re
+
+built_in = ["T", "F", "pi", "is.numeric", "mu", "round"]
 
 class ExtractNames(RVisitor):
     # Get all names and try to infer their types.
@@ -18,8 +19,6 @@ class ExtractNames(RVisitor):
 
         self.visit(ctx.sublist())
 
-        return None
-
     def visitFor(self, ctx: RParser.ForContext):
         # Iterator variable is scoped
         self.scoped.add(ctx.ID().getText())
@@ -30,16 +29,13 @@ class ExtractNames(RVisitor):
             self.names[id]['type'] = 'list'
         self.visit(ctx.expr(1))
         self.scoped.remove(ctx.ID().getText())
-        return None
 
     def visitSub(self, ctx: RParser.SubContext):
         if isinstance(ctx.expr(), RParser.IdContext):
             self.visit(ctx.expr())
-        return None
 
     def visitSublist(self, ctx: RParser.SublistContext):
         self.visitChildren(ctx)
-        return None
 
     def visitAssign(self, ctx: RParser.AssignContext):
         # Get the identifier and the assigned value of the expr and add to dict.
@@ -57,8 +53,6 @@ class ExtractNames(RVisitor):
         else:
             type = self.visit(ctx.expr(1))
             self.names[id] = {'name': id, 'type': type}
-
-    #     return None
 
     def visitAddsub(self, ctx: RParser.AddsubContext):
         # Visit left and right expressions
@@ -125,20 +119,52 @@ class ExtractUndefined(RVisitor):
 
     def visitAssign(self, ctx: RParser.AssignContext):
         self.visitChildren(ctx)
-        return None
 
     def visitCall(self, ctx: RParser.CallContext):
-        self.visit(ctx.sublist())
-        return None
+        # If expr startswith 'function', all sub variables are scoped.
+        if ctx.expr().getText().startswith('function'):
+            for sub in ctx.sublist().sub():
+                self.scoped.add(sub.getText())
+        else:
+            if isinstance(ctx.expr(), RParser.UseropContext):
+                self.visit(ctx.expr())
+            self.visit(ctx.sublist())
+    
+    # TEST
+    def visitUserop(self, ctx: RParser.UseropContext):
+        if isinstance(ctx.expr(0), RParser.CallContext):
+            self.visit(ctx.expr(0))
+        if isinstance(ctx.expr(1), RParser.CallContext):
+            self.visit(ctx.expr(1))
 
     def visitSublist(self, ctx: RParser.SublistContext):
         self.visitChildren(ctx)
-        return None
+    
+    def visitExtract(self, ctx: RParser.ExtractContext):
+        self.visit(ctx.expr(0))
 
     def visitSub(self, ctx: RParser.SubContext):
         if isinstance(ctx.expr(), RParser.IdContext):
             self.visit(ctx.expr())
-        return None
+        elif isinstance(ctx.expr(), RParser.AssignContext):
+            self.scoped.add(ctx.expr().expr(0).getText())
+            self.visit(ctx.expr().expr(1))
+        elif isinstance(ctx.expr(), RParser.CallContext):
+            self.visit(ctx.expr())
+        elif isinstance(ctx.expr(), RParser.FunctionContext):
+            self.visit(ctx.expr())
+
+    def visitFunction(self, ctx: RParser.FunctionContext):
+        self.visit(ctx.formlist())
+        self.visit(ctx.expr())
+    
+    def visitFormlist(self, ctx: RParser.FormlistContext):
+        self.visitChildren(ctx)
+    
+    def visitForm(self, ctx: RParser.FormContext):
+        self.scoped.add(ctx.ID().getText())
+        if isinstance(ctx.expr(), RParser.IdContext):
+            self.visit(ctx.expr())
 
     def visitFor(self, ctx: RParser.ForContext):
         # Iterator variable is scoped
@@ -146,13 +172,11 @@ class ExtractUndefined(RVisitor):
         self.visit(ctx.expr(0))
         self.visit(ctx.expr(1))
         self.scoped.remove(ctx.ID().getText())
-        return None
 
     def visitId(self, ctx: RParser.IdContext):
         id = ctx.ID().getText()
-        if id not in self.defs and id not in self.scoped:
+        if id not in self.defs and id not in self.scoped and id not in built_in:
             self.undefined.add(ctx.getText())
-        return None
 
 
 class ExtractDefined(RVisitor):
@@ -172,12 +196,15 @@ class ExtractDefined(RVisitor):
 
         self.defs.add(id)
 
-        return None
+        self.visit(ctx.expr(1))
 
     def visitCall(self, ctx: RParser.CallContext):
         self.visit(ctx.expr())
-        return None
-
+        self.visit(ctx.sublist())
+    
+    def visitSublist(self, ctx: RParser.SublistContext):
+        self.visitChildren(ctx)
+    
     def visitId(self, ctx: RParser.IdContext):
         return ctx.getText()
 
@@ -210,6 +237,10 @@ class ExtractParams(RVisitor):
 
     def visitId(self, ctx: RParser.IdContext):
         id = ctx.ID().getText()
+
+        if id.startswith("param_") and id not in self.params:
+            self.params[id] = {'val': None, 'type': None}
+
         return str(id)
 
     def visitInt(self, ctx: RParser.IntContext):
@@ -271,70 +302,9 @@ class ExtractImports(RVisitor):
         if fun == "library" or fun == "require":
             lib = self.visit(ctx.sublist()).strip('"')
             self.imports[lib] = lib
-        return None
 
     def visitId(self, ctx: RParser.IdContext):
         return ctx.ID().getText()
 
     def visitString(self, ctx: RParser.StringContext):
         return ctx.STRING().getText()
-
-    # class ExtractInputs(RVisitor):
-    #     def __init__(self, defs):
-    #         self.defs = defs
-    #         self.inputs = set()
-    #         self.scoped = set()
-    #
-    #     def visitProg(self, ctx: RParser.ProgContext):
-    #         self.visitChildren(ctx)
-    #         # remove all inputs with conf_ or param_ prefix
-    #         self.inputs = {i for i in self.inputs if not i.startswith("conf_") and not i.startswith("param_")}
-    #         # remove all built in constants ["T", "F", "pi", "is.numeric", "mu", "round"]
-    #         self.inputs = {i for i in self.inputs if i not in ["T", "F", "pi", "is.numeric", "mu", "round"]}
-    #         return self.inputs
-    #
-    #     def visitSublist(self, ctx: RParser.SublistContext):
-    #         self.visitChildren(ctx)
-    #
-    #     def visitSub(self, ctx: RParser.SubContext):
-    #         # If function, add all its arguments to scoped, which we find using regex
-    #         if ctx.getText().startswith("function"):
-    #             ids = re.findall(r'\((.*?)\)', ctx.getText())[0].split(", ")
-    #             ids = ids[0].split(",")
-    #
-    #             # add all ids to scoped
-    #             for id in ids:
-    #                 self.scoped.add(id)
-    #
-    #             self.visitChildren(ctx)
-    #             # remove all ids from scoped
-    #             for id in ids:
-    #                 self.scoped.remove(id)
-    #             return None
-    #
-    #         if ctx.expr() is not None:
-    #             self.visitChildren(ctx)
-    #
-    #     def visitFor(self, ctx: RParser.ForContext):
-    #         # Iterator variable is scoped
-    #         self.scoped.add(ctx.ID().getText())
-    #         self.visit(ctx.expr(0))
-    #         self.visit(ctx.expr(1))
-    #         self.scoped.remove(ctx.ID().getText())
-    #         return None
-    #
-    #     def visitAssign(self, ctx: RParser.AssignContext):
-    #         return None
-    #
-    #     def visitCall(self, ctx: RParser.CallContext):
-    #         # Skip import calls
-    #         if ctx.expr().getText() == "library" or ctx.expr().getText() == "require":
-    #             return None
-    #
-    #         self.visit(ctx.sublist())
-    #
-    #     def visitId(self, ctx: RParser.IdContext):
-    #         # Only add IDs to input if they have not been defined and are not scoped.
-    #         if ctx.getText() not in self.defs and ctx.getText() not in self.scoped:
-    #             self.inputs.add(ctx.getText())
-    #         return None

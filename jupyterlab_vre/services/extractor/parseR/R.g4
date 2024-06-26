@@ -207,6 +207,7 @@ fragment LETTER
 
 USER_OP
     : '%' .*? '%'
+    | '|>'
     ;
 
 COMMENT

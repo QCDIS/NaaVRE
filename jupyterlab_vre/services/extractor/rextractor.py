@@ -178,28 +178,6 @@ class RExtractor(Extractor):
     def __extract_configurations(self, sources):
         configurations = {}
         for s in sources:
-            # parsed_expr = base.parse(text=s, keep_source=True)
-            # parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
-            # lines = s.splitlines()
-            #
-            # # loop through all assignment variables
-            # assignment_variables = self.assignment_variables(s)
-            # for variable in assignment_variables:
-            #
-            #     # the prefix should be 'conf'
-            #     if not (variable.split("_")[0] == "conf"):
-            #         continue
-            #
-            #     # find the line of the assignment. (TODO) this approach assumes that there is only one expression in one line.
-            #     # this might not work when we have something like: a <- 3; b = 7
-            #     for line in lines:
-            #         matches = re.findall(r'{}\s*(=|<-)'.format(variable), line)
-            #
-            #         if len(matches) > 0 and variable not in configurations:
-            #             configurations[variable] = line
-            #             break
-
-            '''AST parsing'''
             tree = parse_text(s)
             visitor = ExtractConfigs()
             output = visitor.visit(tree)
@@ -209,41 +187,9 @@ class RExtractor(Extractor):
 
         return configurations
 
-    def __extract_params(self, sources):  # check source https://adv-r.hadley.nz/expressions.html)
+    def __extract_params(self, sources):
         params = {}
         for s in sources:
-        #     lines = s.splitlines()
-
-            # '''Approach 1: Naive way
-            # Find all variable assignments with a prefix of "param"'''
-            # pattern = r"param_[a-zA-Z0-9_]{0,}"
-            # matches = re.findall(pattern, s)
-            # Extract the variable names from the matches
-            # for match in matches:
-            # params.add(match)
-
-            # '''Approach 2: Look at the AST'''
-            # assignment_variables = self.assignment_variables(s)
-            # for variable in assignment_variables:
-            #
-            #     # the prefix should be 'param'
-            #     if not (variable.split("_")[0] == "param"):
-            #         continue
-            #
-            #     # find the line of the assignment. (TODO) this approach assumes that there is only one expression in one line.
-            #     # this might not work when we have something like: a <- 3; b = 7
-            #     param_value = ''
-            #     for line in lines:
-            #         m = re.match(r'{}\s*(?:=|<-)(.*?)\s*(#.*?)?$'.format(variable), line)
-            #         if m:
-            #             param_value = m.group(1).strip(" \"' ")
-            #
-            #     params[variable] = {
-            #         'name': variable,
-            #         'type': self.notebook_names[variable]['type'],
-            #         'value': param_value,
-            #     }
-            '''AST parsing'''
             tree = parse_text(s)
             visitor = ExtractParams()
             output = visitor.visit(tree)
@@ -273,13 +219,6 @@ class RExtractor(Extractor):
     def infer_cell_inputs(self):
         cell_undefined = self.__extract_cell_undefined(self.cell_source)
 
-        '''AST parsing'''
-        # tree = parse_text(self.cell_source)
-        # visitor = ExtractDefs()
-        # defs = visitor.visit(tree)
-        # visitor = ExtractInputs(defs)
-        # inputs = visitor.visit(tree)
-
         return {
             und: properties
             for und, properties in cell_undefined.items()
@@ -306,128 +245,14 @@ class RExtractor(Extractor):
 
         return dependencies
 
-    def get_function_parameters(self, cell_source):
-        result = []
-
-        # Approach 1: Naive Regex
-        functions = re.findall(r'function\s*\((.*?)\)', cell_source)
-        for params in functions:
-            result.extend(re.findall(r'\b\w+\b', params))
-
-        # Approach 2: AST based
-        # TODO
-
-        return list(set(result))
-
-    def get_iterator_variables(self, cell_source):
-        result = []
-
-        # Approach 1: Naive Regex. This means that iterator variables are in the following format:
-        # for ( <IT_VAR> .....)
-        result = re.findall(r'for\s*\(\s*([a-zA-Z0-9.]+)\s+in', cell_source)
-
-        # Approach 2: Parse AST. Much cleaner option as iterator variables can appear in differen syntaxes.
-        # TODO
-
-        return result
-
     def __extract_cell_names(self, cell_source):
-        # parsed_r = robjects.r['parse'](text=cell_source)
-        # vars_r = robjects.r['all.vars'](parsed_r)
-        #
-        # # Challenge 1: Function Parameters
-        # function_parameters = self.get_function_parameters(cell_source)
-        # vars_r = list(filter(lambda x: x not in function_parameters, vars_r))
-        #
-        # # Challenge 2: Built-in Constants
-        # built_in_cons = ["T", "F", "pi", "is.numeric", "mu", "round"]
-        # vars_r = list(filter(lambda x: x not in built_in_cons, vars_r))
-        #
-        # # Challenge 3: Iterator Variables
-        # iterator_variables = self.get_iterator_variables(cell_source)
-        # vars_r = list(filter(lambda x: x not in iterator_variables, vars_r))
-        #
-        # # Challenge 4: Apply built-in functions
-        # # MANUALLY SOLVED
-        #
-        # # Challenge 5: Libraries
-        # vars_r = list(filter(lambda x: x not in self.imports, vars_r))
-        #
-        # # Challenge 6: Variable-based data access
-        # # MANUALLY SOLVED
-        #
-        # vars_r = {
-        #     name: {
-        #         'name': name,
-        #         'type': None,
-        #     }
-        #     for name in vars_r
-        # }
         tree = parse_text(cell_source)
         visitor = ExtractNames()
         vars_r = visitor.visit(tree)
 
         return vars_r
 
-    # This is a very inefficient approach to obtain all assignment variables (Solution 1)
-    def recursive_variables(self, my_expr, result):
-        if isinstance(my_expr, rinterface.LangSexpVector):
-            # check if there are enough data values. for an assignment there must be three namely VARIABLE SYMBOL VALUE. e.g. a = 3
-            if len(my_expr) >= 3:
-
-                # check for matches
-                c = str(my_expr[0])
-                variable = my_expr[1]
-
-                # Check if assignment.
-                if (c == "<-" or c == "="):
-                    if isinstance(my_expr[1], rinterface.SexpSymbol):
-                        result.add(str(variable))
-        try:
-            for expr in my_expr:
-                result = self.recursive_variables(expr, result)
-        except Exception as e:
-            pass
-        return result
-
-    def assignment_variables(self, text):
-        result = []
-
-        # Solution 1 (Native-Python): Write our own recursive function that in Python that parses the Abstract Syntax Tree of the R cell
-        # This is a very inefficient solution
-        # parsed_expr = base.parse(text=text, keep_source=True)
-        # parsed_expr_py = robjects.conversion.rpy2py(parsed_expr)
-        # result = list(self.recursive_variables(parsed_expr_py, set()))
-
-        # Solution 2 (Native-R): Use built-in recursive cases of R (source https://adv-r.hadley.nz/expressions.html). This method is significantly faster.
-        output_r = robjects.r("""find_assign({
-            %s
-        })""" % text)
-        result = re.findall(r'"([^"]*)"', str(output_r))
-
-        # Return the result
-        return result
-
     def __extract_cell_undefined(self, cell_source):
-        # Approach 1: get all vars and substract the ones with the approach as in
-        # cell_names = self.__extract_cell_names(cell_source)
-        # assignment_variables = self.assignment_variables(cell_source)
-        # undef_vars = set(cell_names).difference(set(assignment_variables))
-
-        # Approach 2: (TODO) dynamic analysis approach. this is complex for R as functions
-        # as they are not scoped (which is the case in python). As such, we might have to include
-        # all the libraries to make sure that those functions work
-
-        # undef_vars = {
-        #     name: {
-        #         'name': name,
-        #         'type': None,
-        #     }
-        #     for name in undef_vars
-        # }
-        #
-        # return undef_vars
-
         tree = parse_text(cell_source)
         visitor = ExtractDefined()
         defs = visitor.visit(tree)
@@ -437,7 +262,8 @@ class RExtractor(Extractor):
         undef_vars = {
             name: {
                 'name': name,
-                'type': self.notebook_names[name]['type'],
+                # 'type': self.notebook_names[name]['type'],
+                'type': None,
             }
             for name in undefs
         }
@@ -448,6 +274,7 @@ class RExtractor(Extractor):
         params = {}
         cell_unds = self.__extract_cell_undefined(cell_source)
         param_unds = [und for und in cell_unds if und in self.global_params]
+
         for u in param_unds:
             if u not in params:
                 params[u] = self.global_params[u]
