@@ -398,19 +398,28 @@ export class CellTracker extends React.Component<IProps, IState> {
     removeInput = (input: string) => {
         const updatedInputs = this.state.currentCell.inputs.filter((i: string) => i !== input);
         const updatedCell = { ...this.state.currentCell, inputs: updatedInputs } as VRECell;
-        this.setState({ currentCell: updatedCell });
+
+        const updatedTypeSelections = this.state.typeSelections;
+        delete updatedTypeSelections[input];
+        this.setState({ currentCell: updatedCell, typeSelections: updatedTypeSelections });
     };
     
     removeOutput = (output: string) => {
         const updatedOutputs = this.state.currentCell.outputs.filter((o: string) => o !== output);
         const updatedCell = { ...this.state.currentCell, outputs: updatedOutputs } as VRECell;
-        this.setState({ currentCell: updatedCell });
+
+        const updatedTypeSelections = this.state.typeSelections;
+        delete updatedTypeSelections[output];
+        this.setState({ currentCell: updatedCell, typeSelections: updatedTypeSelections });
     };
     
     removeParam = (param: string) => {
         const updatedParams = this.state.currentCell.params.filter((p: string) => p !== param);
         const updatedCell = { ...this.state.currentCell, params: updatedParams } as VRECell;
-        this.setState({ currentCell: updatedCell });
+
+        const updatedTypeSelections = this.state.typeSelections;
+        delete updatedTypeSelections[param];
+        this.setState({ currentCell: updatedCell, typeSelections: updatedTypeSelections });
     };
 
     render() {
