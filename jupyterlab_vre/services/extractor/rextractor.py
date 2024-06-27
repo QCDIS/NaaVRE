@@ -165,7 +165,7 @@ class RExtractor(Extractor):
             # tree = parse_text(s)
             # visitor = ExtractImports()
             # output = visitor.visit(tree)
-            #
+            
             # for o in output:
             #     imports[o] = {
             #         'name': o,
@@ -197,7 +197,7 @@ class RExtractor(Extractor):
             for o in output:
                 params[o] = {
                     'name': o,
-                    'type': self.notebook_names[o]['type'],
+                    'type': self.notebook_names[o]['type'] if o in self.notebook_names else None,
                     'value': output[o]['val']
                 }
 
@@ -255,16 +255,15 @@ class RExtractor(Extractor):
     def __extract_cell_undefined(self, cell_source):
         tree = parse_text(cell_source)
         visitor = ExtractDefined()
-        defs = visitor.visit(tree)
-        visitor = ExtractUndefined(defs)
+        defs, scoped = visitor.visit(tree)
+        visitor = ExtractUndefined(defs, scoped)
         undefs = visitor.visit(tree)
 
         undef_vars = {
-            name: {
-                'name': name,
-                # 'type': self.notebook_names[name]['type'],
-                'type': None,
-            }
+              name: {
+                  'name': name,
+                  'type': self.notebook_names[name]['type'] if name in self.notebook_names else None,
+              }
             for name in undefs
         }
 
