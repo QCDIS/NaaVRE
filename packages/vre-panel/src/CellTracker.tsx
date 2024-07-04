@@ -292,7 +292,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                             let detectedType = null;
                             if (typeString === 'integer') {
                                 detectedType = 'int';
-                            } else if (typeString === 'str') {
+                            } else if (typeString === 'character') {
                                 detectedType = 'str';
                             } else if (typeString === 'double') {
                                 detectedType = 'float';
