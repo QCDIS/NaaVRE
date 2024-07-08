@@ -49,7 +49,7 @@
         "@mrblenny/react-flow-chart": "0.0.14",
         "@jupyterlab/translation": "3.5.3",
         "@mui/icons-material": "5.15.14",
-        "@mui/material": "5.15.4",
+        "@mui/material": "5.16.0",
         "d3": "7.8.2",
         "lodash": "4.17.21",
         "prop-types": "15.7.2",
