@@ -56,7 +56,7 @@ jobs:
             yq ".singleuser.extraEnv.SEARCH_API_ENDPOINT +=\"$SEARCH_API_ENDPOINT\"" docker/test-values/test_values1.yaml -i
             yq ".singleuser.extraEnv.SEARCH_API_TOKEN +=\"$SEARCH_API_TOKEN\"" docker/test-values/test_values1.yaml -i
 
-      - uses: balchua/microk8s-actions@v0.4.2
+      - uses: balchua/microk8s-actions@v0.4.3
         with:
           channel: '1.26/stable'
       - name: Test ${{ matrix.paths }}
