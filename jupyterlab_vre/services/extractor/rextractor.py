@@ -187,23 +187,25 @@ class RExtractor(Extractor):
             for o in output:
                 configurations[o] = output[o]
 
-        return configurations
+        return self.__resolve_configurations(configurations)
 
-    def __extract_params(self, sources):
-        params = {}
+    def __extract_prefixed_var(self, sources, prefix):  # check source https://adv-r.hadley.nz/expressions.html)
+        extracted_vars = {}
         for s in sources:
             tree = parse_text(s)
-            visitor = ExtractParams()
+            visitor = ExtractPrefixedVar(prefix)
             output = visitor.visit(tree)
 
-            for o in output:
-                params[o] = {
-                    'name': o,
-                    'type': self.notebook_names[o]['type'] if o in self.notebook_names else None,
-                    'value': output[o]['val']
+            for variable in output:
+                extracted_vars[variable] = {
+                    'name': variable,
+                    'type': self.notebook_names[variable]['type'] if variable in self.notebook_names else None,
+                    'value': output[variable]['val']
                 }
+                if prefix == 'secret':
+                    del extracted_vars[variable]['value']
 
-        return params
+        return extracted_vars
 
     def infer_cell_outputs(self):
         cell_names = self.__extract_cell_names(self.cell_source)
@@ -216,17 +218,18 @@ class RExtractor(Extractor):
                and name in self.undefined
                and name not in self.configurations
                and name not in self.global_params
+               and name not in self.global_secrets
         }
 
     def infer_cell_inputs(self):
         cell_undefined = self.__extract_cell_undefined(self.cell_source)
-
         return {
             und: properties
             for und, properties in cell_undefined.items()
             if und not in self.imports
                and und not in self.configurations
                and und not in self.global_params
+               and und not in self.global_secrets
         }
 
     def infer_cell_dependencies(self, confs):
@@ -275,11 +278,19 @@ class RExtractor(Extractor):
         params = {}
         cell_unds = self.__extract_cell_undefined(cell_source)
         param_unds = [und for und in cell_unds if und in self.global_params]
-
         for u in param_unds:
             if u not in params:
                 params[u] = self.global_params[u]
         return params
+
+    def extract_cell_secrets(self, cell_source):
+        secrets = {}
+        cell_unds = self.__extract_cell_undefined(cell_source)
+        secret_unds = [und for und in cell_unds if und in self.global_secrets]
+        for u in secret_unds:
+            if u not in secrets:
+                secrets[u] = self.global_secrets[u]
+        return secrets
 
     def extract_cell_conf_ref(self):
         confs = {}
@@ -292,15 +303,23 @@ class RExtractor(Extractor):
 
     def __resolve_configurations(self, configurations):
         resolved_configurations = {}
+        max_depth = 50
         for k, assignment in configurations.items():
-            while 'conf_' in assignment.split('=')[1]:
+            assignment_symbol = '='
+            if '<-' in assignment:
+                assignment_symbol = '<-'
+            while 'conf_' in assignment.split(assignment_symbol)[1]:
+                max_depth -= 1
                 for conf_name, replacing_assignment in configurations.items():
                     if conf_name in assignment.split('=')[1]:
                         assignment = assignment.replace(
                             conf_name,
                             replacing_assignment.split('=')[1],
-                        )
+                            )
                 resolved_configurations[k] = assignment
+                if max_depth <= 0:
+                    raise RuntimeError('maximum depth exceeded while '
+                                       'resolving configuration')
         configurations.update(resolved_configurations)
         return configurations
 

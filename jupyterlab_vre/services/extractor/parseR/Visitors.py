@@ -3,6 +3,7 @@ from .RParser import RParser
 
 built_in = ["T", "F", "pi", "is.numeric", "mu", "round"]
 
+
 class ExtractNames(RVisitor):
     # Get all names and try to infer their types.
     def __init__(self):
@@ -129,7 +130,7 @@ class ExtractUndefined(RVisitor):
             if isinstance(ctx.expr(), RParser.UseropContext):
                 self.visit(ctx.expr())
             self.visit(ctx.sublist())
-    
+
     # TEST
     def visitUserop(self, ctx: RParser.UseropContext):
         if isinstance(ctx.expr(0), RParser.CallContext):
@@ -139,7 +140,7 @@ class ExtractUndefined(RVisitor):
 
     def visitSublist(self, ctx: RParser.SublistContext):
         self.visitChildren(ctx)
-    
+
     def visitExtract(self, ctx: RParser.ExtractContext):
         self.visit(ctx.expr(0))
 
@@ -157,10 +158,10 @@ class ExtractUndefined(RVisitor):
     def visitFunction(self, ctx: RParser.FunctionContext):
         self.visit(ctx.formlist())
         self.visit(ctx.expr())
-    
+
     def visitFormlist(self, ctx: RParser.FormlistContext):
         self.visitChildren(ctx)
-    
+
     def visitForm(self, ctx: RParser.FormContext):
         self.scoped.add(ctx.ID().getText())
         if isinstance(ctx.expr(), RParser.IdContext):
@@ -177,6 +178,7 @@ class ExtractUndefined(RVisitor):
         id = ctx.ID().getText()
         if id not in self.defs and id not in self.scoped and id not in built_in:
             self.undefined.add(ctx.getText())
+
 
 class ExtractDefined(RVisitor):
     def __init__(self):
@@ -205,7 +207,7 @@ class ExtractDefined(RVisitor):
     def visitCall(self, ctx: RParser.CallContext):
         self.visit(ctx.expr())
         self.visit(ctx.sublist())
-    
+
     def visitSublist(self, ctx: RParser.SublistContext):
         self.visitChildren(ctx)
 
@@ -231,8 +233,9 @@ class ExtractDefined(RVisitor):
         return ctx.getText()
 
 
-class ExtractParams(RVisitor):
-    def __init__(self):
+class ExtractPrefixedVar(RVisitor):
+    def __init__(self, prefix):
+        self.prefix = prefix+'_'
         self.params = {}
 
     def visitProg(self, ctx: RParser.ProgContext):
@@ -245,9 +248,8 @@ class ExtractParams(RVisitor):
 
         if id is None:
             return None
-
         # check if id has param_ prefix
-        if id.startswith("param_") and id not in self.params:
+        if id.startswith(self.prefix) and id not in self.params:
             expr = self.visit(ctx.expr(1))
             # If returned expression is empty e.g. in case of unaccessible env variables, do not specify type.
             if expr != "":
@@ -260,7 +262,7 @@ class ExtractParams(RVisitor):
     def visitId(self, ctx: RParser.IdContext):
         id = ctx.ID().getText()
 
-        if id.startswith("param_") and id not in self.params:
+        if id.startswith(self.prefix) and id not in self.params:
             self.params[id] = {'val': None, 'type': None}
 
         return str(id)
