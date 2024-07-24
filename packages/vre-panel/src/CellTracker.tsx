@@ -168,6 +168,9 @@ export class CellTracker extends React.Component<IProps, IState> {
             this.state.currentCell.params.forEach((el: string) => {
                 typeSelections[el] = (this.getVarType(el) != null)
             })
+            this.state.currentCell.secrets.forEach((el: string) => {
+                typeSelections[el] = (this.getVarType(el) != null)
+            })
             this.setState({ typeSelections: typeSelections })
 
             this.cellPreviewRef.current.updateChart(extractedCell['chart_obj']);
@@ -239,7 +242,7 @@ export class CellTracker extends React.Component<IProps, IState> {
     typeDetection = async() => {
         this.setState({loading: true});
         const panel = this.props.notebook;
-    
+
         try {
             // Get contents of currently selected cell
             const currentCell = panel.content.activeCell;
@@ -250,45 +253,45 @@ export class CellTracker extends React.Component<IProps, IState> {
                 console.log('Selected cell is not a code cell');
                 return;
             }
-    
+
             // Clear output of currently selected cell
             const cell = panel.content.activeCell;
             const codeCell = cell as Cell & { model: { outputs: IOutputAreaModel } };
             codeCell.model.outputs.clear();
-    
+
             // Get kernel
             const kernel = panel.sessionContext.session?.kernel;
             if (!kernel) {
                 console.log('No kernel found');
                 return;
             }
-    
+
             // Get original source code
             const cellContent = currentCell.model.value.text;
-    
+
             // Retrieve inputs, outputs, and params from extractedCell
             const extractedCell = this.state.currentCell;
             const types = extractedCell['types'];
             const inputs = extractedCell['inputs'];
             const outputs = extractedCell['outputs'];
             const params = extractedCell['params'];
-    
+
             // Function to send code to kernel and handle response
             const sendCodeToKernel = async (code: string, vars: string[]): Promise<{ [key: string]: string }> => {
                 const future = kernel.requestExecute({ code });
                 let detectedTypes: { [key: string]: string } = {};
-    
+
                 return new Promise((resolve, reject) => {
                     future.onIOPub = (msg) => {
                         if (msg.header.msg_type === 'execute_result') {
                             console.log('Execution Result:', msg.content);
                         } else if (msg.header.msg_type === 'display_data') {
                             console.log('Display Data:', msg.content);
-    
+
                             let typeString = ("data" in msg.content ? msg.content.data['text/html'] : "No data found") as string;
                             typeString = typeString.replace(/['"]/g, '');
                             const varName = vars[0];
-    
+
                             let detectedType = null;
                             if (typeString === 'integer') {
                                 detectedType = 'int';
@@ -301,9 +304,9 @@ export class CellTracker extends React.Component<IProps, IState> {
                             } else {
                                 detectedType = types[varName];
                             }
-    
+
                             detectedTypes[varName] = detectedType;
-                        
+
                             const output = {
                                 output_type: 'display_data',
                                 data: {
@@ -311,7 +314,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                 },
                                 metadata: {}
                             }
-    
+
                             codeCell.model.outputs.add(output);
                             vars.shift();
                         } else if (msg.header.msg_type === 'stream') {
@@ -328,7 +331,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                             console.error('Error:', msg.content);
                         }
                     };
-    
+
                     future.onReply = (msg) => {
                         if (msg.content.status as string === 'ok') {
                             resolve(detectedTypes);
@@ -346,47 +349,47 @@ export class CellTracker extends React.Component<IProps, IState> {
             params.forEach(param => {
                 inputParamSource += `\ntypeof(${param})`;
             });
-            
+
             // Send code to check types of inputs and params
             const detectedInputParamTypes = await sendCodeToKernel(inputParamSource, [...inputs, ...params]);
             console.log('Detected Input and Param Types:', detectedInputParamTypes);
-    
+
             // Send original source code
             await kernel.requestExecute({ code: cellContent }).done;
-    
+
             // Create code with typeof() for outputs
             let outputSource = "";
             outputs.forEach(output => {
                 outputSource += `\ntypeof(${output})`;
             });
-    
+
             // Send code to check types of outputs
             const detectedOutputTypes = await sendCodeToKernel(outputSource, [...outputs]);
             console.log('Detected Output Types:', detectedOutputTypes);
-            
+
             // Update the state with the detected types
             const newTypes = { ...this.state.currentCell.types, ...detectedInputParamTypes, ...detectedOutputTypes };
             const updatedCell = { ...this.state.currentCell, types: newTypes };
-    
+
             let typeSelections: { [key: string]: boolean } = {};
-    
+
             updatedCell.inputs.forEach((el) => {
                 typeSelections[el] = (newTypes[el] != null)
             });
-    
+
             updatedCell.outputs.forEach((el) => {
                 typeSelections[el] = (newTypes[el] != null)
             });
-    
+
             updatedCell.params.forEach((el) => {
                 typeSelections[el] = (newTypes[el] != null)
             });
-    
+
             this.setState({
                 currentCell: updatedCell,
                 typeSelections: typeSelections,
             });
-    
+
             console.log(this.state);
         } catch (error) {
             console.log(error);
@@ -403,7 +406,7 @@ export class CellTracker extends React.Component<IProps, IState> {
         delete updatedTypeSelections[input];
         this.setState({ currentCell: updatedCell, typeSelections: updatedTypeSelections });
     };
-    
+
     removeOutput = (output: string) => {
         const updatedOutputs = this.state.currentCell.outputs.filter((o: string) => o !== output);
         const updatedCell = { ...this.state.currentCell, outputs: updatedOutputs } as VRECell;
@@ -412,7 +415,7 @@ export class CellTracker extends React.Component<IProps, IState> {
         delete updatedTypeSelections[output];
         this.setState({ currentCell: updatedCell, typeSelections: updatedTypeSelections });
     };
-    
+
     removeParam = (param: string) => {
         const updatedParams = this.state.currentCell.params.filter((p: string) => p !== param);
         const updatedCell = { ...this.state.currentCell, params: updatedParams } as VRECell;
@@ -509,7 +512,7 @@ export class CellTracker extends React.Component<IProps, IState> {
                                                                 </Select>
                                                             </FormControl>
                                                         </TableCell>
-                                                        
+
                                                             <TableCell component="th" scope="row">
                                                                 <IconButton
                                                                     aria-label="delete"
@@ -568,6 +571,42 @@ export class CellTracker extends React.Component<IProps, IState> {
                                     </TableContainer>
                                 </div>
                             ) : (<div></div>)}
+                          {this.state.currentCell.secrets.length > 0 ? (
+                            <div>
+                                <p className={'lw-panel-preview'}>Secrets</p>
+                                <TableContainer component={Paper} className={'lw-panel-table'}>
+                                    <Table aria-label="simple table">
+                                        <TableBody>
+                                            {this.state.currentCell.secrets.map((secret: string) => (
+                                              <TableRow key={this.state.currentCell.node_id + "-" + secret}>
+                                                  <TableCell component="th" scope="row">
+                                                      {secret}
+                                                  </TableCell>
+                                                  <TableCell component="th" scope="row">
+                                                      <FormControl fullWidth>
+                                                          <Select
+                                                            labelId="secret-types-select-label"
+                                                            id={this.state.currentCell.node_id + "-" + secret + "-select"}
+                                                            label="Type"
+                                                            value={this.getVarType(secret)}
+                                                            error={this.getVarType(secret) == null}
+                                                            onChange={(event) => { this.typesUpdate(event, secret) }}
+                                                          >
+                                                              <MenuItem value={'int'}>Integer</MenuItem>
+                                                              <MenuItem value={'float'}>Float</MenuItem>
+                                                              <MenuItem value={'str'}>String</MenuItem>
+                                                              <MenuItem value={'list'}>List</MenuItem>
+                                                          </Select>
+                                                      </FormControl>
+                                                  </TableCell>
+                                              </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </div>
+                          ) : (<div></div>)
+                          }
                             {this.state.currentCell.dependencies.length > 0 ? (
                                 <div>
                                     <p className={'lw-panel-preview'}>Dependencies</p>

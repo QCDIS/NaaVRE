@@ -39,7 +39,7 @@ jobs:
       with:
         name: ${{ inputs.wheel_artifact_name }}
         path: docker/${{ inputs.docker_folder }}
-    - uses: mikefarah/yq@v4.42.1
+    - uses: mikefarah/yq@v4.44.2
 
     - name: add whl and start files
       run: |
@@ -80,7 +80,7 @@ jobs:
         fi
 
     - name: Build docker
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: docker/${{ inputs.docker_folder }}
         push: ${{ inputs.push }}

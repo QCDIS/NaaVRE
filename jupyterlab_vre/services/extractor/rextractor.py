@@ -109,6 +109,7 @@ class RExtractor(Extractor):
     imports: dict
     configurations: dict
     global_params: dict
+    global_secrets: dict
     undefined: dict
 
     def __init__(self, notebook, cell_source):
@@ -120,7 +121,8 @@ class RExtractor(Extractor):
 
         self.imports = self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
-        self.global_params = self.__extract_params(self.sources)
+        self.global_params = self.__extract_prefixed_var(self.sources, 'param')
+        self.global_secrets = self.__extract_prefixed_var(self.sources, 'secret')
         self.undefined = dict()
         for source in self.sources:
             self.undefined.update(self.__extract_cell_undefined(source))
@@ -165,7 +167,7 @@ class RExtractor(Extractor):
             # tree = parse_text(s)
             # visitor = ExtractImports()
             # output = visitor.visit(tree)
-            
+
             # for o in output:
             #     imports[o] = {
             #         'name': o,
@@ -260,10 +262,10 @@ class RExtractor(Extractor):
         undefs = visitor.visit(tree)
 
         undef_vars = {
-              name: {
-                  'name': name,
-                  'type': self.notebook_names[name]['type'] if name in self.notebook_names else None,
-              }
+            name: {
+                'name': name,
+                'type': self.notebook_names[name]['type'] if name in self.notebook_names else None,
+            }
             for name in undefs
         }
 
@@ -297,7 +299,7 @@ class RExtractor(Extractor):
                         assignment = assignment.replace(
                             conf_name,
                             replacing_assignment.split('=')[1],
-                            )
+                        )
                 resolved_configurations[k] = assignment
         configurations.update(resolved_configurations)
         return configurations
