@@ -93,9 +93,10 @@ def extract_cell(notebook, cell_index, kernel):
         notebook_dict=extracted_nb.dict()
         )
     cell.integrate_configuration()
-    extractor.params = extractor.extract_cell_params(cell.original_source)
-    cell.add_params(extractor.params)
-    cell.add_param_values(extractor.params)
+    params = extractor.extract_cell_params(cell.original_source)
+    extractor.params = params
+    cell.add_params(params)
+    cell.add_param_values(params)
     extractor.secrets = extractor.extract_cell_secrets(cell.original_source)
     cell.add_secrets(extractor.secrets)
 

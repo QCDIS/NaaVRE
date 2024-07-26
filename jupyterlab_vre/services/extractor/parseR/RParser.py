@@ -95,41 +95,38 @@ def serializedATN():
         184,191,213
     ]
 
-class RParser ( Parser ):
 
+class RParser (Parser):
     grammarFileName = "R.g4"
-
     atn = ATNDeserializer().deserialize(serializedATN())
-
-    decisionsToDFA = [ DFA(ds, i) for i, ds in enumerate(atn.decisionToState) ]
-
+    decisionsToDFA = [DFA(ds, i) for i, ds in enumerate(atn.decisionToState)]
     sharedContextCache = PredictionContextCache()
 
-    literalNames = [ "<INVALID>", "';'", "'[['", "']'", "'['", "'::'", "':::'", 
-                     "'$'", "'@'", "'^'", "'-'", "'+'", "':'", "'*'", "'/'", 
-                     "'>'", "'>='", "'<'", "'<='", "'=='", "'!='", "'!'", 
-                     "'&'", "'&&'", "'|'", "'||'", "'~'", "'<-'", "'<<-'", 
-                     "'='", "'->'", "'->>'", "':='", "'function'", "'('", 
-                     "')'", "'{'", "'}'", "'if'", "'else'", "'for'", "'in'", 
-                     "'while'", "'repeat'", "'?'", "'next'", "'break'", 
-                     "'NULL'", "'NA'", "'Inf'", "'NaN'", "'TRUE'", "'FALSE'", 
-                     "'.'", "','", "'...'" ]
+    literalNames = ["<INVALID>", "';'", "'[['", "']'", "'['", "'::'", "':::'",
+                     "'$'", "'@'", "'^'", "'-'", "'+'", "':'", "'*'", "'/'",
+                     "'>'", "'>='", "'<'", "'<='", "'=='", "'!='", "'!'",
+                     "'&'", "'&&'", "'|'", "'||'", "'~'", "'<-'", "'<<-'",
+                     "'='", "'->'", "'->>'", "':='", "'function'", "'('",
+                     "')'", "'{'", "'}'", "'if'", "'else'", "'for'", "'in'",
+                     "'while'", "'repeat'", "'?'", "'next'", "'break'",
+                     "'NULL'", "'NA'", "'Inf'", "'NaN'", "'TRUE'", "'FALSE'",
+                     "'.'", "','", "'...'"]
 
-    symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>", 
-                      "HEX", "INT", "FLOAT", "COMPLEX", "STRING", "ID", 
+    symbolicNames = [ "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "<INVALID>", "<INVALID>", "<INVALID>", "<INVALID>",
+                      "HEX", "INT", "FLOAT", "COMPLEX", "STRING", "ID",
                       "USER_OP", "NL", "WS" ]
 
     RULE_prog = 0
@@ -140,8 +137,7 @@ class RParser ( Parser ):
     RULE_sublist = 5
     RULE_sub = 6
 
-    ruleNames =  [ "prog", "expr", "exprlist", "formlist", "form", "sublist", 
-                   "sub" ]
+    ruleNames = ["prog", "expr", "exprlist", "formlist", "form", "sublist", "sub"]
 
     EOF = Token.EOF
     T__0=1
@@ -209,33 +205,29 @@ class RParser ( Parser ):
     NL=63
     WS=64
 
-    def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
-        super().__init__(input, output)
+    def __init__(self, input_token: TokenStream, output: TextIO = sys.stdout):
+        super().__init__(input_token, output)
         self.checkVersion("4.13.1")
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 
-
-
-
     class ProgContext(ParserRuleContext):
         __slots__ = 'parser'
 
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
-            super().__init__(parent, invokingState)
+        def __init__(self, parser, parent: ParserRuleContext = None, invoking_state: int = -1):
+            super().__init__(parent, invoking_state)
             self.parser = parser
 
         def EOF(self):
             return self.getToken(RParser.EOF, 0)
 
-        def expr(self, i:int=None):
+        def expr(self, i: int = None):
             if i is None:
                 return self.getTypedRuleContexts(RParser.ExprContext)
             else:
                 return self.getTypedRuleContext(RParser.ExprContext,i)
 
-
-        def NL(self, i:int=None):
+        def NL(self, i: int = None):
             if i is None:
                 return self.getTokens(RParser.NL)
             else:
@@ -245,24 +237,20 @@ class RParser ( Parser ):
             return RParser.RULE_prog
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterProg" ):
+            if hasattr(listener, "enterProg"):
                 listener.enterProg(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitProg" ):
+            if hasattr(listener, "exitProg"):
                 listener.exitProg(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitProg" ):
+            if hasattr(visitor, "visitProg"):
                 return visitor.visitProg(self)
             else:
                 return visitor.visitChildren(self)
 
-
-
-
     def prog(self):
-
         localctx = RParser.ProgContext(self, self._ctx, self.state)
         self.enterRule(localctx, 0, self.RULE_prog)
         self._la = 0 # Token type
@@ -285,14 +273,14 @@ class RParser ( Parser ):
                         if _alt==1:
                             self.state = 15
                             _la = self._input.LA(1)
-                            if not(_la==1 or _la==63):
+                            if not(_la == 1 or _la == 63):
                                 self._errHandler.recoverInline(self)
                             else:
                                 self._errHandler.reportMatch(self)
-                                self.consume() 
+                                self.consume()
                         self.state = 20
                         self._errHandler.sync(self)
-                        _alt = self._interp.adaptivePredict(self._input,0,self._ctx)
+                        _alt = self._interp.adaptivePredict(self._input, 0, self._ctx)
 
                     pass
                 elif token in [63]:
@@ -316,47 +304,40 @@ class RParser ( Parser ):
             self.exitRule()
         return localctx
 
-
     class ExprContext(ParserRuleContext):
         __slots__ = 'parser'
 
-        def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
+        def __init__(self, parser, parent:ParserRuleContext = None, invokingState: int =- 1):
             super().__init__(parent, invokingState)
             self.parser = parser
-
 
         def getRuleIndex(self):
             return RParser.RULE_expr
 
-     
-        def copyFrom(self, ctx:ParserRuleContext):
+        def copyFrom(self, ctx: ParserRuleContext):
             super().copyFrom(ctx)
-
 
     class NextContext(ExprContext):
 
-        def __init__(self, parser, ctx:ParserRuleContext): # actually a RParser.ExprContext
+        def __init__(self, parser, ctx: ParserRuleContext): # actually a RParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterNext" ):
+        def enterRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "enterNext"):
                 listener.enterNext(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitNext" ):
+            if hasattr(listener, "exitNext"):
                 listener.exitNext(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitNext" ):
+            if hasattr(visitor, "visitNext"):
                 return visitor.visitNext(self)
             else:
                 return visitor.visitChildren(self)
 
-
     class ParensContext(ExprContext):
-
         def __init__(self, parser, ctx:ParserRuleContext): # actually a RParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
@@ -364,17 +345,16 @@ class RParser ( Parser ):
         def expr(self):
             return self.getTypedRuleContext(RParser.ExprContext,0)
 
-
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterParens" ):
+            if hasattr(listener, "enterParens"):
                 listener.enterParens(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitParens" ):
+            if hasattr(listener, "exitParens"):
                 listener.exitParens(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitParens" ):
+            if hasattr(visitor, "visitParens"):
                 return visitor.visitParens(self)
             else:
                 return visitor.visitChildren(self)
@@ -394,15 +374,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterCompare" ):
+            if hasattr(listener, "enterCompare"):
                 listener.enterCompare(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitCompare" ):
+            if hasattr(listener, "exitCompare"):
                 listener.exitCompare(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitCompare" ):
+            if hasattr(visitor, "visitCompare"):
                 return visitor.visitCompare(self)
             else:
                 return visitor.visitChildren(self)
@@ -418,15 +398,15 @@ class RParser ( Parser ):
             return self.getToken(RParser.STRING, 0)
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterString" ):
+            if hasattr(listener, "enterString"):
                 listener.enterString(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitString" ):
+            if hasattr(listener, "exitString"):
                 listener.exitString(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitString" ):
+            if hasattr(visitor, "visitString"):
                 return visitor.visitString(self)
             else:
                 return visitor.visitChildren(self)
@@ -448,15 +428,15 @@ class RParser ( Parser ):
             return self.getToken(RParser.USER_OP, 0)
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterUserop" ):
+            if hasattr(listener, "enterUserop"):
                 listener.enterUserop(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitUserop" ):
+            if hasattr(listener, "exitUserop"):
                 listener.exitUserop(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitUserop" ):
+            if hasattr(visitor, "visitUserop"):
                 return visitor.visitUserop(self)
             else:
                 return visitor.visitChildren(self)
@@ -478,15 +458,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterFor" ):
+            if hasattr(listener, "enterFor"):
                 listener.enterFor(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitFor" ):
+            if hasattr(listener, "exitFor"):
                 listener.exitFor(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitFor" ):
+            if hasattr(visitor, "visitFor"):
                 return visitor.visitFor(self)
             else:
                 return visitor.visitChildren(self)
@@ -500,15 +480,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterDot" ):
+            if hasattr(listener, "enterDot"):
                 listener.enterDot(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitDot" ):
+            if hasattr(listener, "exitDot"):
                 listener.exitDot(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitDot" ):
+            if hasattr(visitor, "visitDot"):
                 return visitor.visitDot(self)
             else:
                 return visitor.visitChildren(self)
@@ -528,15 +508,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAddsub" ):
+            if hasattr(listener, "enterAddsub"):
                 listener.enterAddsub(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAddsub" ):
+            if hasattr(listener, "exitAddsub"):
                 listener.exitAddsub(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitAddsub" ):
+            if hasattr(visitor, "visitAddsub"):
                 return visitor.visitAddsub(self)
             else:
                 return visitor.visitChildren(self)
@@ -556,15 +536,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterIndex2" ):
+            if hasattr(listener, "enterIndex2"):
                 listener.enterIndex2(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitIndex2" ):
+            if hasattr(listener, "exitIndex2"):
                 listener.exitIndex2(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitIndex2" ):
+            if hasattr(visitor, "visitIndex2"):
                 return visitor.visitIndex2(self)
             else:
                 return visitor.visitChildren(self)
@@ -581,15 +561,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterUnary" ):
+            if hasattr(listener, "enterUnary"):
                 listener.enterUnary(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitUnary" ):
+            if hasattr(listener, "exitUnary"):
                 listener.exitUnary(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitUnary" ):
+            if hasattr(visitor, "visitUnary"):
                 return visitor.visitUnary(self)
             else:
                 return visitor.visitChildren(self)
@@ -609,15 +589,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterWhile" ):
+            if hasattr(listener, "enterWhile"):
                 listener.enterWhile(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitWhile" ):
+            if hasattr(listener, "exitWhile"):
                 listener.exitWhile(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitWhile" ):
+            if hasattr(visitor, "visitWhile"):
                 return visitor.visitWhile(self)
             else:
                 return visitor.visitChildren(self)
@@ -633,15 +613,15 @@ class RParser ( Parser ):
             return self.getToken(RParser.FLOAT, 0)
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterFloat" ):
+            if hasattr(listener, "enterFloat"):
                 listener.enterFloat(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitFloat" ):
+            if hasattr(listener, "exitFloat"):
                 listener.exitFloat(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitFloat" ):
+            if hasattr(visitor, "visitFloat"):
                 return visitor.visitFloat(self)
             else:
                 return visitor.visitChildren(self)
@@ -658,15 +638,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterNot" ):
+            if hasattr(listener, "enterNot"):
                 listener.enterNot(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitNot" ):
+            if hasattr(listener, "exitNot"):
                 listener.exitNot(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitNot" ):
+            if hasattr(visitor, "visitNot"):
                 return visitor.visitNot(self)
             else:
                 return visitor.visitChildren(self)
@@ -686,15 +666,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAnd" ):
+            if hasattr(listener, "enterAnd"):
                 listener.enterAnd(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAnd" ):
+            if hasattr(listener, "exitAnd"):
                 listener.exitAnd(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitAnd" ):
+            if hasattr(visitor, "visitAnd"):
                 return visitor.visitAnd(self)
             else:
                 return visitor.visitChildren(self)
@@ -714,15 +694,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterFunction" ):
+            if hasattr(listener, "enterFunction"):
                 listener.enterFunction(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitFunction" ):
+            if hasattr(listener, "exitFunction"):
                 listener.exitFunction(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitFunction" ):
+            if hasattr(visitor, "visitFunction"):
                 return visitor.visitFunction(self)
             else:
                 return visitor.visitChildren(self)
@@ -739,15 +719,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterRepeat" ):
+            if hasattr(listener, "enterRepeat"):
                 listener.enterRepeat(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitRepeat" ):
+            if hasattr(listener, "exitRepeat"):
                 listener.exitRepeat(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitRepeat" ):
+            if hasattr(visitor, "visitRepeat"):
                 return visitor.visitRepeat(self)
             else:
                 return visitor.visitChildren(self)
@@ -763,15 +743,15 @@ class RParser ( Parser ):
             return self.getToken(RParser.COMPLEX, 0)
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterComplex" ):
+            if hasattr(listener, "enterComplex"):
                 listener.enterComplex(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitComplex" ):
+            if hasattr(listener, "exitComplex"):
                 listener.exitComplex(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitComplex" ):
+            if hasattr(visitor, "visitComplex"):
                 return visitor.visitComplex(self)
             else:
                 return visitor.visitChildren(self)
@@ -788,15 +768,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterBlock" ):
+            if hasattr(listener, "enterBlock"):
                 listener.enterBlock(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitBlock" ):
+            if hasattr(listener, "exitBlock"):
                 listener.exitBlock(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitBlock" ):
+            if hasattr(visitor, "visitBlock"):
                 return visitor.visitBlock(self)
             else:
                 return visitor.visitChildren(self)
@@ -812,15 +792,15 @@ class RParser ( Parser ):
             return self.getToken(RParser.HEX, 0)
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterHex" ):
+            if hasattr(listener, "enterHex"):
                 listener.enterHex(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitHex" ):
+            if hasattr(listener, "exitHex"):
                 listener.exitHex(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitHex" ):
+            if hasattr(visitor, "visitHex"):
                 return visitor.visitHex(self)
             else:
                 return visitor.visitChildren(self)
@@ -834,15 +814,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterNan" ):
+            if hasattr(listener, "enterNan"):
                 listener.enterNan(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitNan" ):
+            if hasattr(listener, "exitNan"):
                 listener.exitNan(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitNan" ):
+            if hasattr(visitor, "visitNan"):
                 return visitor.visitNan(self)
             else:
                 return visitor.visitChildren(self)
@@ -858,15 +838,15 @@ class RParser ( Parser ):
             return self.getToken(RParser.ID, 0)
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterId" ):
+            if hasattr(listener, "enterId"):
                 listener.enterId(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitId" ):
+            if hasattr(listener, "exitId"):
                 listener.exitId(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitId" ):
+        def accept(self, visitor: ParseTreeVisitor):
+            if hasattr(visitor, "visitId"):
                 return visitor.visitId(self)
             else:
                 return visitor.visitChildren(self)
@@ -886,15 +866,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterPower" ):
+            if hasattr(listener, "enterPower"):
                 listener.enterPower(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitPower" ):
+            if hasattr(listener, "exitPower"):
                 listener.exitPower(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitPower" ):
+            if hasattr(visitor, "visitPower"):
                 return visitor.visitPower(self)
             else:
                 return visitor.visitChildren(self)
@@ -914,15 +894,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterIf" ):
+            if hasattr(listener, "enterIf"):
                 listener.enterIf(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitIf" ):
+            if hasattr(listener, "exitIf"):
                 listener.exitIf(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitIf" ):
+            if hasattr(visitor, "visitIf"):
                 return visitor.visitIf(self)
             else:
                 return visitor.visitChildren(self)
@@ -942,15 +922,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterSeq" ):
+            if hasattr(listener, "enterSeq"):
                 listener.enterSeq(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitSeq" ):
+            if hasattr(listener, "exitSeq"):
                 listener.exitSeq(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitSeq" ):
+            if hasattr(visitor, "visitSeq"):
                 return visitor.visitSeq(self)
             else:
                 return visitor.visitChildren(self)
@@ -964,15 +944,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterInf" ):
+            if hasattr(listener, "enterInf"):
                 listener.enterInf(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitInf" ):
+            if hasattr(listener, "exitInf"):
                 listener.exitInf(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitInf" ):
+            if hasattr(visitor, "visitInf"):
                 return visitor.visitInf(self)
             else:
                 return visitor.visitChildren(self)
@@ -992,15 +972,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterOr" ):
+            if hasattr(listener, "enterOr"):
                 listener.enterOr(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitOr" ):
+            if hasattr(listener, "exitOr"):
                 listener.exitOr(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitOr" ):
+            if hasattr(visitor, "visitOr"):
                 return visitor.visitOr(self)
             else:
                 return visitor.visitChildren(self)
@@ -1014,15 +994,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterBreak" ):
+            if hasattr(listener, "enterBreak"):
                 listener.enterBreak(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitBreak" ):
+            if hasattr(listener, "exitBreak"):
                 listener.exitBreak(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitBreak" ):
+            if hasattr(visitor, "visitBreak"):
                 return visitor.visitBreak(self)
             else:
                 return visitor.visitChildren(self)
@@ -1036,15 +1016,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterFalse" ):
+            if hasattr(listener, "enterFalse"):
                 listener.enterFalse(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitFalse" ):
+            if hasattr(listener, "exitFalse"):
                 listener.exitFalse(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitFalse" ):
+            if hasattr(visitor, "visitFalse"):
                 return visitor.visitFalse(self)
             else:
                 return visitor.visitChildren(self)
@@ -1064,15 +1044,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterIndex" ):
+            if hasattr(listener, "enterIndex"):
                 listener.enterIndex(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitIndex" ):
+            if hasattr(listener, "exitIndex"):
                 listener.exitIndex(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitIndex" ):
+            if hasattr(visitor, "visitIndex"):
                 return visitor.visitIndex(self)
             else:
                 return visitor.visitChildren(self)
@@ -1088,15 +1068,15 @@ class RParser ( Parser ):
             return self.getToken(RParser.INT, 0)
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterInt" ):
+            if hasattr(listener, "enterInt"):
                 listener.enterInt(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitInt" ):
+            if hasattr(listener, "exitInt"):
                 listener.exitInt(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitInt" ):
+            if hasattr(visitor, "visitInt"):
                 return visitor.visitInt(self)
             else:
                 return visitor.visitChildren(self)
@@ -1116,15 +1096,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterMuldiv" ):
+            if hasattr(listener, "enterMuldiv"):
                 listener.enterMuldiv(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitMuldiv" ):
+            if hasattr(listener, "exitMuldiv"):
                 listener.exitMuldiv(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitMuldiv" ):
+            if hasattr(visitor, "visitMuldiv"):
                 return visitor.visitMuldiv(self)
             else:
                 return visitor.visitChildren(self)
@@ -1144,15 +1124,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterIfelse" ):
+            if hasattr(listener, "enterIfelse"):
                 listener.enterIfelse(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitIfelse" ):
+            if hasattr(listener, "exitIfelse"):
                 listener.exitIfelse(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitIfelse" ):
+            if hasattr(visitor, "visitIfelse"):
                 return visitor.visitIfelse(self)
             else:
                 return visitor.visitChildren(self)
@@ -1172,15 +1152,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterCall" ):
+            if hasattr(listener, "enterCall"):
                 listener.enterCall(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitCall" ):
+            if hasattr(listener, "exitCall"):
                 listener.exitCall(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitCall" ):
+            if hasattr(visitor, "visitCall"):
                 return visitor.visitCall(self)
             else:
                 return visitor.visitChildren(self)
@@ -1197,15 +1177,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterHelp" ):
+            if hasattr(listener, "enterHelp"):
                 listener.enterHelp(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitHelp" ):
+            if hasattr(listener, "exitHelp"):
                 listener.exitHelp(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitHelp" ):
+            if hasattr(visitor, "visitHelp"):
                 return visitor.visitHelp(self)
             else:
                 return visitor.visitChildren(self)
@@ -1219,15 +1199,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterNa" ):
+            if hasattr(listener, "enterNa"):
                 listener.enterNa(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitNa" ):
+            if hasattr(listener, "exitNa"):
                 listener.exitNa(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitNa" ):
+            if hasattr(visitor, "visitNa"):
                 return visitor.visitNa(self)
             else:
                 return visitor.visitChildren(self)
@@ -1247,15 +1227,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterExtract" ):
+            if hasattr(listener, "enterExtract"):
                 listener.enterExtract(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitExtract" ):
+            if hasattr(listener, "exitExtract"):
                 listener.exitExtract(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitExtract" ):
+            if hasattr(visitor, "visitExtract"):
                 return visitor.visitExtract(self)
             else:
                 return visitor.visitChildren(self)
@@ -1269,15 +1249,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterNull" ):
+            if hasattr(listener, "enterNull"):
                 listener.enterNull(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitNull" ):
+            if hasattr(listener, "exitNull"):
                 listener.exitNull(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitNull" ):
+            if hasattr(visitor, "visitNull"):
                 return visitor.visitNull(self)
             else:
                 return visitor.visitChildren(self)
@@ -1294,15 +1274,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterUtilde" ):
+            if hasattr(listener, "enterUtilde"):
                 listener.enterUtilde(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitUtilde" ):
+            if hasattr(listener, "exitUtilde"):
                 listener.exitUtilde(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitUtilde" ):
+            if hasattr(visitor, "visitUtilde"):
                 return visitor.visitUtilde(self)
             else:
                 return visitor.visitChildren(self)
@@ -1316,15 +1296,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterTrue" ):
+            if hasattr(listener, "enterTrue"):
                 listener.enterTrue(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitTrue" ):
+            if hasattr(listener, "exitTrue"):
                 listener.exitTrue(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitTrue" ):
+            if hasattr(visitor, "visitTrue"):
                 return visitor.visitTrue(self)
             else:
                 return visitor.visitChildren(self)
@@ -1344,15 +1324,15 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterNamespace" ):
+            if hasattr(listener, "enterNamespace"):
                 listener.enterNamespace(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitNamespace" ):
+            if hasattr(listener, "exitNamespace"):
                 listener.exitNamespace(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitNamespace" ):
+            if hasattr(visitor, "visitNamespace"):
                 return visitor.visitNamespace(self)
             else:
                 return visitor.visitChildren(self)
@@ -1372,43 +1352,40 @@ class RParser ( Parser ):
 
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterBtilde" ):
+            if hasattr(listener, "enterBtilde"):
                 listener.enterBtilde(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitBtilde" ):
+            if hasattr(listener, "exitBtilde"):
                 listener.exitBtilde(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitBtilde" ):
+            if hasattr(visitor, "visitBtilde"):
                 return visitor.visitBtilde(self)
             else:
                 return visitor.visitChildren(self)
 
-
     class AssignContext(ExprContext):
-
         def __init__(self, parser, ctx:ParserRuleContext): # actually a RParser.ExprContext
             super().__init__(parser)
             self.copyFrom(ctx)
 
-        def expr(self, i:int=None):
+        def expr(self, i: int = None):
             if i is None:
                 return self.getTypedRuleContexts(RParser.ExprContext)
             else:
-                return self.getTypedRuleContext(RParser.ExprContext,i)
+                return self.getTypedRuleContext(RParser.ExprContext, i)
 
-
-        def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterAssign" ):
+        def enterRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "enterAssign"):
                 listener.enterAssign(self)
 
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitAssign" ):
+        def exitRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "exitAssign"):
                 listener.exitAssign(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitAssign" ):
+        def accept(self, visitor: ParseTreeVisitor):
+            if hasattr(visitor, "visitAssign"):
                 return visitor.visitAssign(self)
             else:
                 return visitor.visitChildren(self)
@@ -1978,7 +1955,7 @@ class RParser ( Parser ):
                         self.match(RParser.T__34)
                         pass
 
-             
+
                 self.state = 156
                 self._errHandler.sync(self)
                 _alt = self._interp.adaptivePredict(self._input,6,self._ctx)
@@ -2016,15 +1993,15 @@ class RParser ( Parser ):
             return RParser.RULE_exprlist
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterExprlist" ):
+            if hasattr(listener, "enterExprlist"):
                 listener.enterExprlist(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitExprlist" ):
+            if hasattr(listener, "exitExprlist"):
                 listener.exitExprlist(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitExprlist" ):
+            if hasattr(visitor, "visitExprlist"):
                 return visitor.visitExprlist(self)
             else:
                 return visitor.visitChildren(self)
@@ -2103,15 +2080,15 @@ class RParser ( Parser ):
             return RParser.RULE_formlist
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterFormlist" ):
+            if hasattr(listener, "enterFormlist"):
                 listener.enterFormlist(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitFormlist" ):
+            if hasattr(listener, "exitFormlist"):
                 listener.exitFormlist(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitFormlist" ):
+            if hasattr(visitor, "visitFormlist"):
                 return visitor.visitFormlist(self)
             else:
                 return visitor.visitChildren(self)
@@ -2167,15 +2144,15 @@ class RParser ( Parser ):
             return RParser.RULE_form
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterForm" ):
+            if hasattr(listener, "enterForm"):
                 listener.enterForm(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitForm" ):
+            if hasattr(listener, "exitForm"):
                 listener.exitForm(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitForm" ):
+            if hasattr(visitor, "visitForm"):
                 return visitor.visitForm(self)
             else:
                 return visitor.visitChildren(self)
@@ -2247,15 +2224,15 @@ class RParser ( Parser ):
             return RParser.RULE_sublist
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterSublist" ):
+            if hasattr(listener, "enterSublist"):
                 listener.enterSublist(self)
 
         def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitSublist" ):
+            if hasattr(listener, "exitSublist"):
                 listener.exitSublist(self)
 
         def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitSublist" ):
+            if hasattr(visitor, "visitSublist"):
                 return visitor.visitSublist(self)
             else:
                 return visitor.visitChildren(self)
@@ -2314,15 +2291,15 @@ class RParser ( Parser ):
             return RParser.RULE_sub
 
         def enterRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "enterSub" ):
+            if hasattr(listener, "enterSub"):
                 listener.enterSub(self)
 
-        def exitRule(self, listener:ParseTreeListener):
-            if hasattr( listener, "exitSub" ):
+        def exitRule(self, listener: ParseTreeListener):
+            if hasattr(listener, "exitSub"):
                 listener.exitSub(self)
 
-        def accept(self, visitor:ParseTreeVisitor):
-            if hasattr( visitor, "visitSub" ):
+        def accept(self, visitor: ParseTreeVisitor):
+            if hasattr(visitor, "visitSub"):
                 return visitor.visitSub(self)
             else:
                 return visitor.visitChildren(self)
@@ -2439,59 +2416,59 @@ class RParser ( Parser ):
     def expr_sempred(self, localctx:ExprContext, predIndex:int):
             if predIndex == 0:
                 return self.precpred(self._ctx, 40)
-         
+
 
             if predIndex == 1:
                 return self.precpred(self._ctx, 39)
-         
+
 
             if predIndex == 2:
                 return self.precpred(self._ctx, 38)
-         
+
 
             if predIndex == 3:
                 return self.precpred(self._ctx, 36)
-         
+
 
             if predIndex == 4:
                 return self.precpred(self._ctx, 35)
-         
+
 
             if predIndex == 5:
                 return self.precpred(self._ctx, 34)
-         
+
 
             if predIndex == 6:
                 return self.precpred(self._ctx, 33)
-         
+
 
             if predIndex == 7:
                 return self.precpred(self._ctx, 32)
-         
+
 
             if predIndex == 8:
                 return self.precpred(self._ctx, 30)
-         
+
 
             if predIndex == 9:
                 return self.precpred(self._ctx, 29)
-         
+
 
             if predIndex == 10:
                 return self.precpred(self._ctx, 27)
-         
+
 
             if predIndex == 11:
                 return self.precpred(self._ctx, 26)
-         
+
 
             if predIndex == 12:
                 return self.precpred(self._ctx, 42)
-         
+
 
             if predIndex == 13:
                 return self.precpred(self._ctx, 41)
-         
+
 
             if predIndex == 14:
                 return self.precpred(self._ctx, 24)

@@ -17,7 +17,6 @@ class ExtractNames(RVisitor):
     def visitCall(self, ctx: RParser.CallContext):
         if isinstance(ctx.expr(), RParser.AssignContext):
             self.visit(ctx.expr())
-
         self.visit(ctx.sublist())
 
     def visitFor(self, ctx: RParser.ForContext):
@@ -41,15 +40,16 @@ class ExtractNames(RVisitor):
     def visitAssign(self, ctx: RParser.AssignContext):
         # Get the identifier and the assigned value of the expr and add to dict.
         id = self.visit(ctx.expr(0))
-
+        xp1 = ctx.expr(1).getText()
         if id is None:
             return None
 
         if id in self.names and self.names[id]['type'] is not None:
             return None
-
         # Check if the value is an ID or an expression of which we can get type.
-        if isinstance(ctx.expr(1), RParser.IdContext):
+        if xp1 == 'list':
+            self.names[id] = {'name': id, 'type': 'list'}
+        elif isinstance(ctx.expr(1), RParser.IdContext):
             self.names[id] = {'name': id, 'type': None}
         else:
             type = self.visit(ctx.expr(1))
@@ -245,23 +245,28 @@ class ExtractPrefixedVar(RVisitor):
     def visitAssign(self, ctx: RParser.AssignContext):
         # Get the identifier and the assigned value of the expr and add to dict.
         id = self.visit(ctx.expr(0))
-
         if id is None:
             return None
         # check if id has param_ prefix
-        if id.startswith(self.prefix) and id not in self.params:
-            expr = self.visit(ctx.expr(1))
-            # If returned expression is empty e.g. in case of unaccessible env variables, do not specify type.
-            if expr != "":
-                self.params[id] = {'val': expr, 'type': type(expr).__name__}
-            else:
-                self.params[id] = {'val': expr, 'type': None}
-
+        if id.startswith(self.prefix): #and id not in self.params:
+            if self.params[id]['val'] is None or id not in self.params:
+                expr = self.visit(ctx.expr(1))
+                # If returned expression is empty e.g. in case of unaccessible env variables, do not specify type.
+                if expr != "":
+                    self.params[id] = {'val': expr, 'type': type(expr).__name__}
+                else:
+                    self.params[id] = {'val': expr, 'type': None}
         return None
+
+    def visitCall(self, ctx: RParser.CallContext):
+        if isinstance(ctx.expr(), RParser.AssignContext):
+            if ctx.expr().expr(1).getText() == 'list':
+                val = ctx.sublist().getText()
+                self.params[ctx.expr().expr(0).getText()] = {'val': val, 'type': 'list'}
+
 
     def visitId(self, ctx: RParser.IdContext):
         id = ctx.ID().getText()
-
         if id.startswith(self.prefix) and id not in self.params:
             self.params[id] = {'val': None, 'type': None}
 
