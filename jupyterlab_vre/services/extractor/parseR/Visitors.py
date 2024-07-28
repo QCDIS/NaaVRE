@@ -1,3 +1,5 @@
+import json
+
 from .RVisitor import RVisitor
 from .RParser import RParser
 
@@ -244,33 +246,33 @@ class ExtractPrefixedVar(RVisitor):
 
     def visitAssign(self, ctx: RParser.AssignContext):
         # Get the identifier and the assigned value of the expr and add to dict.
-        id = self.visit(ctx.expr(0))
-        if id is None:
+        var_id = self.visit(ctx.expr(0))
+        if var_id is None:
             return None
         # check if id has param_ prefix
-        if id.startswith(self.prefix): #and id not in self.params:
-            if self.params[id]['val'] is None or id not in self.params:
+        if var_id.startswith(self.prefix): #and id not in self.params:
+            if self.params[var_id]['val'] is None or var_id not in self.params:
                 expr = self.visit(ctx.expr(1))
                 # If returned expression is empty e.g. in case of unaccessible env variables, do not specify type.
                 if expr != "":
-                    self.params[id] = {'val': expr, 'type': type(expr).__name__}
+                    self.params[var_id] = {'val': expr, 'type': type(expr).__name__}
                 else:
-                    self.params[id] = {'val': expr, 'type': None}
+                    self.params[var_id] = {'val': expr, 'type': None}
         return None
 
     def visitCall(self, ctx: RParser.CallContext):
         if isinstance(ctx.expr(), RParser.AssignContext):
             if ctx.expr().expr(1).getText() == 'list':
-                val = ctx.sublist().getText()
+                # convert string to list
+                val = json.loads('['+ctx.sublist().getText()+']')
                 self.params[ctx.expr().expr(0).getText()] = {'val': val, 'type': 'list'}
 
-
     def visitId(self, ctx: RParser.IdContext):
-        id = ctx.ID().getText()
-        if id.startswith(self.prefix) and id not in self.params:
-            self.params[id] = {'val': None, 'type': None}
+        var_id = ctx.ID().getText()
+        if var_id.startswith(self.prefix) and var_id not in self.params:
+            self.params[var_id] = {'val': None, 'type': None}
 
-        return str(id)
+        return str(var_id)
 
     def visitInt(self, ctx: RParser.IntContext):
         val = ctx.INT().getText()

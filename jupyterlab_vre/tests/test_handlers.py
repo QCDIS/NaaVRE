@@ -151,6 +151,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cells_json_path = os.path.join(base_path, 'cells')
             cells_files = os.listdir(cells_json_path)
             test_cells = []
+            if not os.path.exists('/tmp/data'):
+                os.makedirs('/tmp/data')
             for cell_file in cells_files:
                 cell_path = os.path.join(cells_json_path, cell_file)
                 test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
