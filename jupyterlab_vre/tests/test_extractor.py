@@ -67,8 +67,6 @@ class TestExtractor(TestCase):
             os.path.join(notebooks_json_path, "*.json")
         )
         for notebook_file in notebooks_files:
-            if 'test_param_values_R.json' not in notebook_file:
-                continue
             cell = extract_cell_from_path(notebook_file)
             logging.getLogger().debug(notebook_file)
             print(notebook_file)

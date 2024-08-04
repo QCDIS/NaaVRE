@@ -237,7 +237,7 @@ class ExtractDefined(RVisitor):
 
 class ExtractPrefixedVar(RVisitor):
     def __init__(self, prefix):
-        self.prefix = prefix+'_'
+        self.prefix = prefix + '_'
         self.params = {}
 
     def visitProg(self, ctx: RParser.ProgContext):
@@ -250,27 +250,33 @@ class ExtractPrefixedVar(RVisitor):
         if var_id is None:
             return None
         # check if id has param_ prefix
-        if var_id.startswith(self.prefix): #and id not in self.params:
-            if self.params[var_id]['val'] is None or var_id not in self.params:
+        if var_id.startswith(self.prefix):  #and id not in self.params:
+            if self.params[var_id]['value'] is None or var_id not in self.params:
                 expr = self.visit(ctx.expr(1))
                 # If returned expression is empty e.g. in case of unaccessible env variables, do not specify type.
                 if expr != "":
-                    self.params[var_id] = {'val': expr, 'type': type(expr).__name__}
+                    self.params[var_id] = {'value': expr, 'type': type(expr).__name__}
                 else:
-                    self.params[var_id] = {'val': expr, 'type': None}
+                    self.params[var_id] = {'value': expr, 'type': None}
         return None
 
     def visitCall(self, ctx: RParser.CallContext):
+
         if isinstance(ctx.expr(), RParser.AssignContext):
             if ctx.expr().expr(1).getText() == 'list':
+                line = ctx.getText()
                 # convert string to list
-                val = json.loads('['+ctx.sublist().getText()+']')
-                self.params[ctx.expr().expr(0).getText()] = {'val': val, 'type': 'list'}
+                list_val = ctx.sublist().getText()
+                try:
+                    val = json.loads('[' + list_val + ']')
+                except:
+                    val = None
+                self.params[ctx.expr().expr(0).getText()] = {'value': val, 'type': 'list'}
 
     def visitId(self, ctx: RParser.IdContext):
         var_id = ctx.ID().getText()
         if var_id.startswith(self.prefix) and var_id not in self.params:
-            self.params[var_id] = {'val': None, 'type': None}
+            self.params[var_id] = {'value': None, 'type': None}
 
         return str(var_id)
 

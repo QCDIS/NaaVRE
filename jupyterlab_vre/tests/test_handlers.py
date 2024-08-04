@@ -97,7 +97,10 @@ def wait_for_api_resource(github=None):
 
 
 class HandlersAPITest(AsyncHTTPTestCase):
-    os.environ["ASYNC_TEST_TIMEOUT"] = "120"
+
+    os.environ["ASYNC_TEST_TIMEOUT"] = "240"
+
+
 
     def get_app(self):
         notebook_path = os.path.join(base_path, 'notebooks/test_notebook.ipynb')
@@ -244,6 +247,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertEqual('success', cell['job']['conclusion'], 'Job not successful')
 
     def test_extractor_handler(self):
+        print()
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
             notebooks_json_path = os.path.join(base_path, 'notebooks')

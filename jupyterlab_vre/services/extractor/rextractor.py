@@ -197,11 +197,11 @@ class RExtractor(Extractor):
             output = visitor.visit(tree)
 
             for variable in output:
-                if variable not in extracted_vars or extracted_vars[variable]['value'] is None:
+                if variable not in extracted_vars or 'value' not in extracted_vars[variable] or extracted_vars[variable]['value'] is None :
                     extracted_vars[variable] = {
                         'name': variable,
                         'type': self.notebook_names[variable]['type'] if variable in self.notebook_names else None,
-                        'value': output[variable]['val']
+                        'value': output[variable]['value']
                     }
                     if prefix == 'secret':
                         del extracted_vars[variable]['value']
