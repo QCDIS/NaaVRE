@@ -42,7 +42,10 @@ main <- function() {
             rmd_chunks[[p]] <- node
             rmd_chunk_indices[[p]] <- i
           }
-          else if (node_type == 'rmd_heading' && i < length(rmd) && parsermd::rmd_node_type(rmd[[i + 1]]) == 'rmd_markdown') {
+          else if (
+            (node_type == 'rmd_heading' && i < length(rmd) && parsermd::rmd_node_type(rmd[[i + 1]]) == 'rmd_markdown')
+            || (node_type == 'rmd_yaml_list' && parsermd::rmd_node_length(node) == 0)
+          ) {
             p <- length(rmd_offset_indices) + 1
             rmd_offset_indices[[p]] <- i
           }
