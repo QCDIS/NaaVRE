@@ -1,0 +1,43 @@
+---
+title: "Long R Markdown Example"
+output: html_document
+---
+
+# Introduction
+
+This is a long R Markdown document that includes multiple code snippets. We will go through several steps of a typical data analysis workflow.
+
+# Load Libraries
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+# Data Loading
+
+```{r}
+# Load the built-in mtcars dataset data(mtcars)
+```
+
+# Data Cleaning
+
+```{r}
+# Check for missing values sum(is.na(mtcars))
+```
+
+# Exploratory Data Analysis
+
+```{r}
+# Summary of the dataset summary(mtcars)
+```
+
+# Data Visualization
+
+```{r}
+# Scatter plot of mpg vs. disp ggplot(mtcars, aes(x=disp, y=mpg)) + geom_point() + labs(title="Scatter plot of Miles Per Gallon vs. Displacement", x="Displacement", y="Miles Per Gallon")
+```
+
+# Conclusion
+
+This is a simple example of a long R Markdown document with multiple code snippets. You can add more sections and code snippets as needed for your analysis.

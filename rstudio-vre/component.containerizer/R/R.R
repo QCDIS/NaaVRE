@@ -4,11 +4,12 @@
 
 main <- function() {
   ui <- fluidPage(
-    h1('[Prototype] Markdown Code Extractor'),
+    h1('Cell Containerizer'),
     htmlOutput('doc_info_output'),
     actionButton('parse_button', 'Parse'),
     selectInput('code_chunk_selector', 'Select Code Chunk', c(), selectize=TRUE),
     htmlOutput('code_output'),
+
     selectInput('base_image_selector', 'Base Image', c()),
     actionButton('create_button', 'Create'),
   )
