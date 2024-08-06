@@ -1,18 +1,30 @@
 #' @import shiny
 #' @import shinydashboard
+#' @import shinyjs
 #' @import rstudioapi
 #' @import parsermd
 
 main <- function() {
   ui <- fluidPage(
+    shinyjs::useShinyjs(),
     h1('Cell Containerizer'),
     htmlOutput('doc_info_output'),
     actionButton('parse_button', 'Parse'),
     selectInput('code_chunk_selector', 'Select Code Chunk', c(), selectize=TRUE),
     htmlOutput('code_output'),
-    shinydashboard::box(
-      title = 'Inputs',
-      tableOutput('input_vars')
+    div(
+      id='inputs_div',
+      shinydashboard::box(
+        title = 'Inputs',
+        tableOutput('inputs_table')
+      )
+    ),
+    div(
+      id='outputs_div',
+      shinydashboard::box(
+        title = 'Outputs',
+        tableOutput('outputs_table')
+      )
     ),
     selectInput('base_image_selector', 'Base Image', c()),
     actionButton('create_button', 'Create'),
@@ -113,14 +125,22 @@ main <- function() {
           ),
           auto_unbox = TRUE)
         )
+        parsed_json = list()
         tryCatch({
           response <- httr2::req_perform(request)
           parsed_json <- httr2::resp_body_json(response)
           print(jsonlite::prettify(parsed_json))
         }, error=function(e) { print(e) })
+        if (exists('inputs', where=parsed_json) && length(parsed_json[['inputs']]) != 0) {
+          inputs <- parsed_json[['inputs']]
+          for (input in inputs) {
 
+          }
+        }
       }
     })
+
+    shinyjs::hide('inputs_div')
 
     parse_md()
 
