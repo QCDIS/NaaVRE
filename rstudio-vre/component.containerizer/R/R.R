@@ -1,4 +1,5 @@
 #' @import shiny
+#' @import shinydashboard
 #' @import rstudioapi
 #' @import parsermd
 
@@ -9,7 +10,10 @@ main <- function() {
     actionButton('parse_button', 'Parse'),
     selectInput('code_chunk_selector', 'Select Code Chunk', c(), selectize=TRUE),
     htmlOutput('code_output'),
-
+    shinydashboard::box(
+      title = 'Inputs',
+      tableOutput('input_vars')
+    ),
     selectInput('base_image_selector', 'Base Image', c()),
     actionButton('create_button', 'Create'),
   )
@@ -19,7 +23,7 @@ main <- function() {
     API_ENDPOINT <- Sys.getenv('API_ENDPOINT')
     CONTAINERIZER_PREFIX <- 'api/containerizer'
     NAAVRE_API_TOKEN <- Sys.getenv('NAAVRE_API_TOKEN')
-    choices_placeholder = c(' ') # # blank [ex. c(), c(''), list(), list('')] or NULL will not trigger event handler thus code_output will not be updated. https://bookdown.org/yihui/rmarkdown/r-code.html does not recommend using spaces in code chunk labels.
+    choices_placeholder <- c(' ') # # blank [ex. c(), c(''), list(), list('')] or NULL will not trigger event handler thus code_output will not be updated. https://bookdown.org/yihui/rmarkdown/r-code.html does not recommend using spaces in code chunk labels.
 
     current_doc <- NULL
     results <- NULL
@@ -111,8 +115,10 @@ main <- function() {
         )
         tryCatch({
           response <- httr2::req_perform(request)
-          print(jsonlite::prettify(httr2::resp_body_json(response)))
+          parsed_json <- httr2::resp_body_json(response)
+          print(jsonlite::prettify(parsed_json))
         }, error=function(e) { print(e) })
+
       }
     })
 

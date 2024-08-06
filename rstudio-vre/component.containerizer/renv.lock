@@ -1168,6 +1168,11 @@
       ],
       "Hash": "6a293995a66e12c48d13aa1f957d09c7"
     },
+    "shinydashboard": {
+      "Package": "shinydashboard",
+      "Version": "0.7.2",
+      "Source": "Repository"
+    },
     "sourcetools": {
       "Package": "sourcetools",
       "Version": "0.1.7-1",
