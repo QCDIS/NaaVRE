@@ -14,17 +14,11 @@ main <- function() {
     htmlOutput('code_output'),
     div(
       id='inputs_div',
-      shinydashboard::box(
-        title = 'Inputs',
-        tableOutput('inputs_table')
-      )
+      h2('Inputs')
     ),
     div(
       id='outputs_div',
-      shinydashboard::box(
-        title = 'Outputs',
-        tableOutput('outputs_table')
-      )
+      h2('Outputs')
     ),
     selectInput('base_image_selector', 'Base Image', c()),
     actionButton('create_button', 'Create'),
@@ -140,7 +134,8 @@ main <- function() {
       }
     })
 
-    shinyjs::hide('inputs_div')
+    # shinyjs::hide('inputs_div')
+    # shinyjs::hide('outputs_div')
 
     parse_md()
 
