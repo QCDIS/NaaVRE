@@ -14,11 +14,11 @@ main <- function() {
     htmlOutput('code_output'),
     div(
       id='inputs_div',
-      h2('Inputs')
+      h4('Inputs')
     ),
     div(
       id='outputs_div',
-      h2('Outputs')
+      h4('Outputs')
     ),
     selectInput('base_image_selector', 'Base Image', c()),
     actionButton('create_button', 'Create'),
@@ -125,20 +125,29 @@ main <- function() {
           parsed_json <- jsonlite::fromJSON(httr2::resp_body_json(response))
           print(jsonlite::toJSON(parsed_json, pretty=TRUE))
         }, error=function(e) { print(e) })
+
         if ('inputs' %in% names(parsed_json) && length(parsed_json[['inputs']]) != 0) {
           inputs <- parsed_json[['inputs']]
           insertUI(selector='#inputs_div', where='beforeEnd',
-            ui=tagList(lapply(1:length(inputs), function(input) {
-              selectInput(paste0('input_type_', input), input, choices=c('Integer', 'Float', 'String', 'List')) }
-            ))
+                   ui=tagList(lapply(1:length(inputs), function(i) { selectInput(paste0('input_type_', i), inputs[i], choices=c('Integer', 'Float', 'String', 'List')) }))
           )
-          print('inserted')
+          shinyjs::show('inputs_div')
         }
+        else { shinyjs::hide('inputs_div') }
+
+        if ('outputs' %in% names(parsed_json) && length(parsed_json[['outputs']]) != 0) {
+          outputs <- parsed_json[['outputs']]
+          insertUI(selector='#outputs_div', where='beforeEnd',
+                   ui=tagList(lapply(1:length(outputs), function(i) { selectInput(paste0('output_type_', i), outputs[i], choices=c('Integer', 'Float', 'String', 'List')) }))
+          )
+          shinyjs::show('outputs_div')
+        }
+        else { shinyjs::hide('outputs_div') }
       }
     })
 
-    # shinyjs::hide('inputs_div')
-    # shinyjs::hide('outputs_div')
+    shinyjs::hide('inputs_div')
+    shinyjs::hide('outputs_div')
 
     parse_md()
 
