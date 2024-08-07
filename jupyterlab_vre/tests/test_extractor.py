@@ -94,6 +94,11 @@ class TestExtractor(TestCase):
                          'test_param_values_R.json',
                          ]):
                     for param_name in cell['params']:
+                        if cell['param_values'][param_name] != self.param_values_ref[param_name]:
+                            print(param_name)
+                            print(cell['param_values'][param_name])
+                            print(self.param_values_ref[param_name])
+
                         self.assertTrue(
                             cell['param_values'][param_name] ==
                             self.param_values_ref[param_name]
