@@ -128,8 +128,10 @@ main <- function() {
 
         if ('inputs' %in% names(parsed_json) && length(parsed_json[['inputs']]) != 0) {
           inputs <- parsed_json[['inputs']]
+          removeUI('div:has(> [id^="input_type_"])', multiple=TRUE)
+          lapply(grep('^input_type_', names(input), value=TRUE), function(id) { removeUI(paste0('#', id)) })
           insertUI(selector='#inputs_div', where='beforeEnd',
-                   ui=tagList(lapply(1:length(inputs), function(i) { selectInput(paste0('input_type_', i), inputs[i], choices=c('Integer', 'Float', 'String', 'List')) }))
+                   ui=tagList(lapply(1:length(inputs), function(i) { selectInput(paste0('input_type_', inputs[i]), inputs[i], choices=c('Integer', 'Float', 'String', 'List')) }))
           )
           shinyjs::show('inputs_div')
         }
@@ -137,8 +139,9 @@ main <- function() {
 
         if ('outputs' %in% names(parsed_json) && length(parsed_json[['outputs']]) != 0) {
           outputs <- parsed_json[['outputs']]
+          removeUI('div:has(> [id^="output_type_"])', multiple=TRUE)
           insertUI(selector='#outputs_div', where='beforeEnd',
-                   ui=tagList(lapply(1:length(outputs), function(i) { selectInput(paste0('output_type_', i), outputs[i], choices=c('Integer', 'Float', 'String', 'List')) }))
+                   ui=tagList(lapply(1:length(outputs), function(i) { selectInput(paste0('output_type_', outputs[i]), outputs[i], choices=c('Integer', 'Float', 'String', 'List')) }))
           )
           shinyjs::show('outputs_div')
         }
