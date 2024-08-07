@@ -123,14 +123,14 @@ main <- function() {
         tryCatch({
           response <- httr2::req_perform(request)
           parsed_json <- jsonlite::fromJSON(httr2::resp_body_json(response))
-          print(jsonlite::prettify(parsed_json))
+          print(jsonlite::toJSON(parsed_json, pretty=TRUE))
         }, error=function(e) { print(e) })
-        print(names(parsed_json))
         if ('inputs' %in% names(parsed_json) && length(parsed_json[['inputs']]) != 0) {
           inputs <- parsed_json[['inputs']]
-          insertUI(
-            selector='#inputs_div', where='beforeEnd',
-            ui=tagList(lapply(1:length(inputs), function(input) { selectInput(paste0('input_type_', input), input, choices=c('Integer', 'Float', 'String', 'List')) }))
+          insertUI(selector='#inputs_div', where='beforeEnd',
+            ui=tagList(lapply(1:length(inputs), function(input) {
+              selectInput(paste0('input_type_', input), input, choices=c('Integer', 'Float', 'String', 'List')) }
+            ))
           )
           print('inserted')
         }
