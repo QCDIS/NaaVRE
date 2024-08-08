@@ -31,6 +31,7 @@ main <- function() {
     NAAVRE_API_TOKEN <- Sys.getenv('NAAVRE_API_TOKEN')
     choices_placeholder <- c(' ') # # blank [ex. c(), c(''), list(), list('')] or NULL will not trigger event handler thus code_output will not be updated. https://bookdown.org/yihui/rmarkdown/r-code.html does not recommend using spaces in code chunk labels.
 
+    base_image_list <- list()
     current_doc <- NULL
     parsing_results <- NULL
     selected_code <- ''
@@ -149,10 +150,28 @@ main <- function() {
       }
     })
 
+    observeEvent(input$create_button, {
+      extraction_results[['base_image']] <- base_image_list[[input$base_image_selector]]
+      prefices <- c('input_type_', 'output_type_')
+      for (prefix in prefices) {
+        type_IDs <- grep(paste0('^', prefix), names(input), value=TRUE)
+        if (length(type_IDs) > 0) {
+          types <- list()
+          for (ID in type_IDs) {
+            print(substr(ID, nchar(prefix) + 1, nchar(ID)))
+            types[[substr(ID, nchar(prefix) + 1, nchar(ID))]] <- input[[ID]]
+          }
+          extraction_results[['types']] <- types
+          print(types)
+          break
+        }
+      }
+    })
+
     shinyjs::hide('inputs_div')
     shinyjs::hide('outputs_div')
 
-    parse_md()
+    parsing_results <- parse_md()
 
     request <- httr2::request(stringr::str_interp('${API_ENDPOINT}/${CONTAINERIZER_PREFIX}/baseimagetags'))
     request <- httr2::req_headers(request, Authorization=stringr::str_interp('Token ${NAAVRE_API_TOKEN}'))
