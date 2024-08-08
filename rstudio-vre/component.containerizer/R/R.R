@@ -32,7 +32,7 @@ main <- function() {
     choices_placeholder <- c(' ') # # blank [ex. c(), c(''), list(), list('')] or NULL will not trigger event handler thus code_output will not be updated. https://bookdown.org/yihui/rmarkdown/r-code.html does not recommend using spaces in code chunk labels.
 
     current_doc <- NULL
-    results <- NULL
+    parsing_results <- NULL
     selected_code <- ''
 
     parse_md <- function() {
@@ -74,20 +74,20 @@ main <- function() {
     }
 
     observeEvent(input$parse_button, {
-      results <<- parse_md()
+      parsing_results <<- parse_md()
       output$doc_info_output <- renderUI({
         HTML(paste0(
           '<b>Document ID: </b>', current_doc$id, '<br>',
           '<b>Document Path: </b>', current_doc$path, '<br>',
-          switch(results[['error']],
+          switch(parsing_results[['error']],
                  'no code'='No code snippets found',
                  'parsing'='<p style="color:red;">Parsing ERROR</p>',
                  'Parsing done')
         )) # cat/paste0 cannot handle trailing comma in its arg list
       })
-      if (results[['error']] != '') { rmd_chunk_labels <<- list() } # c() returns NULL
-      else { rmd_chunk_labels <- lapply(results[['rmd_chunks']], function(node) parsermd::rmd_node_label(node)) }
-      updateSelectInput(session, 'code_chunk_selector', choices=setNames(results[['rmd_chunk_indices']], rmd_chunk_labels))
+      if (parsing_results[['error']] != '') { rmd_chunk_labels <<- list() } # c() returns NULL
+      else { rmd_chunk_labels <- lapply(parsing_results[['rmd_chunks']], function(node) parsermd::rmd_node_label(node)) }
+      updateSelectInput(session, 'code_chunk_selector', choices=setNames(parsing_results[['rmd_chunk_indices']], rmd_chunk_labels))
     })
 
     observeEvent(input$code_chunk_selector, {
@@ -96,7 +96,7 @@ main <- function() {
       output$code_output <- renderUI({
         if (is.na(cell_index)) { selected_code <<- '' }
         else {
-          selected_node <- results$rmd[[cell_index]]
+          selected_node <- parsing_results$rmd[[cell_index]]
           if (is.null(selected_node)) { selected_code <<- '' }
           else {
             code_statements <- parsermd::rmd_node_code(selected_node)
@@ -113,21 +113,21 @@ main <- function() {
         request <- httr2::req_body_raw(request, jsonlite::toJSON(
           list(
             'rmarkdown' = paste0(current_doc$content, collapse='\n'),
-            'rmarkdown_offset_indices' = results$rmd_offset_indices,
+            'rmarkdown_offset_indices' = parsing_results$rmd_offset_indices,
             'cell_index' = cell_index,
-            'kernel' = switch(parsermd::rmd_node_engine(results$rmd[[cell_index]]), 'r'='IRkernel', 'python'='ipykernel', '')
+            'kernel' = switch(parsermd::rmd_node_engine(parsing_results$rmd[[cell_index]]), 'r'='IRkernel', 'python'='ipykernel', '')
           ),
           auto_unbox = TRUE)
         )
-        parsed_json <- list()
+        extraction_results <- list()
         tryCatch({
           response <- httr2::req_perform(request)
-          parsed_json <- jsonlite::fromJSON(httr2::resp_body_json(response))
-          print(jsonlite::toJSON(parsed_json, pretty=TRUE))
+          extraction_results <- jsonlite::fromJSON(httr2::resp_body_json(response))
+          print(jsonlite::toJSON(extraction_results, pretty=TRUE))
         }, error=function(e) { print(e) })
 
-        if ('inputs' %in% names(parsed_json) && length(parsed_json[['inputs']]) != 0) {
-          inputs <- parsed_json[['inputs']]
+        if ('inputs' %in% names(extraction_results) && length(extraction_results[['inputs']]) != 0) {
+          inputs <- extraction_results[['inputs']]
           removeUI('div:has(> [id^="input_type_"])', multiple=TRUE)
           lapply(grep('^input_type_', names(input), value=TRUE), function(id) { removeUI(paste0('#', id)) })
           insertUI(selector='#inputs_div', where='beforeEnd',
@@ -137,8 +137,8 @@ main <- function() {
         }
         else { shinyjs::hide('inputs_div') }
 
-        if ('outputs' %in% names(parsed_json) && length(parsed_json[['outputs']]) != 0) {
-          outputs <- parsed_json[['outputs']]
+        if ('outputs' %in% names(extraction_results) && length(extraction_results[['outputs']]) != 0) {
+          outputs <- extraction_results[['outputs']]
           removeUI('div:has(> [id^="output_type_"])', multiple=TRUE)
           insertUI(selector='#outputs_div', where='beforeEnd',
                    ui=tagList(lapply(1:length(outputs), function(i) { selectInput(paste0('output_type_', outputs[i]), outputs[i], choices=c('Integer', 'Float', 'String', 'List')) }))
