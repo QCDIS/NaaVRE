@@ -34,6 +34,7 @@ main <- function() {
     current_doc <- NULL
     parsing_results <- NULL
     selected_code <- ''
+    extraction_results <- list()
 
     parse_md <- function() {
       current_doc <<- rstudioapi::getSourceEditorContext()
@@ -119,10 +120,9 @@ main <- function() {
           ),
           auto_unbox = TRUE)
         )
-        extraction_results <- list()
         tryCatch({
           response <- httr2::req_perform(request)
-          extraction_results <- jsonlite::fromJSON(httr2::resp_body_json(response))
+          extraction_results <<- jsonlite::fromJSON(httr2::resp_body_json(response))
           print(jsonlite::toJSON(extraction_results, pretty=TRUE))
         }, error=function(e) { print(e) })
 
