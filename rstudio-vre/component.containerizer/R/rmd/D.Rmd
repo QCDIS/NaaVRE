@@ -1,0 +1,22 @@
+
+
+
+
+```{r}
+# Input list
+names <- c('Alice', 'Bob')
+```
+
+
+
+```{r}
+# Process list
+for (name in names) {
+  print(paste0('Hello, ', name))
+}
+```
+
+
+
+
+
