@@ -1,6 +1,6 @@
 #' @import shiny
-#' @import shinydashboard
 #' @import shinyjs
+#' @import rjson
 #' @import rstudioapi
 #' @import parsermd
 
@@ -124,8 +124,7 @@ main <- function() {
         )
         tryCatch({
           response <- httr2::req_perform(request)
-          extraction_results <<- jsonlite::parse_json(httr2::resp_body_json(response))
-          print(jsonlite::toJSON(extraction_results, pretty=FALSE))
+          extraction_results <<- rjson::fromJSON(httr2::resp_body_json(response), simplify=FALSE)
         }, error=function(e) { print(e) })
 
         if ('inputs' %in% names(extraction_results) && length(extraction_results[['inputs']]) != 0) {
@@ -158,13 +157,8 @@ main <- function() {
         type_IDs <- grep(paste0('^', prefix), names(input), value=TRUE)
         if (length(type_IDs) > 0) {
           types <- list()
-          for (ID in type_IDs) {
-            # print(substr(ID, nchar(prefix) + 1, nchar(ID)))
-            types[[substr(ID, nchar(prefix) + 1, nchar(ID))]] <- input[[ID]]
-          }
+          for (ID in type_IDs) { types[[substr(ID, nchar(prefix) + 1, nchar(ID))]] <- input[[ID]] }
           extraction_results[['types']] <- types
-          # print(types)
-          # print(extraction_results[['types']])
           break
         }
       }
@@ -172,8 +166,8 @@ main <- function() {
       request <- httr2::request(stringr::str_interp('${API_ENDPOINT}/${CONTAINERIZER_PREFIX}/addcell'))
       request <- httr2::req_method(request, 'POST')
       request <- httr2::req_headers(request, Authorization=stringr::str_interp('Token ${NAAVRE_API_TOKEN}'), 'Content-Type'='application/json')
-      print(jsonlite::toJSON(extraction_results))
-      request <- httr2::req_body_raw(request, jsonlite::toJSON(extraction_results, auto_unbox = TRUE))
+      # print(rjson::toJSON(extraction_results))
+      request <- httr2::req_body_raw(request, rjson::toJSON(extraction_results))
       tryCatch({
         response <- httr2::req_perform(request)
         print(httr2::resp_body_json(response))
