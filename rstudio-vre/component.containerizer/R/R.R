@@ -25,6 +25,7 @@ main <- function() {
   )
   server <- function(input, output, session) {
     linesep <- '\n'
+    type_choices = c('Integer'='int', 'Float'='float', 'String'='str', 'List'='list')
 
     API_ENDPOINT <- Sys.getenv('API_ENDPOINT')
     CONTAINERIZER_PREFIX <- 'api/containerizer'
@@ -123,8 +124,8 @@ main <- function() {
         )
         tryCatch({
           response <- httr2::req_perform(request)
-          extraction_results <<- jsonlite::fromJSON(httr2::resp_body_json(response))
-          print(jsonlite::toJSON(extraction_results, pretty=TRUE))
+          extraction_results <<- jsonlite::parse_json(httr2::resp_body_json(response))
+          print(jsonlite::toJSON(extraction_results, pretty=FALSE))
         }, error=function(e) { print(e) })
 
         if ('inputs' %in% names(extraction_results) && length(extraction_results[['inputs']]) != 0) {
@@ -132,7 +133,7 @@ main <- function() {
           removeUI('div:has(> [id^="input_type_"])', multiple=TRUE)
           lapply(grep('^input_type_', names(input), value=TRUE), function(id) { removeUI(paste0('#', id)) })
           insertUI(selector='#inputs_div', where='beforeEnd',
-                   ui=tagList(lapply(1:length(inputs), function(i) { selectInput(paste0('input_type_', inputs[i]), inputs[i], choices=c('Integer', 'Float', 'String', 'List')) }))
+                   ui=tagList(lapply(1:length(inputs), function(i) { selectInput(paste0('input_type_', inputs[i]), inputs[i], choices=type_choices) }))
           )
           shinyjs::show('inputs_div')
         }
@@ -142,7 +143,7 @@ main <- function() {
           outputs <- extraction_results[['outputs']]
           removeUI('div:has(> [id^="output_type_"])', multiple=TRUE)
           insertUI(selector='#outputs_div', where='beforeEnd',
-                   ui=tagList(lapply(1:length(outputs), function(i) { selectInput(paste0('output_type_', outputs[i]), outputs[i], choices=c('Integer', 'Float', 'String', 'List')) }))
+                   ui=tagList(lapply(1:length(outputs), function(i) { selectInput(paste0('output_type_', outputs[i]), outputs[i], choices=type_choices) }))
           )
           shinyjs::show('outputs_div')
         }
@@ -158,10 +159,12 @@ main <- function() {
         if (length(type_IDs) > 0) {
           types <- list()
           for (ID in type_IDs) {
+            # print(substr(ID, nchar(prefix) + 1, nchar(ID)))
             types[[substr(ID, nchar(prefix) + 1, nchar(ID))]] <- input[[ID]]
           }
           extraction_results[['types']] <- types
-          print(extraction_results[['types']])
+          # print(types)
+          # print(extraction_results[['types']])
           break
         }
       }
@@ -169,6 +172,7 @@ main <- function() {
       request <- httr2::request(stringr::str_interp('${API_ENDPOINT}/${CONTAINERIZER_PREFIX}/addcell'))
       request <- httr2::req_method(request, 'POST')
       request <- httr2::req_headers(request, Authorization=stringr::str_interp('Token ${NAAVRE_API_TOKEN}'), 'Content-Type'='application/json')
+      print(jsonlite::toJSON(extraction_results))
       request <- httr2::req_body_raw(request, jsonlite::toJSON(extraction_results, auto_unbox = TRUE))
       tryCatch({
         response <- httr2::req_perform(request)
