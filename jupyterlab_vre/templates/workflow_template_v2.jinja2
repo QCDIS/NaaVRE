@@ -87,13 +87,6 @@ spec:
         {% endfor %}
       {% endif %}
       outputs:
-      {% if 'visualize-' in cells[nid]['task_name']%}
-        artifacts:
-          - name: {{ task_name }}-output-html
-            path: /tmp/data/{{ task_name }}-output.html
-            archive:
-                none: {}
-      {% endif %}
         parameters:
         {% for p in ports %}
         {% if ports[p]['type'] == 'right' %}
@@ -184,9 +177,6 @@ spec:
             jupyter nbconvert --no-input --execute /app/task-output.ipynb --to html;
             cp /app/task-output.html /tmp/data/{{ task_name }}-output.html;
             jupyter notebook --port 5173 --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --NotebookApp.base_url=/naavre-visualizer-notebook
-        volumeMounts:
-        - name: workdir
-          mountPath: /tmp/data
       metadata:
         labels:
           app: naavre-visualizer-notebook
