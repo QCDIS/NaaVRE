@@ -78,7 +78,7 @@ jobs:
       - name: print test
         shell: bash -l {0}
         run: |
-          echo ${{ inputs.test }}
+           echo ${{ matrix.test }}
 
 #       - name: Cache Conda environment
 #         uses: actions/cache@v4
@@ -97,7 +97,7 @@ jobs:
 #       - name: pytest
 #         shell: bash -l {0}
 #         run: |
-#           conda activate jupyterlab
+#            conda activate jupyterlab
 #           conda install -y conda-forge::pytest-cov
 #           conda install -y conda-forge::pytest-split
 #           python docker/repo_utils/conf_vl_repos.py  --force=True
