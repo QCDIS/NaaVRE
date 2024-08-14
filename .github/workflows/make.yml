@@ -83,29 +83,39 @@ jobs:
           MATRIX=$(jq -c . test_list.json)
           echo "test_list=$MATRIX" >> $GITHUB_OUTPUT
 
-
   call-pytest:
-    uses: ./.github/workflows/run-tests.yml
-    needs: [configure-workflow]
-    if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
-    strategy:
-      matrix:
-        test: split-output.matrix
-    with:
-      runs-on: ${{ needs.configure-workflow.outputs.runner }}
-      jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}
-      vlab_slug: ${{ vars.VLAB_SLUG }}
-      cell_github: ${{ vars.CELL_GITHUB }}
-      api_endpoint: ${{ vars.API_ENDPOINT }}
-      module_mapping_url: ${{ vars.MODULE_MAPPING_URL }}
-      search_api_endpoint: ${{ vars.SEARCH_API_ENDPOINT }}
-      registry_url: ${{ vars.REGISTRY_URL }}
-      debug: ${{ vars.DEBUG }}
-#       group: ${{ matrix.group }}
-    secrets:
-      cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
-      naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
-      search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
+    needs: [split-tests]
+    steps:
+        -name : Run in parallel
+        strategy:
+          matrix:
+            test: ${{ needs.split-tests.outputs.matrix }}
+        run: |
+          echo ${{ matrix.test }}
+
+
+#   call-pytest:
+#     uses: ./.github/workflows/run-tests.yml
+#     needs: [configure-workflow]
+#     if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
+#     strategy:
+#       matrix:
+#         test: jobs.split-tests.outputs.matrix
+#     with:
+#       runs-on: ${{ needs.configure-workflow.outputs.runner }}
+#       jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}
+#       vlab_slug: ${{ vars.VLAB_SLUG }}
+#       cell_github: ${{ vars.CELL_GITHUB }}
+#       api_endpoint: ${{ vars.API_ENDPOINT }}
+#       module_mapping_url: ${{ vars.MODULE_MAPPING_URL }}
+#       search_api_endpoint: ${{ vars.SEARCH_API_ENDPOINT }}
+#       registry_url: ${{ vars.REGISTRY_URL }}
+#       debug: ${{ vars.DEBUG }}
+# #       group: ${{ matrix.group }}
+#     secrets:
+#       cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
+#       naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
+#       search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
 #
 #   make-release:
 #     uses: ./.github/workflows/make-release.yml
