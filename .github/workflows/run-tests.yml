@@ -15,9 +15,9 @@ on:
       debug:
         required: true
         type: string
-      test:
-        required: true
-        type: string
+#       test:
+#         required: true
+#         type: string
       jupyterhub_user:
         required: true
         type: string
