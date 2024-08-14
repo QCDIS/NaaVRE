@@ -1,4 +1,4 @@
-name: Run tests
+name: Collect tests
 
 on:
   workflow_call:
@@ -27,11 +27,6 @@ jobs:
           activate-environment: jupyterlab
           use-mamba: true
 
-      - name: print group
-        shell: bash -l {0}
-        run: |
-          echo ${{ inputs.group }}
-
       - name: Cache Conda environment
         uses: actions/cache@v4
         with:
@@ -45,9 +40,6 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate jupyterlab
-          conda install -y conda-forge::pytest-cov
-          conda install -y conda-forge::pytest-split
-          python docker/repo_utils/conf_vl_repos.py  --force=True
           pip install --upgrade build
           mkdir -p /tmp/data
           pytest --collect-only -q | grep 'tests/' | jq -R . | jq -s . > pytest_output.json
