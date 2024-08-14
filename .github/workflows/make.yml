@@ -84,19 +84,6 @@ jobs:
           echo "test_list=$MATRIX" >> $GITHUB_OUTPUT
 
   call-pytest:
-    needs: [split-tests]
-    runs-on: ubuntu-latest
-    steps:
-      - name : Run in parallel
-        run: |
-          echo ${{ matrix.test }}
-    strategy:
-      matrix:
-        test: ${{ needs.split-tests.outputs.matrix }}
-
-
-
-  call-pytest:
     uses: ./.github/workflows/run-tests.yml
     needs: [split-tests]
     if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
