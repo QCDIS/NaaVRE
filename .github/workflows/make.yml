@@ -86,12 +86,13 @@ jobs:
   call-pytest:
     needs: [split-tests]
     steps:
-        -name : Run in parallel
-        strategy:
-          matrix:
-            test: ${{ needs.split-tests.outputs.matrix }}
+      - name : Run in parallel
         run: |
           echo ${{ matrix.test }}
+    strategy:
+      matrix:
+        test: ${{ needs.split-tests.outputs.matrix }}
+
 
 
 #   call-pytest:
