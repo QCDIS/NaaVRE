@@ -74,7 +74,7 @@ jobs:
       - name: Download pytest output artifact
         uses: actions/download-artifact@v3
         with:
-          name: test_list.json
+          name: test_list
           path: ./
 
       - name: Generate matrix from pytest_output
