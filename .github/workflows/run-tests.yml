@@ -15,9 +15,9 @@ on:
       debug:
         required: true
         type: string
-      test:
-        required: true
-        type: string
+#       test:
+#         required: true
+#         type: string
       jupyterhub_user:
         required: true
         type: string
@@ -74,11 +74,6 @@ jobs:
           environment-file: environment.yml
           activate-environment: jupyterlab
           use-mamba: true
-
-      - name: print test
-        shell: bash -l {0}
-        run: |
-           echo ${{ inputs.test }}
 
 #       - name: Cache Conda environment
 #         uses: actions/cache@v4
