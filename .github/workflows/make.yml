@@ -84,14 +84,6 @@ jobs:
           echo $MATRIX
           echo "test_list=$MATRIX" >> $GITHUB_OUTPUT
 
-  print-matrix:
-    runs-on: ubuntu-latest
-    needs: [split-tests]
-    steps:
-      - name: Print test_list
-        run: |
-          echo "${{ needs.split-tests.outputs.test_list }}"
-
 
   call-pytest:
     uses: ./.github/workflows/run-tests.yml
