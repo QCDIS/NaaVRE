@@ -78,7 +78,7 @@ jobs:
       - name: print test
         shell: bash -l {0}
         run: |
-           echo ${{ test }}
+           echo ${{ inputs.test }}
 
 #       - name: Cache Conda environment
 #         uses: actions/cache@v4
