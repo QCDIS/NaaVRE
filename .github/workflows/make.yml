@@ -66,7 +66,7 @@ jobs:
     needs: [configure-workflow, call-collect-tests]
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.split-output.outputs.matrix }}
+      matrix: ${{ steps.split-output.outputs.test_list }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -80,6 +80,7 @@ jobs:
       - name: Generate matrix from pytest_output
         id: split-output
         run: |
+          cat test_list.json
           MATRIX=$(jq -c . test_list.json)
           echo "test_list=$MATRIX" >> $GITHUB_OUTPUT
 
@@ -87,9 +88,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [split-tests]
     steps:
-      - name: Print matrix
+      - name: Print test_list
         run: |
-          echo "${{ needs.split-tests.outputs.matrix }}"
+          echo "${{ steps.split-tests.outputs.test_list }}"
 
 
   call-pytest:
