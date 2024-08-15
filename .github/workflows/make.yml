@@ -90,6 +90,7 @@ jobs:
     needs: [configure-workflow,split-tests]
     if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
     strategy:
+      fail-fast: false
       matrix:
         test: ${{ fromJson(needs.split-tests.outputs.test_list) }}
     with:
