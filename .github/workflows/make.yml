@@ -92,7 +92,6 @@ jobs:
       - name: Print test_list
         run: |
           echo "${{ needs.split-tests.outputs.test_list }}"
-          echo "${{ needs.split-tests.* }}"
 
 
   call-pytest:
@@ -101,7 +100,7 @@ jobs:
     if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
     strategy:
       matrix:
-        test: ${{ needs.split-tests.outputs.matrix }}
+        test: ${{ needs.split-tests.outputs.test_list }}
     with:
       runs-on: ${{ needs.configure-workflow.outputs.runner }}
       jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}
@@ -112,7 +111,7 @@ jobs:
       search_api_endpoint: ${{ vars.SEARCH_API_ENDPOINT }}
       registry_url: ${{ vars.REGISTRY_URL }}
       debug: ${{ vars.DEBUG }}
-#       group: ${{ matrix.group }}
+      test: ${{ matrix.test }}
     secrets:
       cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
       naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
