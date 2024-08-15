@@ -66,7 +66,7 @@ jobs:
     needs: [configure-workflow, call-collect-tests]
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.split-output.outputs.test_list }}
+      test_list: ${{ steps.split-output.outputs.test_list }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -91,7 +91,7 @@ jobs:
     steps:
       - name: Print test_list
         run: |
-          echo "${{ steps.split-tests.outputs.test_list }}"
+          echo "${{ needs.split-tests.outputs.* }}"
 
 
   call-pytest:
