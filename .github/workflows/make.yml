@@ -91,7 +91,8 @@ jobs:
     steps:
       - name: Print test_list
         run: |
-          echo "${{ needs.split-tests.outputs.* }}"
+          echo "${{ needs.split-tests.outputs.test_list }}"
+          echo "${{ needs.split-tests.* }}"
 
 
   call-pytest:
