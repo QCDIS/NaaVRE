@@ -61,6 +61,8 @@ jobs:
   call-collect-tests:
     uses: ./.github/workflows/collect-tests.yml
     needs: [configure-workflow]
+    with:
+      runs-on: ubuntu-latest
 
   split-tests:
     needs: [call-collect-tests]
