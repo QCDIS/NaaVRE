@@ -58,11 +58,9 @@ jobs:
     with:
       runs-on: ubuntu-latest
 
-
   call-collect-tests:
     uses: ./.github/workflows/collect-tests.yml
     needs: [configure-workflow]
-
 
   split-tests:
     needs: [configure-workflow, call-collect-tests]
@@ -94,16 +92,16 @@ jobs:
       - name: Print test_list
         run: |
           echo "${{ needs.split-tests.outputs.test_list }}"
-          echo "------------------------------------"
           echo  "${{ needs.configure-workflow.outputs.runner }}"
+
 
   call-pytest:
     uses: ./.github/workflows/run-tests.yml
-    needs: [configure-workflow]
+    needs: [configure-workflow,split-tests]
     if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
-#     strategy:
-#       matrix:
-#         group: ["1","2"]
+    strategy:
+      matrix:
+        test: ["jupyterlab_vre/tests/test_catalog.py::TestCatalog::test_db_path","jupyterlab_vre/tests/test_catalog.py::TestCatalog::test_get_gh_credentials"]
     with:
       runs-on: ${{ needs.configure-workflow.outputs.runner }}
       jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}
@@ -114,39 +112,39 @@ jobs:
       search_api_endpoint: ${{ vars.SEARCH_API_ENDPOINT }}
       registry_url: ${{ vars.REGISTRY_URL }}
       debug: ${{ vars.DEBUG }}
-#       group: ${{ matrix.group }}
+      test: ${{ matrix.test }}
     secrets:
       cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
       naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
       search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
-
-  make-release:
-    uses: ./.github/workflows/make-release.yml
-    needs: [configure-workflow]
-    if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
-    with:
-      runs-on: ubuntu-latest
-      jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}
-      vlab_slug: ${{ vars.VLAB_SLUG }}
-      cell_github: ${{ vars.CELL_GITHUB }}
-      api_endpoint: ${{ vars.API_ENDPOINT }}
-      module_mapping_url: ${{ vars.MODULE_MAPPING_URL }}
-      search_api_endpoint: ${{ vars.SEARCH_API_ENDPOINT }}
-      registry_url: ${{ vars.REGISTRY_URL }}
-      debug: ${{ vars.DEBUG }}
-    secrets:
-      cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
-      naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
-      search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
-
-  call-build-container-vanilla:
-    needs: [make-release,call-pytest]
-    uses: ./.github/workflows/build-container.yml
-    with:
-      wheel_artifact_name: jupyterlab_vre
-      docker_folder: vanilla
-      tag: n-a-a-vre
-      push: ${{ github.event_name == 'release' }}
-    secrets:
-      docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
-      docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
+#
+#   make-release:
+#     uses: ./.github/workflows/make-release.yml
+#     needs: [configure-workflow]
+#     if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
+#     with:
+#       runs-on: ubuntu-latest
+#       jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}
+#       vlab_slug: ${{ vars.VLAB_SLUG }}
+#       cell_github: ${{ vars.CELL_GITHUB }}
+#       api_endpoint: ${{ vars.API_ENDPOINT }}
+#       module_mapping_url: ${{ vars.MODULE_MAPPING_URL }}
+#       search_api_endpoint: ${{ vars.SEARCH_API_ENDPOINT }}
+#       registry_url: ${{ vars.REGISTRY_URL }}
+#       debug: ${{ vars.DEBUG }}
+#     secrets:
+#       cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
+#       naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
+#       search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
+#
+#   call-build-container-vanilla:
+#     needs: [make-release,call-pytest]
+#     uses: ./.github/workflows/build-container.yml
+#     with:
+#       wheel_artifact_name: jupyterlab_vre
+#       docker_folder: vanilla
+#       tag: n-a-a-vre
+#       push: ${{ github.event_name == 'release' }}
+#     secrets:
+#       docker_username: ${{ secrets.DOCKERHUB_USERNAME }}
+#       docker_password: ${{ secrets.DOCKERHUB_PASSWORD }}
