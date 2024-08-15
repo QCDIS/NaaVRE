@@ -92,6 +92,7 @@ jobs:
       - name: Print test_list
         run: |
           echo "${{ needs.split-tests.outputs.test_list }}"
+          echo  "${{ needs.configure-workflow.outputs.runner }}"
 
 
   call-pytest:
