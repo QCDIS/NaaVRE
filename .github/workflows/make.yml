@@ -63,7 +63,7 @@ jobs:
     needs: [configure-workflow]
 
   split-tests:
-    needs: [configure-workflow, call-collect-tests]
+    needs: [call-collect-tests]
     runs-on: ubuntu-latest
     outputs:
       test_list: ${{ steps.split-output.outputs.test_list }}
