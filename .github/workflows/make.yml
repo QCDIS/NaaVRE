@@ -83,6 +83,14 @@ jobs:
           MATRIX=$(jq -c . test_list.json)
           echo "test_list=$MATRIX" >> $GITHUB_OUTPUT
 
+  print-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print matrix
+        run: |
+          echo "${{ needs.split-tests.outputs.matrix }}"
+
+
   call-pytest:
     uses: ./.github/workflows/run-tests.yml
     needs: [split-tests]
