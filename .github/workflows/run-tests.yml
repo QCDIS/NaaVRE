@@ -80,27 +80,27 @@ jobs:
         run: |
            echo ${{ inputs.test }}
 
-#       - name: Cache Conda environment
-#         uses: actions/cache@v4
-#         with:
-#           path: ${{ env.CONDA }}/envs
-#           key: conda-environment-${{ runner.os }}-${{ hashFiles('environment.yml') }}
-#           restore-keys: |
-#             conda-environment-${{ runner.os }}-
-#         id: cache-conda
-#
-# #      - name: Update environment
-# #        if: steps.cache-conda.outputs.cache-hit != 'true'
-# #        run:
-# #          mamba env update -n jupyterlab -f environment.yml
-#
-#       - name: pytest
-#         shell: bash -l {0}
-#         run: |
-#            conda activate jupyterlab
-#           conda install -y conda-forge::pytest-cov
-#           conda install -y conda-forge::pytest-split
-#           python docker/repo_utils/conf_vl_repos.py  --force=True
-#           pip install --upgrade build
-#           mkdir -p /tmp/data
-#           pytest  -s --ignore=docker --ignore=cypress --no-header -v --store-durations
+      - name: Cache Conda environment
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CONDA }}/envs
+          key: conda-environment-${{ runner.os }}-${{ hashFiles('environment.yml') }}
+          restore-keys: |
+            conda-environment-${{ runner.os }}-
+        id: cache-conda
+
+#      - name: Update environment
+#        if: steps.cache-conda.outputs.cache-hit != 'true'
+#        run:
+#          mamba env update -n jupyterlab -f environment.yml
+
+      - name: pytest
+        shell: bash -l {0}
+        run: |
+           conda activate jupyterlab
+          conda install -y conda-forge::pytest-cov
+          conda install -y conda-forge::pytest-split
+          python docker/repo_utils/conf_vl_repos.py  --force=True
+          pip install --upgrade build
+          mkdir -p /tmp/data
+          pytest ${{ inputs.test }} -s --ignore=docker --ignore=cypress --no-header
