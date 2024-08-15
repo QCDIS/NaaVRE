@@ -91,7 +91,6 @@ jobs:
       - name: Print test_list
         run: |
           echo "${{ needs.split-tests.outputs.test_list }}"
-          echo  "${{ needs.configure-workflow.outputs.runner }}"
 
 
   call-pytest:
@@ -100,7 +99,7 @@ jobs:
     if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
     strategy:
       matrix:
-        test: ["jupyterlab_vre/tests/test_catalog.py::TestCatalog::test_db_path","jupyterlab_vre/tests/test_catalog.py::TestCatalog::test_get_gh_credentials"]
+        test: ${{ needs.split-tests.outputs.test_list }}
     with:
       runs-on: ${{ needs.configure-workflow.outputs.runner }}
       jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}
