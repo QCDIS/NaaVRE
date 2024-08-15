@@ -82,6 +82,7 @@ jobs:
         run: |
           cat test_list.json
           MATRIX=$(jq -c . test_list.json)
+          echo $MATRIX
           echo "test_list=$MATRIX" >> $GITHUB_OUTPUT
 
   print-matrix:
