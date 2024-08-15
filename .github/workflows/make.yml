@@ -99,7 +99,7 @@ jobs:
     if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
     strategy:
       matrix:
-        test: ${{ needs.split-tests.outputs.test_list }}
+        test: ${{ fromJson(needs.split-tests.outputs.test_list) }}
     with:
       runs-on: ${{ needs.configure-workflow.outputs.runner }}
       jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}
