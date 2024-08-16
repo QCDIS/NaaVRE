@@ -469,6 +469,8 @@ class CellsHandler(APIHandler, Catalog):
             Catalog.add_cell(current_cell)
 
         print(json.dumps({'wf_id': wf_id, 'dispatched_github_workflow': do_dispatch_github_workflow, 'image_version': image_version}, indent=4))
+        if not image_version:
+            raise Exception('Error! image_version not set')
         self.write(json.dumps({'wf_id': wf_id, 'dispatched_github_workflow': do_dispatch_github_workflow, 'image_version': image_version}))
         self.flush()
 
