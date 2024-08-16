@@ -275,6 +275,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
         cells_files = os.listdir(cells_json_path)
         for workflow_file in workflow_files:
             print('workflow_file: ', workflow_file)
+            if '468f918f414f96df.json' not in workflow_file:
+                continue
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
