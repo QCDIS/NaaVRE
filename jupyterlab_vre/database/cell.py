@@ -67,7 +67,6 @@ class Cell:
         self.container_source = container_source
         self.kernel = kernel
         self.notebook_dict = notebook_dict
-        self.image_version = image_version
 
     def _extract_types(self, vars_dict):
         """ Extract types to self.types and return list of var names

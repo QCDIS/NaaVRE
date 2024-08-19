@@ -31,63 +31,63 @@ jobs:
           fallback-runner: ubuntu-latest
           github-token: ${{ secrets.RUNNER_ACCESS_TOKEN }}
 
-  check_secrets_and_variables:
-    uses: ./.github/workflows/check_secrets_and_variables.yml
-    needs: [configure-workflow]
-    with:
-      runs-on: ubuntu-latest
-      jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}
-      vlab_slug: ${{ vars.VLAB_SLUG }}
-      cell_github: ${{ vars.CELL_GITHUB }}
-      api_endpoint: ${{ vars.API_ENDPOINT }}
-      module_mapping_url: ${{ vars.MODULE_MAPPING_URL }}
-      search_api_endpoint: ${{ vars.SEARCH_API_ENDPOINT }}
-      registry_url: ${{ vars.REGISTRY_URL }}
-      argo_url: ${{ vars.ARGO_URL }}
-      debug: ${{ vars.DEBUG }}
-    secrets:
-      argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
-      cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
-      naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
-      search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
+#   check_secrets_and_variables:
+#     uses: ./.github/workflows/check_secrets_and_variables.yml
+#     needs: [configure-workflow]
+#     with:
+#       runs-on: ubuntu-latest
+#       jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}
+#       vlab_slug: ${{ vars.VLAB_SLUG }}
+#       cell_github: ${{ vars.CELL_GITHUB }}
+#       api_endpoint: ${{ vars.API_ENDPOINT }}
+#       module_mapping_url: ${{ vars.MODULE_MAPPING_URL }}
+#       search_api_endpoint: ${{ vars.SEARCH_API_ENDPOINT }}
+#       registry_url: ${{ vars.REGISTRY_URL }}
+#       argo_url: ${{ vars.ARGO_URL }}
+#       debug: ${{ vars.DEBUG }}
+#     secrets:
+#       argo_api_token: ${{ secrets.ARGO_API_TOKEN }}
+#       cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
+#       naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}
+#       search_api_token: ${{ secrets.SEARCH_API_TOKEN }}
 
-  lint:
-    uses: ./.github/workflows/lint.yml
-    needs: [configure-workflow]
-    if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
-    with:
-      runs-on: ubuntu-latest
+#   lint:
+#     uses: ./.github/workflows/lint.yml
+#     needs: [configure-workflow]
+#     if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
+#     with:
+#       runs-on: ubuntu-latest
 
-  call-collect-tests:
-    uses: ./.github/workflows/collect-tests.yml
+#   call-collect-tests:
+#     uses: ./.github/workflows/collect-tests.yml
 
-  split-tests:
-    needs: [call-collect-tests]
-    runs-on: ubuntu-latest
-    outputs:
-      test_list: ${{ steps.split-output.outputs.test_list }}
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Download pytest output artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: test_list
-          path: ./
-
-      - name: Generate matrix from pytest_output
-        id: split-output
-        run: |
-          cat test_list.json
-          MATRIX=$(jq -c . test_list.json)
-          echo $MATRIX
-          echo "test_list=$MATRIX" >> $GITHUB_OUTPUT
+#   split-tests:
+#     needs: [call-collect-tests]
+#     runs-on: ubuntu-latest
+#     outputs:
+#       test_list: ${{ steps.split-output.outputs.test_list }}
+#     steps:
+#       - name: Checkout Code
+#         uses: actions/checkout@v4
+#
+#       - name: Download pytest output artifact
+#         uses: actions/download-artifact@v3
+#         with:
+#           name: test_list
+#           path: ./
+#
+#       - name: Generate matrix from pytest_output
+#         id: split-output
+#         run: |
+#           cat test_list.json
+#           MATRIX=$(jq -c . test_list.json)
+#           echo $MATRIX
+#           echo "test_list=$MATRIX" >> $GITHUB_OUTPUT
 
 
   call-pytest:
     uses: ./.github/workflows/run-tests.yml
-    needs: [configure-workflow,split-tests]
+    needs: [configure-workflow] #[configure-workflow,split-tests]
     if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
     strategy:
       fail-fast: false

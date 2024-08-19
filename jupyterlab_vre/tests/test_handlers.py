@@ -286,7 +286,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     if cell['title'] == cell_title:
                         cell_paths.add(cell_path)
             self.add_cells_to_cat(cell_paths=cell_paths, debug=False)
-
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
             self.assertEqual(response.code, 200, response.body)
             json_response = json.loads(response.body.decode('utf-8'))
@@ -393,11 +392,36 @@ class HandlersAPITest(AsyncHTTPTestCase):
 
     def add_cells_to_cat(self, cell_paths=None, debug=None):
         os.environ["DEBUG"] = str(debug)
+        cells = []
         wf_ids_and_creation_utc = []
         for cell_path in cell_paths:
-            create_cell_and_add_to_cat(cell_path=cell_path)
+            test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
+            self.assertIsNotNone(test_cell)
             response = self.call_cell_handler()
-            self.assertIsNotNone(json.loads(response.body.decode('utf-8'))['image_version'])
+            image_version = json.loads(response.body.decode('utf-8'))['image_version']
+            self.assertIsNotNone(image_version)
+            test_cell = Cell(
+                cell['title'],
+                cell['task_name'],
+                cell['original_source'],
+                cell['inputs'],
+                cell['outputs'],
+                cell['params'],
+                cell.get('secrets', []),
+                cell['confs'],
+                cell['dependencies'],
+                cell['container_source'],
+                cell['chart_obj'],
+                cell['node_id'],
+                cell['kernel'],
+            )
+            test_cell.types = cell['types']
+            test_cell.base_image = cell['base_image']
+            Catalog.editor_buffer = test_cell
+            test_cell.set_image_version(image_version)
+            Catalog.update_cell(test_cell)
+            test_cell = Catalog.get_cell_from_og_node_id(test_cell.node_id)
+            self.assertIsNotNone(test_cell)
             entry = {'wf_creation_utc': datetime.datetime.now(tz=datetime.timezone.utc)}
             self.assertEqual(200, response.code)
             entry['wf_id'] = json.loads(response.body.decode('utf-8'))['wf_id']
