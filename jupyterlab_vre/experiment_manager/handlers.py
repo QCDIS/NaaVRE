@@ -168,8 +168,6 @@ class ExecuteWorkflowHandler(APIHandler):
             workflow_name = 'n-a-a-vre-' + slugify(os.environ['JUPYTERHUB_USER'])
         for cell_id in cells:
             if 'image_version' not in cells[cell_id]:
-                # local_hash = git_hash( cells[cell_id]['original_source'] )
-                # cells[cell_id]['image_version'] = local_hash
                 logger.error(f"Image version is not set for cell {cell_id}")
                 self.set_status(400)
                 self.write(f"Image version is not set for cell {cell_id}")

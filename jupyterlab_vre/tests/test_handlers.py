@@ -17,7 +17,7 @@ from tornado.web import Application
 
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
     NotebookSearchHandler, NotebookSearchRatingHandler
-from jupyterlab_vre.component_containerizer.handlers import wait_for_job
+from jupyterlab_vre.component_containerizer.handlers import wait_for_job, git_hash
 from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.handlers import load_module_names_mapping
@@ -79,6 +79,8 @@ def create_cell_and_add_to_cat(cell_path=None):
     )
     test_cell.types = cell['types']
     test_cell.base_image = cell['base_image']
+    local_hash = git_hash( test_cell.original_source )
+    test_cell.set_image_version(local_hash[:7])
     Catalog.editor_buffer = test_cell
     return test_cell, cell
 
