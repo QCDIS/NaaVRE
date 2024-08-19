@@ -92,7 +92,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test: ["jupyterlab_vre/tests/test_handlers.py::HandlersAPITest::test_execute_workflow_handler"] #${{ fromJson(needs.split-tests.outputs.test_list) }}
+        test: ${{ fromJson(needs.split-tests.outputs.test_list) }}
     with:
       runs-on: ${{ needs.configure-workflow.outputs.runner }}
       jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}

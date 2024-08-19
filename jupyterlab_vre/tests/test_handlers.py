@@ -79,9 +79,11 @@ def create_cell_and_add_to_cat(cell_path=None):
     )
     test_cell.types = cell['types']
     test_cell.base_image = cell['base_image']
-    if test_cell.base_image is None:
-        local_hash = git_hash( test_cell.original_source.encode(encoding = 'UTF-8', errors = 'strict'))
-        test_cell.set_image_version(local_hash[:7])
+    # if not test_cell.base_image:
+    local_hash = git_hash(test_cell.original_source.encode(encoding='UTF-8'))
+    if not local_hash:
+        raise Exception('Could not get local hash. Original source: ' + test_cell.original_source+' Cell: '+test_cell.title)
+    test_cell.set_image_version(local_hash[:7])
     Catalog.editor_buffer = test_cell
     return test_cell, cell
 
@@ -101,10 +103,7 @@ def wait_for_api_resource(github=None):
 
 
 class HandlersAPITest(AsyncHTTPTestCase):
-
     os.environ["ASYNC_TEST_TIMEOUT"] = "240"
-
-
 
     def get_app(self):
         notebook_path = os.path.join(base_path, 'notebooks/test_notebook.ipynb')
@@ -405,7 +404,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             entry = {'wf_creation_utc': datetime.datetime.now(tz=datetime.timezone.utc)}
             self.assertEqual(200, response.code)
             entry['wf_id'] = json.loads(response.body.decode('utf-8'))['wf_id']
-            entry['dispatched_github_workflow'] = json.loads(response.body.decode('utf-8'))['dispatched_github_workflow']
+            entry['dispatched_github_workflow'] = json.loads(response.body.decode('utf-8'))[
+                'dispatched_github_workflow']
             wf_ids_and_creation_utc.append(entry)
         cat_repositories = Catalog.get_repositories()
         repo = cat_repositories[0]
