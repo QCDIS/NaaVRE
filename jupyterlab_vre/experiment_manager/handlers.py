@@ -168,7 +168,7 @@ class ExecuteWorkflowHandler(APIHandler):
             workflow_name = 'n-a-a-vre-' + slugify(os.environ['JUPYTERHUB_USER'])
         for cell_id in cells:
             if 'image_version' not in cells[cell_id]:
-                logger.error(f"Image version is not set for cell {cell_id}")
+                logger.error(f"Image version is not set for cell {cells[cell_id]['title']}")
                 self.set_status(400)
                 self.write(f"Image version is not set for cell {cell_id}")
                 self.write_error(f"Image version is not set for cell {cell_id}")

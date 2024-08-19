@@ -79,11 +79,6 @@ def create_cell_and_add_to_cat(cell_path=None):
     )
     test_cell.types = cell['types']
     test_cell.base_image = cell['base_image']
-    # if not test_cell.base_image:
-    local_hash = git_hash(test_cell.original_source.encode(encoding='UTF-8'))
-    if not local_hash:
-        raise Exception('Could not get local hash. Original source: ' + test_cell.original_source+' Cell: '+test_cell.title)
-    test_cell.set_image_version(local_hash[:7])
     Catalog.editor_buffer = test_cell
     return test_cell, cell
 
@@ -291,6 +286,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
                     if cell['title'] == cell_title:
                         cell_paths.add(cell_path)
             self.add_cells_to_cat(cell_paths=cell_paths, debug=False)
+
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
             self.assertEqual(response.code, 200, response.body)
             json_response = json.loads(response.body.decode('utf-8'))
@@ -401,6 +397,7 @@ class HandlersAPITest(AsyncHTTPTestCase):
         for cell_path in cell_paths:
             create_cell_and_add_to_cat(cell_path=cell_path)
             response = self.call_cell_handler()
+            self.assertIsNotNone(json.loads(response.body.decode('utf-8'))['image_version'])
             entry = {'wf_creation_utc': datetime.datetime.now(tz=datetime.timezone.utc)}
             self.assertEqual(200, response.code)
             entry['wf_id'] = json.loads(response.body.decode('utf-8'))['wf_id']
