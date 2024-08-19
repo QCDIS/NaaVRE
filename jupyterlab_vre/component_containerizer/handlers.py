@@ -470,7 +470,10 @@ class CellsHandler(APIHandler, Catalog):
 
         print(json.dumps({'wf_id': wf_id, 'dispatched_github_workflow': do_dispatch_github_workflow, 'image_version': image_version}, indent=4))
         if not image_version:
-            raise Exception('Error! image_version not set')
+            self.set_status(500)
+            self.write_error('Error! image_version not set. Cell: ' + str(current_cell.task_name))
+            logger.error('Error! image_version not set. Cell: ' + str(current_cell.task_name))
+            self.flush()
         self.write(json.dumps({'wf_id': wf_id, 'dispatched_github_workflow': do_dispatch_github_workflow, 'image_version': image_version}))
         self.flush()
 
