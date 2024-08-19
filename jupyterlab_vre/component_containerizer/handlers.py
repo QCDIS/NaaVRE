@@ -507,6 +507,7 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
                 code_content_hash = local_hash
     if not code_content_hash:
         logger.warning('code_content_hash not set')
+        print('Warning! code_content_hash not set')
     return files_updated, code_content_hash
 
 
