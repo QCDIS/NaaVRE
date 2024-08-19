@@ -79,8 +79,9 @@ def create_cell_and_add_to_cat(cell_path=None):
     )
     test_cell.types = cell['types']
     test_cell.base_image = cell['base_image']
-    local_hash = git_hash( test_cell.original_source )
-    test_cell.set_image_version(local_hash[:7])
+    if test_cell.base_image is None:
+        local_hash = git_hash( test_cell.original_source.encode(encoding = 'UTF-8', errors = 'strict'))
+        test_cell.set_image_version(local_hash[:7])
     Catalog.editor_buffer = test_cell
     return test_cell, cell
 
