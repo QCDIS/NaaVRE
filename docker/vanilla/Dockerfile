@@ -10,7 +10,7 @@ RUN conda-pack -n venv -o /tmp/env.tar && \
     rm /tmp/env.tar
 RUN /venv/bin/conda-unpack
 
-FROM jupyterhub/k8s-singleuser-sample:1.2.0 AS runtime
+FROM jupyterhub/k8s-singleuser-sample:3.3.8 AS runtime
 USER root
 
 RUN apt-get update --allow-releaseinfo-change && apt-get -y install fuse
