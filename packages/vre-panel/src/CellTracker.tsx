@@ -23,7 +23,8 @@ interface IProps {
 
 interface IState {
     loading: boolean
-    extractorError: string,
+    isDialogOpen: boolean
+    extractorError: string
     baseImageSelected: boolean
     currentCellIndex: number
     currentCell: VRECell
@@ -32,7 +33,7 @@ interface IState {
 }
 
 const DefaultState: IState = {
-
+    isDialogOpen: false,
     loading: false,
     extractorError: '',
     baseImageSelected: false,
@@ -57,11 +58,17 @@ export class CellTracker extends React.Component<IProps, IState> {
         const AddCellDialogOptions: Partial<Dialog.IOptions<any>> = {
             title: '',
             body: ReactWidget.create(
-                <AddCellDialog notebook={this.props.notebook}/>
+                <AddCellDialog notebook={this.props.notebook} closeDialog={this.closeDialog} />
             ) as Dialog.IBodyWidget<any>,
-            buttons: []
+            buttons: this.state.loading ? [] : [Dialog.okButton({ label: 'Close' })]
         };
-        showDialog(AddCellDialogOptions)
+        showDialog(AddCellDialogOptions).then(() => {
+            this.setState({ loading: false });
+        });
+    }
+
+    closeDialog = () => {
+        this.setState({ isDialogOpen: false });
     }
 
     allTypesSelected = () => {
@@ -74,7 +81,6 @@ export class CellTracker extends React.Component<IProps, IState> {
                 )
             )
         }
-
         return false;
     };
 
@@ -88,7 +94,6 @@ export class CellTracker extends React.Component<IProps, IState> {
               'containerizer/baseimagetags',
               { method: 'GET' }
             )
-
             // Convert object data to an array of objects
             const updatedBaseImages = Object.entries(baseImagesData).map(
               ([name, image]) => ({ name, image})
