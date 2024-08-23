@@ -22,16 +22,11 @@ from github import Github
 from github.GithubException import UnknownObjectException
 from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
-from slugify import slugify
 from tornado import web
 
 from jupyterlab_vre.database.catalog import Catalog
-from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
-from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.services.extractor.headerextractor import HeaderExtractor
-from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
-from jupyterlab_vre.services.extractor.rextractor import RExtractor
+from jupyterlab_vre.services.extractor.extract_cell import extract_cell
 
 logger = logging.getLogger(__name__)
 
@@ -58,22 +53,6 @@ def git_hash(contents):
     s.update(('blob %u\0' % len(contents)).encode('utf-8'))
     s.update(contents)
     return s.hexdigest()
-
-
-def extract_cell_by_index(notebook, cell_index):
-    new_nb = copy.deepcopy(notebook)
-    if cell_index < len(notebook.cells):
-        new_nb.cells = [notebook.cells[cell_index]]
-        return new_nb
-
-
-def set_notebook_kernel(notebook, kernel):
-    new_nb = copy.deepcopy(notebook)
-    # Replace kernel name in the notebook metadata
-    new_nb.metadata.kernelspec.name = kernel
-    new_nb.metadata.kernelspec.display_name = kernel
-    new_nb.metadata.kernelspec.language = kernel
-    return new_nb
 
 
 def query_registry_for_image(image_repo, image_name):
@@ -118,15 +97,13 @@ class ExtractorHandler(APIHandler, Catalog):
         payload = self.get_json_body()
         logging.getLogger(__name__).debug('ExtractorHandler. payload: ' + json.dumps(payload, indent=4))
         print('ExtractorHandler. payload: ' + json.dumps(payload, indent=4))
-        kernel = payload['kernel']
-        cell_index = payload['cell_index']
-        notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
 
-        source = notebook.cells[cell_index].source
-
-        # extractor based on the cell header
         try:
-            extractor = HeaderExtractor(notebook, source)
+            cell = extract_cell(
+                nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT),
+                payload['cell_index'],
+                payload['kernel'],
+                )
         except jsonschema.ValidationError as e:
             self.set_status(400, f"Invalid cell header")
             self.write(
@@ -134,99 +111,11 @@ class ExtractorHandler(APIHandler, Catalog):
                     'message': f"Error in cell header: {e}",
                     'reason': None,
                     'traceback': traceback.format_exception(e),
-                }
-            )
+                    }
+                )
             self.flush()
             return
 
-        # extractor based on the kernel (if cell header is not defined)
-        if not extractor.enabled():
-            if kernel == "IRkernel":
-                extractor = RExtractor(notebook)
-            else:
-                extractor = PyExtractor(notebook)
-
-        extracted_nb = extract_cell_by_index(notebook, cell_index)
-        if kernel == "IRkernel":
-            extracted_nb = set_notebook_kernel(extracted_nb, 'R')
-        else:
-            extracted_nb = set_notebook_kernel(extracted_nb, 'python3')
-
-        # initialize variables
-        title = source.partition('\n')[0].strip()
-        title = slugify(title) if title and title[0] == "#" else "Untitled"
-
-        if 'JUPYTERHUB_USER' in os.environ:
-            title += '-' + slugify(os.environ['JUPYTERHUB_USER'])
-
-        ins = {}
-        outs = {}
-        params = {}
-        confs = []
-        dependencies = []
-
-        # Check if cell is code. If cell is for example markdown we get execution from 'extractor.infer_cell_inputs(
-        # source)'
-        if notebook.cells[cell_index].cell_type == 'code':
-            ins = extractor.infer_cell_inputs(source)
-            outs = extractor.infer_cell_outputs(source)
-
-            confs = extractor.extract_cell_conf_ref(source)
-            dependencies = extractor.infer_cell_dependencies(source, confs)
-
-        # If any of these change, we create a new cell in the catalog.
-        # This matches the cell properties saved in workflows.
-        cell_identity_dict = {
-            'title': title,
-            'params': params,
-            'inputs': ins,
-            'outputs': outs,
-            'deps': sorted(dependencies, key=lambda x: x['name']),
-            }
-        cell_identity_str = json.dumps(cell_identity_dict, sort_keys=True)
-        node_id = hashlib.sha1(cell_identity_str.encode()).hexdigest()[:7]
-
-        cell = Cell(
-            node_id=node_id,
-            title=title,
-            task_name=slugify(title.lower()),
-            original_source=source,
-            inputs=ins,
-            outputs=outs,
-            params=params,
-            confs=confs,
-            dependencies=dependencies,
-            container_source="",
-            kernel=kernel,
-            notebook_dict=extracted_nb.dict()
-        )
-        if notebook.cells[cell_index].cell_type == 'code':
-            cell.integrate_configuration()
-            params = extractor.extract_cell_params(cell.original_source)
-            cell.add_params(params)
-            cell.add_param_values(params)
-
-        node = ConverterReactFlowChart.get_node(
-            node_id,
-            title,
-            set(ins),
-            set(outs),
-            params,
-        )
-
-        chart = {
-            'offset': {
-                'x': 0,
-                'y': 0,
-            },
-            'scale': 1,
-            'nodes': {node_id: node},
-            'links': {},
-            'selected': {},
-            'hovered': {},
-        }
-
-        cell.chart_obj = chart
         Catalog.editor_buffer = copy.deepcopy(cell)
         self.write(cell.toJSON())
         self.flush()
@@ -300,6 +189,7 @@ def wait_for_github_api_resources():
         sleep(remaining_time + 1)
         rate_limit = github.get_rate_limit()
 
+
 def find_job(
         wf_id=None,
         wf_creation_utc=None,
@@ -339,6 +229,7 @@ def find_job(
                 job['head_sha'] = run['head_sha']
                 return job
     return None
+
 
 def wait_for_job(
         wf_id=None,
@@ -381,11 +272,13 @@ def wait_for_job(
                 return job
         sleep(5)
 
+
 def write_cell_to_file(current_cell):
     Path('/tmp/workflow_cells/cells').mkdir(parents=True, exist_ok=True)
     with open('/tmp/workflow_cells/cells/' + current_cell.task_name + '.json', 'w') as f:
         f.write(current_cell.toJSON())
         f.close()
+
 
 class CellsHandler(APIHandler, Catalog):
     logger = logging.getLogger(__name__)
@@ -539,6 +432,8 @@ class CellsHandler(APIHandler, Catalog):
             repository=gh_repository,
             files_info=files_info,
             )
+        if not image_version:
+            raise Exception('Error! image_version not set')
         wf_id = str(uuid.uuid4())
 
         if os.getenv('DEBUG') and os.getenv('DEBUG').lower() == 'true':
@@ -574,6 +469,11 @@ class CellsHandler(APIHandler, Catalog):
             Catalog.add_cell(current_cell)
 
         print(json.dumps({'wf_id': wf_id, 'dispatched_github_workflow': do_dispatch_github_workflow, 'image_version': image_version}, indent=4))
+        if not image_version:
+            self.set_status(500)
+            self.write_error('Error! image_version not set. Cell: ' + str(current_cell.task_name))
+            logger.error('Error! image_version not set. Cell: ' + str(current_cell.task_name))
+            self.flush()
         self.write(json.dumps({'wf_id': wf_id, 'dispatched_github_workflow': do_dispatch_github_workflow, 'image_version': image_version}))
         self.flush()
 
@@ -608,6 +508,9 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
                 files_updated = True
             if f_type == 'cell':
                 code_content_hash = local_hash
+    if not code_content_hash:
+        logger.warning('code_content_hash not set')
+        print('Warning! code_content_hash not set')
     return files_updated, code_content_hash
 
 
@@ -634,6 +537,8 @@ def dispatch_github_workflow(owner, repository_name, task_name, files_info, repo
 
 
 def get_github_workflow_runs(owner=None, repository_name=None, t_utc=None, token=None):
+    if repository_name and '.git' in repository_name:
+        repository_name = repository_name.replace('.git', '')
     workflow_runs_url = github_url_repos + '/' + owner + '/' + repository_name + '/actions/runs'
     if t_utc:
         t_start = (t_utc - datetime.timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%SZ")

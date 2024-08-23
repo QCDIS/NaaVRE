@@ -32,12 +32,12 @@
         "watch": "tsc -w"
     },
     "dependencies": {
-        "react-ipynb-renderer": "2.0.1"
+        "react-ipynb-renderer": "2.2.1"
     },
     "devDependencies": {
         "@types/node": "20.2.5",
-        "@types/react-star-rating-component": "1.4.1",
-        "rimraf": "5.0.0",
+        "@types/react-star-rating-component": "1.4.4",
+        "rimraf": "5.0.7",
         "typescript": "5.3.2"
     },
     "publishConfig": {

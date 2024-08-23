@@ -173,6 +173,7 @@ class Catalog:
             inputs=cell_document.get('inputs', []),
             outputs=cell_document.get('outputs', []),
             params=cell_document.get('params', []),
+            secrets=cell_document.get('secrets', []),
             confs=cell_document.get('confs', {}),
             dependencies=cell_document.get('dependencies', []),
             container_source=cell_document.get('container_source', ''),

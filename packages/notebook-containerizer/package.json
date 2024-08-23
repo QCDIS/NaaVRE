@@ -35,8 +35,8 @@
         "@jupyterlab/notebook": "3.5.3"
     },
     "devDependencies": {
-        "@types/node": "20.2.5",
-        "rimraf": "5.0.0",
+        "@types/node": "20.11.30",
+        "rimraf": "5.0.7",
         "typescript": "5.4.3"
     },
     "publishConfig": {

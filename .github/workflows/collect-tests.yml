@@ -1,0 +1,51 @@
+name: Collect tests
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        default: ubuntu-latest
+        type: string
+
+
+jobs:
+  build-wheel:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          miniforge-version: latest
+          miniforge-variant: Mambaforge
+          python-version: 3.11
+          path: ${{ env.CONDA }}/envs
+          environment-file: environment.yml
+          activate-environment: jupyterlab
+          use-mamba: true
+
+      - name: Cache Conda environment
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CONDA }}/envs
+          key: conda-environment-${{ runner.os }}-${{ hashFiles('environment.yml') }}
+          restore-keys: |
+            conda-environment-${{ runner.os }}-
+        id: cache-conda
+
+      - name: pytest
+        shell: bash -l {0}
+        run: |
+          conda activate jupyterlab
+          pip install --upgrade build
+          mkdir -p /tmp/data
+          pytest --collect-only -q | grep 'tests/' | jq -R . | jq -s . > test_list.json
+
+      - name: Upload pytest output as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: test_list
+          path: test_list.json

@@ -1,4 +1,4 @@
-FROM condaforge/mambaforge:23.11.0-0 AS naavre-build
+FROM condaforge/mambaforge:24.3.0-0 AS naavre-build
 RUN conda install -c conda-forge conda-pack conda-merge
 COPY environment.yaml .
 COPY naa-vre-environment.yaml .
@@ -47,7 +47,9 @@ RUN jupyter serverextension enable --py jupyterlab_vre --user
 RUN jupyter serverextension enable --py jupyter_videochat --user
 RUN jupyter serverextension enable --py jupyterlab_github --user
 RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager
+RUN jupyter serverextension enable --py jupyterlab_s3_browser
+RUN jupyter serverextension enable voila
 
 RUN jupyter lab build --debug;
 
-cmd ["/usr/local/bin/start-jupyter-venv.sh"]
+CMD ["/usr/local/bin/start-jupyter-venv.sh"]

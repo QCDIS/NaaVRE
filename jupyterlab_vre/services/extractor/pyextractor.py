@@ -7,15 +7,42 @@ from pyflakes import reporter as pyflakes_reporter, api as pyflakes_api
 from pytype import config as pytype_config
 from pytype.tools.annotate_ast import annotate_ast
 
+from .extractor import Extractor
 
-class PyExtractor:
+
+class PyConfAssignmentTransformer(ast.NodeTransformer):
+
+    def __init__(self, configurations):
+        # get the 'value' side of configuration assignments
+        self.conf_values = {
+            k: ast.parse(v).body[0].value
+            for k, v in configurations.items()
+            }
+
+    def visit_Assign(self, node):
+        # visit the 'value' side of assignments (*<node.targets> = node.value)
+        node.value = self.generic_visit(node.value)
+        return node
+
+    def visit_Name(self, node):
+        # replace variable names starting with 'conf_' by their value
+        if not node.id.startswith('conf_'):
+            return node
+        if node.id not in self.conf_values:
+            raise ValueError(f'{node.id} is not defined')
+        # Recursively call self.visit() to replace names in dropped-in values
+        return self.visit(self.conf_values[node.id])
+
+
+class PyExtractor(Extractor):
     sources: list
     imports: dict
     configurations: dict
     global_params: dict
+    global_secrets: dict
     undefined: dict
 
-    def __init__(self, notebook):
+    def __init__(self, notebook, cell_source):
         # If cell_type is code and not starting with '!'
         self.sources = [nbcell.source for nbcell in notebook.cells if
                         nbcell.cell_type == 'code' and len(nbcell.source) > 0 and nbcell.source[0] != '!']
@@ -25,10 +52,13 @@ class PyExtractor:
         )
         self.imports = self.__extract_imports(self.sources)
         self.configurations = self.__extract_configurations(self.sources)
-        self.global_params = self.__extract_params(self.sources)
+        self.global_params = self.__extract_prefixed_var(self.sources, 'param')
+        self.global_secrets = self.__extract_prefixed_var(self.sources, 'secret')
         self.undefined = dict()
         for source in self.sources:
             self.undefined.update(self.__extract_cell_undefined(source))
+
+        super().__init__(notebook, cell_source)
 
     def __extract_imports(self, sources):
         imports = {}
@@ -64,58 +94,71 @@ class PyExtractor:
                             configurations[name] = conf_line
         return self.__resolve_configurations(configurations)
 
-    def __extract_params(self, sources):
-        params = dict()
+    def __extract_prefixed_var(self, sources, prefix):
+        extracted_vars = dict()
         for s in sources:
             lines = s.splitlines()
             tree = ast.parse(s)
             for node in ast.walk(tree):
                 if isinstance(node, ast.Assign) and hasattr(node.targets[0], 'id'):
                     name = node.targets[0].id
-                    prefix = name.split('_')[0]
-                    if prefix == 'param':
-                        param_line = ''
+                    node_prefix = name.split('_')[0]
+                    if node_prefix == prefix:
+                        var_line = ''
                         for line in lines[node.lineno - 1:node.end_lineno]:
-                            param_line += line.strip()
-                        param_value = ast.unparse(node.value)
+                            var_line += line.strip()
+                        var_value = ast.unparse(node.value)
                         try:
                             # remove quotes around strings
-                            param_value = str(ast.literal_eval(param_value))
+                            var_value = str(ast.literal_eval(var_value))
+                            # Cast according to self.notebook_names[name]['type']
+                            if self.notebook_names[name]['type'] == 'int':
+                                var_value = int(var_value)
+                            elif self.notebook_names[name]['type'] == 'float':
+                                var_value = float(var_value)
+                            elif self.notebook_names[name]['type'] == 'list':
+                                var_value = list(ast.literal_eval(var_value))
+                            elif self.notebook_names[name]['type'] == 'str':
+                                var_value = str(var_value)
                         except ValueError:
-                            # when param_value can't safely be parsed,
+                            # when var_value can't safely be parsed,
                             pass
-                        params[name] = {
+                        extracted_vars[name] = {
                             'name': name,
                             'type': self.notebook_names[name]['type'],
-                            'value': param_value,
+                            'value': var_value,
                         }
-        return params
+                        if prefix == 'secret':
+                            del extracted_vars[name]['value']
+        return extracted_vars
 
-    def infer_cell_outputs(self, cell_source):
-        cell_names = self.__extract_cell_names(cell_source)
+    def infer_cell_outputs(self):
+        cell_names = self.__extract_cell_names(self.cell_source)
         return {
             name: properties
             for name, properties in cell_names.items()
-            if name not in self.__extract_cell_undefined(cell_source)
+            if name not in self.__extract_cell_undefined(self.cell_source)
                and name not in self.imports
                and name in self.undefined
                and name not in self.configurations
                and name not in self.global_params
-        }
+               and name not in self.global_secrets
+            }
 
-    def infer_cell_inputs(self, cell_source):
-        cell_undefined = self.__extract_cell_undefined(cell_source)
+    def infer_cell_inputs(self):
+        cell_undefined = self.__extract_cell_undefined(self.cell_source)
         return {
             und: properties
             for und, properties in cell_undefined.items()
             if und not in self.imports
                and und not in self.configurations
                and und not in self.global_params
-        }
+               and und not in self.global_secrets
+            }
 
-    def infer_cell_dependencies(self, cell_source, confs):
+    def infer_cell_dependencies(self, confs):
         dependencies = []
-        names = self.__extract_cell_names(cell_source)
+        names = self.__extract_cell_names(self.cell_source)
 
         for ck in confs:
             names.update(self.__extract_cell_names(confs[ck]))
@@ -201,7 +244,6 @@ class PyExtractor:
         return names
 
     def __extract_cell_undefined(self, cell_source):
-
         flakes_stdout = StreamList()
         flakes_stderr = StreamList()
         rep = pyflakes_reporter.Reporter(
@@ -235,9 +277,18 @@ class PyExtractor:
                 params[u] = self.global_params[u]
         return params
 
-    def extract_cell_conf_ref(self, cell_source):
-        confs = {}
+    def extract_cell_secrets(self, cell_source):
+        secrets = {}
         cell_unds = self.__extract_cell_undefined(cell_source)
+        secret_unds = [und for und in cell_unds if und in self.global_secrets]
+        for u in secret_unds:
+            if u not in secrets:
+                secrets[u] = self.global_secrets[u]
+        return secrets
+
+    def extract_cell_conf_ref(self):
+        confs = {}
+        cell_unds = self.__extract_cell_undefined(self.cell_source)
         conf_unds = [und for und in cell_unds if und in self.configurations]
         for u in conf_unds:
             if u not in confs:
@@ -245,22 +296,11 @@ class PyExtractor:
         return confs
 
     def __resolve_configurations(self, configurations):
-        confs_in_assignment = {}
-        resolved_configurations = {}
-        for conf_name in configurations:
-            conf = configurations[conf_name]
-            if 'conf_' in conf.split('=')[1]:
-                confs_in_assignment[conf_name] = conf
-        for conf_name in configurations:
-            for confs_in_assignment_name in confs_in_assignment:
-                if conf_name in confs_in_assignment[
-                    confs_in_assignment_name] and conf_name not in resolved_configurations:
-                    replace_value = configurations[conf_name].split('=')[1]
-                    if confs_in_assignment_name in resolved_configurations:
-                        new_value = resolved_configurations[confs_in_assignment_name].replace(conf_name, replace_value)
-                    else:
-                        new_value = confs_in_assignment[confs_in_assignment_name].replace(conf_name, replace_value)
-                    resolved_configurations[confs_in_assignment_name] = new_value
+        assignment_transformer = PyConfAssignmentTransformer(configurations)
+        resolved_configurations = {
+            k: ast.unparse(assignment_transformer.visit(ast.parse(v)))
+            for k, v in configurations.items()
+            }
         configurations.update(resolved_configurations)
         return configurations
 
