@@ -34,12 +34,23 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Free Up GitHub Actions Ubuntu Runner Disk Space
+      uses: jlumbroso/free-disk-space@v1.3.1
+      with:
+        tool-cache: false
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        docker-images: false
+        swap-storage: true
+
     - name: Download artifact
       uses: actions/download-artifact@v3
       with:
         name: ${{ inputs.wheel_artifact_name }}
         path: docker/${{ inputs.docker_folder }}
-    - uses: mikefarah/yq@v4.44.1
+    - uses: mikefarah/yq@v4.44.2
 
     - name: add whl and start files
       run: |
@@ -80,7 +91,7 @@ jobs:
         fi
 
     - name: Build docker
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: docker/${{ inputs.docker_folder }}
         push: ${{ inputs.push }}

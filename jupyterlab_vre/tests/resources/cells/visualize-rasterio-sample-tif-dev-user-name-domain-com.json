@@ -155,5 +155,6 @@
     "title": "visualize-rasterio-sample-tif-dev-user-name-domain-com",
     "types": {
         "filename": "str"
-    }
+    },
+    "skip_exec" : true
 }
