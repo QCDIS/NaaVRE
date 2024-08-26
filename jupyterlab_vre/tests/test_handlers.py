@@ -2,6 +2,7 @@ import datetime
 import glob
 import json
 import os
+import pytest
 import random
 import shlex
 import shutil
@@ -16,7 +17,7 @@ from tornado.web import Application
 
 from jupyterlab_vre import ExtractorHandler, TypesHandler, CellsHandler, ExportWorkflowHandler, ExecuteWorkflowHandler, \
     NotebookSearchHandler, NotebookSearchRatingHandler
-from jupyterlab_vre.component_containerizer.handlers import wait_for_job
+from jupyterlab_vre.component_containerizer.handlers import wait_for_job, git_hash
 from jupyterlab_vre.database.catalog import Catalog
 from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.handlers import load_module_names_mapping
@@ -28,6 +29,7 @@ elif os.path.exists('jupyterlab_vre/tests/resources/'):
     base_path = 'jupyterlab_vre/tests/resources/'
 
 cells_path = os.path.join(str(Path.home()), 'NaaVRE', 'cells')
+
 
 def delete_text(file_path, text_to_delete):
     # Read the file
@@ -59,10 +61,22 @@ def create_cell_and_add_to_cat(cell_path=None):
     notebook_dict = {}
     if 'notebook_dict' in cell:
         notebook_dict = cell['notebook_dict']
-    test_cell = Cell(cell['title'], cell['task_name'], cell['original_source'], cell['inputs'],
-                     cell['outputs'],
-                     cell['params'], cell['confs'], cell['dependencies'], cell['container_source'],
-                     cell['chart_obj'], cell['node_id'], cell['kernel'], notebook_dict)
+    test_cell = Cell(
+        cell['title'],
+        cell['task_name'],
+        cell['original_source'],
+        cell['inputs'],
+        cell['outputs'],
+        cell['params'],
+        cell.get('secrets', []),
+        cell['confs'],
+        cell['dependencies'],
+        cell['container_source'],
+        cell['chart_obj'],
+        cell['node_id'],
+        cell['kernel'],
+        notebook_dict,
+    )
     test_cell.types = cell['types']
     test_cell.base_image = cell['base_image']
     Catalog.editor_buffer = test_cell
@@ -84,8 +98,7 @@ def wait_for_api_resource(github=None):
 
 
 class HandlersAPITest(AsyncHTTPTestCase):
-
-    os.environ["ASYNC_TEST_TIMEOUT"] = "120"
+    os.environ["ASYNC_TEST_TIMEOUT"] = "240"
 
     def get_app(self):
         notebook_path = os.path.join(base_path, 'notebooks/test_notebook.ipynb')
@@ -139,6 +152,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             cells_json_path = os.path.join(base_path, 'cells')
             cells_files = os.listdir(cells_json_path)
             test_cells = []
+            if not os.path.exists('/tmp/data'):
+                os.makedirs('/tmp/data')
             for cell_file in cells_files:
                 cell_path = os.path.join(cells_json_path, cell_file)
                 test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
@@ -230,11 +245,13 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertEqual('success', cell['job']['conclusion'], 'Job not successful')
 
     def test_extractor_handler(self):
+        print()
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
             notebooks_json_path = os.path.join(base_path, 'notebooks')
             notebooks_files = glob.glob(os.path.join(notebooks_json_path, "*.json"))
             for notebook_file in notebooks_files:
+                print(notebook_file)
                 with open(notebook_file, 'r') as file:
                     notebook = json.load(file)
                 file.close()
@@ -253,36 +270,22 @@ class HandlersAPITest(AsyncHTTPTestCase):
             m.return_value = 'cookie'
         cells_json_path = os.path.join(base_path, 'cells')
         cells_files = os.listdir(cells_json_path)
-        for cell_file in cells_files:
-            cell_path = os.path.join(cells_json_path, cell_file)
-            create_cell_and_add_to_cat(cell_path=cell_path)
-            response = self.call_cell_handler()
-            wf_creation_utc = datetime.datetime.now(tz=datetime.timezone.utc)
-            self.assertEqual(200, response.code)
-            git_wf_id = json.loads(response.body.decode('utf-8'))['wf_id']
-            cat_repositories = Catalog.get_repositories()
-            repo = cat_repositories[0]
-            repo_token = repo['token']
-
-            owner, repository_name = repo['url'].removeprefix('https://github.com/').split('/')
-            job = wait_for_job(
-                wf_id=git_wf_id,
-                wf_creation_utc=wf_creation_utc,
-                owner=owner,
-                repository_name=repository_name,
-                token=repo_token,
-                job_id=None,
-                timeout=300,
-                wait_for_completion=True,
-            )
-            self.assertIsNotNone(job, 'Job not found')
-            self.assertEqual('completed', job['status'], 'Job not completed')
         for workflow_file in workflow_files:
             print('workflow_file: ', workflow_file)
             workflow_file_path = os.path.join(workflow_path, workflow_file)
             with open(workflow_file_path, 'r') as read_file:
                 payload = json.load(read_file)
-
+            cells = payload['chart']['nodes']
+            cell_paths = set()
+            for cell_id in cells:
+                cell_title = cells[cell_id]['properties']['title']
+                for cell_file in cells_files:
+                    cell_path = os.path.join(cells_json_path, cell_file)
+                    with open(cell_path, 'r') as read_file:
+                        cell = json.load(read_file)
+                    if cell['title'] == cell_title:
+                        cell_paths.add(cell_path)
+            self.add_cells_to_cat(cell_paths=cell_paths, debug=False)
             response = self.fetch('/executeworkflowhandler', method='POST', body=json.dumps(payload))
             self.assertEqual(response.code, 200, response.body)
             json_response = json.loads(response.body.decode('utf-8'))
@@ -354,12 +357,23 @@ class HandlersAPITest(AsyncHTTPTestCase):
 
                 # Commit modified cell
                 _, new_cell = create_cell_and_add_to_cat(cell_path=cell_path)
-                new_cell['original_source'] += f'\na = {random.random()}'
+                new_line = f'a = {random.random()}'
+                new_cell['original_source'] += '\n' + new_line
+                if 'notebook_dict' in new_cell and 'cells' in new_cell['notebook_dict']:
+                    new_cell['notebook_dict']['cells'][0]['source'] += '\n' + new_line
                 with open(cell_path, 'r') as f:
                     saved_cell_text = f.read()
                 try:
                     with open(cell_path, 'w') as file:
                         json.dump(new_cell, file, indent=2)
+                    file.close()
+                    with open(cell_path, 'r') as f:
+                        modified_cell_text = f.read()
+                    file.close()
+                    self.assertNotEqual(saved_cell_text, modified_cell_text)
+                    modified_cell_json = json.loads(modified_cell_text)
+                    # check if modified_cell_text continents new_line
+                    self.assertTrue(new_line in modified_cell_json['original_source'])
                     os.environ["DEBUG"] = "False"
                     create_cell_and_add_to_cat(cell_path=cell_path)
                     response = self.call_cell_handler()
@@ -369,8 +383,67 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 finally:
                     with open(cell_path, 'w') as f:
                         f.write(saved_cell_text)
+                    f.close()
 
         if saved_debug_value is not None:
             os.environ["DEBUG"] = saved_debug_value
         else:
             del os.environ["DEBUG"]
+
+    def add_cells_to_cat(self, cell_paths=None, debug=None):
+        os.environ["DEBUG"] = str(debug)
+        cells = []
+        wf_ids_and_creation_utc = []
+        for cell_path in cell_paths:
+            test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
+            self.assertIsNotNone(test_cell)
+            response = self.call_cell_handler()
+            image_version = json.loads(response.body.decode('utf-8'))['image_version']
+            self.assertIsNotNone(image_version)
+            test_cell = Cell(
+                cell['title'],
+                cell['task_name'],
+                cell['original_source'],
+                cell['inputs'],
+                cell['outputs'],
+                cell['params'],
+                cell.get('secrets', []),
+                cell['confs'],
+                cell['dependencies'],
+                cell['container_source'],
+                cell['chart_obj'],
+                cell['node_id'],
+                cell['kernel'],
+            )
+            test_cell.types = cell['types']
+            test_cell.base_image = cell['base_image']
+            Catalog.editor_buffer = test_cell
+            test_cell.set_image_version(image_version)
+            Catalog.update_cell(test_cell)
+            test_cell = Catalog.get_cell_from_og_node_id(test_cell.node_id)
+            self.assertIsNotNone(test_cell)
+            entry = {'wf_creation_utc': datetime.datetime.now(tz=datetime.timezone.utc)}
+            self.assertEqual(200, response.code)
+            entry['wf_id'] = json.loads(response.body.decode('utf-8'))['wf_id']
+            entry['dispatched_github_workflow'] = json.loads(response.body.decode('utf-8'))[
+                'dispatched_github_workflow']
+            wf_ids_and_creation_utc.append(entry)
+        cat_repositories = Catalog.get_repositories()
+        repo = cat_repositories[0]
+        repo_token = repo['token']
+
+        owner, repository_name = repo['url'].removeprefix('https://github.com/').split('/')
+        for entry in wf_ids_and_creation_utc:
+            if entry['dispatched_github_workflow']:
+                job = wait_for_job(
+                    wf_id=entry['wf_id'],
+                    wf_creation_utc=entry['wf_creation_utc'],
+                    owner=owner,
+                    repository_name=repository_name,
+                    token=repo_token,
+                    job_id=None,
+                    timeout=300,
+                    wait_for_completion=True,
+                )
+                self.assertIsNotNone(job, 'Job not found')
+                self.assertEqual('completed', job['status'], 'Job not completed')

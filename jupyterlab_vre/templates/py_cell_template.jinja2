@@ -6,7 +6,12 @@
 
 import argparse
 import json
+import os
 arg_parser = argparse.ArgumentParser()
+
+{%  for secret in cell.secrets|sort %}
+{{ secret }} = os.getenv('{{ secret }}')
+{% endfor %}
 
 arg_parser.add_argument('--id', action='store', type=str, required=True, dest='id')
 
@@ -74,8 +79,7 @@ except Exception as e:
 
 {% if cell.outputs|length > 0 %}
 {% for out in cell.outputs %}
-filename = "/tmp/{{out}}_" + id + ".json"
-file_{{out}} = open(filename, "w")
+file_{{out}} = open("/tmp/{{out}}_" + id + ".json", "w")
 file_{{out}}.write(json.dumps({{out}}))
 file_{{out}}.close()
 {% endfor %}
