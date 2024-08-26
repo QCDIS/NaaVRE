@@ -14,7 +14,7 @@ class HeaderExtractor(Extractor):
     """ Extracts cells using information defined by the user in its header
 
     Cells should contain a comment with a yaml block defining inputs, outputs,
-    params and confs. Eg:
+    params, secrets and confs. Eg:
 
     # My cell
     # ---
@@ -32,6 +32,9 @@ class HeaderExtractor(Extractor):
     #       - param_something:
     #           type: String
     #           default_value: "my default value"
+    #     secrets:
+    #       - secret_api_key:
+    #           type: String
     #     confs:
     #       - conf_something_else:
     #           assignation: "conf_something_else = 'my other value'"
@@ -44,6 +47,7 @@ class HeaderExtractor(Extractor):
     ins: Union[dict, None]
     outs: Union[dict, None]
     params: Union[dict, None]
+    secrets: Union[dict, None]
     confs: Union[list, None]
     dependencies: Union[list, None]
 
@@ -58,6 +62,7 @@ class HeaderExtractor(Extractor):
         self.schema = self._load_schema()
         self.cell_header = self._extract_header(cell_source)
         self._external_extract_cell_params = None
+        self._external_extract_cell_secrets = None
 
         super().__init__(notebook, cell_source)
 
@@ -78,6 +83,7 @@ class HeaderExtractor(Extractor):
                 (self.ins is not None)
                 and (self.outs is not None)
                 and (self.params is not None)
+                and (self.secrets is not None)
                 and (self.confs is not None)
                 and (self.dependencies is not None)
             )
@@ -117,17 +123,21 @@ class HeaderExtractor(Extractor):
             # self.extract_cell_params is called after self.add_missing_values
             # in component_containerizer.handlers.ExtractorHandler.post()
             self._external_extract_cell_params = extractor.extract_cell_params
+        if self.secrets is None:
+            self.secrets = extractor.secrets
+            # Same as self._external_extract_cell_params
+            self._external_extract_cell_secrets = extractor.extract_cell_secrets
         if self.confs is None:
             self.confs = extractor.confs
         if self.dependencies is None:
             self.dependencies = extractor.dependencies
 
     @staticmethod
-    def _parse_inputs_outputs_param_items(
+    def _parse_interface_vars_items(
             item: Union[str, dict],
-            item_type: Literal['inputs', 'outputs', 'params'],
+            item_type: Literal['inputs', 'outputs', 'params', 'secrets'],
             ) -> dict:
-        """ Parse inputs, outputs, or params items from the header
+        """ Parse interface variables (inputs, outputs, params, secrets) items
 
         They can have either format
         - ElementVarName: 'my_name'
@@ -135,9 +145,10 @@ class HeaderExtractor(Extractor):
         - IOElementVarDict {'my_name': {'type': 'my_type'}}
           or ParamElementVarDict {'my_name': {'type': 'my_type',
                                               'default_value': 'my_value'}}
+          or SecretElementVarDict {'my_name': {'type': 'my_type'}}
 
         Returns
-        - if item_type is 'inputs' or 'outputs':
+        - if item_type is 'inputs', 'outputs' or 'secrets':
             {'name': 'my_name', 'type': 'my_type'}
         - if item_type is 'params':
             {'name': 'my_name', 'type': 'my_type', 'value': 'my_value'}
@@ -172,6 +183,9 @@ class HeaderExtractor(Extractor):
                     'value': var_props.get('default_value'),
                     }
 
+        if (var_dict['type'] == 'List') and (var_dict['value'] is not None):
+            var_dict['value'] = json.dumps(var_dict['value'])
+
         # Convert types
         types_conversion = {
             'Integer': 'int',
@@ -188,28 +202,28 @@ class HeaderExtractor(Extractor):
 
         return var_dict
 
-    def _infer_cell_inputs_outputs_params(
+    def _infer_cell_interface_vars(
             self,
             header: Union[dict, None],
-            item_type: Literal['inputs', 'outputs', 'params'],
+            item_type: Literal['inputs', 'outputs', 'params', 'secrets'],
             ) -> Union[dict, None]:
         if header is None:
             return None
         items = header['NaaVRE']['cell'].get(item_type)
         if items is None:
             return None
-        items = [self._parse_inputs_outputs_param_items(it, item_type)
+        items = [self._parse_interface_vars_items(it, item_type)
                  for it in items]
         return {it['name']: it for it in items}
 
     def infer_cell_inputs(self):
-        return self._infer_cell_inputs_outputs_params(
+        return self._infer_cell_interface_vars(
             self.cell_header,
             'inputs',
             )
 
     def infer_cell_outputs(self):
-        return self._infer_cell_inputs_outputs_params(
+        return self._infer_cell_interface_vars(
             self.cell_header,
             'outputs',
             )
@@ -217,9 +231,17 @@ class HeaderExtractor(Extractor):
     def extract_cell_params(self, source):
         if self._external_extract_cell_params is not None:
             return self._external_extract_cell_params(source)
-        return self._infer_cell_inputs_outputs_params(
+        return self._infer_cell_interface_vars(
             self._extract_header(source),
             'params',
+            )
+
+    def extract_cell_secrets(self, source):
+        if self._external_extract_cell_secrets is not None:
+            return self._external_extract_cell_secrets(source)
+        return self._infer_cell_interface_vars(
+            self._extract_header(source),
+            'secrets',
             )
 
     def extract_cell_conf_ref(self):

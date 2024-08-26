@@ -83,9 +83,12 @@ class WorkflowParser:
 
             from_special_node = (is_special_node(from_node))
 
-            task_name = f'{from_node["type"]}-{from_node["id"][:7]}' if from_special_node else \
-                Catalog.get_cell_from_og_node_id(
-                    self.__get_og_node_id(from_node['id']))['task_name'] + "-" + from_node['id'][:7]
+            if from_special_node:
+                task_name = f'{from_node["type"]}-{from_node["id"][:7]}'
+            else:
+                og_node_id = self.__get_og_node_id(from_node['id'])
+                cell = Catalog.get_cell_from_og_node_id(og_node_id)
+                task_name = f'{cell["task_name"]}-{from_node["id"][:7]}'
 
             self.dependencies[to_node['id']].append({
                 'task_name': task_name,

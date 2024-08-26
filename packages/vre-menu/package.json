@@ -34,15 +34,15 @@
     },
     "dependencies": {
         "@emotion/react": "11.11.4",
-        "@emotion/styled": "11.10.6",
+        "@emotion/styled": "11.11.5",
         "@jupyterlab/application": "3.5.3",
         "@jupyterlab/apputils": "3.5.3",
         "@jupyterlab/mainmenu": "3.5.3",
         "@material-ui/core": "4.12.4",
-        "@mui/material": "5.15.6"
+        "@mui/material": "5.15.17"
     },
     "devDependencies": {
-        "@jupyterlab/builder": "4.0.2",
+        "@jupyterlab/builder": "4.0.12",
         "@typescript-eslint/eslint-plugin": "6.19.0",
         "eslint-plugin-jsdoc": "48.2.1",
         "@typescript-eslint/parser": "7.1.1",
@@ -52,7 +52,7 @@
         "eslint-plugin-react": "7.34.1",
         "npm-run-all": "4.1.5",
         "prettier": "3.2.2",
-        "rimraf": "5.0.0",
+        "rimraf": "5.0.5",
         "typescript": "5.0.2"
     },
     "sideEffects": [
