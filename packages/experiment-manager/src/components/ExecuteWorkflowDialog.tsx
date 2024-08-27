@@ -14,14 +14,14 @@ import TableCell from "@mui/material/TableCell";
 import TextField from '@mui/material/TextField';
 
 interface IState {
-  params: string[]
-  params_values: { [param: string]: any },
+  params: { [name: string]: any },
+  secrets: { [name: string]: any },
   submitted_workflow: any
 }
 
 export const DefaultState: IState = {
-  params: [],
-  params_values: {},
+  params: {},
+  secrets: {},
   submitted_workflow: null
 }
 
@@ -39,6 +39,7 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
 
   state = DefaultState
   global_params: string[] = []
+  global_secrets: string[] = []
   chart_node_ids: string[] = []
 
   constructor(props: ExecuteWorkflowDialogProps) {
@@ -46,21 +47,27 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
     const nodes = props.chart.nodes;
 
     Object.keys(nodes).forEach((nid) => {
+      this.chart_node_ids.push(nodes[nid].properties['og_node_id']);
       if (nodes[nid].properties['params']) {
         this.global_params.push(...nodes[nid].properties['params']);
-        this.chart_node_ids.push(nodes[nid].properties['og_node_id']);
+      }
+      if (nodes[nid].properties['secrets']) {
+        this.global_secrets.push(...nodes[nid].properties['secrets']);
       }
     });
 
     const unique_params = [...new Set(this.global_params)].sort()
-    const params_values: { [param: string]: any } = {}
-
-    unique_params.forEach((param: string) => {
-      params_values[param] = null
+    const unique_secrets = [...new Set(this.global_secrets)].sort()
+    const params: { [name: string]: any } = {}
+    const secrets: { [name: string]: any } = {}
+    unique_params.forEach((paramName: string) => {
+      params[paramName] = null
     });
-
-    this.state.params = unique_params
-    this.state.params_values = params_values
+    unique_secrets.forEach((secretName: string) => {
+      secrets[secretName] = null
+    });
+    this.state.params = params
+    this.state.secrets = secrets
 
   }
 
@@ -68,25 +75,29 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
     const catalog = await requestAPI<any>('catalog/cells/all', {
       method: 'GET'
     });
-    const params_values = this.state.params_values
+    const params = this.state.params
     // Extract param values for cells that are in the current workflow
     catalog.forEach((catalogItem: VRECell) => {
       if (this.chart_node_ids.includes(catalogItem.node_id)) {
         Object.keys(catalogItem.param_values).forEach((paramName) => {
-          params_values[paramName] = catalogItem.param_values[paramName]
+          params[paramName] = catalogItem.param_values[paramName]
         })
       }
     })
     this.setState({
-      params_values: params_values,
+      params: params,
     })
   }
 
-  executeWorkflow = async (values: { [param: string]: any }) => {
+  executeWorkflow = async (
+    params: { [name: string]: any },
+    secrets: { [name: string]: any },
+  ) => {
 
     const body = JSON.stringify({
       chart: this.props.chart,
-      params: values
+      params: params,
+      secrets: secrets,
     })
 
     try {
@@ -107,24 +118,36 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
   }
 
   handleSubmit = () => {
-    this.executeWorkflow(this.state.params_values)
+    this.executeWorkflow(
+      this.state.params,
+      this.state.secrets,
+    )
   }
 
-  handleParamValueUpdate = (event: React.ChangeEvent<{ name?: string; value: string; }>, param: string) => {
-    const curr_values = this.state.params_values;
-    curr_values[param] = event.target.value;
-    this.setState({
-      params_values: curr_values
-    })
+  handleParamValueUpdate = (event: React.ChangeEvent<{ name?: string; value: string; }>, name: string) => {
+    const curr_values = this.state.params;
+    curr_values[name] = event.target.value;
+    this.setState({ params: curr_values })
   };
 
-  allParamsFilled = () => {
+  handleSecretValueUpdate = (event: React.ChangeEvent<{ name?: string; value: string; }>, name: string) => {
+    const curr_values = this.state.secrets;
+    curr_values[name] = event.target.value;
+    this.setState({ secrets: curr_values })
+  };
+
+  allValuesFilled = () => {
 
     var all_filled = true
 
-    if (Object.values(this.state.params_values).length > 0) {
+    if (Object.values(this.state.params).length > 0) {
+      Object.values(this.state.params).forEach((value) => {
+        all_filled = all_filled && value != null
+      });
+    }
 
-      Object.values(this.state.params_values).forEach((value) => {
+    if (Object.values(this.state.secrets).length > 0) {
+      Object.values(this.state.secrets).forEach((value) => {
         all_filled = all_filled && value != null
       });
     }
@@ -164,25 +187,45 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
                     endIcon={<AutoModeIcon fontSize="inherit" />}
                     style={{color: grey[900], textTransform: 'none'}}
                   >
-                    Use notebook values
+                    Use notebook parameter values
                   </Button>
                 </div>
                 <TableContainer >
                   <Table stickyHeader aria-label="sticky table">
                     <TableBody>
-                      {this.state.params.map((param: string) => (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={param}>
-                          <TableCell key={param} align={"right"}>
-                            {param}
+                      {Object.keys(this.state.params).map((paramName: string) => (
+                        <TableRow hover role="checkbox" tabIndex={-1} key={paramName}>
+                          <TableCell key={paramName} align={"right"}>
+                            {paramName}
                           </TableCell>
                           <TableCell component="th" scope="row">
                             <TextField
                               // id="standard-basic"
                               // label="Standard"
                               // variant="standard"
-                              value={this.state.params_values[param]}
+                              value={this.state.params[paramName]}
                               onChange={(event) => {
-                                this.handleParamValueUpdate(event, param)
+                                this.handleParamValueUpdate(event, paramName)
+                              }}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      {Object.keys(this.state.secrets).map((secretName: string) => (
+                        <TableRow hover role="checkbox" tabIndex={-1} key={secretName}>
+                          <TableCell key={secretName} align={"right"}>
+                            {secretName}
+                          </TableCell>
+                          <TableCell component="th" scope="row">
+                            <TextField
+                              // id="standard-basic"
+                              // label="Standard"
+                              // variant="standard"
+                              type="password"
+                              autoComplete="off"
+                              value={this.state.secrets[secretName]}
+                              onChange={(event) => {
+                                this.handleSecretValueUpdate(event, secretName)
                               }}
                             />
                           </TableCell>
@@ -195,7 +238,7 @@ export class ExecuteWorkflowDialog extends React.Component<ExecuteWorkflowDialog
                         className={'lw-panel-button'}
                         onClick={this.handleSubmit}
                         color="primary"
-                        disabled={!this.allParamsFilled()}>
+                        disabled={!this.allValuesFilled()}>
                   Execute
                 </Button>
               </div>
