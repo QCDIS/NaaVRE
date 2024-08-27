@@ -12,6 +12,7 @@ spec:
         name: workdir
       spec:
         accessModes: [ "ReadWriteMany" ]
+        persistentVolumeReclaimPolicy: Delete
         resources:
           requests:
             storage: {{ workdir_storage_size }}Gi
@@ -19,7 +20,7 @@ spec:
       parameters:
       {% for p, value in global_params.items() %}
       - name: {{ p }}
-        value: {{ value }}
+        value:  "{{ value | replace('"', "'") }}"
       {% endfor %}
     templates:
     - name: {{ workflow_name }}
@@ -36,7 +37,6 @@ spec:
           dependencies: [{{ task_name }}]
           template: {{ task_name }}-server-tmp
         {% endif %} #}
-    
         - name: {{ task_name }}
           {% if deps_dag[nid]|length > 0 %}
           dependencies: [{% for d in deps_dag[nid] %} {{ d['task_name'] }}{% if not loop.last %},{% endif %} {% endfor %}]
@@ -64,6 +64,7 @@ spec:
     {% set is_visualizer = nodes[nid]['type'] == 'visualizer' %}
     {% set task_name = nodes[nid]['type'] + "-" + nid[:7] if is_special_node else cells[nid]['task_name'] + "-" + nid[:7] %}
     {% set params = [] if is_special_node else cells[nid]['params'] %}
+    {% set secrets = [] if is_special_node else cells[nid]['secrets'] %}
     {% set ports = nodes[nid]['ports'] %}
     {# {% if 'visualize-' in task_name %}
     - name: {{ task_name }}-server-tmp
@@ -133,7 +134,7 @@ spec:
             {% for d in deps_dag[nid] %}
             {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
             {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}
-            {% set stdinname_base = stdinname.split('_')[0] %}
+            {% set stdinname_base = stdinname.split('_')[:-1]|join('_') %}
             --{{ stdinname_base }} '{{ '{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}' }}'
             {% endfor %}
             {% for p in params %}
@@ -147,6 +148,17 @@ spec:
       container:
         image: "{{ image_repo }}/{{ cells[nid]['task_name'] }}:{{ cells[nid]['image_version'] }}"
         imagePullPolicy: Always
+        volumeMounts:
+        - name: workdir
+          mountPath: /tmp/data
+        env:
+        {%  for s in secrets %}
+          - name: {{ s }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ k8s_secret_name }}
+                key: {{ s }}
+        {%  endfor %}
         command: ["/bin/bash", "-c"]
         args:
         {% if 'visualize-' in cells[nid]['task_name']%}
@@ -154,7 +166,7 @@ spec:
             {% for d in deps_dag[nid] %}
             {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
             {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}
-            {% set stdinname_base = stdinname.split('_')[0] %}
+            {% set stdinname_base = stdinname.split('_')[:-1]|join('_') %}
             --{{ stdinname_base }} '{{ '{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}' }}'
             {% endfor %}
             {% for p in params %}
@@ -163,6 +175,7 @@ spec:
             --id {{' '}}{{cells[nid]['node_id']}}{{''}}{{";"}}
             jupyter execute /app/task-output.ipynb --allow-errors;
             jupyter nbconvert --no-input --execute /app/task-output.ipynb --to html;
+            cp /app/task-output.html /tmp/data/{{ task_name }}-output.html;
             jupyter notebook --port 5173 --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --NotebookApp.base_url=/naavre-visualizer-notebook
       metadata:
         labels:
@@ -172,11 +185,11 @@ spec:
             {% for d in deps_dag[nid] %}
             {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
             {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}
-            {% set stdinname_base = stdinname.split('_')[0] %}
+            {% set stdinname_base = stdinname.split('_')[:-1]|join('_') %}
             --{{ stdinname_base }} '{{ '{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}' }}'
             {% endfor %}
             {% for p in params %}
-            --{{ p }} '{{ '{{workflow.parameters.' }}{{ p }}{{ '}}' }}'
+            --{{ p }} {{ '"{{workflow.parameters.' }}{{ p }}{{ '}}"' }}
             {% endfor %}
             --id {{' '}}{{cells[nid]['node_id']}}{{''}}{{";"}}
         {% elif cells[nid]['kernel'] == 'IRkernel' %}
@@ -184,16 +197,13 @@ spec:
             {% for d in deps_dag[nid] %}
             {% set is_from_special = d['type'] == 'splitter' or  d['type'] == 'merger' %}
             {% set stdinname = d['og_port_id'] if is_from_special else d['port_id'] %}
-            {% set stdinname_base = stdinname.split('_')[0] %}
+            {% set stdinname_base = stdinname.split('_')[:-1]|join('_') %}
             --{{ stdinname_base }} '{{ '{{inputs.parameters.' }}{{ d['port_id'] }}{{ '}}' }}'
             {% endfor %}
             {% for p in params %}
-            --{{ p }} '{{ '{{workflow.parameters.' }}{{ p }}{{ '}}' }}'
+            --{{ p }} {{ '"{{workflow.parameters.' }}{{ p }}{{ '}}"' }}
             {% endfor %}
             --id {{' '}}{{cells[nid]['node_id']}}{{''}}{{";"}}
         {% endif %}
-        volumeMounts:
-        - name: workdir
-          mountPath: /tmp/data
       {% endif %}
     {% endfor %}
