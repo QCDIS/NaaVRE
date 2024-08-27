@@ -5,6 +5,7 @@ class Extractor(abc.ABC):
     ins: dict
     outs: dict
     params: dict
+    secrets: dict
     confs: list
     dependencies: list
 
@@ -15,6 +16,7 @@ class Extractor(abc.ABC):
         self.ins = self.infer_cell_inputs()
         self.outs = self.infer_cell_outputs()
         self.params = self.extract_cell_params(cell_source)
+        self.secrets = self.extract_cell_secrets(cell_source)
         self.confs = self.extract_cell_conf_ref()
         self.dependencies = self.infer_cell_dependencies(self.confs)
 
@@ -28,6 +30,10 @@ class Extractor(abc.ABC):
 
     @abc.abstractmethod
     def extract_cell_params(self, source):
+        pass
+
+    @abc.abstractmethod
+    def extract_cell_secrets(self, source):
         pass
 
     @abc.abstractmethod
@@ -47,6 +53,9 @@ class DummyExtractor(Extractor):
         return {}
 
     def extract_cell_params(self, source):
+        return {}
+
+    def extract_cell_secrets(self, source):
         return {}
 
     def extract_cell_conf_ref(self):
