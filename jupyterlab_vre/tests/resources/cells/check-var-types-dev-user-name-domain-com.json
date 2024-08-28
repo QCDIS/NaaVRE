@@ -1,248 +1,249 @@
 {
-    "all_inputs": [
-        "var_string",
-        "var_string_with_comment",
-        "var_int",
-        "var_float",
-        "var_list_int",
-        "var_list_str"
-    ],
-    "base_image": {
-        "build": "ghcr.io/qcdis/naavre/naavre-cell-build-python:v0.9",
-        "runtime": "ghcr.io/qcdis/naavre/naavre-cell-runtime-python:v0.9"
-    },
-    "chart_obj": {
-        "hovered": {},
-        "links": {},
-        "nodes": {
-            "fa27dcb": {
-                "id": "fa27dcb",
-                "ports": {
-                    "done": {
-                        "id": "done",
-                        "properties": {
-                            "color": "#ac8a53"
-                        },
-                        "type": "right"
-                    },
-                    "var_float": {
-                        "id": "var_float",
-                        "properties": {
-                            "color": "#53ac8b"
-                        },
-                        "type": "left"
-                    },
-                    "var_int": {
-                        "id": "var_int",
-                        "properties": {
-                            "color": "#aad279"
-                        },
-                        "type": "left"
-                    },
-                    "var_list_int": {
-                        "id": "var_list_int",
-                        "properties": {
-                            "color": "#2d4ed2"
-                        },
-                        "type": "left"
-                    },
-                    "var_list_str": {
-                        "id": "var_list_str",
-                        "properties": {
-                            "color": "#6c89e0"
-                        },
-                        "type": "left"
-                    },
-                    "var_string": {
-                        "id": "var_string",
-                        "properties": {
-                            "color": "#98e06c"
-                        },
-                        "type": "left"
-                    },
-                    "var_string_with_comment": {
-                        "id": "var_string_with_comment",
-                        "properties": {
-                            "color": "#87c0c5"
-                        },
-                        "type": "left"
-                    }
-                },
-                "position": {
-                    "x": 35,
-                    "y": 15
-                },
-                "properties": {
-                    "inputs": [
-                        "var_list_int",
-                        "var_int",
-                        "var_float",
-                        "var_list_str",
-                        "var_string",
-                        "var_string_with_comment"
-                    ],
-                    "og_node_id": "fa27dcb",
-                    "outputs": [
-                        "done"
-                    ],
-                    "params": [
-                        "param_string",
-                        "param_string_with_comment",
-                        "param_int",
-                        "param_float",
-                        "param_list_int",
-                        "param_list_str"
-                    ],
-                    "title": "check-var-types-dev-user-name-domain-com",
-                    "vars": [
-                        {
-                            "color": "#2d4ed2",
-                            "direction": "input",
-                            "name": "var_list_int",
-                            "type": "datatype"
-                        },
-                        {
-                            "color": "#aad279",
-                            "direction": "input",
-                            "name": "var_int",
-                            "type": "datatype"
-                        },
-                        {
-                            "color": "#53ac8b",
-                            "direction": "input",
-                            "name": "var_float",
-                            "type": "datatype"
-                        },
-                        {
-                            "color": "#6c89e0",
-                            "direction": "input",
-                            "name": "var_list_str",
-                            "type": "datatype"
-                        },
-                        {
-                            "color": "#98e06c",
-                            "direction": "input",
-                            "name": "var_string",
-                            "type": "datatype"
-                        },
-                        {
-                            "color": "#87c0c5",
-                            "direction": "input",
-                            "name": "var_string_with_comment",
-                            "type": "datatype"
-                        },
-                        {
-                            "color": "#ac8a53",
-                            "direction": "output",
-                            "name": "done",
-                            "type": "datatype"
-                        }
-                    ]
-                },
-                "type": "input-output"
-            }
-        },
-        "offset": {
-            "x": 0,
-            "y": 0
-        },
-        "scale": 1,
-        "selected": {}
-    },
-    "confs": {
-        "conf_float": "conf_float = 1.1",
-        "conf_int": "conf_int = 1",
-        "conf_list_int": "conf_list_int = [1, 2, 3]",
-        "conf_list_str": "conf_list_str = [\"list_str\", \"space in elem\", \"3\"]",
-        "conf_string": "conf_string = 'param_string value'",
-        "conf_string_with_comment": "conf_string_with_comment = 'param_string value'  # comment"
-    },
-    "container_source": "",
-    "dependencies": [],
-    "inputs": [
-        "var_string",
-        "var_string_with_comment",
-        "var_int",
-        "var_float",
-        "var_list_int",
-        "var_list_str"
-    ],
-    "kernel": "ipython",
-    "node_id": "fa27dcb",
-    "notebook_dict": {
-        "cells": [
-            {
-                "cell_type": "code",
-                "execution_count": 5,
-                "id": "52d263a1-df6d-4bf3-a97a-32a862c541ab",
-                "metadata": {},
-                "outputs": [
-                    {
-                        "name": "stdout",
-                        "output_type": "stream",
-                        "text": "conf_string: param_string value type: <class 'str'>\nconf_string_with_comment: param_string value type: <class 'str'>\nconf_int: 1 type: <class 'int'>\nconf_float: 1.1 type: <class 'float'>\nconf_list_int: [1, 2, 3] type: <class 'list'>\nconf_list_str: ['list_str', 'space in elem', '3'] type: <class 'list'>\nparam_string: param_string value type: <class 'str'>\nparam_string_with_comment: param_string value type: <class 'str'>\nparam_int: 1 type: <class 'int'>\nparam_float: 1.1 type: <class 'float'>\nparam_list_int: [1, 2, 3] type: <class 'list'>\nparam_list_str: ['list_str', 'space in elem', '3'] type: <class 'list'>\nvar_string: var_string value type: <class 'str'>\nvar_string_with_comment: var_string value type: <class 'str'>\nvar_int: 1 type: <class 'int'>\nvar_float: 1.1 type: <class 'float'>\nvar_list_int: [1, 2, 3] type: <class 'list'>\nvar_list_str: ['list_str', 'space in elem', '3'] type: <class 'list'>\nAll vars are of the correct type\n"
-                    }
-                ],
-                "source": "# check var types\n\nprint('conf_string: ' + str(conf_string) + ' type: ' + str(type(conf_string)))\nprint('conf_string_with_comment: ' + str(conf_string_with_comment) + ' type: ' + str(type(conf_string_with_comment)))\nprint('conf_int: ' + str(conf_int) + ' type: ' + str(type(conf_int)))\nprint('conf_float: ' + str(conf_float) + ' type: ' + str(type(conf_float)))\nprint('conf_list_int: ' + str(conf_list_int) + ' type: ' + str(type(conf_list_int)))\nprint('conf_list_str: ' + str(conf_list_str) + ' type: ' + str(type(conf_list_str)))\n\nprint('param_string: ' + str(param_string) + ' type: ' + str(type(param_string)))\nprint('param_string_with_comment: ' + str(param_string_with_comment) + ' type: ' + str(type(param_string_with_comment)))\nprint('param_int: ' + str(param_int) + ' type: ' + str(type(param_int)))\nprint('param_float: ' + str(param_float) + ' type: ' + str(type(param_float)))\nprint('param_list_int: ' + str(param_list_int) + ' type: ' + str(type(param_list_int)))\nprint('param_list_str: ' + str(param_list_str) + ' type: ' + str(type(param_list_str)))\n\nprint('var_string: ' + str(var_string) + ' type: ' + str(type(var_string)))\nprint('var_string_with_comment: ' + str(var_string_with_comment) + ' type: ' + str(type(var_string_with_comment)))\nprint('var_int: ' + str(var_int) + ' type: ' + str(type(var_int)))\nprint('var_float: ' + str(var_float) + ' type: ' + str(type(var_float)))\nprint('var_list_int: ' + str(var_list_int) + ' type: ' + str(type(var_list_int)))\nprint('var_list_str: ' + str(var_list_str) + ' type: ' + str(type(var_list_str)))\n\ncheck = conf_string\nif not isinstance(check, str):\n    print('conf_string is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = conf_string_with_comment\nif not isinstance(check, str):\n    print('conf_string_with_comment is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = conf_int\nif not isinstance(check, int):\n    print('conf_int is not an int. It is a ' + str(type(check)))\n    exit(1)\ncheck = conf_float\nif not isinstance(check, float):\n    print('conf_float is not a float. It is a ' + str(type(check)))\n    exit(1)\ncheck = conf_list_int\nif not isinstance(check, list):\n    print('conf_list_int is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in conf_list_int:\n    if not isinstance(i, int):\n        print('conf_list_int contains a non-int value: ' + str(i))\n        exit(1)\ncheck = conf_list_str\nif not isinstance(check, list):\n    print('conf_list_str is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in conf_list_str:\n    if not isinstance(i, str):\n        print('conf_list_str contains a non-str value: ' + str(i))\n        exit(1)\n\ncheck = param_string\nif not isinstance(check, str):\n    print('param_string is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = param_string_with_comment\nif not isinstance(check, str):\n    print('param_string_with_comment is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = param_int\nif not isinstance(check, int):\n    print('param_int is not an int. It is a ' + str(type(check)))\n    exit(1)\ncheck = param_float\nif not isinstance(check, float):\n    print('param_float is not a float. It is a ' + str(type(check)))\n    exit(1)\ncheck = param_list_int\nif not isinstance(check, list):\n    print('param_list_int is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in param_list_int:\n    if not isinstance(i, int):\n        print('param_list_int contains a non-int value: ' + str(i))\n        exit(1)\ncheck = param_list_str\nif not isinstance(check, list):\n    print('param_list_str is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in param_list_str:\n    if not isinstance(i, str):\n        print('param_list_str contains a non-str value: ' + str(i))\n        exit(1)\n\n\ncheck = var_string\nif not isinstance(check, str):\n    print('var_string is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = var_string_with_comment\nif not isinstance(check, str):\n    print('var_string_with_comment is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = var_int\nif not isinstance(check, int):\n    print('var_int is not an int. It is a ' + str(type(check)))\n    exit(1)\ncheck = var_float\nif not isinstance(check, float):\n    print('var_float is not a float. It is a ' + str(type(check)))\n    exit(1)\ncheck = var_list_int\nif not isinstance(check, list):\n    print('var_list_int is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in var_list_int:\n    if not isinstance(i, int):\n        print('var_list_int contains a non-int value: ' + str(i))\n        exit(1)\ncheck = var_list_str\nif not isinstance(check, list):\n    print('var_list_str is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in var_list_str:\n    if not isinstance(i, str):\n        print('var_list_str contains a non-str value: ' + str(i))\n        exit(1)\nprint('All vars are of the correct type')\n\ndone = 'True'\n"
-            }
-        ],
-        "metadata": {
-            "kernelspec": {
-                "display_name": "python3",
-                "language": "python3",
-                "name": "python3"
+  "all_inputs": [
+    "var_string",
+    "var_string_with_comment",
+    "var_int",
+    "var_float",
+    "var_list_int",
+    "var_list_str"
+  ],
+  "base_image": {
+    "build": "ghcr.io/qcdis/naavre/naavre-cell-build-python:v0.9",
+    "runtime": "ghcr.io/qcdis/naavre/naavre-cell-runtime-python:v0.9"
+  },
+  "chart_obj": {
+    "hovered": {},
+    "links": {},
+    "nodes": {
+      "fa27dcb": {
+        "id": "fa27dcb",
+        "ports": {
+          "done": {
+            "id": "done",
+            "properties": {
+              "color": "#ac8a53"
             },
-            "language_info": {
-                "codemirror_mode": {
-                    "name": "ipython",
-                    "version": 3
-                },
-                "file_extension": ".py",
-                "mimetype": "text/x-python",
-                "name": "python",
-                "nbconvert_exporter": "python",
-                "pygments_lexer": "ipython3",
-                "version": "3.11.8"
-            }
+            "type": "right"
+          },
+          "var_float": {
+            "id": "var_float",
+            "properties": {
+              "color": "#53ac8b"
+            },
+            "type": "left"
+          },
+          "var_int": {
+            "id": "var_int",
+            "properties": {
+              "color": "#aad279"
+            },
+            "type": "left"
+          },
+          "var_list_int": {
+            "id": "var_list_int",
+            "properties": {
+              "color": "#2d4ed2"
+            },
+            "type": "left"
+          },
+          "var_list_str": {
+            "id": "var_list_str",
+            "properties": {
+              "color": "#6c89e0"
+            },
+            "type": "left"
+          },
+          "var_string": {
+            "id": "var_string",
+            "properties": {
+              "color": "#98e06c"
+            },
+            "type": "left"
+          },
+          "var_string_with_comment": {
+            "id": "var_string_with_comment",
+            "properties": {
+              "color": "#87c0c5"
+            },
+            "type": "left"
+          }
         },
-        "nbformat": 4,
-        "nbformat_minor": 5
+        "position": {
+          "x": 35,
+          "y": 15
+        },
+        "properties": {
+          "inputs": [
+            "var_list_int",
+            "var_int",
+            "var_float",
+            "var_list_str",
+            "var_string",
+            "var_string_with_comment"
+          ],
+          "og_node_id": "fa27dcb",
+          "outputs": [
+            "done"
+          ],
+          "params": [
+            "param_string",
+            "param_string_with_comment",
+            "param_int",
+            "param_float",
+            "param_list_int",
+            "param_list_str"
+          ],
+          "title": "check-var-types-dev-user-name-domain-com",
+          "vars": [
+            {
+              "color": "#2d4ed2",
+              "direction": "input",
+              "name": "var_list_int",
+              "type": "datatype"
+            },
+            {
+              "color": "#aad279",
+              "direction": "input",
+              "name": "var_int",
+              "type": "datatype"
+            },
+            {
+              "color": "#53ac8b",
+              "direction": "input",
+              "name": "var_float",
+              "type": "datatype"
+            },
+            {
+              "color": "#6c89e0",
+              "direction": "input",
+              "name": "var_list_str",
+              "type": "datatype"
+            },
+            {
+              "color": "#98e06c",
+              "direction": "input",
+              "name": "var_string",
+              "type": "datatype"
+            },
+            {
+              "color": "#87c0c5",
+              "direction": "input",
+              "name": "var_string_with_comment",
+              "type": "datatype"
+            },
+            {
+              "color": "#ac8a53",
+              "direction": "output",
+              "name": "done",
+              "type": "datatype"
+            }
+          ]
+        },
+        "type": "input-output"
+      }
     },
-    "original_source": "conf_string = 'param_string value'\nconf_string_with_comment = 'param_string value'  # comment\nconf_int = 1\nconf_float = 1.1\nconf_list_int = [1, 2, 3]\nconf_list_str = [\"list_str\", \"space in elem\", \"3\"]\n\nprint('conf_string: ' + str(conf_string) + ' type: ' + str(type(conf_string)))\nprint('conf_string_with_comment: ' + str(conf_string_with_comment) + ' type: ' + str(type(conf_string_with_comment)))\nprint('conf_int: ' + str(conf_int) + ' type: ' + str(type(conf_int)))\nprint('conf_float: ' + str(conf_float) + ' type: ' + str(type(conf_float)))\nprint('conf_list_int: ' + str(conf_list_int) + ' type: ' + str(type(conf_list_int)))\nprint('conf_list_str: ' + str(conf_list_str) + ' type: ' + str(type(conf_list_str)))\n\nprint('param_string: ' + str(param_string) + ' type: ' + str(type(param_string)))\nprint('param_string_with_comment: ' + str(param_string_with_comment) + ' type: ' + str(type(param_string_with_comment)))\nprint('param_int: ' + str(param_int) + ' type: ' + str(type(param_int)))\nprint('param_float: ' + str(param_float) + ' type: ' + str(type(param_float)))\nprint('param_list_int: ' + str(param_list_int) + ' type: ' + str(type(param_list_int)))\nprint('param_list_str: ' + str(param_list_str) + ' type: ' + str(type(param_list_str)))\n\nprint('var_string: ' + str(var_string) + ' type: ' + str(type(var_string)))\nprint('var_string_with_comment: ' + str(var_string_with_comment) + ' type: ' + str(type(var_string_with_comment)))\nprint('var_int: ' + str(var_int) + ' type: ' + str(type(var_int)))\nprint('var_float: ' + str(var_float) + ' type: ' + str(type(var_float)))\nprint('var_list_int: ' + str(var_list_int) + ' type: ' + str(type(var_list_int)))\nprint('var_list_str: ' + str(var_list_str) + ' type: ' + str(type(var_list_str)))\n\ncheck = conf_string\nif not isinstance(check, str):\n    print('conf_string is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = conf_string_with_comment\nif not isinstance(check, str):\n    print('conf_string_with_comment is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = conf_int\nif not isinstance(check, int):\n    print('conf_int is not an int. It is a ' + str(type(check)))\n    exit(1)\ncheck = conf_float\nif not isinstance(check, float):\n    print('conf_float is not a float. It is a ' + str(type(check)))\n    exit(1)\ncheck = conf_list_int\nif not isinstance(check, list):\n    print('conf_list_int is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in conf_list_int:\n    if not isinstance(i, int):\n        print('conf_list_int contains a non-int value: ' + str(i))\n        exit(1)\ncheck = conf_list_str\nif not isinstance(check, list):\n    print('conf_list_str is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in conf_list_str:\n    if not isinstance(i, str):\n        print('conf_list_str contains a non-str value: ' + str(i))\n        exit(1)\n\ncheck = param_string\nif not isinstance(check, str):\n    print('param_string is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = param_string_with_comment\nif not isinstance(check, str):\n    print('param_string_with_comment is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = param_int\nif not isinstance(check, int):\n    print('param_int is not an int. It is a ' + str(type(check)))\n    exit(1)\ncheck = param_float\nif not isinstance(check, float):\n    print('param_float is not a float. It is a ' + str(type(check)))\n    exit(1)\ncheck = param_list_int\nif not isinstance(check, list):\n    print('param_list_int is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in param_list_int:\n    if not isinstance(i, int):\n        print('param_list_int contains a non-int value: ' + str(i))\n        exit(1)\ncheck = param_list_str\nif not isinstance(check, list):\n    print('param_list_str is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in param_list_str:\n    if not isinstance(i, str):\n        print('param_list_str contains a non-str value: ' + str(i))\n        exit(1)\n\n\ncheck = var_string\nif not isinstance(check, str):\n    print('var_string is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = var_string_with_comment\nif not isinstance(check, str):\n    print('var_string_with_comment is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = var_int\nif not isinstance(check, int):\n    print('var_int is not an int. It is a ' + str(type(check)))\n    exit(1)\ncheck = var_float\nif not isinstance(check, float):\n    print('var_float is not a float. It is a ' + str(type(check)))\n    exit(1)\ncheck = var_list_int\nif not isinstance(check, list):\n    print('var_list_int is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in var_list_int:\n    if not isinstance(i, int):\n        print('var_list_int contains a non-int value: ' + str(i))\n        exit(1)\ncheck = var_list_str\nif not isinstance(check, list):\n    print('var_list_str is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in var_list_str:\n    if not isinstance(i, str):\n        print('var_list_str contains a non-str value: ' + str(i))\n        exit(1)\nprint('All vars are of the correct type')\n\ndone = 'True'",
-    "outputs": [
-        "done"
-    ],
-    "param_values": {
-        "param_float": "1.1",
-        "param_int": "1",
-        "param_list_int": "[1, 2, 3]",
-        "param_list_str": "['list_str', 'space in elem', '3']",
-        "param_string": "param_string value",
-        "param_string_with_comment": "param_string value"
+    "offset": {
+      "x": 0,
+      "y": 0
     },
-    "params": [
-        "param_string",
-        "param_string_with_comment",
-        "param_int",
-        "param_float",
-        "param_list_int",
-        "param_list_str"
+    "scale": 1,
+    "selected": {}
+  },
+  "confs": {
+    "conf_float": "conf_float = 1.1",
+    "conf_int": "conf_int = 1",
+    "conf_list_int": "conf_list_int = [1, 2, 3]",
+    "conf_list_str": "conf_list_str = [\"list_str\", \"space in elem\", \"3\"]",
+    "conf_string": "conf_string = 'param_string value'",
+    "conf_string_with_comment": "conf_string_with_comment = 'param_string value'  # comment"
+  },
+  "container_source": "",
+  "dependencies": [],
+  "inputs": [
+    "var_string",
+    "var_string_with_comment",
+    "var_int",
+    "var_float",
+    "var_list_int",
+    "var_list_str"
+  ],
+  "kernel": "ipython",
+  "node_id": "fa27dcb",
+  "notebook_dict": {
+    "cells": [
+      {
+        "cell_type": "code",
+        "execution_count": 5,
+        "id": "52d263a1-df6d-4bf3-a97a-32a862c541ab",
+        "metadata": {},
+        "outputs": [
+          {
+            "name": "stdout",
+            "output_type": "stream",
+            "text": "conf_string: param_string value type: <class 'str'>\nconf_string_with_comment: param_string value type: <class 'str'>\nconf_int: 1 type: <class 'int'>\nconf_float: 1.1 type: <class 'float'>\nconf_list_int: [1, 2, 3] type: <class 'list'>\nconf_list_str: ['list_str', 'space in elem', '3'] type: <class 'list'>\nparam_string: param_string value type: <class 'str'>\nparam_string_with_comment: param_string value type: <class 'str'>\nparam_int: 1 type: <class 'int'>\nparam_float: 1.1 type: <class 'float'>\nparam_list_int: [1, 2, 3] type: <class 'list'>\nparam_list_str: ['list_str', 'space in elem', '3'] type: <class 'list'>\nvar_string: var_string value type: <class 'str'>\nvar_string_with_comment: var_string value type: <class 'str'>\nvar_int: 1 type: <class 'int'>\nvar_float: 1.1 type: <class 'float'>\nvar_list_int: [1, 2, 3] type: <class 'list'>\nvar_list_str: ['list_str', 'space in elem', '3'] type: <class 'list'>\nAll vars are of the correct type\n"
+          }
+        ],
+        "source": "# check var types\n\nprint('conf_string: ' + str(conf_string) + ' type: ' + str(type(conf_string)))\nprint('conf_string_with_comment: ' + str(conf_string_with_comment) + ' type: ' + str(type(conf_string_with_comment)))\nprint('conf_int: ' + str(conf_int) + ' type: ' + str(type(conf_int)))\nprint('conf_float: ' + str(conf_float) + ' type: ' + str(type(conf_float)))\nprint('conf_list_int: ' + str(conf_list_int) + ' type: ' + str(type(conf_list_int)))\nprint('conf_list_str: ' + str(conf_list_str) + ' type: ' + str(type(conf_list_str)))\n\nprint('param_string: ' + str(param_string) + ' type: ' + str(type(param_string)))\nprint('param_string_with_comment: ' + str(param_string_with_comment) + ' type: ' + str(type(param_string_with_comment)))\nprint('param_int: ' + str(param_int) + ' type: ' + str(type(param_int)))\nprint('param_float: ' + str(param_float) + ' type: ' + str(type(param_float)))\nprint('param_list_int: ' + str(param_list_int) + ' type: ' + str(type(param_list_int)))\nprint('param_list_str: ' + str(param_list_str) + ' type: ' + str(type(param_list_str)))\n\nprint('var_string: ' + str(var_string) + ' type: ' + str(type(var_string)))\nprint('var_string_with_comment: ' + str(var_string_with_comment) + ' type: ' + str(type(var_string_with_comment)))\nprint('var_int: ' + str(var_int) + ' type: ' + str(type(var_int)))\nprint('var_float: ' + str(var_float) + ' type: ' + str(type(var_float)))\nprint('var_list_int: ' + str(var_list_int) + ' type: ' + str(type(var_list_int)))\nprint('var_list_str: ' + str(var_list_str) + ' type: ' + str(type(var_list_str)))\n\ncheck = conf_string\nif not isinstance(check, str):\n    print('conf_string is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = conf_string_with_comment\nif not isinstance(check, str):\n    print('conf_string_with_comment is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = conf_int\nif not isinstance(check, int):\n    print('conf_int is not an int. It is a ' + str(type(check)))\n    exit(1)\ncheck = conf_float\nif not isinstance(check, float):\n    print('conf_float is not a float. It is a ' + str(type(check)))\n    exit(1)\ncheck = conf_list_int\nif not isinstance(check, list):\n    print('conf_list_int is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in conf_list_int:\n    if not isinstance(i, int):\n        print('conf_list_int contains a non-int value: ' + str(i))\n        exit(1)\ncheck = conf_list_str\nif not isinstance(check, list):\n    print('conf_list_str is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in conf_list_str:\n    if not isinstance(i, str):\n        print('conf_list_str contains a non-str value: ' + str(i))\n        exit(1)\n\ncheck = param_string\nif not isinstance(check, str):\n    print('param_string is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = param_string_with_comment\nif not isinstance(check, str):\n    print('param_string_with_comment is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = param_int\nif not isinstance(check, int):\n    print('param_int is not an int. It is a ' + str(type(check)))\n    exit(1)\ncheck = param_float\nif not isinstance(check, float):\n    print('param_float is not a float. It is a ' + str(type(check)))\n    exit(1)\ncheck = param_list_int\nif not isinstance(check, list):\n    print('param_list_int is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in param_list_int:\n    if not isinstance(i, int):\n        print('param_list_int contains a non-int value: ' + str(i))\n        exit(1)\ncheck = param_list_str\nif not isinstance(check, list):\n    print('param_list_str is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in param_list_str:\n    if not isinstance(i, str):\n        print('param_list_str contains a non-str value: ' + str(i))\n        exit(1)\n\n\ncheck = var_string\nif not isinstance(check, str):\n    print('var_string is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = var_string_with_comment\nif not isinstance(check, str):\n    print('var_string_with_comment is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = var_int\nif not isinstance(check, int):\n    print('var_int is not an int. It is a ' + str(type(check)))\n    exit(1)\ncheck = var_float\nif not isinstance(check, float):\n    print('var_float is not a float. It is a ' + str(type(check)))\n    exit(1)\ncheck = var_list_int\nif not isinstance(check, list):\n    print('var_list_int is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in var_list_int:\n    if not isinstance(i, int):\n        print('var_list_int contains a non-int value: ' + str(i))\n        exit(1)\ncheck = var_list_str\nif not isinstance(check, list):\n    print('var_list_str is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in var_list_str:\n    if not isinstance(i, str):\n        print('var_list_str contains a non-str value: ' + str(i))\n        exit(1)\nprint('All vars are of the correct type')\n\ndone = 'True'\n"
+      }
     ],
-    "task_name": "check-var-types-dev-user-name-domain-com",
-    "title": "check-var-types-dev-user-name-domain-com",
-    "types": {
-        "done": "str",
-        "param_float": "float",
-        "param_int": "int",
-        "param_list_int": "list",
-        "param_list_str": "list",
-        "param_string": "str",
-        "param_string_with_comment": "str",
-        "var_float": "float",
-        "var_int": "int",
-        "var_list_int": "list",
-        "var_list_str": "list",
-        "var_string": "str",
-        "var_string_with_comment": "str"
-    },"skip_exec": true
+    "metadata": {
+      "kernelspec": {
+        "display_name": "python3",
+        "language": "python3",
+        "name": "python3"
+      },
+      "language_info": {
+        "codemirror_mode": {
+          "name": "ipython",
+          "version": 3
+        },
+        "file_extension": ".py",
+        "mimetype": "text/x-python",
+        "name": "python",
+        "nbconvert_exporter": "python",
+        "pygments_lexer": "ipython3",
+        "version": "3.11.8"
+      }
+    },
+    "nbformat": 4,
+    "nbformat_minor": 5
+  },
+  "original_source": "conf_string = 'param_string value'\nconf_string_with_comment = 'param_string value'  # comment\nconf_int = 1\nconf_float = 1.1\nconf_list_int = [1, 2, 3]\nconf_list_str = [\"list_str\", \"space in elem\", \"3\"]\n\nprint('conf_string: ' + str(conf_string) + ' type: ' + str(type(conf_string)))\nprint('conf_string_with_comment: ' + str(conf_string_with_comment) + ' type: ' + str(type(conf_string_with_comment)))\nprint('conf_int: ' + str(conf_int) + ' type: ' + str(type(conf_int)))\nprint('conf_float: ' + str(conf_float) + ' type: ' + str(type(conf_float)))\nprint('conf_list_int: ' + str(conf_list_int) + ' type: ' + str(type(conf_list_int)))\nprint('conf_list_str: ' + str(conf_list_str) + ' type: ' + str(type(conf_list_str)))\n\nprint('param_string: ' + str(param_string) + ' type: ' + str(type(param_string)))\nprint('param_string_with_comment: ' + str(param_string_with_comment) + ' type: ' + str(type(param_string_with_comment)))\nprint('param_int: ' + str(param_int) + ' type: ' + str(type(param_int)))\nprint('param_float: ' + str(param_float) + ' type: ' + str(type(param_float)))\nprint('param_list_int: ' + str(param_list_int) + ' type: ' + str(type(param_list_int)))\nprint('param_list_str: ' + str(param_list_str) + ' type: ' + str(type(param_list_str)))\n\nprint('var_string: ' + str(var_string) + ' type: ' + str(type(var_string)))\nprint('var_string_with_comment: ' + str(var_string_with_comment) + ' type: ' + str(type(var_string_with_comment)))\nprint('var_int: ' + str(var_int) + ' type: ' + str(type(var_int)))\nprint('var_float: ' + str(var_float) + ' type: ' + str(type(var_float)))\nprint('var_list_int: ' + str(var_list_int) + ' type: ' + str(type(var_list_int)))\nprint('var_list_str: ' + str(var_list_str) + ' type: ' + str(type(var_list_str)))\n\ncheck = conf_string\nif not isinstance(check, str):\n    print('conf_string is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = conf_string_with_comment\nif not isinstance(check, str):\n    print('conf_string_with_comment is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = conf_int\nif not isinstance(check, int):\n    print('conf_int is not an int. It is a ' + str(type(check)))\n    exit(1)\ncheck = conf_float\nif not isinstance(check, float):\n    print('conf_float is not a float. It is a ' + str(type(check)))\n    exit(1)\ncheck = conf_list_int\nif not isinstance(check, list):\n    print('conf_list_int is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in conf_list_int:\n    if not isinstance(i, int):\n        print('conf_list_int contains a non-int value: ' + str(i))\n        exit(1)\ncheck = conf_list_str\nif not isinstance(check, list):\n    print('conf_list_str is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in conf_list_str:\n    if not isinstance(i, str):\n        print('conf_list_str contains a non-str value: ' + str(i))\n        exit(1)\n\ncheck = param_string\nif not isinstance(check, str):\n    print('param_string is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = param_string_with_comment\nif not isinstance(check, str):\n    print('param_string_with_comment is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = param_int\nif not isinstance(check, int):\n    print('param_int is not an int. It is a ' + str(type(check)))\n    exit(1)\ncheck = param_float\nif not isinstance(check, float):\n    print('param_float is not a float. It is a ' + str(type(check)))\n    exit(1)\ncheck = param_list_int\nif not isinstance(check, list):\n    print('param_list_int is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in param_list_int:\n    if not isinstance(i, int):\n        print('param_list_int contains a non-int value: ' + str(i))\n        exit(1)\ncheck = param_list_str\nif not isinstance(check, list):\n    print('param_list_str is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in param_list_str:\n    if not isinstance(i, str):\n        print('param_list_str contains a non-str value: ' + str(i))\n        exit(1)\n\n\ncheck = var_string\nif not isinstance(check, str):\n    print('var_string is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = var_string_with_comment\nif not isinstance(check, str):\n    print('var_string_with_comment is not a string. It is a ' + str(type(check)))\n    exit(1)\ncheck = var_int\nif not isinstance(check, int):\n    print('var_int is not an int. It is a ' + str(type(check)))\n    exit(1)\ncheck = var_float\nif not isinstance(check, float):\n    print('var_float is not a float. It is a ' + str(type(check)))\n    exit(1)\ncheck = var_list_int\nif not isinstance(check, list):\n    print('var_list_int is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in var_list_int:\n    if not isinstance(i, int):\n        print('var_list_int contains a non-int value: ' + str(i))\n        exit(1)\ncheck = var_list_str\nif not isinstance(check, list):\n    print('var_list_str is not a list. It is a ' + str(type(check)))\n    exit(1)\nfor i in var_list_str:\n    if not isinstance(i, str):\n        print('var_list_str contains a non-str value: ' + str(i))\n        exit(1)\nprint('All vars are of the correct type')\n\ndone = 'True'",
+  "outputs": [
+    "done"
+  ],
+  "param_values": {
+    "param_float": "1.1",
+    "param_int": "1",
+    "param_list_int": "[1, 2, 3]",
+    "param_list_str": "['list_str', 'space in elem', '3']",
+    "param_string": "param_string value",
+    "param_string_with_comment": "param_string value"
+  },
+  "params": [
+    "param_string",
+    "param_string_with_comment",
+    "param_int",
+    "param_float",
+    "param_list_int",
+    "param_list_str"
+  ],
+  "task_name": "check-var-types-dev-user-name-domain-com",
+  "title": "check-var-types-dev-user-name-domain-com",
+  "types": {
+    "done": "str",
+    "param_float": "float",
+    "param_int": "int",
+    "param_list_int": "list",
+    "param_list_str": "list",
+    "param_string": "str",
+    "param_string_with_comment": "str",
+    "var_float": "float",
+    "var_int": "int",
+    "var_list_int": "list",
+    "var_list_str": "list",
+    "var_string": "str",
+    "var_string_with_comment": "str"
+  },
+  "skip_exec": true
 }

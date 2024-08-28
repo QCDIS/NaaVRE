@@ -22,18 +22,11 @@ from github import Github
 from github.GithubException import UnknownObjectException
 from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
-from slugify import slugify
 from tornado import web
 
 from jupyterlab_vre.database.catalog import Catalog
-from jupyterlab_vre.database.cell import Cell
 from jupyterlab_vre.services.containerizer.Rcontainerizer import Rcontainerizer
-from jupyterlab_vre.services.converter.converter import ConverterReactFlowChart
-from jupyterlab_vre.services.extractor.extractor import DummyExtractor
-from jupyterlab_vre.services.extractor.pyextractor import PyExtractor
-from jupyterlab_vre.services.extractor.rextractor import RExtractor
-from jupyterlab_vre.services.extractor.pyheaderextractor import PyHeaderExtractor
-from jupyterlab_vre.services.extractor.rheaderextractor import RHeaderExtractor
+from jupyterlab_vre.services.extractor.extract_cell import extract_cell
 
 logger = logging.getLogger(__name__)
 
@@ -60,22 +53,6 @@ def git_hash(contents):
     s.update(('blob %u\0' % len(contents)).encode('utf-8'))
     s.update(contents)
     return s.hexdigest()
-
-
-def extract_cell_by_index(notebook, cell_index):
-    new_nb = copy.deepcopy(notebook)
-    if cell_index < len(notebook.cells):
-        new_nb.cells = [notebook.cells[cell_index]]
-        return new_nb
-
-
-def set_notebook_kernel(notebook, kernel):
-    new_nb = copy.deepcopy(notebook)
-    # Replace kernel name in the notebook metadata
-    new_nb.metadata.kernelspec.name = kernel
-    new_nb.metadata.kernelspec.display_name = kernel
-    new_nb.metadata.kernelspec.language = kernel
-    return new_nb
 
 
 def query_registry_for_image(image_repo, image_name):
@@ -120,110 +97,25 @@ class ExtractorHandler(APIHandler, Catalog):
         payload = self.get_json_body()
         logging.getLogger(__name__).debug('ExtractorHandler. payload: ' + json.dumps(payload, indent=4))
         print('ExtractorHandler. payload: ' + json.dumps(payload, indent=4))
-        kernel = payload['kernel']
-        cell_index = payload['cell_index']
-        notebook = nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT)
 
-        source = notebook.cells[cell_index].source
-
-        if notebook.cells[cell_index].cell_type != 'code':
-            # dummy extractor for non-code cells (e.g. markdown)
-            extractor = DummyExtractor(notebook, source)
-        else:
-            # extractor based on the cell header
-            try:
-                if 'python' in kernel.lower():
-                    extractor = PyHeaderExtractor(notebook, source)
-                elif 'r' in kernel.lower():
-                    extractor = RHeaderExtractor(notebook, source)
-            except jsonschema.ValidationError as e:
-                self.set_status(400, f"Invalid cell header")
-                self.write(
-                    {
-                        'message': f"Error in cell header: {e}",
-                        'reason': None,
-                        'traceback': traceback.format_exception(e),
+        try:
+            cell = extract_cell(
+                nb.reads(json.dumps(payload['notebook']), nb.NO_CONVERT),
+                payload['cell_index'],
+                payload['kernel'],
+                )
+        except jsonschema.ValidationError as e:
+            self.set_status(400, f"Invalid cell header")
+            self.write(
+                {
+                    'message': f"Error in cell header: {e}",
+                    'reason': None,
+                    'traceback': traceback.format_exception(e),
                     }
                 )
-                self.flush()
-                return
-            params = extractor.params
-            inputs = extractor.ins
-            outputs = extractor.outs
-            confs = extractor.confs
-            # Extractor based on code analysis. Used if the cell has no header,
-            # or if some values are not specified in the header
-            if not extractor.is_complete():
-                if kernel == "IRkernel":
-                    code_extractor = RExtractor(notebook, source)
-                else:
-                    code_extractor = PyExtractor(notebook, source)
-                extractor.add_missing_values(code_extractor)
+            self.flush()
+            return
 
-        extracted_nb = extract_cell_by_index(notebook, cell_index)
-        if kernel == "IRkernel":
-            extracted_nb = set_notebook_kernel(extracted_nb, 'R')
-        else:
-            extracted_nb = set_notebook_kernel(extracted_nb, 'python3')
-
-        # initialize variables
-        title = source.partition('\n')[0].strip()
-        title = slugify(title) if title and title[0] == "#" else "Untitled"
-
-        if 'JUPYTERHUB_USER' in os.environ:
-            title += '-' + slugify(os.environ['JUPYTERHUB_USER'])
-
-        # If any of these change, we create a new cell in the catalog.
-        # This matches the cell properties saved in workflows.
-        cell_identity_dict = {
-            'title': title,
-            'params': extractor.params,
-            'inputs': extractor.ins,
-            'outputs': extractor.outs,
-            }
-        cell_identity_str = json.dumps(cell_identity_dict, sort_keys=True)
-        node_id = hashlib.sha1(cell_identity_str.encode()).hexdigest()[:7]
-
-        cell = Cell(
-            node_id=node_id,
-            title=title,
-            task_name=slugify(title.lower()),
-            original_source=source,
-            inputs=extractor.ins,
-            outputs=extractor.outs,
-            params={},
-            confs=extractor.confs,
-            dependencies=extractor.dependencies,
-            container_source="",
-            kernel=kernel,
-            notebook_dict=extracted_nb.dict()
-        )
-        cell.integrate_configuration()
-        extractor.params = extractor.extract_cell_params(cell.original_source)
-        cell.add_params(extractor.params)
-        cell.add_param_values(extractor.params)
-
-        node = ConverterReactFlowChart.get_node(
-            node_id,
-            title,
-            set(extractor.ins),
-            set(extractor.outs),
-            extractor.params,
-        )
-
-        chart = {
-            'offset': {
-                'x': 0,
-                'y': 0,
-            },
-            'scale': 1,
-            'nodes': {node_id: node},
-            'links': {},
-            'selected': {},
-            'hovered': {},
-        }
-
-        cell.chart_obj = chart
         Catalog.editor_buffer = copy.deepcopy(cell)
         self.write(cell.toJSON())
         self.flush()
@@ -577,6 +469,11 @@ class CellsHandler(APIHandler, Catalog):
             Catalog.add_cell(current_cell)
 
         print(json.dumps({'wf_id': wf_id, 'dispatched_github_workflow': do_dispatch_github_workflow, 'image_version': image_version}, indent=4))
+        if not image_version:
+            self.set_status(500)
+            self.write_error('Error! image_version not set. Cell: ' + str(current_cell.task_name))
+            logger.error('Error! image_version not set. Cell: ' + str(current_cell.task_name))
+            self.flush()
         self.write(json.dumps({'wf_id': wf_id, 'dispatched_github_workflow': do_dispatch_github_workflow, 'image_version': image_version}))
         self.flush()
 
@@ -613,6 +510,7 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
                 code_content_hash = local_hash
     if not code_content_hash:
         logger.warning('code_content_hash not set')
+        print('Warning! code_content_hash not set')
     return files_updated, code_content_hash
 
 
