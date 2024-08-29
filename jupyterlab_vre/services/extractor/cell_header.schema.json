@@ -51,6 +51,12 @@
             "$ref": "#/definitions/ParamElement"
           }
         },
+        "secrets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SecretElement"
+          }
+        },
         "confs": {
           "type": "array",
           "items": {
@@ -134,6 +140,22 @@
         }
       }
     },
+    "SecretElementVarDict": {
+      "title": "Full secret variable description",
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "maxProperties": 1,
+      "patternProperties": {
+        "^secret_.*$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {"$ref": "#/definitions/VarType"}
+          }
+        }
+      }
+    },
     "ConfElementVarDict": {
       "title": "Full param variable description",
       "type": "object",
@@ -178,6 +200,15 @@
         {"$ref": "#/definitions/ElementVarName"},
         {"$ref": "#/definitions/ElementVarNameType"},
         {"$ref": "#/definitions/ParamElementVarDict"}
+      ]
+    },
+    "SecretElement": {
+      "title": "Secret element",
+      "description": "description secret variable elements",
+      "anyOf": [
+        {"$ref": "#/definitions/ElementVarName"},
+        {"$ref": "#/definitions/ElementVarNameType"},
+        {"$ref": "#/definitions/SecretElementVarDict"}
       ]
     },
     "ConfElement": {
