@@ -28,7 +28,8 @@
      "param_string = 'param_string value'\n",
      "param_string_with_comment = 'param_string value'  # comment\n",
      "param_int = 1\n",
-     "param_float = 1.1"
+     "param_float = 1.1\n",
+     "param_list = list(1, 2, 3)"
     ],
     "metadata": {
      "trusted": true
@@ -44,7 +45,8 @@
      "print(param_string)\n",
      "print(param_string_with_comment)\n",
      "print(param_int)\n",
-     "print(param_float)"
+     "print(param_float)\n",
+     "print(param_list)"
     ],
     "metadata": {
      "trusted": true,
