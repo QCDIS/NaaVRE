@@ -32,7 +32,7 @@
         "watch": "tsc -w"
     },
     "dependencies": {
-        "react-ipynb-renderer": "2.2.1"
+        "react-ipynb-renderer": "2.2.3"
     },
     "devDependencies": {
         "@types/node": "20.2.5",
