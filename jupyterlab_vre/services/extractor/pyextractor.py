@@ -111,6 +111,15 @@ class PyExtractor(Extractor):
                         try:
                             # remove quotes around strings
                             var_value = str(ast.literal_eval(var_value))
+                            # Cast according to self.notebook_names[name]['type']
+                            if self.notebook_names[name]['type'] == 'int':
+                                var_value = int(var_value)
+                            elif self.notebook_names[name]['type'] == 'float':
+                                var_value = float(var_value)
+                            elif self.notebook_names[name]['type'] == 'list':
+                                var_value = list(ast.literal_eval(var_value))
+                            elif self.notebook_names[name]['type'] == 'str':
+                                var_value = str(var_value)
                         except ValueError:
                             # when var_value can't safely be parsed,
                             pass

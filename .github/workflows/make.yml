@@ -58,13 +58,41 @@ jobs:
     with:
       runs-on: ubuntu-latest
 
+  call-collect-tests:
+    uses: ./.github/workflows/collect-tests.yml
+
+  split-tests:
+    needs: [call-collect-tests]
+    runs-on: ubuntu-latest
+    outputs:
+      test_list: ${{ steps.split-output.outputs.test_list }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download pytest output artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: test_list
+          path: ./
+
+      - name: Generate matrix from pytest_output
+        id: split-output
+        run: |
+          cat test_list.json
+          MATRIX=$(jq -c . test_list.json)
+          echo $MATRIX
+          echo "test_list=$MATRIX" >> $GITHUB_OUTPUT
+
+
   call-pytest:
     uses: ./.github/workflows/run-tests.yml
-    needs: [configure-workflow]
+    needs: [configure-workflow,split-tests]
     if: ${{ needs.configure-workflow.outputs.should_skip != 'true' }}
-#     strategy:
-#       matrix:
-#         group: ["1","2"]
+    strategy:
+      fail-fast: false
+      matrix:
+        test: ${{ fromJson(needs.split-tests.outputs.test_list) }}
     with:
       runs-on: ${{ needs.configure-workflow.outputs.runner }}
       jupyterhub_user: ${{ vars.JUPYTERHUB_USER }}
@@ -75,7 +103,7 @@ jobs:
       search_api_endpoint: ${{ vars.SEARCH_API_ENDPOINT }}
       registry_url: ${{ vars.REGISTRY_URL }}
       debug: ${{ vars.DEBUG }}
-#       group: ${{ matrix.group }}
+      test: ${{ matrix.test }}
     secrets:
       cell_github_token:  ${{ secrets.CELL_GITHUB_TOKEN }}
       naavre_api_token: ${{ secrets.NAAVRE_API_TOKEN }}

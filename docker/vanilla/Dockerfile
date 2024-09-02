@@ -52,4 +52,4 @@ RUN jupyter serverextension enable voila
 
 RUN jupyter lab build --debug;
 
-cmd ["/usr/local/bin/start-jupyter-venv.sh"]
+CMD ["/usr/local/bin/start-jupyter-venv.sh"]

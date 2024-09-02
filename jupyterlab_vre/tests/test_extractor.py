@@ -53,11 +53,11 @@ class PyAssertNoConfInAssign(ast.NodeVisitor):
 class TestExtractor(TestCase):
     # Reference parameter values for `test_param_values_*.json`
     param_values_ref = {
-        'param_float': '1.1',
-        'param_int': '1',
-        'param_list': '[1, 2, 3]',
+        'param_float': 1.1,
+        'param_int': 1,
+        'param_list': [1, 2, 3],
         'param_string': 'param_string value',
-        'param_string_with_comment': 'param_string value',
+        'param_string_with_comment': 'param_string value'
     }
 
     @pytest.mark.timeout(60)
@@ -94,6 +94,11 @@ class TestExtractor(TestCase):
                          'test_param_values_R.json',
                          ]):
                     for param_name in cell['params']:
+                        if cell['param_values'][param_name] != self.param_values_ref[param_name]:
+                            print(param_name)
+                            print(cell['param_values'][param_name])
+                            print(self.param_values_ref[param_name])
+
                         self.assertTrue(
                             cell['param_values'][param_name] ==
                             self.param_values_ref[param_name]
