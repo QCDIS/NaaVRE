@@ -10,31 +10,6 @@ describe('JupyterLab', () => {
     cy.wait(15000) // Adjust the timeout as needed
   })
 
-
-
-//   it('should open a notebook and execute code', () => {
-//     // Open a notebook file
-//     cy.contains('.jp-DirListing-item', 'test_notebook.ipynb').click()
-//
-//     // Wait for the notebook to load
-//     cy.get('.jp-mod-notebookPanel').should('be.visible')
-//
-//     // Get the first code cell in the notebook
-//     cy.get('.jp-NotebookPanel-notebook .jp-Cell').first().as('codeCell')
-//
-//     // Execute the code cell
-//     cy.get('@codeCell')
-//       .click()
-//       .type('{enter}')
-//
-//     // Wait for the execution to complete
-//     cy.get('@codeCell').should('have.class', 'jp-mod-executing')
-//     cy.get('@codeCell').should('not.have.class', 'jp-mod-executing')
-//
-//     // Check for the output of the executed code
-//     cy.get('@codeCell').next('.jp-OutputArea').should('be.visible')
-//   })
-
   it('should create a new Python notebook', () => {
   cy.get(
     `.jp-LauncherCard[data-category="Notebook"][title="Python 3 (ipykernel)"]:visible`
@@ -104,6 +79,28 @@ describe('JupyterLab', () => {
   cy.wait(10000)
   // Close the image creation dialog by clicking on the "Close" button: <div class="jp-Dialog-buttonLabel" title="">Close</div>
   cy.get('.jp-Dialog-buttonLabel').contains('Close').click();
+
+
+
+  //Click on codeCell2
+  cy.get('@codeCell2').click();
+  cy.wait(5000)
+  
+  // create image
+  cy.get('[data-testid=ArrowDropDownIcon]').click();
+  cy.get('[data-option-index="7"]').click();
+  // Press create button: <span class="MuiButton-label">Create</span>  
+  cy.contains('Create').click()
+  cy.wait(10000)
+  // Close the image creation dialog by clicking on the "Close" button: <div class="jp-Dialog-buttonLabel" title="">Close</div>
+  cy.get('.jp-Dialog-buttonLabel').contains('Close').click();
+  // Open new launcher by cliking File->New launcher
+  // File from :<div class="lm-MenuBar-itemLabel p-MenuBar-itemLabel">File</div> 
+  cy.get('.lm-MenuBar-itemLabel').contains('File').click(); 
+  // New launcher from : <div class="lm-Menu-itemLabel p-Menu-itemLabel">New Launcher</div>
+  cy.get('.lm-Menu-itemLabel').contains('New Launcher').click();
+  // Click on the "Experiment Manager" from <h2 class="jp-Launcher-sectionTitle">VRE Components</h2>
+  cy.get('.jp-Launcher-sectionTitle').contains('VRE Components').click();
 
   });
 })
