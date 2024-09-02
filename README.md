@@ -36,7 +36,6 @@ Build the extension  and start a jupyterlab instance:
 ```shell
 source export_VARS && jupyter lab build && cp -r ~/workspace/NaaVRE/docker/repo_utils/ /tmp/ && ~/workspace/NaaVRE/docker/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative
 ```
-
 ## Make a release
 
 Build wheel file for release:
