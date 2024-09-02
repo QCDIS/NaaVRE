@@ -63,7 +63,7 @@ export class AddCellDialog extends React.Component<AddCellDialogProps, IState> {
     render(): React.ReactElement {
         return (
             <ThemeProvider theme={theme}>
-                <p className='section-header'>Create Cell</p>
+                <p className='<section-header>' id='create-cell'>Create Cell</p>
                 <CatalogBody>
                 {!this.state.loading ? (
                     <div style={{display: "flex", flexDirection: "row", alignItems: "center"}}>

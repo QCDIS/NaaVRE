@@ -94,16 +94,16 @@ describe('JupyterLab', () => {
 
   //Click on codeCell1
   cy.get('@codeCell1').click();
+  cy.wait(5000)
 
-  // open input type selection menu for my_list
-  // cy.get('.lw-panel-preview + [class^="MuiPaper-root"] [role="button"]').click()
-//
-  // open base image
-  cy.get('.lw-panel-preview + .MuiAutocomplete-root button').click()
-  cy.get('.MuiAutocomplete-listbox [data-option-index="7"]').click()
-//
   // create image
+  cy.get('[data-testid=ArrowDropDownIcon]').click();
+  cy.get('[data-option-index="7"]').click();
+  // Press create button: <span class="MuiButton-label">Create</span>  
   cy.contains('Create').click()
+  cy.wait(10000)
+  // Close the image creation dialog by clicking on the "Close" button: <div class="jp-Dialog-buttonLabel" title="">Close</div>
+  cy.get('.jp-Dialog-buttonLabel').contains('Close').click();
 
   });
 })
