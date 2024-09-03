@@ -103,6 +103,8 @@ class Cell:
         self.secrets = secrets
 
     def set_image_version(self, image_version):
+        if not image_version:
+            raise ValueError("Image version cannot be empty. Cell title: %s" % self.title)
         self.image_version = image_version
 
     def add_param_values(self, params):
