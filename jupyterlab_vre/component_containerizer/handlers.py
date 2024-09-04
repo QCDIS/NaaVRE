@@ -469,6 +469,11 @@ class CellsHandler(APIHandler, Catalog):
             Catalog.add_cell(current_cell)
 
         print(json.dumps({'wf_id': wf_id, 'dispatched_github_workflow': do_dispatch_github_workflow, 'image_version': image_version}, indent=4))
+        if not image_version:
+            self.set_status(500)
+            self.write_error('Error! image_version not set. Cell: ' + str(current_cell.task_name))
+            logger.error('Error! image_version not set. Cell: ' + str(current_cell.task_name))
+            self.flush()
         self.write(json.dumps({'wf_id': wf_id, 'dispatched_github_workflow': do_dispatch_github_workflow, 'image_version': image_version}))
         self.flush()
 
@@ -505,6 +510,7 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
                 code_content_hash = local_hash
     if not code_content_hash:
         logger.warning('code_content_hash not set')
+        print('Warning! code_content_hash not set')
     return files_updated, code_content_hash
 
 

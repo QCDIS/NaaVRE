@@ -54,6 +54,17 @@ pytest --ignore=docker --ignore=cypress
 ```
 
 
+### Cypress
+
+```shell
+docker run -it -v $PWD:/e2e -w /e2e cypress/included:12.17.2
+```
+
+To run interactive mode setup X11 according to https://www.baeldung.com/linux/docker-container-gui-applications.
+Then type 
+```shell
+ docker run -it --rm --network host -v ~/.Xauthority:/root/.Xauthority:ro -e DISPLAY=$DISPLAY  -v $PWD:/e2e -w /e2e --entrypoint '' cypress/included:12.17.2  npx cypress open . 
+ ```
 ## Running the development environment
 
 
