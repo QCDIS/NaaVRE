@@ -37,7 +37,7 @@
     "devDependencies": {
         "@types/node": "20.2.5",
         "@types/react-star-rating-component": "1.4.4",
-        "typescript": "5.4.5",
+        "typescript": "5.6.2",
         "rimraf": "5.0.7"
     },
     "publishConfig": {
