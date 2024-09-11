@@ -2,7 +2,8 @@
     "all_inputs": [
         "a"
     ],
-    "base_image": {"build":"ghcr.io/qcdis/naavre/naavre-cell-build-vol2bird:latest","runtime":"ghcr.io/qcdis/naavre/naavre-cell-runtime-vol2bird:latest"},
+    "base_image": {"build":"ghcr.io/qcdis/naavre/naavre-cell-build-vol2bird:latest",
+        "runtime":"ghcr.io/qcdis/naavre/naavre-cell-runtime-vol2bird:latest"},
     "chart_obj": {
         "hovered": {},
         "links": {},
