@@ -1,8 +1,8 @@
 {
     "all_inputs": [],
     "base_image": {
-        "build": "ghcr.io/qcdis/naavre/naavre-cell-build-python:v0.9",
-        "runtime": "ghcr.io/qcdis/naavre/naavre-cell-runtime-python:v0.9"
+        "build": "ghcr.io/qcdis/naavre/naavre-cell-build-python:latest",
+        "runtime": "ghcr.io/qcdis/naavre/naavre-cell-runtime-python:latest"
     },
     "chart_obj": {
         "hovered": {},
