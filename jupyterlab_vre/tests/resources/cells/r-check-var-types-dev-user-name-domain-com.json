@@ -8,8 +8,8 @@
         "var_list_str"
     ],
     "base_image": {
-        "build": "ghcr.io/qcdis/naavre/naavre-cell-build-r:v0.11",
-        "runtime": "ghcr.io/qcdis/naavre/naavre-cell-runtime-r:v0.11"
+        "build": "ghcr.io/qcdis/naavre/naavre-cell-build-r:latest",
+        "runtime": "ghcr.io/qcdis/naavre/naavre-cell-runtime-r:latest"
     },
     "chart_obj": {
         "hovered": {},

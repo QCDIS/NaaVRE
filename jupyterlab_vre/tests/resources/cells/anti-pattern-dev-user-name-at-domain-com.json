@@ -3,7 +3,8 @@
         "count",
         "a"
     ],
-    "base_image": {"build":"ghcr.io/qcdis/naavre/naavre-cell-build-python:latest","runtime":"ghcr.io/qcdis/naavre/naavre-cell-runtime-python:latest"},
+    "base_image": {"build":"ghcr.io/qcdis/naavre/naavre-cell-build-python:latest",
+        "runtime":"ghcr.io/qcdis/naavre/naavre-cell-runtime-python:latest"},
     "chart_obj": {
         "hovered": {},
         "links": {},
