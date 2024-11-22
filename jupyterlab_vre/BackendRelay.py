@@ -61,5 +61,11 @@ class BackendRelay(APIHandler):
     @tornado.web.authenticated
     async def post(self):
         url: str = BackendRelay.convert_url(self.request.uri)
-        response = self.send_with_auth(url, 'POST', self.request.body)
+        request_body: bytes = self.request.body
+        # additional request data
+        if '/extract' in url:
+            parsed_request_body = json.loads(request_body)
+            parsed_request_body['JUPYTERHUB_USER'] = os.getenv('JUPYTERHUB_USER')
+            request_body = json.dumps(parsed_request_body).encode('utf-8')
+        response = self.send_with_auth(url, 'POST', request_body)
         return self.common_response_handler(response)
