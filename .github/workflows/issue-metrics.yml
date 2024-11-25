@@ -1,5 +1,8 @@
 name: Monthly issue metrics
 on:
+  push:
+    branches:
+      - '**'
   workflow_dispatch:
   schedule:
     - cron: "3 2 1 * *"
