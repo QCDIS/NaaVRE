@@ -1,0 +1,46 @@
+name: Lint
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        default: ubuntu-latest
+        type: string
+
+
+jobs:
+  lint:
+    runs-on: ${{ inputs.runs-on }}
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          miniforge-version: latest
+          miniforge-variant: Mambaforge
+          python-version: 3.11
+          path: ${{ env.CONDA }}/envs
+          environment-file: environment.yml
+          activate-environment: jupyterlab
+          use-mamba: true
+
+      - name: Cache Conda environment
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CONDA }}/envs
+          key: conda-environment-${{ runner.os }}-${{ hashFiles('environment.yml') }}
+          restore-keys: |
+            conda-environment-${{ runner.os }}-
+        id: cache-conda
+
+      - name: Lint with flake8
+        shell: bash -l {0}
+        run: |
+          conda activate jupyterlab
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics

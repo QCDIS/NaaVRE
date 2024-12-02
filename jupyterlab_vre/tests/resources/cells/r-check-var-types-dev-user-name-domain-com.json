@@ -1,0 +1,232 @@
+{
+    "all_inputs": [
+        "var_string",
+        "var_string_with_comment",
+        "var_int",
+        "var_float",
+        "var_list_int",
+        "var_list_str"
+    ],
+    "base_image": {
+        "build": "ghcr.io/qcdis/naavre/naavre-cell-build-r:v0.11",
+        "runtime": "ghcr.io/qcdis/naavre/naavre-cell-runtime-r:v0.11"
+    },
+    "chart_obj": {
+        "hovered": {},
+        "links": {},
+        "nodes": {
+            "afd9aa6": {
+                "id": "afd9aa6",
+                "ports": {
+                    "var_float": {
+                        "id": "var_float",
+                        "properties": {
+                            "color": "#53ac8b"
+                        },
+                        "type": "left"
+                    },
+                    "var_int": {
+                        "id": "var_int",
+                        "properties": {
+                            "color": "#aad279"
+                        },
+                        "type": "left"
+                    },
+                    "var_list_int": {
+                        "id": "var_list_int",
+                        "properties": {
+                            "color": "#2d4ed2"
+                        },
+                        "type": "left"
+                    },
+                    "var_list_str": {
+                        "id": "var_list_str",
+                        "properties": {
+                            "color": "#6c89e0"
+                        },
+                        "type": "left"
+                    },
+                    "var_string": {
+                        "id": "var_string",
+                        "properties": {
+                            "color": "#98e06c"
+                        },
+                        "type": "left"
+                    },
+                    "var_string_with_comment": {
+                        "id": "var_string_with_comment",
+                        "properties": {
+                            "color": "#87c0c5"
+                        },
+                        "type": "left"
+                    }
+                },
+                "position": {
+                    "x": 35,
+                    "y": 15
+                },
+                "properties": {
+                    "inputs": [
+                        "var_float",
+                        "var_list_str",
+                        "var_list_int",
+                        "var_string_with_comment",
+                        "var_string",
+                        "var_int"
+                    ],
+                    "og_node_id": "afd9aa6",
+                    "outputs": [],
+                    "params": [
+                        "param_string",
+                        "param_string_with_comment",
+                        "param_int",
+                        "param_float",
+                        "param_list_int",
+                        "param_list_str"
+                    ],
+                    "title": "R-Check-var-types-dev-user-name-domain-com",
+                    "vars": [
+                        {
+                            "color": "#53ac8b",
+                            "direction": "input",
+                            "name": "var_float",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#6c89e0",
+                            "direction": "input",
+                            "name": "var_list_str",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#2d4ed2",
+                            "direction": "input",
+                            "name": "var_list_int",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#87c0c5",
+                            "direction": "input",
+                            "name": "var_string_with_comment",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#98e06c",
+                            "direction": "input",
+                            "name": "var_string",
+                            "type": "datatype"
+                        },
+                        {
+                            "color": "#aad279",
+                            "direction": "input",
+                            "name": "var_int",
+                            "type": "datatype"
+                        }
+                    ]
+                },
+                "type": "input-output"
+            }
+        },
+        "offset": {
+            "x": 0,
+            "y": 0
+        },
+        "scale": 1,
+        "selected": {}
+    },
+    "confs": {
+        "conf_float": "conf_float = 1.1",
+        "conf_int": "conf_int = 1",
+        "conf_list_int": "conf_list_int = list(1, 2, 3)",
+        "conf_list_str": "conf_list_str = list('list_str', 'space in elem', '3')",
+        "conf_string": "conf_string = 'param_string value'",
+        "conf_string_with_comment": "conf_string_with_comment = 'param_string value'"
+    },
+    "container_source": "",
+    "dependencies": [
+        {
+            "asname": "",
+            "module": "",
+            "name": "jsonlite"
+        }
+    ],
+    "inputs": [
+        "var_string",
+        "var_string_with_comment",
+        "var_int",
+        "var_float",
+        "var_list_int",
+        "var_list_str"
+    ],
+    "kernel": "IRkernel",
+    "node_id": "afd9aa6",
+    "notebook_dict": {
+        "cells": [
+            {
+                "cell_type": "code",
+                "execution_count": 5,
+                "id": "c7bcfe5c-5b6b-4fff-8c04-07c20f894363",
+                "metadata": {},
+                "outputs": [
+                    {
+                        "name": "stdout",
+                        "output_type": "stream",
+                        "text": "[1] \"conf_string:  param_string value  type:  character\"\n[1] \"conf_string_with_comment:  param_string value  type:  character\"\n[1] \"conf_int:  1  type:  numeric\"\n[1] \"conf_float:  1.1  type:  numeric\"\n[1] \"conf_list_int:  1, 2, 3  type:  list\"\n[1] \"conf_list_str:  list_str, space in elem, 3  type:  list\"\n[1] \"param_string:  param_string value  type:  character\"\n[1] \"param_string_with_comment:  param_string value  type:  character\"\n[1] \"param_int:  1  type:  numeric\"\n[1] \"param_float:  1.1  type:  numeric\"\n[1] \"param_list_int:  1, 2, 3  type:  list\"\n[1] \"param_list_str:  list_str, space in elem, 3  type:  list\"\n[1] \"var_string:  var_string value  type:  character\"\n[1] \"var_string_with_comment:  var_string value  type:  character\"\n[1] \"var_int:  1  type:  numeric\"\n[1] \"var_float:  1.1  type:  numeric\"\n[1] \"var_list_int:  1, 2, 3  type:  list\"\n[1] \"var_list_str:  list_str, space in elem, 3  type:  list\"\n[1] \"All vars are of the correct type\"\n"
+                    }
+                ],
+                "source": "# R Check var types\n\n# ---\n# NaaVRE:\n#  cell:\n#   params:\n#    - param_string: \n#       type: String\n#       default_value: \"param_string value\"\n#    - param_string_with_comment:\n#       type: String\n#       default_value: \"param_string value\"\n#    - param_int: \n#       type: Integer\n#       default_value: 1\n#    - param_float: \n#       type: Float\n#       default_value: 1.1\n#    - param_list_int:\n#       type: List\n#       default_value: [1, 2, 3]\n#    - param_list_str: \n#       type: List\n#       default_value: ['list_str', 'space in elem', '3']\n#   inputs:\n#    - var_string: String\n#    - var_string_with_comment: String\n#    - var_int: Integer\n#    - var_float: Float\n#    - var_list_int: List\n#    - var_list_str: List\n#   confs:\n#    - conf_string:\n#       assignation: \"conf_string = 'param_string value'\"\n#    - conf_string_with_comment:\n#       assignation: \"conf_string_with_comment = 'param_string value'\"\n#    - conf_int:\n#       assignation: \"conf_int = 1\"\n#    - conf_float:\n#       assignation: \"conf_float = 1.1\"\n#    - conf_list_int:\n#       assignation: \"conf_list_int = [1, 2, 3]\"\n#    - conf_list_str:\n#       assignation: \"conf_list_str = ['list_str', 'space in elem', '3']\"\n# ...\n\nprint(paste('conf_string: ', conf_string, ' type: ', class(conf_string)))\nprint(paste('conf_string_with_comment: ', conf_string_with_comment, ' type: ', class(conf_string_with_comment)))\nprint(paste('conf_int: ', conf_int, ' type: ', class(conf_int)))\nprint(paste('conf_float: ', conf_float, ' type: ', class(conf_float)))\nprint(paste('conf_list_int: ', toString(conf_list_int), ' type: ', class(conf_list_int)))\nprint(paste('conf_list_str: ', toString(conf_list_str), ' type: ', class(conf_list_str)))\n\nprint(paste('param_string: ', param_string, ' type: ', class(param_string)))\nprint(paste('param_string_with_comment: ', param_string_with_comment, ' type: ', class(param_string_with_comment)))\nprint(paste('param_int: ', param_int, ' type: ', class(param_int)))\nprint(paste('param_float: ', param_float, ' type: ', class(param_float)))\nprint(paste('param_list_int: ', toString(param_list_int), ' type: ', class(param_list_int)))\nprint(paste('param_list_str: ', toString(param_list_str), ' type: ', class(param_list_str)))\n\nprint(paste('var_string: ', var_string, ' type: ', class(var_string)))\nprint(paste('var_string_with_comment: ', var_string_with_comment, ' type: ', class(var_string_with_comment)))\nprint(paste('var_int: ', var_int, ' type: ', class(var_int)))\nprint(paste('var_float: ', var_float, ' type: ', class(var_float)))\nprint(paste('var_list_int: ', toString(var_list_int), ' type: ', class(var_list_int)))\nprint(paste('var_list_str: ', toString(var_list_str), ' type: ', class(var_list_str)))\n\ncheck_type <- function(var, expected_types) {\n  \n  # Check if the variable matches any of the expected types\n  if (!any(sapply(expected_types, function(x) inherits(var, x)))) {\n    stop(paste('Variable is not of the expected types:', paste(expected_types, collapse = ', '),\n               '. It is a', class(var)))\n  }\n  \n  # If the expected types include 'list', check if the variable is iterable\n  if ('list' %in% expected_types) {\n    if (!is.list(var) && !is.vector(var)) {\n      stop(paste('Variable', var, 'is not iterable.'))\n    }\n  }\n}\n\ncheck_type(conf_string, c(c(\"character\")))\ncheck_type(conf_string_with_comment, c(\"character\"))\ncheck_type(conf_int, \"numeric\")\ncheck_type(conf_float, \"numeric\")\nif (is.numeric(conf_list_int)) {\n  conf_list_int <- list(conf_list_int)\n}\n\ncheck_type(conf_list_int, c(\"list\"))\nif (is.character(conf_list_str)) {\n  conf_list_str <- list(conf_list_str)\n}\ncheck_type(conf_list_str, c(\"list\"))\n\ncheck_type(param_string, c(\"character\"))\ncheck_type(param_string_with_comment, c(\"character\"))\ncheck_type(param_int, c(\"numeric\", \"integer\"))\ncheck_type(param_float, c(\"numeric\", \"float\"))\nif (is.numeric(param_list_int)) {\n  param_list_int <- list(param_list_int)\n}\ncheck_type(param_list_int, c(\"list\"))\ncheck_type(conf_list_int, c(\"list\"))\nif (is.character(param_list_str)) {\n  param_list_str <- list(param_list_str)\n}\ncheck_type(param_list_str, c(\"list\"))\n\ncheck_type(var_string, c(\"character\"))\ncheck_type(var_string_with_comment, c(\"character\"))\ncheck_type(var_int, c(\"numeric\", \"integer\"))\ncheck_type(var_float, c(\"numeric\", \"float\"))\nif (is.numeric(var_list_int)) {\n  var_list_int <- list(var_list_int)\n}\ncheck_type(var_list_int, c(\"list\"))\n\nif (is.character(var_list_str)) {\n  var_list_str <- list(var_list_str)\n}\ncheck_type(var_list_str, c(\"list\"))\n\nprint('All vars are of the correct type')\n\ndone <- TRUE"
+            }
+        ],
+        "metadata": {
+            "kernelspec": {
+                "display_name": "R",
+                "language": "R",
+                "name": "R"
+            },
+            "language_info": {
+                "codemirror_mode": "r",
+                "file_extension": ".r",
+                "mimetype": "text/x-r-source",
+                "name": "R",
+                "pygments_lexer": "r",
+                "version": "4.3.3"
+            }
+        },
+        "nbformat": 4,
+        "nbformat_minor": 5
+    },
+    "original_source": "conf_string = 'param_string value'\nconf_string_with_comment = 'param_string value'\nconf_int = 1\nconf_float = 1.1\nconf_list_int = list(1, 2, 3)\nconf_list_str = list('list_str', 'space in elem', '3')\n\n\nprint(paste('conf_string: ', conf_string, ' type: ', class(conf_string)))\nprint(paste('conf_string_with_comment: ', conf_string_with_comment, ' type: ', class(conf_string_with_comment)))\nprint(paste('conf_int: ', conf_int, ' type: ', class(conf_int)))\nprint(paste('conf_float: ', conf_float, ' type: ', class(conf_float)))\nprint(paste('conf_list_int: ', toString(conf_list_int), ' type: ', class(conf_list_int)))\nprint(paste('conf_list_str: ', toString(conf_list_str), ' type: ', class(conf_list_str)))\n\nprint(paste('param_string: ', param_string, ' type: ', class(param_string)))\nprint(paste('param_string_with_comment: ', param_string_with_comment, ' type: ', class(param_string_with_comment)))\nprint(paste('param_int: ', param_int, ' type: ', class(param_int)))\nprint(paste('param_float: ', param_float, ' type: ', class(param_float)))\nprint(paste('param_list_int: ', toString(param_list_int), ' type: ', class(param_list_int)))\nprint(paste('param_list_str: ', toString(param_list_str), ' type: ', class(param_list_str)))\n\nprint(paste('var_string: ', var_string, ' type: ', class(var_string)))\nprint(paste('var_string_with_comment: ', var_string_with_comment, ' type: ', class(var_string_with_comment)))\nprint(paste('var_int: ', var_int, ' type: ', class(var_int)))\nprint(paste('var_float: ', var_float, ' type: ', class(var_float)))\nprint(paste('var_list_int: ', toString(var_list_int), ' type: ', class(var_list_int)))\nprint(paste('var_list_str: ', toString(var_list_str), ' type: ', class(var_list_str)))\n\ncheck_type <- function(var, expected_types) {\n  \n  if (!any(sapply(expected_types, function(x) inherits(var, x)))) {\n    stop(paste('Variable is not of the expected types:', paste(expected_types, collapse = ', '),\n               '. It is a', class(var)))\n  }\n  \n  if ('list' %in% expected_types) {\n    if (!is.list(var) && !is.vector(var)) {\n      stop(paste('Variable', var, 'is not iterable.'))\n    }\n  }\n}\n\ncheck_type(conf_string, c(c(\"character\")))\ncheck_type(conf_string_with_comment, c(\"character\"))\ncheck_type(conf_int, \"numeric\")\ncheck_type(conf_float, \"numeric\")\nif (is.numeric(conf_list_int)) {\n  conf_list_int <- list(conf_list_int)\n}\n\ncheck_type(conf_list_int, c(\"list\"))\nif (is.character(conf_list_str)) {\n  conf_list_str <- list(conf_list_str)\n}\ncheck_type(conf_list_str, c(\"list\"))\n\ncheck_type(param_string, c(\"character\"))\ncheck_type(param_string_with_comment, c(\"character\"))\ncheck_type(param_int, c(\"numeric\", \"integer\"))\ncheck_type(param_float, c(\"numeric\", \"float\"))\nif (is.numeric(param_list_int)) {\n  param_list_int <- list(param_list_int)\n}\ncheck_type(param_list_int, c(\"list\"))\ncheck_type(conf_list_int, c(\"list\"))\nif (is.character(param_list_str)) {\n  param_list_str <- list(param_list_str)\n}\ncheck_type(param_list_str, c(\"list\"))\n\ncheck_type(var_string, c(\"character\"))\ncheck_type(var_string_with_comment, c(\"character\"))\ncheck_type(var_int, c(\"numeric\", \"integer\"))\ncheck_type(var_float, c(\"numeric\", \"float\"))\nif (is.numeric(var_list_int)) {\n  var_list_int <- list(var_list_int)\n}\ncheck_type(var_list_int, c(\"list\"))\n\nif (is.character(var_list_str)) {\n  var_list_str <- list(var_list_str)\n}\ncheck_type(var_list_str, c(\"list\"))\n\nprint('All vars are of the correct type')\n\ndone <- TRUE",
+    "outputs": [],
+    "param_values": {
+        "param_float": 1.1,
+        "param_int": 1,
+        "param_list_int": "[1, 2, 3]",
+        "param_list_str": "[\"list_str\", \"space in elem\", \"3\"]",
+        "param_string": "param_string value",
+        "param_string_with_comment": "param_string value"
+    },
+    "params": [
+        "param_string",
+        "param_string_with_comment",
+        "param_int",
+        "param_float",
+        "param_list_int",
+        "param_list_str"
+    ],
+    "task_name": "r-check-var-types-dev-user-name-domain-com",
+    "title": "R-Check-var-types-dev-user-name-domain-com",
+    "types": {
+        "param_float": "float",
+        "param_int": "int",
+        "param_list_int": "list",
+        "param_list_str": "list",
+        "param_string": "str",
+        "param_string_with_comment": "str",
+        "var_float": "float",
+        "var_int": "int",
+        "var_list_int": "list",
+        "var_list_str": "list",
+        "var_string": "str",
+        "var_string_with_comment": "str"
+    },"skip_exec": true
+}

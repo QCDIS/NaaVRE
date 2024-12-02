@@ -39,10 +39,10 @@
         "@jupyterlab/apputils": "3.5.3",
         "@jupyterlab/mainmenu": "3.5.3",
         "@material-ui/core": "4.12.4",
-        "@mui/material": "5.15.6"
+        "@mui/material": "5.15.17"
     },
     "devDependencies": {
-        "@jupyterlab/builder": "4.0.2",
+        "@jupyterlab/builder": "4.0.12",
         "@typescript-eslint/eslint-plugin": "6.19.0",
         "eslint-plugin-jsdoc": "48.2.1",
         "@typescript-eslint/parser": "7.1.1",

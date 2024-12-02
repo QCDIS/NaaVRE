@@ -205,7 +205,6 @@ class PyExtractor(Extractor):
         return names
 
     def __extract_cell_undefined(self, cell_source):
-
         flakes_stdout = StreamList()
         flakes_stderr = StreamList()
         rep = pyflakes_reporter.Reporter(

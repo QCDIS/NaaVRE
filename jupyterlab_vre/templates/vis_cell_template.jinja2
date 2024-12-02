@@ -55,8 +55,8 @@ parameters['{{ c_name }}'] = {{ c_name }}
 {% endfor %}
 
 pm.execute_notebook(
-    '{{ cell.title }}.ipynb',
-    '{{ cell.title }}-output.ipynb',
+    'task.ipynb',
+    'task-output.ipynb',
     prepare_only=True,
     parameters=dict(parameters)
 )
