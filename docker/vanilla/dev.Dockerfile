@@ -7,7 +7,7 @@ FROM condaforge/mambaforge:24.3.0-0  AS env
 
 RUN conda install -c conda-forge conda-pack mamba
 COPY environment.yml .
-
+RUN mamba create -n venv -f environment.yml
 RUN mamba env update --name venv -f environment.yml
 RUN conda-pack -n venv -o /tmp/env.tar && \
     mkdir /venv && cd /venv && tar xf /tmp/env.tar && \
