@@ -31,3 +31,11 @@ class SecretsProvider:
         with open(self.file_path, 'r') as file:
             secrets = yaml.safe_load(file)
             return secrets[key]
+
+    def print_secrets(self):
+        with open(self.file_path, 'r') as file:
+            secret_names = yaml.safe_load(file).keys()
+            print(f"\nFound {len(secret_names)} secrets in file: {self.file_path}")
+            for name in secret_names:
+                print(name)
+            print("We recommend that the variable names for the secrets in the Notebook are equal to the secret names in the file.")

@@ -21,5 +21,9 @@ class TestSecretsProvider(TestCase):
     def test_retrieve_secret(self):
         secret_file_path: str = "jupyterlab_vre/tests/resources/secrets/secrets.yaml"
         KNMI_key_name: str = "KNMI_OPEN_DATA_API_KEY"
-        KNMI_OPEN_DATA_API_KEY: str = "eyJvcmciOiI1ZTU1NGUxOTI3NGE5NjAwMDEyYTNlYjEiLCJpZCI6ImRlMGNiMGM5ZjM2NTQyYjU4YWU1MmUwODMxNGExMDcwIiwiaCI6Im11cm11cjEyOCJ9"
+        KNMI_OPEN_DATA_API_KEY: str = "api_key1"
         self.assertEqual(KNMI_OPEN_DATA_API_KEY, SecretsProvider(secret_file_path).get_secret(KNMI_key_name))
+
+    def test_print_secrets(self):
+        secret_file_path : str = "jupyterlab_vre/tests/resources/secrets/secrets.yaml"
+        SecretsProvider(secret_file_path).print_secrets()
