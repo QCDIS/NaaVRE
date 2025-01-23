@@ -1,5 +1,5 @@
 import yaml
-import os
+from pathlib import Path
 
 class SecretsProvider:
     def __init__(self, file_path):
@@ -10,7 +10,7 @@ class SecretsProvider:
         return self.can_open_file_as_yaml() and self.file_content_parsed_to_dict()
 
     def can_open_file_as_yaml(self) -> bool:
-        if not os.path.isfile(self.file_path):
+        if not Path(self.file_path).exists():
             raise FileNotFoundError(f"File '{self.file_path}' does not exist.")
         try:
             with open(self.file_path, 'r') as f:
