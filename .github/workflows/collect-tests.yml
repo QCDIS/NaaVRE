@@ -20,7 +20,7 @@ jobs:
         with:
           auto-update-conda: true
           miniforge-version: latest
-          miniforge-variant: Mambaforge
+          miniforge-variant: Miniforge3
           python-version: 3.11
           path: ${{ env.CONDA }}/envs
           environment-file: environment.yml
