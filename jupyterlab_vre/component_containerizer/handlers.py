@@ -19,7 +19,7 @@ import jsonschema
 import nbformat as nb
 import requests
 from github import Github
-from github.GithubException import UnknownObjectException
+from github.GithubException import UnknownObjectException, GithubException
 from jinja2 import Environment, PackageLoader
 from notebook.base.handlers import APIHandler
 from tornado import web
@@ -491,6 +491,12 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
                 remote_hash = repository.get_contents(path=task_name + '/' + f_name).sha
             except UnknownObjectException:
                 remote_hash = None
+            except GithubException as e:
+                # Workaround for https://github.com/PyGithub/PyGithub/issues/3179
+                if e.status == 404:
+                    remote_hash = None
+                else:
+                    raise e
             logger.debug(f'local_hash: {local_hash}; remote_hash: {remote_hash}')
             if remote_hash is None:
                 repository.create_file(
