@@ -13,8 +13,8 @@ class SecretsProvider:
         current_secret_value: str = os.environ.get(self.environment_secret_prefix + secret_name)
         if (current_secret_value):
             print(f"\nThere is already a secret named {secret_name} stored as {self.environment_secret_prefix + secret_name}. Entering a new value will overwrite the existing secret.")
-        new_secret_value = self.request_secret_value()
-        self.store_secret(secret_name, new_secret_value)
+        new_secret_value = self._request_secret_value()
+        self._store_secret(secret_name, new_secret_value)
 
     def get_secret(self, secret_name: str) -> str:
         '''Retrieves secret from environment variables
@@ -24,8 +24,8 @@ class SecretsProvider:
         secret_value = os.environ.get(self.environment_secret_prefix + secret_name)
         if not secret_value:
             print(f"\nA secret with name {self.environment_secret_prefix + secret_name} is not yet stored in environment variables.")
-            secret_value = self.request_secret_value()
-            self.store_secret(secret_name, secret_value)
+            secret_value = self._request_secret_value()
+            self._store_secret(secret_name, secret_value)
         return secret_value
 
     def remove_secret(self, secret_name: str) -> None:
