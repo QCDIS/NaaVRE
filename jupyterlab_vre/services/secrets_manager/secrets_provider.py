@@ -41,11 +41,11 @@ class SecretsProvider:
         else:
             print(f"\nSecrets using prefix {self.environment_secret_prefix} do not exist in environment variables.")
 
-    def request_secret_value(self) -> str:
+    def _request_secret_value(self) -> str:
         return self.get_input("Enter your Secret: ")
 
-    def store_secret(self, secret_name: str, secret_value: str) -> None:
-        if (secret_value.strip()):
+    def _store_secret(self, secret_name: str, secret_value: str) -> None:
+        if secret_value.strip():
             os.environ[self.environment_secret_prefix + secret_name] = secret_value
             print(f"\nSecret has been stored as environment variable: {self.environment_secret_prefix + secret_name}.")
         else:
