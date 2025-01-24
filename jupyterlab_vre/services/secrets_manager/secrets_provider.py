@@ -36,7 +36,7 @@ class SecretsProvider:
         '''Prints secrets in environment variables which have the environment_secret_prefix'''
         secrets_from_environment_variables = {key: value for key, value in os.environ.items() if key.startswith(self.environment_secret_prefix)}
         if secrets_from_environment_variables:
-            print(f"\nSecrets in environment variables using the prefix {self.environment_secret_prefix}")
+            print(f"\nThere are {len(secrets_from_environment_variables)} secret(s) in environment variables using the prefix {self.environment_secret_prefix}")
             pprint.pprint(secrets_from_environment_variables, width=1)
         else:
             print(f"\nSecrets using prefix {self.environment_secret_prefix} do not exist in environment variables.")
