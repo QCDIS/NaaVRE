@@ -45,7 +45,7 @@ jobs:
           pytest --collect-only -q | grep 'tests/' | jq -R . | jq -s . > test_list.json
 
       - name: Upload pytest output as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test_list
           path: test_list.json
