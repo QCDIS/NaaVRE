@@ -1,23 +1,32 @@
 import * as React from 'react';
+import { CSSProperties } from 'react';
 import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
 
-function renderRow(props: ListChildComponentProps, clickAction: (cell_index: number) => void) {
-  const { data, index, style } = props;
-
+function Row(
+  {
+    label,
+    index, style, clickAction
+  }: {
+    label: string,
+    index: number,
+    style: CSSProperties,
+    clickAction: (cell_index: number) => void
+  }) {
   return (
-    <ListItem style={style} key={index} component="div" disablePadding>
-      <ListItemButton onClick={() => { clickAction(index) }}>
+    <ListItem style={style} component="div" disablePadding>
+      <ListItemButton onClick={() => {
+        clickAction(index);
+      }}>
         <ListItemText
-          primary={data[index]['title']}
+          primary={label}
           primaryTypographyProps={{
             style: {
               whiteSpace: 'nowrap',
               overflow: 'hidden',
-              textOverflow: 'ellipsis',
+              textOverflow: 'ellipsis'
             }
           }}
         />
@@ -27,25 +36,27 @@ function renderRow(props: ListChildComponentProps, clickAction: (cell_index: num
 }
 
 interface VirtualizedListProps {
-    clickAction     : (index: number) => void
-    items           : []
+  clickAction: (index: number) => void;
+  items: [];
 }
 
 export function VirtualizedList({ items, clickAction }: VirtualizedListProps) {
   return (
     <Box
-      sx={{ width: '100%', height: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+      sx={{ width: '100%', height: '100%', maxWidth: 360, bgcolor: 'background.paper', overflow: 'scroll' }}
     >
-      <FixedSizeList
-        itemData={items}
-        height={400}
-        width={360}
-        itemSize={50}
-        itemCount={items.length}
-        overscanCount={5}
-      >
-        {(props) => renderRow({...props}, clickAction=clickAction)}
-      </FixedSizeList>
+      {items.map((item, index) => (
+        <Row
+          key={item['node_id']}
+          label={item['title']}
+          index={index}
+          style={{
+            width: '100%',
+            height: 50,
+          }}
+          clickAction={clickAction}
+        />
+      ))}
     </Box>
   );
 }
