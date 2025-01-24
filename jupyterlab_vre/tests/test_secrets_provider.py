@@ -1,29 +1,39 @@
+import os
 from unittest import TestCase
-from yaml import YAMLError
 from ..services.secrets_manager.secrets_provider import SecretsProvider
 
 class TestSecretsProvider(TestCase):
-    def test_file_not_found(self):
-        incorrect_file_path: str = "../file_does_not_exist.yaml"
-        with self.assertRaises(FileNotFoundError):
-            SecretsProvider(incorrect_file_path)
-
-    def test_not_parsed_to_dict(self):
-        not_parsed_to_dict_file_path: str = "jupyterlab_vre/tests/resources/secrets/secrets_not_in_yaml_format.yaml"
-        with self.assertRaises(SyntaxError):
-            SecretsProvider(not_parsed_to_dict_file_path)
-
-    def test_YAML_error(self):
-        polluted_file_path: str = "jupyterlab_vre/tests/resources/secrets/polluted_secrets_file.yaml"
-        with self.assertRaises(YAMLError):
-            SecretsProvider(polluted_file_path)
+    environment_secret_prefix = "Virtual_lab_user_secret_"
 
     def test_retrieve_secret(self):
-        secret_file_path: str = "jupyterlab_vre/tests/resources/secrets/secrets.yaml"
-        KNMI_key_name: str = "KNMI_OPEN_DATA_API_KEY"
-        KNMI_OPEN_DATA_API_KEY: str = "api_key1"
-        self.assertEqual(KNMI_OPEN_DATA_API_KEY, SecretsProvider(secret_file_path).get_secret(KNMI_key_name))
+        secret1_name: str = "secret1"
+        secret1_value: str = "secret1_value"
+        os.environ[self.environment_secret_prefix + secret1_name] = secret1_value
 
-    def test_print_secrets(self):
-        secret_file_path : str = "jupyterlab_vre/tests/resources/secrets/secrets.yaml"
-        SecretsProvider(secret_file_path).print_secrets()
+        self.assertEqual(secret1_value, SecretsProvider(self.environment_secret_prefix).get_secret(secret1_name))
+
+        self.clean_secret(secret1_name)
+
+    def test_retrieve_nonexistent_secret(self):
+        secret1_name: str = "secret1"
+        with self.assertRaises(OSError):
+            SecretsProvider(self.environment_secret_prefix).get_secret(secret1_name)
+
+    def test_print_secret(self):
+        secret1_name: str = "secret1"
+        secret1_value: str = "secret1_value"
+        secret2_name: str = "secret2"
+        secret2_value: str = "secret2_value"
+        os.environ[self.environment_secret_prefix + secret1_name] = secret1_value
+        os.environ[self.environment_secret_prefix + secret2_name] = secret2_value
+
+        SecretsProvider(self.environment_secret_prefix).print_secrets()
+
+        self.clean_secret(secret1_name)
+        self.clean_secret(secret2_name)
+
+    def test_print_no_secrets(self):
+        SecretsProvider(self.environment_secret_prefix).print_secrets()
+
+    def clean_secret(self, secret_name: str):
+        os.environ.pop(self.environment_secret_prefix + secret_name)
