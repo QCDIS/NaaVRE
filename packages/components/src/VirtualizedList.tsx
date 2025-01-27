@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import { SxProps } from '@mui/material';
 
 function Row(
   {
@@ -38,13 +39,12 @@ function Row(
 interface VirtualizedListProps {
   clickAction: (index: number) => void;
   items: [];
+  sx: SxProps;
 }
 
-export function VirtualizedList({ items, clickAction }: VirtualizedListProps) {
+export function VirtualizedList({ items, clickAction, sx }: VirtualizedListProps) {
   return (
-    <Box
-      sx={{ width: '100%', height: '100%', maxWidth: 360, bgcolor: 'background.paper', overflow: 'scroll' }}
-    >
+    <Box sx={sx}>
       {items.map((item, index) => (
         <Row
           key={item['node_id']}

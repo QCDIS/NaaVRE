@@ -95,12 +95,23 @@ export class CatalogDialog extends React.Component<CatalogDialogProps> {
                             disablePortal
                             id="combo-box-demo"
                             options={catalogs}
-                            sx={{ width: 300, margin: '10px' }}
+                            sx={{
+                                width: 300,
+                                margin: '10px',
+                                height: '50px',
+                            }}
                             renderInput={(params) => <TextField {...params} label="Catalog" />}
                         />
                         <VirtualizedList
                             items={this.state.catalog_elements}
                             clickAction={this.onCellSelection}
+                            sx={{
+                                width: '100%',
+                                height: 'calc(100% - 70px)',
+                                maxWidth: 360,
+                                bgcolor: 'background.paper',
+                                overflow: 'scroll',
+                            }}
                         />
                     </div>
                     <PreviewWindow>
