@@ -32,8 +32,9 @@ Go to the project folder and run make :
 ```shell
 make install-backend && make build-frontend && make install-ui && make link-ui
 ```
-Build the extension  and start a jupyterlab instance (replace the ~/workspace 
-dir with the location of your NaaVRE repo):
+Build the extension  and start a jupyterlab instance:
+- Replace the ~/workspace dir with the location of your NaaVRE repo
+- Get an export_VARS file with the right configuration:
 ```shell
 source export_VARS && jupyter lab build && cp -r ~/workspace/NaaVRE/docker/repo_utils/ /tmp/ && ~/workspace/NaaVRE/docker/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative
 ```
