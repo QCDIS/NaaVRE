@@ -8,6 +8,8 @@ from time import sleep
 import requests
 import yaml
 from jinja2 import Environment, PackageLoader
+from requests import JSONDecodeError
+
 from jupyterlab_vre.component_containerizer.handlers import git_hash
 from notebook.base.handlers import APIHandler
 from slugify import slugify
@@ -245,7 +247,17 @@ class ExecuteWorkflowHandler(APIHandler):
                 'Content-Type': 'application/json'
             }
         )
-        wf_list = resp.json()
+        try:
+            wf_list = resp.json()
+        except JSONDecodeError as e:
+            logger.error('Workflow list retrieval failed: ' + str(e))
+            logger.error('api_endpoint: ' + str(api_endpoint))
+            logger.error('vre_api_verify_ssl: ' + str(self.vre_api_verify_ssl))
+            self.set_status(400)
+            self.write('Workflow list retrieval failed: ' + str(e))
+            self.write_error('Workflow list retrieval failed: ' + str(e))
+            self.flush()
+            return
         for wf in wf_list:
             if wf['argo_id'] == workflow_id:
                 self.write(wf)
