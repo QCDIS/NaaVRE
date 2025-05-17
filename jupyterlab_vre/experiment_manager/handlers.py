@@ -229,7 +229,18 @@ class ExecuteWorkflowHandler(APIHandler):
             self.write_error('Workflow submission failed: ' + str(resp.content))
             self.flush()
             return
-        self.write(resp.json())
+        try:
+            json_resp = resp.json()
+        except JSONDecodeError as e:
+            logger.error('Workflow submission failed: ' + str(e))
+            logger.error('api_endpoint: ' + str(api_endpoint))
+            logger.error('vre_api_verify_ssl: ' + str(self.vre_api_verify_ssl))
+            self.set_status(400)
+            self.write('Workflow submission failed: ' + str(e))
+            self.write_error('Workflow submission failed: ' + str(e))
+            self.flush()
+            return
+        self.write(json_resp)
         self.flush()
 
     @web.authenticated
