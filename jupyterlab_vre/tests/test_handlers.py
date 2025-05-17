@@ -245,7 +245,6 @@ class HandlersAPITest(AsyncHTTPTestCase):
                 self.assertEqual('success', cell['job']['conclusion'], 'Job not successful')
 
     def test_extractor_handler(self):
-        print()
         with mock.patch.object(ExtractorHandler, 'get_secure_cookie') as m:
             m.return_value = 'cookie'
             notebooks_json_path = os.path.join(base_path, 'notebooks')
