@@ -497,6 +497,8 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
                     remote_hash = None
                 else:
                     raise e
+            # Update the reference to point to the new commit
+            main_ref = repository.get_git_ref("heads/main")
             logger.debug(f'local_hash: {local_hash}; remote_hash: {remote_hash}')
             if remote_hash is None:
                 repository.create_file(
