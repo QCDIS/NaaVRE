@@ -12,6 +12,7 @@ from pathlib import Path
 from time import sleep
 from unittest import mock
 
+from aiohttp.web_response import json_response
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 
@@ -397,6 +398,9 @@ class HandlersAPITest(AsyncHTTPTestCase):
             test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
             self.assertIsNotNone(test_cell)
             response = self.call_cell_handler()
+            json_resp = json.loads(response.body.decode('utf-8'))
+            if 'image_version' not in json_resp:
+                print('image_version not in json_response')
             image_version = json.loads(response.body.decode('utf-8'))['image_version']
             self.assertIsNotNone(image_version)
             test_cell = Cell(

@@ -477,7 +477,7 @@ class CellsHandler(APIHandler, Catalog):
         self.write(json.dumps({'wf_id': wf_id, 'dispatched_github_workflow': do_dispatch_github_workflow, 'image_version': image_version}))
         self.flush()
 
-@retry(UnknownObjectException, tries=2, delay=0.1, backoff=0.5)
+@retry(Exception, tries=3, delay=1, backoff=2)
 def create_or_update_cell_in_repository(task_name, repository, files_info):
     files_updated = False
     code_content_hash = None
@@ -507,11 +507,13 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
                     content=local_content,
                     )
             elif remote_hash != local_hash:
+                content_file = repository.get_contents(
+                    path=task_name + '/' + f_name)
                 repository.update_file(
                     path=task_name + '/' + f_name,
                     message=task_name + ' update',
                     content=local_content,
-                    sha=remote_hash,
+                    sha=content_file.sha,
                     )
                 files_updated = True
             if f_type == 'cell':
