@@ -44,6 +44,8 @@ dependencies:
   - r-rcpp=1.0.12
   - r-rcppeigen=0.3.4.0.0
   - r-ggplot2=3.5.0
+  - r-SecretsProvider=1.0.0
+  - r-getpass=0.2_2
   - cmake=3.28.3
   - jupyter-collaboration=1.1.0
   - pytest=8.0.2
