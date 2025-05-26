@@ -427,6 +427,7 @@ class CellsHandler(APIHandler, Catalog):
             logger.error(error_message)
             self.flush()
             return
+        gh_repository.update()
         do_dispatch_github_workflow, image_version = create_or_update_cell_in_repository(
             task_name=current_cell.task_name,
             repository=gh_repository,
@@ -481,6 +482,9 @@ class CellsHandler(APIHandler, Catalog):
 def create_or_update_cell_in_repository(task_name, repository, files_info):
     files_updated = False
     code_content_hash = None
+    repository.update()
+    main_ref = repository.get_git_ref("heads/main")
+    main_ref.update()
     for f_type, f_info in files_info.items():
         f_name = f_info['file_name']
         f_path = f_info['path']
@@ -497,8 +501,6 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
                     remote_hash = None
                 else:
                     raise e
-            # Update the reference to point to the new commit
-            main_ref = repository.get_git_ref("heads/main")
             logger.debug(f'local_hash: {local_hash}; remote_hash: {remote_hash}')
             if remote_hash is None:
                 repository.create_file(
