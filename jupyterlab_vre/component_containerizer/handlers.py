@@ -428,11 +428,12 @@ class CellsHandler(APIHandler, Catalog):
             self.flush()
             return
         gh_repository.update()
-        do_dispatch_github_workflow, image_version = create_or_update_cell_in_repository(
+        do_dispatch_github_workflow, image_version, commit_hash = (
+            create_or_update_cell_in_repository(
             task_name=current_cell.task_name,
             repository=gh_repository,
             files_info=files_info,
-            )
+            ))
         if not image_version:
             raise Exception('Error! image_version not set')
         wf_id = str(uuid.uuid4())
@@ -449,6 +450,9 @@ class CellsHandler(APIHandler, Catalog):
 
         image_version = image_version[:7]
         if do_dispatch_github_workflow:
+            logger.debug(
+                'Dispatch github workflow on commit_hash: ' + str(commit_hash))
+            sleep(0.5)
             resp = dispatch_github_workflow(
                 owner,
                 repository_name,
@@ -457,7 +461,8 @@ class CellsHandler(APIHandler, Catalog):
                 repo_token,
                 image_repo,
                 wf_id=wf_id,
-                image_version=image_version
+                image_version=image_version,
+                commit_hash = commit_hash
             )
             if resp.status_code != 201 and resp.status_code != 200 and resp.status_code != 204:
                 self.set_status(400)
@@ -520,6 +525,8 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
                 files_updated = True
             if f_type == 'cell':
                 code_content_hash = local_hash
+    # Get current commit hash
+    repo_commit = repository.get_commit(sha=main_ref.object.sha)
     if not code_content_hash:
         logger.warning('code_content_hash not set')
         print('Warning! code_content_hash not set')
@@ -527,15 +534,27 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
     for f_type, f_info in files_info.items():
         repository.get_contents(path=task_name + '/' + f_info['file_name'])
 
-    return files_updated, code_content_hash
+    return files_updated, code_content_hash, repo_commit
 
 
-def dispatch_github_workflow(owner, repository_name, task_name, files_info, repository_token, image, wf_id=None, image_version=None):
+def dispatch_github_workflow(owner,
+                             repository_name,
+                             task_name,
+                             files_info,
+                             repository_token,
+                             image,
+                             wf_id=None,
+                             image_version=None,
+                             commit_hash = None):
     url = github_url_repos + '/' + owner + '/' + repository_name + '/actions/workflows/' + github_workflow_file_name + '/dispatches'
+    if commit_hash:
+        ref = commit_hash
+    else:
+        ref = 'refs/heads/main'
     resp = requests.post(
         url=url,
         json={
-            'ref': 'refs/heads/main',
+            'ref': ref,
             'inputs': {
                 'build_dir': task_name,
                 'dockerfile': files_info['dockerfile']['file_name'],
