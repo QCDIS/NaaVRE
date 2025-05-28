@@ -12,7 +12,7 @@ import uuid
 from builtins import Exception
 from pathlib import Path
 from time import sleep
-
+from retry import retry
 import autopep8
 import distro
 import jsonschema
@@ -477,7 +477,7 @@ class CellsHandler(APIHandler, Catalog):
         self.write(json.dumps({'wf_id': wf_id, 'dispatched_github_workflow': do_dispatch_github_workflow, 'image_version': image_version}))
         self.flush()
 
-
+@retry(Exception, tries=3, delay=1, backoff=2)
 def create_or_update_cell_in_repository(task_name, repository, files_info):
     files_updated = False
     code_content_hash = None
@@ -497,6 +497,8 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
                     remote_hash = None
                 else:
                     raise e
+            # Update the reference to point to the new commit
+            main_ref = repository.get_git_ref("heads/main")
             logger.debug(f'local_hash: {local_hash}; remote_hash: {remote_hash}')
             if remote_hash is None:
                 repository.create_file(
@@ -505,11 +507,13 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
                     content=local_content,
                     )
             elif remote_hash != local_hash:
+                content_file = repository.get_contents(
+                    path=task_name + '/' + f_name)
                 repository.update_file(
                     path=task_name + '/' + f_name,
                     message=task_name + ' update',
                     content=local_content,
-                    sha=remote_hash,
+                    sha=content_file.sha,
                     )
                 files_updated = True
             if f_type == 'cell':
@@ -517,6 +521,10 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
     if not code_content_hash:
         logger.warning('code_content_hash not set')
         print('Warning! code_content_hash not set')
+    # Check if files are present in the repository
+    for f_type, f_info in files_info.items():
+        repository.get_contents(path=task_name + '/' + f_info['file_name'])
+
     return files_updated, code_content_hash
 
 

@@ -127,5 +127,5 @@
         "rolling_mean_temp_str": "str",
         "temperature_data_str": "str"
     },
-    "skip_exec": false
+    "skip_exec": true
 }

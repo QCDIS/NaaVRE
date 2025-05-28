@@ -33,6 +33,8 @@ Go to the project folder and run make :
 make install-backend && make build-frontend && make install-ui && make link-ui
 ```
 Build the extension  and start a jupyterlab instance:
+- Replace the ~/workspace dir with the location of your NaaVRE repo
+- Get an export_VARS file with the right configuration:
 ```shell
 source export_VARS && jupyter lab build && cp -r ~/workspace/NaaVRE/docker/repo_utils/ /tmp/ && ~/workspace/NaaVRE/docker/init_script.sh && jupyter lab --debug --watch --NotebookApp.token='' --NotebookApp.ip='0.0.0.0' --NotebookApp.allow_origin='*' --collaborative
 ```
@@ -108,7 +110,7 @@ To do that:
 2. Open the NaaVRE UI and dockerize the cells that will make up the workflow.
 3. Open the Workflow Manager and construct the workflow. 
 
-After these steps go to `/tmp/workflow_cells/cells` and copy the files from that folder in the `test/resources/cells` 
+After these steps go to `~/tmp/workflow_cells/cells` and copy the files from that folder in the `test/resources/cells` 
 folder.
 
 To test the code in the cell you must add a `example_inputs` field to the cell file that will have to match it's input
