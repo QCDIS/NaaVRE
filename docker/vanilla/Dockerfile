@@ -1,4 +1,4 @@
-FROM  quay.io/condaforge/miniforge3:24.11.3-0 AS naavre-build
+FROM  quay.io/condaforge/miniforge3:25.3.0-3 AS naavre-build
 RUN conda install -c conda-forge conda-pack conda-merge
 COPY environment.yaml .
 COPY naa-vre-environment.yaml .
