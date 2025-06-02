@@ -452,7 +452,9 @@ class CellsHandler(APIHandler, Catalog):
         if do_dispatch_github_workflow:
             logger.debug(
                 'Dispatch github workflow on commit_hash: ' + str(commit_hash))
-            sleep(0.5)
+            # Get latest commit from repository
+            main_ref = gh_repository.get_git_ref("heads/main")
+            main_ref.update()
             resp = dispatch_github_workflow(
                 owner,
                 repository_name,
@@ -462,7 +464,7 @@ class CellsHandler(APIHandler, Catalog):
                 image_repo,
                 wf_id=wf_id,
                 image_version=image_version,
-                commit_hash = commit_hash
+                commit_hash = None
             )
             if resp.status_code != 201 and resp.status_code != 200 and resp.status_code != 204:
                 self.set_status(400)
@@ -534,7 +536,7 @@ def create_or_update_cell_in_repository(task_name, repository, files_info):
     for f_type, f_info in files_info.items():
         repository.get_contents(path=task_name + '/' + f_info['file_name'])
 
-    return files_updated, code_content_hash, repo_commit
+    return files_updated, code_content_hash, repo_commit.sha
 
 
 def dispatch_github_workflow(owner,
