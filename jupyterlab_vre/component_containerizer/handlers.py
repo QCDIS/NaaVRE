@@ -427,6 +427,7 @@ class CellsHandler(APIHandler, Catalog):
             logger.error(error_message)
             self.flush()
             return
+        sleep(1)
         gh_repository.update()
         do_dispatch_github_workflow, image_version, commit_hash = (
             create_or_update_cell_in_repository(
