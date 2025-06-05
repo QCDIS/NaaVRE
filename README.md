@@ -110,7 +110,7 @@ To do that:
 2. Open the NaaVRE UI and dockerize the cells that will make up the workflow.
 3. Open the Workflow Manager and construct the workflow. 
 
-After these steps go to `/tmp/workflow_cells/cells` and copy the files from that folder in the `test/resources/cells` 
+After these steps go to `~/tmp/workflow_cells/cells` and copy the files from that folder in the `test/resources/cells` 
 folder.
 
 To test the code in the cell you must add a `example_inputs` field to the cell file that will have to match it's input
