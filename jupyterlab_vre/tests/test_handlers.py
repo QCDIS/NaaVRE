@@ -398,6 +398,8 @@ class HandlersAPITest(AsyncHTTPTestCase):
             test_cell, cell = create_cell_and_add_to_cat(cell_path=cell_path)
             self.assertIsNotNone(test_cell)
             response = self.call_cell_handler()
+            if response.code != 200:
+                raise Exception(f'Error calling cell handler: {response.body.decode("utf-8")}')
             json_resp = json.loads(response.body.decode('utf-8'))
             if 'image_version' not in json_resp:
                 print('image_version not in json_response')
