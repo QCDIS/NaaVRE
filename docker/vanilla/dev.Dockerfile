@@ -3,7 +3,7 @@
 # Build context must be the NaaVRE project root:
 # docker build . --file ./docker/vanilla/dev.Dockerfile -t qcdis/n-a-a-vre
 
-FROM  quay.io/condaforge/miniforge3:24.11.3-0 AS env
+FROM  quay.io/condaforge/miniforge3:25.3.1-0 AS env
 
 RUN conda install -c conda-forge conda-pack mamba
 COPY environment.yml .
