@@ -45,7 +45,7 @@ jobs:
         paths:
           - "docker/test-values/test_values1.yaml"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: add VARS
         run: |
