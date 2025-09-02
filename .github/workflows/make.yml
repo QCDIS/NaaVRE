@@ -68,7 +68,7 @@ jobs:
       test_list: ${{ steps.split-output.outputs.test_list }}
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Download pytest output artifact
         uses: actions/download-artifact@v4
