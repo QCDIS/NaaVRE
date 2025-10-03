@@ -24,8 +24,9 @@ assignees: ''
  
 #### Maturity level 1
 * Documentation
-  - [ ] The virtual lab metadata is available outside the virtual lab.
-    - [ ] Metadata is tracked by version control.
+  - [ ] ~The virtual lab metadata is available outside the virtual lab.~
+    - [ ] ~Metadata is tracked by version control.~
+  - _The possibility to add metadata to a catalogue is under development._ 
 * Security
   - [ ] Personal tokens are not tracked by version control.
 * Versioning
