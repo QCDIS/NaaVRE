@@ -1,3 +1,12 @@
+> [!IMPORTANT]
+> NaaVRE has been rewritten and migrated to the [NaaVRE](https://github.com/NaaVRE) organization. This repository is an archive of the legacy implementation. 
+>
+> Quick links to the new NaaVRE:
+> * [Issues](https://github.com/NaaVRE/NaaVRE/issues)
+> * [Architecture](https://github.com/NaaVRE/NaaVRE-architecture)
+> * [Full repos list](https://github.com/NaaVRE/.github/blob/main/profile/README.md)
+
+
 [![make](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml/badge.svg)](https://github.com/QCDIS/NaaVRE/actions/workflows/make.yml)
 
 
